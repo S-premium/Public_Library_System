@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Log in | Iloilo City Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+      --mono:    'DM Mono', monospace;
+      --gold:    #f5c842;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #fff; min-height: 100vh; overflow-x: hidden;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar-strip {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+      background-color: #2f3f4d; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
+    }
+    .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; transition: .18s; min-width: 0; }
+    .brand-logo:hover { opacity: .85; }
+    .brand-img  { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .brand-text { font-weight: 700; font-size: 1.05rem; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-btns   { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+    .tb-btn {
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.75); border-radius: 20px; padding: 6px 16px;
+      font-size: .83rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .18s; white-space: nowrap;
+    }
+    .tb-btn:hover  { background: rgba(255,255,255,.14); color: #fff; }
+    .tb-btn.accent { background: var(--accent); color: #0d1a24; border-color: var(--accent); }
+    .tb-btn.accent:hover { background: #b8d4ec; }
+
+    @media (max-width: 640px) {
+      .topbar-strip { padding: 0 14px; }
+      .brand-text { font-size: .88rem; }
+      .tb-btn { padding: 5px 11px; font-size: .78rem; }
+      .top-btns { gap: 5px; }
+    }
+    @media (max-width: 430px) {
+      .brand-text { display: none; }
+      .tb-btn { padding: 5px 9px; font-size: .74rem; }
+    }
+    @media (max-width: 360px) {
+      .top-btns { gap: 3px; }
+      .tb-btn { padding: 4px 7px; font-size: .7rem; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: space-between; padding: 80px 8% 80px; gap: 3rem;
+    }
+    @media (max-width: 1100px) {
+      .hero { flex-direction: column; padding: 90px 6% 110px; text-align: center; align-items: center; }
+    }
+    @media (max-width: 520px) {
+      .hero { padding: 80px 5% 100px; gap: 2rem; }
+    }
+    @media (max-width: 380px) {
+      .hero { padding: 76px 4% 90px; gap: 1.6rem; }
+    }
+
+    .hero-left { max-width: 520px; width: 100%; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.25);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: .72rem; font-weight: 700; color: var(--accent);
+      letter-spacing: .05em; text-transform: uppercase; margin-bottom: 20px;
+    }
+    @media (max-width: 400px) { .hero-badge { font-size: .65rem; padding: 4px 10px; } }
+    .hero-left h1 { font-size: clamp(1.65rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.03em; color: #fff; line-height: 1.15; margin-bottom: 16px; }
+    .hero-left h1 span { color: var(--accent); }
+    .hero-left p { color: var(--tl); font-size: clamp(.85rem, 2.2vw, .95rem); line-height: 1.7; margin-bottom: 28px; }
+    .hero-cards { display: flex; flex-direction: column; gap: 10px; }
+    .hero-card { background: var(--card); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; backdrop-filter: blur(8px); transition: .2s; text-align: left; }
+    .hero-card:hover { background: var(--card-b); transform: translateX(4px); }
+    @media (max-width: 960px) { .hero-card:hover { transform: none; } }
+    @media (max-width: 400px) { .hero-card { padding: 11px 14px; gap: 10px; border-radius: 12px; } }
+    .hc-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .hci-b { background: rgba(159,193,225,.18); color: var(--accent); }
+    .hci-g { background: rgba(72,199,142,.18);  color: var(--accent2); }
+    .hci-o { background: rgba(255,152,0,.18);   color: var(--warn); }
+    .hc-label { font-size: .72rem; color: var(--tl); margin-bottom: 1px; }
+    .hc-val   { font-size: .88rem; font-weight: 600; color: #fff; }
+
+    /* ── FORM BOX ── */
+    .form-box {
+      background: linear-gradient(150deg, rgba(30,45,61,.9), rgba(39,56,72,.9));
+      backdrop-filter: blur(16px); border: 1px solid rgba(159,193,225,.18);
+      border-radius: 22px; padding: 34px 32px; width: 380px; flex-shrink: 0;
+      box-shadow: 0 28px 70px rgba(0,0,0,.5);
+      opacity: 0; transform: translateX(60px);
+      transition: opacity .65s cubic-bezier(.16,.84,.44,1),
+                  transform .65s cubic-bezier(.16,.84,.44,1),
+                  width .45s cubic-bezier(.16,.84,.44,1);
+      pointer-events: none; position: relative;
+    }
+    .form-box.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+
+    /* Widen form box when signup is visible */
+    .form-box.signup-wide { width: 680px; }
+
+    @media (max-width: 1100px) {
+      .form-box { width: 100% !important; max-width: 680px; transform: translateY(20px); }
+      .form-box.active { transform: translateY(0); }
+    }
+    @media (max-width: 520px) { .form-box { padding: 26px 20px; border-radius: 18px; } }
+    @media (max-width: 360px) { .form-box { padding: 22px 15px; border-radius: 16px; } }
+
+    .form-box h3 { font-size: 1.1rem; font-weight: 700; color: #fff; text-align: center; margin-bottom: 20px; letter-spacing: -.02em; }
+    .close-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.6); font-size: 1.1rem; cursor: pointer; border-radius: 8px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; transition: .18s; z-index: 10; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .close-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
+    .fg { margin-bottom: 13px; }
+    .fg label.fg-label { display: block; font-size: .72rem; font-weight: 700; color: rgba(218,232,245,.55); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
+
+    /* ── FORM CONTROLS ── */
+    .form-control {
+      width: 100%;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 10px;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: .88rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: .2s;
+      caret-color: var(--accent);
+    }
+    .form-control::placeholder { color: rgba(255,255,255,.35); }
+    .form-control:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,.10);
+      box-shadow: 0 0 0 3px rgba(159,193,225,.15);
+      color: #fff;
+    }
+    .form-control:not(:placeholder-shown) { color: #fff; }
+    select.form-control { color: rgba(255,255,255,.35); }
+    select.form-control:focus { color: #fff; }
+    select.form-control option:not([value=""]) { color: #fff; }
+    select.form-control.has-value { color: #fff; }
+
+    .form-control.input-error { border-color: rgba(255,99,99,.6) !important; background: rgba(255,99,99,.06) !important; box-shadow: 0 0 0 3px rgba(255,99,99,.12) !important; color: #fff !important; }
+    .form-control.input-ok    { border-color: rgba(72,199,142,.5) !important; color: #fff !important; }
+    select.form-control { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(159,193,225,.6)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer; }
+    select.form-control option { background: #1e2d3d; color: #fff; }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+    .password-wrapper { position: relative; }
+    .password-wrapper .form-control { padding-right: 42px; }
+    .password-toggle { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: rgba(255,255,255,.4); cursor: pointer; font-size: .9rem; transition: .18s; padding: 0; }
+    .password-toggle:hover { color: var(--accent); }
+    .password-hint { display: block; font-size: .73rem; color: rgba(255,255,255,.4); margin-bottom: 6px; }
+    .pw-row { display: flex; align-items: center; gap: 10px; }
+    .pw-row .password-wrapper { flex: 1; min-width: 0; }
+    .password-strength { font-size: .73rem; color: rgba(255,255,255,.45); white-space: nowrap; min-width: 70px; text-align: right; flex-shrink: 0; }
+    @media (max-width: 360px) { .password-strength { display: none; } }
+    .btn-main { width: 100%; background: var(--accent); color: #0d1a24; border: none; border-radius: 11px; padding: 11px; font-size: .92rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: .2s; margin-top: 4px; }
+    .btn-main:hover { background: #b8d4ec; transform: translateY(-1px); }
+    .btn-main:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .form-footer { text-align: center; margin-top: 14px; font-size: .82rem; color: rgba(255,255,255,.5); }
+    .form-footer a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+    .form-footer a:hover { text-decoration: underline; }
+    .forgot-pw-link { display: block; text-align: right; font-size: .76rem; color: rgba(255,255,255,.4); text-decoration: none; margin: -6px 2px 12px; transition: .18s; }
+    .forgot-pw-link:hover { color: var(--accent); }
+    .policy-accepted-tag { display: none; align-items: center; gap: 7px; font-size: .76rem; color: var(--accent2); margin-bottom: 14px; padding: 6px 12px; background: rgba(72,199,142,.1); border-radius: 20px; border: 1px solid rgba(72,199,142,.25); }
+    .policy-accepted-tag.show { display: flex; }
+    .fade-in { animation: fadeUp .32s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    .shake { animation: shake .4s ease; }
+
+    /* ── SIGNUP 2-COLUMN GRID ── */
+    .signup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 14px;
+    }
+    .signup-col-full {
+      grid-column: 1 / -1;
+    }
+    @media (max-width: 560px) {
+      .signup-grid { grid-template-columns: 1fr; }
+      .signup-col-full { grid-column: 1; }
+    }
+
+    /* ── GENDER RADIO ── */
+    .gender-bullets {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .gender-option {
+      display: flex; align-items: center; gap: 0;
+    }
+    .gender-option input[type="radio"] { display: none; }
+    .gender-option label {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 20px; padding: 6px 14px; font-size: .82rem; font-weight: 600;
+      color: rgba(218,232,245,.65); cursor: pointer; transition: .18s; user-select: none;
+    }
+    .gender-option label:hover { background: rgba(159,193,225,.12); border-color: rgba(159,193,225,.35); color: #fff; }
+    .gender-option input[type="radio"]:checked + label {
+      background: rgba(159,193,225,.18); border-color: var(--accent);
+      color: var(--accent); box-shadow: 0 0 0 2px rgba(159,193,225,.15);
+    }
+    .gender-option label i { font-size: .75rem; }
+
+    /* ── GOV CHECKBOX ── */
+    .gov-check-row {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,152,0,.07); border: 1px solid rgba(255,152,0,.2);
+      border-radius: 11px; padding: 10px 14px; cursor: pointer; transition: .18s;
+    }
+    .gov-check-row:hover { background: rgba(255,152,0,.12); border-color: rgba(255,152,0,.35); }
+    .gov-check-row input[type="checkbox"] { display: none; }
+    .gov-check-box {
+      width: 18px; height: 18px; border: 1.5px solid rgba(255,152,0,.5);
+      border-radius: 5px; background: rgba(255,152,0,.08); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: .18s; position: relative;
+    }
+    .gov-check-box::after {
+      content: ''; display: none; width: 5px; height: 9px;
+      border: 2px solid #0d1a24; border-top: none; border-left: none;
+      transform: rotate(45deg); margin-top: -2px;
+    }
+    .gov-check-row.active .gov-check-box { background: var(--warn); border-color: var(--warn); }
+    .gov-check-row.active .gov-check-box::after { display: block; }
+    .gov-check-label { font-size: .84rem; font-weight: 600; color: rgba(255,200,100,.8); flex: 1; }
+    .gov-check-row.active .gov-check-label { color: var(--warn); }
+    .gov-badge { font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(255,152,0,.15); border: 1px solid rgba(255,152,0,.3); color: rgba(255,152,0,.8); letter-spacing: .04em; text-transform: uppercase; }
+
+    /* ── FILE UPLOAD ── */
+    .file-upload-wrap { position: relative; }
+    .file-upload-input {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .file-upload-ui {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,.07); border: 1px dashed rgba(159,193,225,.3);
+      border-radius: 10px; padding: 10px 14px; transition: .2s; cursor: pointer;
+    }
+    .file-upload-ui:hover { background: rgba(159,193,225,.08); border-color: rgba(159,193,225,.55); }
+    .file-upload-ui.has-file { border-color: rgba(72,199,142,.45); background: rgba(72,199,142,.06); }
+    .fu-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(159,193,225,.12); display: flex; align-items: center; justify-content: center; font-size: .85rem; color: var(--accent); flex-shrink: 0; }
+    .fu-icon.has-file { background: rgba(72,199,142,.15); color: var(--accent2); }
+    .fu-text { flex: 1; min-width: 0; }
+    .fu-title { font-size: .82rem; font-weight: 600; color: rgba(218,232,245,.7); }
+    .fu-sub   { font-size: .7rem; color: rgba(218,232,245,.35); margin-top: 1px; }
+    .fu-title.has-file { color: var(--accent2); }
+
+    /* ── SECTION DIVIDER ── */
+    .form-section-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 16px 0 14px;
+    }
+    .form-section-divider::before, .form-section-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.08);
+    }
+    .form-section-divider span {
+      font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(218,232,245,.3); white-space: nowrap;
+    }
+
+    /* ── FORM NOTE ── */
+    .form-note-box {
+      margin-top: 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      padding: 10px 14px;
+      min-height: 38px;
+      font-size: .75rem;
+      color: rgba(218,232,245,.35);
+      font-style: italic;
+      text-align: center;
+      letter-spacing: .01em;
+    }
+
+    /* ── FORM NOTE — orange ── */
+    .form-note-box.note-orange {
+      background: rgba(255,152,0,.08);
+      border-color: rgba(255,152,0,.28);
+      color: rgba(255,200,100,.8);
+      font-style: normal;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-align: left;
+    }
+    .note-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,152,0,.2);
+      border: 1px solid rgba(255,152,0,.4);
+      color: var(--warn);
+      font-size: .63rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── OFFICE PHONE SLIDE ── */
+    .office-phone-wrap {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .3s ease, opacity .3s ease, margin .3s ease;
+      margin-bottom: 0;
+    }
+    .office-phone-wrap.visible {
+      max-height: 80px;
+      opacity: 1;
+      margin-bottom: 13px;
+    }
+
+    /* ── EMAIL TAKEN ALERT ── */
+    .email-taken-alert { display: flex; align-items: flex-start; gap: 9px; background: rgba(255,99,99,.10); border: 1px solid rgba(255,99,99,.32); border-radius: 11px; padding: 11px 14px; margin-bottom: 14px; font-size: .81rem; color: #ff9f9f; line-height: 1.5; animation: fadeUp .3s ease; }
+    .email-taken-alert i { color: #ff6363; flex-shrink: 0; margin-top: 2px; }
+    .email-taken-alert a { color: var(--accent); font-weight: 700; text-decoration: none; cursor: pointer; }
+    .email-taken-alert a:hover { text-decoration: underline; }
+
+    /* ── INLINE HINTS ── */
+    .field-hint { font-size: .73rem; margin-top: 5px; padding: 0 2px; display: none; align-items: center; gap: 5px; animation: fadeUp .2s ease; flex-wrap: wrap; }
+    .field-hint.error   { color: #ff8f8f; display: flex; }
+    .field-hint.success { color: var(--accent2); display: flex; }
+    .field-hint.info    { color: rgba(218,232,245,.55); display: flex; }
+    .field-hint.checking{ color: rgba(255,255,255,.4); display: flex; }
+    .email-inline-hint { font-size: .73rem; margin-top: 5px; padding: 0 2px; display: none; align-items: center; gap: 5px; animation: fadeUp .2s ease; flex-wrap: wrap; }
+    .email-inline-hint.taken    { color: #ff8f8f; display: flex; }
+    .email-inline-hint.avail    { color: var(--accent2); display: flex; }
+    .email-inline-hint.checking { color: rgba(255,255,255,.4); display: flex; }
+    .check-spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(255,255,255,.2); border-top-color: var(--accent); animation: spin .55s linear infinite; display: inline-block; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── CHAR COUNTER ── */
+    .char-counter { font-size: .7rem; color: rgba(255,255,255,.3); text-align: right; margin-top: 3px; }
+    .char-counter.warn { color: var(--warn); }
+
+    /* ── STRENGTH BAR ── */
+    .strength-bar-wrap { display: flex; gap: 4px; margin-top: 6px; }
+    .strength-seg { height: 3px; flex: 1; border-radius: 3px; background: rgba(255,255,255,.1); transition: background .3s; }
+    .strength-seg.s1 { background: var(--danger); }
+    .strength-seg.s2 { background: var(--warn); }
+    .strength-seg.s3 { background: #f7c948; }
+    .strength-seg.s4 { background: var(--accent2); }
+    .strength-seg.s5 { background: #2ecc71; }
+
+    /* ── QR LOGIN BUTTON — desktop only ── */
+    .desktop-only { display: none !important; }
+    @media (min-width: 993px) {
+      .desktop-only { display: flex !important; }
+    }
+
+    .btn-qr-login {
+      width: 100%; align-items: center; justify-content: center; gap: 10px;
+      background: rgba(159,193,225,.08); border: 1px solid rgba(159,193,225,.22);
+      border-radius: 11px; padding: 10px 14px; color: var(--accent);
+      font-size: .88rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; margin-top: 10px;
+    }
+    .btn-qr-login:hover {
+      background: rgba(159,193,225,.15); border-color: rgba(159,193,225,.4);
+      transform: translateY(-1px);
+    }
+    .qr-btn-icon {
+      width: 26px; height: 26px; background: rgba(159,193,225,.14);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; flex-shrink: 0;
+    }
+    .qr-btn-badge {
+      background: rgba(72,199,142,.15); border: 1px solid rgba(72,199,142,.28);
+      color: #48c78e; font-size: .62rem; font-weight: 700; padding: 2px 7px;
+      border-radius: 10px; letter-spacing: .04em; text-transform: uppercase; margin-left: auto;
+    }
+
+    /* ── OR DIVIDER ── */
+    .or-divider { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; }
+    .or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background: rgba(255,255,255,.1); }
+    .or-divider span { font-size: .72rem; color: rgba(255,255,255,.3); }
+
+    /* ── POLICIES BADGE ── */
+    .policies-badge {
+      position: fixed; bottom: 24px; right: 32px; left: auto; z-index: 1050;
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(30,45,61,.9); backdrop-filter: blur(12px);
+      border: 1px solid rgba(159,193,225,.2); border-radius: 50px;
+      padding: 10px 18px 10px 12px; cursor: pointer; transition: .25s;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      animation: badgeFloat 3.8s ease-in-out infinite; font-family: 'DM Sans', sans-serif;
+    }
+    .policies-badge:hover { background: rgba(30,45,61,.97); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,.35); animation: none; }
+    @keyframes badgeFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .policies-badge.accepted { border-color: rgba(72,199,142,.35) !important; background: rgba(72,199,142,.08); }
+    .pb-icon { width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent), var(--bg3)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; flex-shrink: 0; }
+    .pb-text strong { font-size: .76rem; font-weight: 700; color: #fff; display: block; }
+    .pb-text span   { font-size: .66rem; color: rgba(218,232,245,.5); }
+    .pb-dot { width: 8px; height: 8px; background: #51cf66; border-radius: 50%; box-shadow: 0 0 7px rgba(81,207,102,.8); animation: dotPulse 2.2s ease-in-out infinite; flex-shrink: 0; }
+    @keyframes dotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:.65} }
+    @media (max-width: 600px) {
+      .policies-badge { right: 14px; bottom: 14px; padding: 8px 13px 8px 10px; gap: 7px; }
+      .pb-text span { display: none; }
+      .pb-text strong { font-size: .72rem; }
+    }
+    @media (max-width: 380px) {
+      .policies-badge { right: 10px; bottom: 10px; padding: 7px 11px 7px 9px; }
+      .pb-text { display: none; }
+    }
+
+    /* ── MODALS BASE ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; padding: 16px; overflow-y: auto; }
+    .modal-overlay.show { display: flex; }
+    .m-dialog { background: linear-gradient(150deg, #1e2d3d, #273848); border: 1px solid rgba(159,193,225,.2); border-radius: 20px; padding: 32px 32px 32px 32px; width: 100%; max-width: 460px; color: #fff; position: relative; box-shadow: 0 28px 70px rgba(0,0,0,.55); animation: slideIn .35s ease; }
+    @media (max-width: 480px) { .m-dialog { padding: 24px 16px; border-radius: 16px; } }
+    @keyframes slideIn { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .m-dialog h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -.02em; }
+    .m-dialog p  { font-size: .85rem; color: var(--tl); line-height: 1.65; margin-bottom: 20px; }
+    .modal-close-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.5); font-size: 1.1rem; cursor: pointer; border-radius: 8px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; transition: .18s; z-index: 10; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .modal-close-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
+    .m-dialog .form-control { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); border-radius: 10px; color: #fff; padding: 10px 14px; font-family: 'DM Sans', sans-serif; outline: none; transition: .2s; }
+    .m-dialog .form-control::placeholder { color: rgba(255,255,255,.35); }
+    .m-dialog .form-control:focus { border-color: var(--accent); background: rgba(255,255,255,.10); box-shadow: 0 0 0 3px rgba(159,193,225,.15); color: #fff; }
+    .m-dialog label { display: block; font-size: .76rem; color: var(--tl); font-weight: 600; margin-bottom: 5px; }
+    .captcha-question { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 18px; }
+    .captcha-options  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .captcha-option { background: rgba(255,255,255,.07); border: 1px solid rgba(159,193,225,.25); border-radius: 12px; padding: 13px; cursor: pointer; text-align: center; font-weight: 600; color: var(--tl); transition: .18s; }
+    .captcha-option:hover    { background: rgba(159,193,225,.12); color: #fff; border-color: var(--accent); }
+    .captcha-option.selected { background: var(--accent); color: #0d1a24; border-color: var(--accent); }
+    .btn-forgot-submit { width: 100%; background: var(--accent); color: #0d1a24; border: none; border-radius: 11px; padding: 11px; font-size: .92rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: .2s; margin-top: 4px; }
+    .btn-forgot-submit:hover { background: #b8d4ec; }
+    .forgot-back-link { display: inline-block; margin-top: 14px; color: rgba(255,255,255,.4); font-size: .8rem; text-decoration: none; cursor: pointer; transition: .18s; }
+    .forgot-back-link:hover { color: var(--accent); }
+
+    /* ── OTP MODAL ── */
+    #otpModal { z-index: 2100; }
+    .otp-dialog { background: linear-gradient(150deg, #1a2a3a, #233040); border: 1px solid rgba(159,193,225,.22); border-radius: 24px; padding: 36px 36px 30px; width: 100%; max-width: 440px; color: #fff; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(159,193,225,.06) inset; animation: slideIn .4s cubic-bezier(.16,.84,.44,1); }
+    .otp-icon-wrap { width: 56px; height: 56px; margin: 0 auto 20px; background: linear-gradient(135deg, rgba(159,193,225,.2), rgba(159,193,225,.06)); border: 1px solid rgba(159,193,225,.28); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent); box-shadow: 0 8px 24px rgba(159,193,225,.15); transition: background .35s, border-color .35s, color .35s, box-shadow .35s; }
+    .otp-icon-wrap.expired { background: linear-gradient(135deg, rgba(255,152,0,.2), rgba(255,152,0,.06)); border-color: rgba(255,152,0,.38); color: var(--warn); box-shadow: 0 8px 24px rgba(255,152,0,.18); }
+    .otp-dialog h3 { text-align: center; font-size: 1.15rem; font-weight: 700; color: #fff; letter-spacing: -.02em; margin-bottom: 6px; }
+    .otp-dialog > p { text-align: center; font-size: .82rem; color: var(--tl); line-height: 1.65; margin-bottom: 24px; }
+    .otp-dialog > p strong { color: var(--accent); }
+    .otp-alert { display: none; border-radius: 10px; padding: 11px 14px; font-size: .8rem; margin-bottom: 18px; text-align: center; background: rgba(255,99,99,.1); border: 1px solid rgba(255,99,99,.28); color: #ff8f8f; }
+    .otp-alert.show { display: block; animation: fadeUp .25s ease; }
+    .otp-expired-banner { display: none; background: rgba(255,152,0,.08); border: 1px solid rgba(255,152,0,.3); border-radius: 14px; padding: 16px 18px; margin-bottom: 18px; text-align: center; }
+    .otp-expired-banner.show { display: block; animation: fadeUp .3s ease; }
+    .otp-expired-banner .exp-title { font-size: .86rem; font-weight: 700; color: var(--warn); display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 6px; }
+    .otp-expired-banner .exp-sub { font-size: .79rem; color: rgba(218,232,245,.6); line-height: 1.6; }
+    .otp-expired-banner .exp-sub a { color: var(--accent); font-weight: 700; text-decoration: none; cursor: pointer; transition: .18s; }
+    .otp-progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; }
+    .otp-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.12); transition: background .2s, box-shadow .2s; }
+    .otp-dot.filled { background: var(--accent); box-shadow: 0 0 8px rgba(159,193,225,.55); }
+    .otp-boxes { display: flex; gap: 10px; justify-content: center; margin-bottom: 8px; }
+    .otp-box { width: 52px; height: 60px; background: rgba(255,255,255,.06); border: 1.5px solid rgba(159,193,225,.22); border-radius: 14px; font-family: var(--mono); font-size: 1.6rem; font-weight: 700; color: #fff; text-align: center; caret-color: var(--accent); outline: none; transition: border-color .2s, background .2s, box-shadow .2s, transform .15s, opacity .25s; }
+    .otp-box::placeholder { color: rgba(255,255,255,.15); }
+    .otp-box:focus { border-color: var(--accent); background: rgba(159,193,225,.1); box-shadow: 0 0 0 3px rgba(159,193,225,.18), 0 4px 16px rgba(0,0,0,.25); transform: translateY(-2px); }
+    .otp-box.filled { border-color: rgba(159,193,225,.5); background: rgba(159,193,225,.08); }
+    .otp-box.locked { border-color: rgba(255,152,0,.3) !important; background: rgba(255,152,0,.04) !important; opacity: .45; pointer-events: none; transform: none !important; box-shadow: none !important; }
+    @keyframes otpShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+    .otp-boxes.shake { animation: otpShake .4s ease; }
+    .otp-divider { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 22px; }
+    .otp-divider::before, .otp-divider::after { content:''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(159,193,225,.12), transparent); }
+    .otp-divider span { font-size: .68rem; color: rgba(255,255,255,.25); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .otp-timer { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 22px; font-size: .78rem; color: rgba(255,255,255,.4); }
+    .otp-timer i { color: var(--accent); transition: color .3s; }
+    .otp-timer.expired-state i { color: var(--warn); }
+    #timerCount { font-family: var(--mono); color: var(--accent); font-weight: 600; font-size: .82rem; transition: color .3s; }
+    #timerCount.urgent  { color: var(--danger); }
+    #timerCount.expired { color: rgba(255,255,255,.2); }
+    .btn-otp-submit { width: 100%; background: var(--accent); color: #0d1a24; border: none; border-radius: 12px; padding: 12px; font-size: .93rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-otp-submit:hover:not(:disabled) { background: #b8d4ec; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(159,193,225,.25); }
+    .btn-otp-submit:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+    .otp-resend { text-align: center; margin-top: 16px; font-size: .78rem; color: rgba(255,255,255,.38); }
+    .otp-resend a { color: var(--accent); text-decoration: none; font-weight: 600; transition: .18s; pointer-events: none; opacity: .4; cursor: default; }
+    .otp-resend a.active { pointer-events: auto; opacity: 1; cursor: pointer; }
+    .otp-resend a.active:hover { text-decoration: underline; }
+    .resend-spinner { display: none; width: 13px; height: 13px; border: 2px solid rgba(159,193,225,.3); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 4px; }
+    .resend-spinner.show { display: inline-block; }
+    @media (max-width: 480px) {
+      .otp-dialog { padding: 28px 14px 24px; border-radius: 20px; }
+      .otp-box { width: 42px; height: 52px; font-size: 1.3rem; border-radius: 11px; }
+      .otp-boxes { gap: 7px; }
+    }
+
+    /* QR LOGIN MODAL */
+    #qrLoginModal { z-index: 2200; }
+    .qr-dialog { background: linear-gradient(150deg, #1a2a3a, #233040); border: 1px solid rgba(159,193,225,.22); border-radius: 24px; padding: 32px 28px 28px; width: 100%; max-width: 720px; color: #fff; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(159,193,225,.05) inset; animation: slideIn .4s cubic-bezier(.16,.84,.44,1); }
+    .qr-dialog-header { text-align: center; margin-bottom: 24px; }
+    .qr-dialog-icon { width: 54px; height: 54px; margin: 0 auto 14px; background: linear-gradient(135deg, rgba(159,193,225,.2), rgba(159,193,225,.06)); border: 1px solid rgba(159,193,225,.28); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--accent); box-shadow: 0 6px 20px rgba(159,193,225,.15); transition: all .35s; }
+    .qr-dialog-icon.confirmed { background: linear-gradient(135deg, rgba(72,199,142,.2), rgba(72,199,142,.06)); border-color: rgba(72,199,142,.35); color: var(--accent2); box-shadow: 0 6px 20px rgba(72,199,142,.2); }
+    .qr-dialog-icon.expired { background: linear-gradient(135deg, rgba(255,152,0,.18), rgba(255,152,0,.05)); border-color: rgba(255,152,0,.35); color: var(--warn); }
+    .qr-dialog h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; letter-spacing: -.02em; }
+    .qr-dialog .qr-sub { font-size: .82rem; color: rgba(218,232,245,.6); line-height: 1.6; margin: 0; }
+    .qr-dialog .qr-sub strong { color: var(--accent); }
+    .qr-body-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+    .qr-left-col { display: flex; flex-direction: column; align-items: center; }
+    .qr-image-wrap { width: 200px; height: 200px; margin: 0 auto 10px; border-radius: 16px; overflow: hidden; position: relative; background: #fff; border: 3px solid rgba(159,193,225,.25); box-shadow: 0 8px 28px rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .qr-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .qr-loading { display: flex; flex-direction: column; align-items: center; gap: 10px; color: rgba(100,120,140,.7); font-size: .8rem; font-family: 'DM Sans', sans-serif; }
+    .qr-loading-spinner { width: 32px; height: 32px; border-radius: 50%; border: 3px solid rgba(159,193,225,.2); border-top-color: rgba(100,130,160,.5); animation: spin .7s linear infinite; }
+    .qr-expired-overlay { position: absolute; inset: 0; background: rgba(255,255,255,.95); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; font-size: .8rem; color: rgba(40,60,80,.75); font-weight: 600; font-family: 'DM Sans', sans-serif; }
+    .btn-qr-refresh { background: var(--warn); color: #0d1a24; border: none; border-radius: 8px; padding: 6px 14px; font-size: .78rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 6px; margin-top: 3px; transition: .18s; }
+    .btn-qr-refresh:hover { filter: brightness(1.1); }
+    .qr-timer-bar-wrap { width: 200px; height: 3px; background: rgba(255,255,255,.08); border-radius: 3px; margin: 0 auto 8px; overflow: hidden; }
+    .qr-timer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), #6fa8d0); border-radius: 3px; transition: width .9s linear, background .5s; }
+    .qr-timer-bar.urgent { background: linear-gradient(90deg, var(--danger), #ff8f8f); }
+    .qr-timer-label { text-align: center; font-size: .75rem; color: rgba(255,255,255,.4); margin-bottom: 0; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .qr-timer-label i { color: var(--accent); font-size: .7rem; }
+    .qr-mono { font-family: var(--mono); color: var(--accent); font-weight: 600; font-size: .78rem; }
+    .qr-mono.urgent  { color: var(--danger); }
+    .qr-mono.expired { color: rgba(255,255,255,.2); }
+    .qr-waiting-dots { display: flex; justify-content: center; gap: 5px; margin-top: 10px; }
+    .qr-waiting-dots span { width: 6px; height: 6px; border-radius: 50%; background: rgba(159,193,225,.3); animation: qrPulse 1.4s ease-in-out infinite; }
+    .qr-waiting-dots span:nth-child(2) { animation-delay: .2s; }
+    .qr-waiting-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes qrPulse { 0%,100%{opacity:.3;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+    .qr-waiting-dots.hidden { display: none; }
+    .qr-right-col { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; }
+    .qr-status-banner { display: none; align-items: center; gap: 10px; border-radius: 12px; padding: 11px 14px; font-size: .81rem; animation: fadeUp .3s ease; }
+    .qr-status-banner.show { display: flex; }
+    .qr-status-banner.success { background: rgba(72,199,142,.1); border: 1px solid rgba(72,199,142,.3); color: #7ee8b5; }
+    .qr-status-banner.error   { background: rgba(255,99,99,.1);  border: 1px solid rgba(255,99,99,.28); color: #ff9f9f; }
+    .qr-status-banner.warning { background: rgba(255,152,0,.1);  border: 1px solid rgba(255,152,0,.28); color: #ffba6b; }
+    .qr-right-label { font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.25); padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .qr-steps { display: flex; flex-direction: column; gap: 0; }
+    .qr-step  { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .qr-step:last-child { border-bottom: none; padding-bottom: 0; }
+    .qr-step-num { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; background: rgba(159,193,225,.12); border: 1px solid rgba(159,193,225,.25); display: flex; align-items: center; justify-content: center; font-size: .68rem; font-weight: 700; color: var(--accent); }
+    .qr-step p { font-size: .79rem; color: rgba(218,232,245,.6); line-height: 1.6; margin: 0; }
+    .qr-step p strong { color: rgba(218,232,245,.88); }
+    @media (max-width: 600px) {
+      .qr-dialog { padding: 26px 18px 22px; border-radius: 20px; max-width: 100%; }
+      .qr-body-cols { grid-template-columns: 1fr; gap: 20px; }
+      .qr-image-wrap { width: 180px; height: 180px; }
+      .qr-timer-bar-wrap { width: 180px; }
+    }
+
+    /* ── POLICIES MODAL ── */
+    #policiesModal { z-index: 3000; }
+    .policies-modal-content { background: linear-gradient(150deg, #1e2d3d, #273848); border: 1px solid rgba(159,193,225,.18); width: 92%; max-width: 680px; max-height: 88vh; border-radius: 22px; box-shadow: 0 28px 80px rgba(0,0,0,.6); animation: slideIn .4s ease; color: #fff; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+    .policies-header { background: rgba(0,0,0,.25); padding: 24px 30px 18px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .policies-header h2 { margin: 0 0 5px; color: var(--accent); font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -.02em; }
+    .policies-header p  { margin: 0; color: rgba(218,232,245,.5); font-size: .75rem; }
+    .read-progress-wrap { height: 3px; background: rgba(255,255,255,.08); flex-shrink: 0; }
+    .read-progress-bar  { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .12s linear; }
+    .policies-body { padding: 26px 30px; overflow-y: auto; flex: 1; scroll-behavior: smooth; }
+    .policies-body::-webkit-scrollbar { width: 4px; }
+    .policies-body::-webkit-scrollbar-track { background: rgba(255,255,255,.04); }
+    .policies-body::-webkit-scrollbar-thumb { background: rgba(159,193,225,.35); border-radius: 10px; }
+    .policy-section { margin-bottom: 24px; padding-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .policy-section:last-of-type { border-bottom: none; margin-bottom: 4px; }
+    .policy-section h4 { font-size: .85rem; font-weight: 700; color: #fff; margin: 0 0 10px; display: flex; align-items: center; gap: 9px; }
+    .sec-icon { width: 24px; height: 24px; background: rgba(159,193,225,.15); border: 1px solid rgba(159,193,225,.25); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--accent); flex-shrink: 0; }
+    .policy-section p  { font-size: .82rem; color: var(--tl); line-height: 1.75; margin: 0 0 8px; }
+    .policy-section ul { padding: 0; list-style: none; margin: 0; }
+    .policy-section ul li { font-size: .81rem; color: var(--tl); line-height: 1.7; padding: 3px 0 3px 17px; position: relative; }
+    .policy-section ul li::before { content: '›'; position: absolute; left: 4px; color: var(--accent); font-weight: 700; font-size: .95rem; }
+    .policies-footer { padding: 16px 30px 22px; border-top: 1px solid rgba(255,255,255,.07); flex-shrink: 0; background: rgba(0,0,0,.15); }
+    .scroll-notice { display: flex; align-items: center; gap: 7px; font-size: .76rem; color: rgba(255,255,255,.4); margin-bottom: 13px; transition: opacity .4s, height .4s; }
+    .scroll-notice i { color: var(--accent); animation: bounceDown .9s ease-in-out infinite; }
+    @keyframes bounceDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(3px)} }
+    .scroll-notice.hidden { opacity: 0; pointer-events: none; height: 0; margin: 0; overflow: hidden; }
+    .accept-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; opacity: .35; pointer-events: none; transition: opacity .4s ease; }
+    .accept-row.unlocked { opacity: 1; pointer-events: auto; }
+    .accept-checkbox { width: 18px; height: 18px; border: 1.5px solid rgba(159,193,225,.4); border-radius: 5px; appearance: none; -webkit-appearance: none; cursor: pointer; flex-shrink: 0; margin-top: 2px; transition: .2s; position: relative; background: rgba(255,255,255,.06); }
+    .accept-checkbox:hover   { border-color: var(--accent); }
+    .accept-checkbox:checked { background: var(--accent); border-color: var(--accent); }
+    .accept-checkbox:checked::after { content: '✓'; position: absolute; color: #0d1a24; font-size: 11px; font-weight: 800; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+    .accept-label { font-size: .8rem; color: var(--tl); line-height: 1.55; cursor: pointer; user-select: none; }
+    .accept-label strong { color: #fff; }
+    .btn-accept { width: 100%; padding: 11px; background: var(--accent); color: #0d1a24; border: none; border-radius: 11px; font-weight: 700; font-size: .92rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-accept:disabled { opacity: .35; cursor: not-allowed; }
+    .btn-accept:not(:disabled):hover { background: #b8d4ec; transform: translateY(-1px); }
+    @media (max-width: 768px) {
+      .policies-header, .policies-body, .policies-footer { padding-left: 18px; padding-right: 18px; }
+      .policies-modal-content { max-height: 95vh; width: 96%; }
+    }
+    @media (max-width: 520px) {
+      .policies-modal-content { width: 100%; border-radius: 20px 20px 0 0; align-self: flex-end; max-height: 93vh; }
+      #policiesModal { align-items: flex-end; padding: 0; }
+    }
+
+    /* ── PENDING MODAL ── */
+    .pending-dialog { background: linear-gradient(150deg, #1e2d3d, #273848); border: 1px solid rgba(255,152,0,.28); border-radius: 22px; padding: 36px 32px 30px; width: 100%; max-width: 420px; color: #fff; position: relative; box-shadow: 0 28px 70px rgba(0,0,0,.6); animation: slideIn .4s cubic-bezier(.16,.84,.44,1); text-align: center; }
+    .pending-icon-wrap { width: 64px; height: 64px; margin: 0 auto 20px; background: linear-gradient(135deg, rgba(255,152,0,.2), rgba(255,152,0,.05)); border: 1px solid rgba(255,152,0,.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: var(--warn); box-shadow: 0 8px 28px rgba(255,152,0,.2); animation: pendingPulse 2.5s ease-in-out infinite; }
+    @keyframes pendingPulse { 0%,100% { box-shadow: 0 8px 28px rgba(255,152,0,.2); } 50% { box-shadow: 0 8px 38px rgba(255,152,0,.38); } }
+    .pending-dialog h3 { font-size: 1.15rem; font-weight: 700; color: #fff; letter-spacing: -.02em; margin-bottom: 8px; }
+    .pending-dialog .pending-sub { font-size: .84rem; color: rgba(218,232,245,.6); line-height: 1.7; margin-bottom: 22px; }
+    .pending-steps { background: rgba(255,152,0,.07); border: 1px solid rgba(255,152,0,.18); border-radius: 13px; padding: 14px 16px; margin-bottom: 22px; text-align: left; }
+    .pending-steps-title { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,152,0,.7); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .pending-step { display: flex; align-items: flex-start; gap: 10px; font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.6; padding: 4px 0; }
+    .pending-step i { flex-shrink: 0; margin-top: 2px; }
+    .pending-step i.done   { color: var(--accent2); }
+    .pending-step i.active { color: var(--warn); }
+    .pending-step i.muted  { color: rgba(255,255,255,.2); }
+    .btn-pending-home { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; background: rgba(255,152,0,.14); border: 1px solid rgba(255,152,0,.3); color: var(--warn); border-radius: 11px; padding: 11px; font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif; text-decoration: none; cursor: pointer; transition: .2s; }
+    .btn-pending-home:hover { background: rgba(255,152,0,.24); color: #fff; }
+    .pending-note { margin-top: 14px; font-size: .73rem; color: rgba(255,255,255,.25); line-height: 1.6; }
+
+    /* ── PIN DIGIT INPUTS ── */
+    .login-pin-digit, .lfp-otp-digit, .lfp-pin-digit {
+      width: 44px; height: 52px;
+      background: rgba(255,255,255,.07);
+      border: 1.5px solid rgba(159,193,225,.22);
+      border-radius: 12px;
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s, transform .15s;
+      caret-color: var(--accent);
+    }
+    .login-pin-digit:focus, .lfp-otp-digit:focus, .lfp-pin-digit:focus {
+      border-color: var(--accent);
+      background: rgba(159,193,225,.1);
+      box-shadow: 0 0 0 3px rgba(159,193,225,.18);
+      transform: translateY(-2px);
+    }
+    .login-pin-digit.pin-filled, .lfp-otp-digit.pin-filled, .lfp-pin-digit.pin-filled {
+      border-color: rgba(159,193,225,.5);
+      background: rgba(159,193,225,.08);
+    }
+    .login-pin-digit.pin-error, .lfp-otp-digit.pin-error, .lfp-pin-digit.pin-error {
+      border-color: rgba(255,99,99,.6) !important;
+      background: rgba(255,99,99,.07) !important;
+    }
+    @keyframes pinShake {
+      0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)}
+      40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}
+    }
+    .pin-row-shake { animation: pinShake .4s ease; }
+
+    /* ── WIZARD STEP TRACK ── */
+    .wz-step-item { display:flex; flex-direction:column; align-items:center; gap:5px; }
+    .wz-circle {
+      width:32px; height:32px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.75rem; font-weight:700;
+      border:2px solid rgba(159,193,225,.2);
+      background:rgba(255,255,255,.05);
+      color:rgba(255,255,255,.3);
+      transition:all .35s cubic-bezier(.16,.84,.44,1);
+      position:relative; z-index:1;
+    }
+    .wz-circle.active  { border-color:var(--accent); background:rgba(159,193,225,.18); color:var(--accent); box-shadow:0 0 0 4px rgba(159,193,225,.1); }
+    .wz-circle.done    { border-color:var(--accent2); background:rgba(72,199,142,.18); color:var(--accent2); }
+    .wz-circle.done span { display:none; }
+    .wz-circle.done::after { content:'\f00c'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:.72rem; }
+    .wz-label { font-size:.63rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:rgba(255,255,255,.28); transition:color .3s; white-space:nowrap; }
+    .wz-step-item.active .wz-label { color:var(--accent); }
+    .wz-step-item.done   .wz-label { color:var(--accent2); }
+    .wz-connector { width:56px; height:2px; background:rgba(255,255,255,.08); margin:0 6px 20px; overflow:hidden; border-radius:2px; }
+    .wz-connector-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--accent2),var(--accent)); transition:width .5s cubic-bezier(.16,.84,.44,1); }
+    .wz-connector.done .wz-connector-fill { width:100%; }
+
+    /* ── WIZARD PANELS ── */
+    .wz-panel { display:none; }
+    .wz-panel.active { display:block; animation:wzIn .3s cubic-bezier(.16,.84,.44,1); }
+    .wz-panel.wz-back { animation:wzBack .3s cubic-bezier(.16,.84,.44,1); }
+    @keyframes wzIn   { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes wzBack { from{opacity:0;transform:translateX(-14px)} to{opacity:1;transform:translateX(0)} }
+
+    /* ── WIZARD FOOTER ── */
+    .wz-footer {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-top:14px; gap:10px;
+    }
+    .wz-btn-back {
+      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.65); border-radius:10px; padding:9px 16px;
+      font-size:.84rem; font-weight:600; font-family:'DM Sans',sans-serif;
+      cursor:pointer; transition:.18s; display:flex; align-items:center; gap:5px;
+    }
+    .wz-btn-back:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .wz-btn-next { flex:1; margin-top:0 !important; }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE INIT FLAGS -->
+  <div id="pageFlags"
+    data-show-captcha="{{ 'true' if show_captcha_modal else 'false' }}"
+    data-show-otp="{{ 'true' if show_otp_modal else 'false' }}"
+    data-signup-email-error="{{ 'true' if signup_email_error else 'false' }}"
+    data-otp-expired="{{ 'true' if otp_expired else 'false' }}"
+    data-show-pending="{{ 'true' if show_pending_modal else 'false' }}"
+    style="display:none;">
+  </div>
+
+  <!-- ── TOPBAR ── -->
+  <header class="topbar-strip">
+    <a href="/" class="brand-logo">
+      <img src="/static/images/logo.png" alt="Logo" class="brand-img">
+      <span class="brand-text">Iloilo City Public Library</span>
+    </a>
+    <div class="top-btns">
+      <button id="contactBtn"    class="tb-btn">Contact Us</button>
+      <button id="getStartedBtn" class="tb-btn accent">Get Started</button>
+      <button id="createBtn"     class="tb-btn">Membership</button>
+    </div>
+  </header>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-badge"><i class="fas fa-building-columns me-1"></i> Dr. Graciano Lopez Jaena LRC &amp; Museum</div>
+      <h1>Welcome to<br><span>Iloilo Public<br>Library</span></h1>
+      <p>Access the library management system to borrow books, manage records, and explore resources available to the Iloilo City community.</p>
+      <div class="hero-cards">
+        <div class="hero-card">
+          <div class="hc-icon hci-b"><i class="fas fa-book"></i></div>
+          <div><div class="hc-label">Book Catalog</div><div class="hc-val">Browse &amp; Borrow Titles</div></div>
+        </div>
+        <div class="hero-card">
+          <div class="hc-icon hci-g"><i class="fas fa-users"></i></div>
+          <div><div class="hc-label">Member Access</div><div class="hc-val">Borrowing History &amp; Records</div></div>
+        </div>
+        <div class="hero-card">
+          <div class="hc-icon hci-o"><i class="fas fa-shield-halved"></i></div>
+          <div><div class="hc-label">Secure Login</div><div class="hc-val">OTP + CAPTCHA + QR Protection</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — form panel -->
+    <div class="form-box" id="formBox" aria-live="polite">
+      <button class="close-btn" id="closeForm" aria-label="Close">×</button>
+
+      <!-- ════ LOGIN FORM ════ -->
+      <div id="loginForm" class="form-content" style="display:none;">
+        <h3><i class="fas fa-right-to-bracket me-2" style="color:var(--accent)"></i>Sign In</h3>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="font-size:.82rem;border-radius:10px;">
+                {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form id="loginFormElement" action="/login" method="POST" novalidate onsubmit="return validateLoginForm(event)">
+          <div class="fg">
+            <input name="email" id="loginEmail" type="email" class="form-control" placeholder="Email Address" required autocomplete="email">
+            <div id="loginEmailHint" class="field-hint"></div>
+          </div>
+          <div class="fg password-wrapper">
+            <input name="password" id="loginPassword" type="password" class="form-control" placeholder="Password" required autocomplete="current-password">
+            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)"><i class="fas fa-eye"></i></button>
+          </div>
+          <div id="loginPasswordHint" class="field-hint" style="margin-top:-8px;margin-bottom:8px;"></div>
+          <a href="#" class="forgot-pw-link" onclick="openForgotModal(); return false;">Forgot password?</a>
+          <button type="submit" class="btn-main">
+            <i class="fas fa-arrow-right-to-bracket me-1"></i> Login
+          </button>
+        </form>
+        <div class="or-divider desktop-only"><span>or</span></div>
+        <button type="button" class="btn-qr-login desktop-only" id="qrLoginBtn" onclick="openQrModal()">
+          <span class="qr-btn-icon"><i class="fas fa-qrcode"></i></span>
+          <span>Login with QR Code</span>
+          <span class="qr-btn-badge">Desktop</span>
+        </button>
+        <div class="form-footer" style="margin-top:16px;">Don't have an account? <a onclick="showForm('signupForm')">Create one</a></div>
+        <div style="margin-top:10px;text-align:center;">
+          <small style="font-size:.7rem;color:rgba(218,232,245,.35);">
+            By logging in you agree to our
+            <a href="#" onclick="openPoliciesModal(false);return false;" style="color:rgba(159,193,225,.65);text-decoration:underline;">Terms &amp; Conditions</a>
+          </small>
+        </div>
+      </div>
+
+      <!-- ════ CONTACT FORM ════ -->
+      <div id="contactForm" class="form-content" style="display:none;">
+        <h3><i class="fas fa-envelope me-2" style="color:var(--accent)"></i>Contact Us</h3>
+        <form id="contactFormElement" action="https://formsubmit.co/anthonyojera47@gmail.com" method="POST" novalidate onsubmit="return validateContactForm(event)">
+          <div class="fg">
+            <input id="contactName" type="text" class="form-control" placeholder="Your name" maxlength="80" required>
+            <div id="contactNameHint" class="field-hint"></div>
+          </div>
+          <div class="fg">
+            <input id="contactEmail" type="email" class="form-control" placeholder="Your email" required>
+            <div id="contactEmailHint" class="field-hint"></div>
+          </div>
+          <div class="fg">
+            <textarea id="contactMsg" class="form-control" rows="3" placeholder="Message" maxlength="1000" required oninput="updateCharCount(this,'contactMsgCount',1000)"></textarea>
+            <div class="char-counter" id="contactMsgCount">0 / 1000</div>
+            <div id="contactMsgHint" class="field-hint"></div>
+          </div>
+          <button type="submit" class="btn-main"><i class="fas fa-paper-plane me-1"></i> Send Message</button>
+        </form>
+      </div>
+
+      <!-- ════ SIGNUP FORM — 3-STEP WIZARD ════ -->
+      <div id="signupForm" class="form-content" style="display:none;">
+
+        <!-- ── WIZARD HEADER ── -->
+        <div style="text-align:center;margin-bottom:20px;">
+          <h3 style="font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:14px;">
+            <i class="fas fa-user-plus me-2" style="color:var(--accent)"></i>Membership Registration
+          </h3>
+          <!-- Step track -->
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div class="wz-step-item active" id="wz-si1">
+              <div class="wz-circle active" id="wz-sc1"><span>1</span></div>
+              <div class="wz-label">Personal</div>
+            </div>
+            <div class="wz-connector" id="wz-con1"><div class="wz-connector-fill" id="wz-cf1"></div></div>
+            <div class="wz-step-item" id="wz-si2">
+              <div class="wz-circle" id="wz-sc2"><span>2</span></div>
+              <div class="wz-label">Documents</div>
+            </div>
+            <div class="wz-connector" id="wz-con2"><div class="wz-connector-fill" id="wz-cf2"></div></div>
+            <div class="wz-step-item" id="wz-si3">
+              <div class="wz-circle" id="wz-sc3"><span>3</span></div>
+              <div class="wz-label">Account</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ STEP 1 — Personal Info ═══ -->
+        <div class="wz-panel active" id="wz-panel1">
+          <div class="signup-grid">
+
+            <div class="fg">
+              <input name="firstname" id="signupFirstname" type="text" class="form-control"
+                     placeholder="First Name" maxlength="50" required
+                     oninput="validateName(this,'signupFirstnameHint','First name')">
+              <div id="signupFirstnameHint" class="field-hint"></div>
+            </div>
+
+            <div class="fg">
+              <input name="lastname" id="signupLastname" type="text" class="form-control"
+                     placeholder="Last Name" maxlength="50" required
+                     oninput="validateName(this,'signupLastnameHint','Last name')">
+              <div id="signupLastnameHint" class="field-hint"></div>
+            </div>
+
+            <div class="fg signup-col-full">
+              <label class="fg-label">
+                <i class="fas fa-venus-mars me-1" style="color:var(--accent);font-size:.65rem;"></i> Gender
+              </label>
+              <div class="gender-bullets">
+                <div class="gender-option">
+                  <input type="radio" name="gender" id="genderMale" value="Male" required>
+                  <label for="genderMale"><i class="fas fa-mars"></i> Male</label>
+                </div>
+                <div class="gender-option">
+                  <input type="radio" name="gender" id="genderFemale" value="Female">
+                  <label for="genderFemale"><i class="fas fa-venus"></i> Female</label>
+                </div>
+                <div class="gender-option">
+                  <input type="radio" name="gender" id="genderOther" value="Others">
+                  <label for="genderOther"><i class="fas fa-circle-nodes"></i> Others</label>
+                </div>
+              </div>
+              <div id="signupGenderHint" class="field-hint"></div>
+            </div>
+
+            <div class="fg">
+              <input name="phone" id="signupPhone" type="tel" class="form-control"
+                     placeholder="Phone (09XXXXXXXXX)" maxlength="15" required>
+              <div id="signupPhoneHint" class="field-hint"></div>
+            </div>
+
+            <div class="fg">
+              <input name="school" id="signupSchool" type="text" class="form-control"
+                     placeholder="School / Institution" maxlength="100">
+            </div>
+
+            <div class="fg">
+              <input name="city" id="signupCity" type="text" class="form-control"
+                     placeholder="City" maxlength="60">
+            </div>
+
+            <div class="fg">
+              <input name="province" id="signupProvince" type="text" class="form-control"
+                     placeholder="Province" maxlength="60">
+            </div>
+
+            <div class="fg">
+              <select name="education_level" id="signupEducation" class="form-control" onchange="this.classList.add('has-value')">
+                <option value="" disabled selected>Education Level</option>
+                <option value="Elementary">Elementary</option>
+                <option value="Junior High School">Junior High School</option>
+                <option value="Senior High School">Senior High School</option>
+                <option value="Vocational/Technical">Vocational / Technical</option>
+                <option value="College">College (Undergraduate)</option>
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                <option value="Master's Degree">Master's Degree</option>
+                <option value="Doctorate">Doctorate (PhD)</option>
+                <option value="Postdoctoral">Postdoctoral</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+
+            <div class="fg signup-col-full">
+              <input name="occupation" id="signupOccupation" type="text" class="form-control"
+                     placeholder="Occupation (optional)" maxlength="80">
+            </div>
+
+          </div>
+
+          <div class="wz-footer">
+            <span style="font-size:.72rem;color:rgba(255,255,255,.25);">Step 1 of 3</span>
+            <button type="button" class="btn-main wz-btn-next" onclick="wzGoStep(2)">
+              Next <i class="fas fa-arrow-right ms-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ STEP 2 — Documents ═══ -->
+        <div class="wz-panel" id="wz-panel2">
+          <div class="signup-grid">
+
+            <div class="fg signup-col-full">
+              <div class="gov-check-row" id="govCheckRow" onclick="toggleGovCheck()">
+                <input type="checkbox" name="is_government" id="govCheckbox" value="1">
+                <div class="gov-check-box" id="govCheckBox"></div>
+                <span class="gov-check-label">Government Official / Employee</span>
+                <span class="gov-badge">Optional</span>
+              </div>
+            </div>
+
+            <div class="office-phone-wrap signup-col-full" id="officePhoneWrap">
+              <div class="fg" style="margin-bottom:0;">
+                <input name="office_phone" id="signupOfficePhone" type="tel" class="form-control"
+                       placeholder="Office Phone Number" maxlength="20">
+              </div>
+            </div>
+
+            <div class="fg signup-col-full">
+              <label class="fg-label">
+                <i class="fas fa-id-card me-1" style="color:var(--accent);font-size:.65rem;"></i> Valid ID
+                <span style="text-transform:none;letter-spacing:0;font-weight:400;color:rgba(255,255,255,.3)"> (attach file)</span>
+              </label>
+              <!-- ══ VISIBLE upload UI (cosmetic only — no name attribute) ══ -->
+              <div class="file-upload-wrap">
+                <input type="file" id="signupIdFilePreview" class="file-upload-input"
+                       accept="image/jpeg,image/png,image/webp,application/pdf"
+                       onchange="handleFileSelect(this)">
+                <div class="file-upload-ui" id="fileUploadUI">
+                  <div class="fu-icon" id="fuIcon"><i class="fas fa-cloud-arrow-up" id="fuIconI"></i></div>
+                  <div class="fu-text">
+                    <div class="fu-title" id="fuTitle">Click to upload your valid ID</div>
+                    <div class="fu-sub" id="fuSub">JPG, PNG, WEBP or PDF · max 5 MB</div>
+                  </div>
+                </div>
+              </div>
+              <div id="signupIdHint" class="field-hint"></div>
+            </div>
+
+            <div class="signup-col-full">
+              <div class="form-note-box note-orange">
+                <span class="note-tag"><i class="fas fa-triangle-exclamation"></i> Note</span>
+                <span>Your account will be reviewed by a library admin before you can log in. Please ensure all information is accurate and your valid ID is attached.</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="wz-footer">
+            <button type="button" class="wz-btn-back" onclick="wzGoStep(1)">
+              <i class="fas fa-arrow-left me-1"></i> Back
+            </button>
+            <button type="button" class="btn-main wz-btn-next" onclick="wzGoStep(3)">
+              Next <i class="fas fa-arrow-right ms-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ STEP 3 — Account Details ═══ -->
+        <div class="wz-panel" id="wz-panel3">
+          <div class="policy-accepted-tag" id="policyAcceptedTag">
+            <i class="fas fa-circle-check"></i> Terms &amp; Conditions accepted
+          </div>
+          {% if signup_email_error %}
+          <div class="email-taken-alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <span>This email is <strong>already registered</strong>. <a onclick="showForm('loginForm')">Sign in instead?</a></span>
+          </div>
+          {% endif %}
+
+          <!--
+            ══════════════════════════════════════════════════════════
+            THE ACTUAL FORM — enctype MUST be multipart/form-data.
+            All hidden inputs AND the real file input live here so
+            they are included when the form is submitted.
+            ══════════════════════════════════════════════════════════
+          -->
+          <form id="signupFormElement" action="/signup" method="POST" novalidate
+                enctype="multipart/form-data" onsubmit="return validateSignupForm()">
+
+            <!-- Hidden fields populated from steps 1 & 2 -->
+            <input type="hidden" name="firstname"       id="hFirstname">
+            <input type="hidden" name="lastname"        id="hLastname">
+            <input type="hidden" name="gender"          id="hGender">
+            <input type="hidden" name="phone"           id="hPhone">
+            <input type="hidden" name="school"          id="hSchool">
+            <input type="hidden" name="city"            id="hCity">
+            <input type="hidden" name="province"        id="hProvince">
+            <input type="hidden" name="education_level" id="hEducation">
+            <input type="hidden" name="occupation"      id="hOccupation">
+            <input type="hidden" name="is_government"   id="hGovEmployee">
+            <input type="hidden" name="office_phone"    id="hOfficePhone">
+
+            <!--
+              ══ REAL file input (hidden visually, inside the form) ══
+              This receives the file via DataTransfer in handleFileSelect().
+              name="valid_id" must match what the Flask route expects.
+            -->
+            <input type="file" name="valid_id" id="hValidId"
+                   accept="image/jpeg,image/png,image/webp,application/pdf"
+                   style="display:none;" tabindex="-1" aria-hidden="true">
+
+            <div class="signup-grid">
+
+              <div class="fg signup-col-full">
+                <input name="email" id="signupEmailInput" type="email"
+                  class="form-control {% if signup_email_error %}input-error{% endif %}"
+                  placeholder="Email Address"
+                  value="{{ prefill_email or '' }}"
+                  required autocomplete="email">
+                <div id="emailInlineHint" class="email-inline-hint"></div>
+              </div>
+
+              <div class="fg signup-col-full" id="passwordFieldGroup">
+                <small class="password-hint">Must contain uppercase, lowercase, number &amp; special character.</small>
+                <div class="pw-row">
+                  <div class="password-wrapper">
+                    <input name="password" id="signupPassword" type="password" class="form-control"
+                           placeholder="Password" required
+                           oninput="checkPasswordStrength(this.value); validatePasswordLive(this.value); clearPasswordError();"
+                           onblur="validatePasswordBlur()">
+                    <button type="button" class="password-toggle" onclick="togglePassword('signupPassword',this)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                  <div id="passwordStrength" class="password-strength">Strength: <span id="strengthText">—</span></div>
+                </div>
+                <div class="strength-bar-wrap" id="strengthBar">
+                  <div class="strength-seg" id="seg1"></div>
+                  <div class="strength-seg" id="seg2"></div>
+                  <div class="strength-seg" id="seg3"></div>
+                  <div class="strength-seg" id="seg4"></div>
+                  <div class="strength-seg" id="seg5"></div>
+                </div>
+                <div id="passwordInlineHint" class="email-inline-hint" style="margin-top:5px;"></div>
+              </div>
+
+              <div class="fg signup-col-full">
+                <div class="password-wrapper">
+                  <input id="signupConfirmPassword" type="password" class="form-control"
+                         placeholder="Confirm Password" required
+                         oninput="validateConfirmPassword()"
+                         onblur="validateConfirmPassword()">
+                  <button type="button" class="password-toggle" onclick="togglePassword('signupConfirmPassword',this)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+                <div id="confirmPasswordHint" class="field-hint"></div>
+              </div>
+
+            </div>
+
+            <button type="button" id="signupSubmitBtn" class="btn-main"
+                    onclick="handleSignupAttempt()" style="margin-top:6px;width:100%;">
+              <i class="fas fa-user-plus me-1"></i> Create Account
+            </button>
+          </form>
+
+          <div class="wz-footer" style="margin-top:0;padding-top:10px;">
+            <button type="button" class="wz-btn-back" onclick="wzGoStep(2)">
+              <i class="fas fa-arrow-left me-1"></i> Back
+            </button>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="form-footer" style="margin-top:12px;">Already have an account? <a onclick="showForm('loginForm')">Sign in</a></div>
+      </div><!-- /#signupForm -->
+
+    </div><!-- /.form-box -->
+  </section>
+
+  <!-- ── POLICIES BADGE ── -->
+  <button class="policies-badge" id="policiesBadge" onclick="openPoliciesModal(false)">
+    <div class="pb-icon"><i class="fas fa-file-shield"></i></div>
+    <div class="pb-text"><strong>Terms &amp; Conditions</strong><span>Privacy · Library Policy</span></div>
+    <div class="pb-dot"></div>
+  </button>
+
+  <!-- ═══════════ PIN LOGIN MODAL ═══════════ -->
+  {% if show_pin_modal %}
+  <div id="loginPinBackdrop"
+       style="position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:linear-gradient(150deg,#1e2d3d,#273848);border:1px solid rgba(159,193,225,.2);border-radius:22px;padding:36px 30px;width:100%;max-width:380px;box-shadow:0 32px 80px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;gap:0;">
+      <div style="width:62px;height:62px;border-radius:18px;background:rgba(159,193,225,.12);border:1px solid rgba(159,193,225,.2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#9fc1e1;margin-bottom:18px;">
+        <i class="bi bi-pin-angle-fill"></i>
+      </div>
+      <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:-.02em;">Enter Your PIN</h3>
+      <p style="font-size:.82rem;color:rgba(255,255,255,.45);text-align:center;margin-bottom:24px;line-height:1.6;">Your account is protected with a PIN.<br>Enter your 6-digit PIN to continue.</p>
+      <div id="loginPinRow" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:6px;">
+        <input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-lidx="0" autocomplete="off">
+        <input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-lidx="1" autocomplete="off">
+        <input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-lidx="2" autocomplete="off">
+        <span style="color:rgba(255,255,255,.25);font-weight:700;">–</span>
+        <input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-lidx="3" autocomplete="off">
+        <input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-lidx="4" autocomplete="off">
+        <input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-lidx="5" autocomplete="off">
+      </div>
+      <div id="loginPinError" style="display:none;background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.25);border-radius:9px;padding:9px 14px;font-size:.79rem;color:#ff9090;width:100%;text-align:center;margin:10px 0 0;"></div>
+      <div id="loginPinAttempts" style="font-size:.72rem;color:rgba(255,255,255,.25);margin-top:10px;min-height:18px;"></div>
+      <label style="display:flex;align-items:center;gap:9px;margin-top:14px;font-size:.8rem;color:rgba(255,255,255,.5);cursor:pointer;user-select:none;">
+        <input type="checkbox" id="loginPinRemember" style="accent-color:#48c78e;width:15px;height:15px;">
+        Trust this device for 30 days
+      </label>
+      <button id="loginPinVerifyBtn" onclick="loginPinVerify()" style="width:100%;margin-top:20px;background:rgba(159,193,225,.18);border:1.5px solid rgba(159,193,225,.3);color:#fff;border-radius:11px;padding:13px;font-size:.92rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="bi bi-shield-check-fill"></i> Verify PIN
+      </button>
+      <button onclick="openLoginForgotPin()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.78rem;cursor:pointer;margin-top:14px;font-family:'DM Sans',sans-serif;transition:.18s;" onmouseover="this.style.color='rgba(159,193,225,.7)'" onmouseout="this.style.color='rgba(255,255,255,.3)'">Forgot PIN?</button>
+    </div>
+  </div>
+
+  <div id="loginForgotPinOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9100;align-items:center;justify-content:center;padding:20px;">
+    <div id="loginForgotPinBox" style="background:linear-gradient(150deg,#1e2d3d,#273848);border:1px solid rgba(245,200,66,.2);border-radius:22px;padding:36px 30px;width:100%;max-width:380px;box-shadow:0 32px 80px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;gap:0;">
+      <div id="lfp-step1" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+        <div style="width:54px;height:54px;border-radius:16px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--gold,#f5c842);margin-bottom:16px;"><i class="bi bi-key-fill"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:8px;">Forgot PIN</h3>
+        <p style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:20px;line-height:1.6;">Enter your account password to verify your identity, then we'll send an OTP to your email.</p>
+        <div style="position:relative;width:100%;">
+          <input type="password" id="lfpPassword" placeholder="Account password" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;padding:11px 40px 11px 14px;font-family:'DM Mono',monospace;font-size:.85rem;outline:none;">
+          <button type="button" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.9rem;" onclick="togglePw('lfpPassword',this)"><i class="bi bi-eye"></i></button>
+        </div>
+        <div id="lfpError1" style="display:none;width:100%;background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.25);border-radius:9px;padding:9px 14px;font-size:.78rem;color:#ff9090;margin-top:10px;text-align:center;"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;width:100%;">
+          <button onclick="closeLoginForgotPin()" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:11px;font-size:.85rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;">Cancel</button>
+          <button onclick="lfpStep1Submit()" style="flex:1;background:rgba(245,200,66,.15);border:1.5px solid rgba(245,200,66,.3);color:#f5c842;border-radius:10px;padding:11px;font-size:.85rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="bi bi-send-fill"></i> Send OTP</button>
+        </div>
+      </div>
+      <div id="lfp-step2" style="width:100%;display:none;flex-direction:column;align-items:center;">
+        <div style="width:54px;height:54px;border-radius:16px;background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#9fc1e1;margin-bottom:16px;"><i class="bi bi-chat-dots-fill"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:8px;">Enter OTP</h3>
+        <p id="lfpOtpDesc" style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:20px;line-height:1.6;">Code sent to your email.</p>
+        <div style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:8px;align-items:center;justify-content:center;width:100%;">
+          <input class="lfp-otp-digit" type="text" inputmode="text" maxlength="1" data-oidx="0" style="border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.07);">
+          <input class="lfp-otp-digit" type="text" inputmode="text" maxlength="1" data-oidx="1" style="border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.07);">
+          <input class="lfp-otp-digit" type="text" inputmode="text" maxlength="1" data-oidx="2" style="border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.07);">
+          <span style="color:rgba(255,255,255,.25);font-weight:700;flex-shrink:0;">–</span>
+          <input class="lfp-otp-digit" type="text" inputmode="numeric" maxlength="1" data-oidx="3" style="border-color:rgba(72,199,142,.3);background:rgba(72,199,142,.07);">
+          <input class="lfp-otp-digit" type="text" inputmode="numeric" maxlength="1" data-oidx="4" style="border-color:rgba(72,199,142,.3);background:rgba(72,199,142,.07);">
+          <input class="lfp-otp-digit" type="text" inputmode="numeric" maxlength="1" data-oidx="5" style="border-color:rgba(72,199,142,.3);background:rgba(72,199,142,.07);">
+        </div>
+        <div id="lfpError2" style="display:none;width:100%;background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.25);border-radius:9px;padding:9px 14px;font-size:.78rem;color:#ff9090;margin-top:10px;text-align:center;"></div>
+        <div style="font-size:.74rem;color:rgba(255,255,255,.3);margin-top:10px;">Expires in <strong id="lfpTimer">5:00</strong></div>
+        <button onclick="lfpStep2Submit()" style="width:100%;margin-top:16px;background:rgba(159,193,225,.18);border:1.5px solid rgba(159,193,225,.3);color:#fff;border-radius:11px;padding:12px;font-size:.9rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;"><i class="bi bi-check2"></i> Verify OTP</button>
+        <button onclick="closeLoginForgotPin()" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:.76rem;cursor:pointer;margin-top:10px;font-family:'DM Sans',sans-serif;">Cancel</button>
+      </div>
+      <div id="lfp-step3" style="width:100%;display:none;flex-direction:column;align-items:center;">
+        <div style="width:54px;height:54px;border-radius:16px;background:rgba(72,199,142,.1);border:1px solid rgba(72,199,142,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#48c78e;margin-bottom:16px;"><i class="bi bi-pin-angle-fill"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:8px;">Set New PIN</h3>
+        <p style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:20px;line-height:1.6;">Choose a new 6-digit PIN to protect your account.</p>
+        <label style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);align-self:flex-start;margin-bottom:8px;">New PIN</label>
+        <div style="display:flex;gap:8px;justify-content:center;width:100%;" id="lfpNewPinRow">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="new" data-pi="0">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="new" data-pi="1">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="new" data-pi="2">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="new" data-pi="3">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="new" data-pi="4">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="new" data-pi="5">
+        </div>
+        <label style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);align-self:flex-start;margin-top:14px;margin-bottom:8px;">Confirm PIN</label>
+        <div style="display:flex;gap:8px;justify-content:center;width:100%;" id="lfpConfirmPinRow">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="confirm" data-pi="0">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="confirm" data-pi="1">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="confirm" data-pi="2">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="confirm" data-pi="3">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="confirm" data-pi="4">
+          <input class="lfp-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pg="confirm" data-pi="5">
+        </div>
+        <div id="lfpError3" style="display:none;width:100%;background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.25);border-radius:9px;padding:9px 14px;font-size:.78rem;color:#ff9090;margin-top:12px;text-align:center;"></div>
+        <button onclick="lfpStep3Submit()" style="width:100%;margin-top:18px;background:rgba(72,199,142,.15);border:1.5px solid rgba(72,199,142,.3);color:#48c78e;border-radius:11px;padding:12px;font-size:.9rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;"><i class="bi bi-shield-check"></i> Save New PIN</button>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ═══════════ CAPTCHA MODAL ═══════════ -->
+  <div id="captchaModal" class="modal-overlay {% if show_captcha_modal %}show{% endif %}">
+    <div class="m-dialog">
+      <button class="modal-close-btn" onclick="closeModal('captchaModal')">&times;</button>
+      <h3><i class="fas fa-robot me-2" style="color:var(--accent)"></i>Security Verification</h3>
+      <p class="captcha-question">{% if captcha %}{{ captcha.question }}{% endif %}</p>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" style="font-size:.82rem;border-radius:10px;" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        {% endfor %}{% endif %}
+      {% endwith %}
+      <form method="POST" action="/verify_captcha" id="captchaForm">
+        <input type="hidden" name="captcha_answer" id="captchaAnswerInput" required>
+        <div class="captcha-options">
+          {% if captcha %}{% for option in captcha.options %}
+            <div class="captcha-option" onclick="selectCaptchaOption(this, '{{ option }}')">{{ option }}</div>
+          {% endfor %}{% endif %}
+        </div>
+        <button type="submit" class="btn-main"><i class="fas fa-check me-1"></i> Verify</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ OTP MODAL ═══════════ -->
+  <div id="otpModal" class="modal-overlay {% if show_otp_modal %}show{% endif %}">
+    <div class="otp-dialog" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
+      <button class="modal-close-btn" onclick="closeModal('otpModal')" aria-label="Close">&times;</button>
+      <div class="otp-icon-wrap" id="otpIconWrap"><i class="fas fa-envelope-open-text" id="otpIconInner"></i></div>
+      <h3 id="otpTitle">Verify Your Identity</h3>
+      <p>We sent a 6-digit code to <strong>your registered email</strong>.<br>Enter it below to continue.</p>
+      <div class="otp-expired-banner" id="otpExpiredBanner">
+        <div class="exp-title"><i class="fas fa-clock-rotate-left"></i> Your OTP has expired</div>
+        <div class="exp-sub">The code is no longer valid. Please <a onclick="doResend()">click here to resend</a> a fresh code to your email.</div>
+      </div>
+      <div class="otp-alert" id="otpAlert">
+        <i class="fas fa-circle-exclamation me-1"></i><span id="otpAlertMsg">Invalid code. Please try again.</span>
+      </div>
+      <div class="otp-progress">
+        <div class="otp-dot"></div><div class="otp-dot"></div><div class="otp-dot"></div>
+        <div class="otp-dot"></div><div class="otp-dot"></div><div class="otp-dot"></div>
+      </div>
+      <form method="POST" action="/verify_otp" id="otpFormElement" onsubmit="return handleOtpSubmit(event)">
+        <input type="hidden" name="otp" id="otpHiddenInput">
+        <div class="otp-boxes" id="otpBoxes">
+          <input class="otp-box otp-letter" type="text" inputmode="text" maxlength="1" placeholder="·" autocomplete="off" style="border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.07);">
+          <input class="otp-box otp-letter" type="text" inputmode="text" maxlength="1" placeholder="·" autocomplete="off" style="border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.07);">
+          <input class="otp-box otp-letter" type="text" inputmode="text" maxlength="1" placeholder="·" autocomplete="off" style="border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.07);">
+          <input class="otp-box otp-number" type="text" inputmode="numeric" maxlength="1" placeholder="·" autocomplete="off" style="border-color:rgba(72,199,142,.3);background:rgba(72,199,142,.07);">
+          <input class="otp-box otp-number" type="text" inputmode="numeric" maxlength="1" placeholder="·" autocomplete="off" style="border-color:rgba(72,199,142,.3);background:rgba(72,199,142,.07);">
+          <input class="otp-box otp-number" type="text" inputmode="numeric" maxlength="1" placeholder="·" autocomplete="off" style="border-color:rgba(72,199,142,.3);background:rgba(72,199,142,.07);">
+        </div>
+        <div class="otp-divider"><span>Enter each digit in its box</span></div>
+        <div class="otp-timer" id="otpTimerRow">
+          <i class="fas fa-clock"></i> Code expires in <span id="timerCount">05:00</span>
+        </div>
+        <button type="submit" class="btn-otp-submit" id="otpSubmitBtn" disabled>
+          <i class="fas fa-shield-check"></i> Verify OTP
+        </button>
+      </form>
+      <div class="otp-resend">
+        Didn't receive it?
+        <span class="resend-spinner" id="resendSpinner"></span>
+        <a id="resendLink" onclick="doResend()">Resend code</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ FORGOT PASSWORD MODAL ═══════════ -->
+  <div id="forgotPasswordModal" class="modal-overlay">
+    <div class="m-dialog">
+      <button class="modal-close-btn" onclick="closeModal('forgotPasswordModal')">&times;</button>
+      <h3><i class="fas fa-lock me-2" style="color:var(--warn)"></i>Forgot Password?</h3>
+      <p>Enter your registered email and we'll send you a secure reset link valid for <strong style="color:#fff">1 hour</strong>.</p>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" style="font-size:.82rem;border-radius:10px;" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        {% endfor %}{% endif %}
+      {% endwith %}
+      <form method="POST" action="/forgot_password" id="forgotForm" novalidate onsubmit="return handleForgotSubmit(event)">
+        <div class="fg">
+          <label>Email Address</label>
+          <input type="email" name="email" id="forgotEmail" class="form-control" placeholder="your@email.com" required autocomplete="email">
+          <div id="forgotEmailHint" class="field-hint" style="margin-top:5px;"></div>
+        </div>
+        <div id="forgotLoading" style="display:none;text-align:center;padding:10px 0;">
+          <div class="spinner-border spinner-border-sm me-2" role="status" style="width:1rem;height:1rem;border-color:var(--accent);border-right-color:transparent;"></div>
+          <span style="font-size:.85rem;color:var(--tl);">Sending reset link…</span>
+        </div>
+        <button type="submit" class="btn-forgot-submit" id="forgotSubmitBtn"><i class="fas fa-paper-plane me-1"></i> Send Reset Link</button>
+      </form>
+      <a href="#" class="forgot-back-link" onclick="closeModal('forgotPasswordModal');return false;">← Back to Login</a>
+    </div>
+  </div>
+
+  <!-- ═══════════ PENDING APPROVAL MODAL ═══════════ -->
+  <div id="pendingModal" class="modal-overlay {% if show_pending_modal %}show{% endif %}" style="z-index:2500;">
+    <div class="pending-dialog">
+      <div class="pending-icon-wrap"><i class="fas fa-hourglass-half"></i></div>
+      <h3>Registration Submitted!</h3>
+      <p class="pending-sub">Your account is <strong>pending admin approval.</strong><br>You'll receive an <strong>email notification</strong> once a decision is made.</p>
+      <div class="pending-steps">
+        <div class="pending-steps-title"><i class="fas fa-list-check"></i> What happens next</div>
+        <div class="pending-step"><i class="fas fa-circle-check done"></i><span>Your registration has been submitted successfully</span></div>
+        <div class="pending-step"><i class="fas fa-bell active"></i><span>Admin has been notified and will review your request</span></div>
+        <div class="pending-step"><i class="fas fa-envelope muted"></i><span>You'll get an email when approved — or if not approved, a reason will be provided</span></div>
+        <div class="pending-step"><i class="fas fa-right-to-bracket muted"></i><span>Once approved, you can log in normally</span></div>
+      </div>
+      <a href="/" class="btn-pending-home"><i class="fas fa-house"></i> Back to Home</a>
+      <p class="pending-note">This usually takes less than 24 hours. Check your email inbox and spam folder.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════ QR LOGIN MODAL ═══════════ -->
+  <div id="qrLoginModal" class="modal-overlay" style="z-index:2200;">
+    <div class="qr-dialog">
+      <button class="modal-close-btn" onclick="closeQrModal()" aria-label="Close">&times;</button>
+      <div class="qr-dialog-header">
+        <div class="qr-dialog-icon" id="qrDialogIcon"><i class="fas fa-qrcode" id="qrDialogIconInner"></i></div>
+        <h3>Login with QR Code</h3>
+        <p class="qr-sub">Scan with your <strong>logged-in mobile app</strong> to sign in instantly — no OTP needed.</p>
+      </div>
+      <div class="qr-body-cols">
+        <div class="qr-left-col">
+          <div class="qr-image-wrap" id="qrImageWrap">
+            <div class="qr-loading" id="qrLoading"><div class="qr-loading-spinner"></div><span>Generating secure code…</span></div>
+            <img id="qrCodeImg" class="qr-img" src="" alt="QR Code" style="display:none;">
+            <div class="qr-expired-overlay" id="qrExpiredOverlay" style="display:none;">
+              <i class="fas fa-rotate-right" style="font-size:1.5rem;color:var(--warn);margin-bottom:6px;"></i>
+              <span>Code expired</span>
+              <button class="btn-qr-refresh" onclick="generateQrCode()"><i class="fas fa-arrows-rotate"></i> Refresh</button>
+            </div>
+          </div>
+          <div class="qr-timer-bar-wrap"><div class="qr-timer-bar" id="qrTimerBar"></div></div>
+          <div class="qr-timer-label"><i class="fas fa-clock" id="qrTimerIcon"></i><span>Expires in <span id="qrTimerCount" class="qr-mono">01:00</span></span></div>
+          <div class="qr-waiting-dots" id="qrWaitingDots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="qr-right-col">
+          <div class="qr-status-banner" id="qrStatusBanner"><i id="qrStatusIcon" class="fas fa-circle-info"></i><span id="qrStatusMsg"></span></div>
+          <div class="qr-right-label">How to use</div>
+          <div class="qr-steps">
+            <div class="qr-step"><div class="qr-step-num">1</div><p>Open your library mobile app and make sure you're <strong>logged in</strong>.</p></div>
+            <div class="qr-step"><div class="qr-step-num">2</div><p>Go to <strong>Menu → Scan QR Login</strong> or visit <code style="background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.2);border-radius:4px;padding:1px 5px;font-size:.72rem;color:var(--accent);font-family:var(--mono)">scan-qr</code> in the app.</p></div>
+            <div class="qr-step"><div class="qr-step-num">3</div><p>Scan this code and tap <strong>Approve Login</strong> on your phone.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ POLICIES MODAL ═══════════ -->
+  <div id="policiesModal" class="modal-overlay" style="z-index:3000;">
+    <div class="policies-modal-content">
+      <div class="policies-header">
+        <h2><i class="fas fa-file-shield me-2"></i>Terms &amp; Conditions</h2>
+        <p>Iloilo City Public Library — Dr. Graciano Lopez Jaena Learning Resource Center &amp; Museum &nbsp;·&nbsp; Effective January 2024</p>
+      </div>
+      <div class="read-progress-wrap"><div class="read-progress-bar" id="readProgressBar"></div></div>
+      <div class="policies-body" id="policiesBody">
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-door-open"></i></span> 1. Access &amp; Eligibility</h4>
+          <p>Access to the Iloilo City Public Library Management System is granted exclusively to registered members, library staff, and authorized administrators. By creating an account and logging in, you confirm that:</p>
+          <ul>
+            <li>You are at least 13 years of age, or have obtained parental or guardian consent if under 13.</li>
+            <li>All information provided during registration is accurate, current, and complete.</li>
+            <li>You will keep your login credentials strictly confidential and will not share them with any third party.</li>
+            <li>You will notify library staff immediately if you suspect unauthorized use of your account.</li>
+            <li>You understand that account access may be revoked at any time for violation of these terms.</li>
+          </ul>
+        </div>
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-book-open"></i></span> 2. Use of Library Resources</h4>
+          <p>All library resources — physical and digital — are made available for educational, research, and recreational purposes only. As a registered user, you agree to:</p>
+          <ul>
+            <li>Use borrowed materials responsibly and return them on or before the due date.</li>
+            <li>Pay applicable fines promptly for overdue, lost, or damaged library materials.</li>
+            <li>Refrain from reproducing, distributing, or commercially exploiting any library-owned content.</li>
+            <li>Respect intellectual property rights and applicable copyright laws of the Republic of the Philippines (RA 8293).</li>
+            <li>Not attempt to access, alter, copy, or delete records belonging to other users, staff, or administrators.</li>
+          </ul>
+        </div>
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-shield-halved"></i></span> 3. Privacy &amp; Data Protection</h4>
+          <p>The Iloilo City Public Library is committed to protecting your personal information in accordance with Republic Act No. 10173, the Data Privacy Act of 2012.</p>
+          <ul>
+            <li>Your name, email address, and contact details are used exclusively for account management and official communications.</li>
+            <li>Borrowing history is maintained for operational purposes and will not be disclosed to any third party without your explicit consent, unless required by law.</li>
+            <li>All passwords are stored using industry-standard cryptographic hashing (bcrypt) and are never accessible in plain text.</li>
+            <li>You have the right to request access to, correction of, or deletion of your personal data at any time by contacting library staff.</li>
+            <li>The library will not sell, rent, or trade your personal information to any commercial entity.</li>
+          </ul>
+        </div>
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-lock"></i></span> 4. Account Security &amp; Authentication</h4>
+          <ul>
+            <li>After five (5) consecutive failed login attempts, your account will be automatically locked for fifteen (15) minutes.</li>
+            <li>A One-Time Password (OTP) delivered to your registered email is required to complete every standard login.</li>
+            <li>QR Code login requires an active authenticated mobile session and is one-time-use with a 60-second expiry.</li>
+            <li>Password reset links expire after one (1) hour and are single-use only.</li>
+            <li>You are fully responsible for all actions performed under your account during any active session.</li>
+            <li>Do not access your account on shared, public, or untrusted devices without logging out afterward.</li>
+          </ul>
+        </div>
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-ban"></i></span> 5. Prohibited Conduct</h4>
+          <ul>
+            <li>Attempting to gain unauthorized access to the system, databases, servers, or other users' accounts.</li>
+            <li>Uploading, transmitting, or introducing malicious software, viruses, or any harmful code into the system.</li>
+            <li>Engaging in harassment, intimidation, or discriminatory behavior toward library staff or other users.</li>
+            <li>Using library computers or systems for any activity that is illegal under Philippine law.</li>
+            <li>Misrepresenting your identity, age, or institutional affiliation during registration.</li>
+            <li>Attempting to circumvent or disable any security feature or authentication mechanism of the system.</li>
+          </ul>
+        </div>
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-gavel"></i></span> 6. Liability &amp; Disclaimers</h4>
+          <p>The library shall not be held liable for temporary service interruptions, loss of data resulting from user error, or the content of third-party resources accessible through library systems. Use of this system is provided on an "as is" basis.</p>
+        </div>
+        <div class="policy-section">
+          <h4><span class="sec-icon"><i class="fas fa-rotate-left"></i></span> 7. Amendments &amp; Contact</h4>
+          <p>The Iloilo City Public Library reserves the right to revise these Terms &amp; Conditions at any time. Continued use of the system after any amendment constitutes your full acceptance of the revised terms. For questions, contact the Library Administration Office (Monday–Friday, 8:00 AM – 5:00 PM).</p>
+        </div>
+      </div>
+      <div class="policies-footer">
+        <div class="scroll-notice" id="scrollNotice"><i class="fas fa-arrow-down"></i> Please scroll through and read all terms before accepting.</div>
+        <div class="accept-row" id="acceptRow">
+          <input type="checkbox" id="acceptCheckbox" class="accept-checkbox" onchange="onAcceptChange()">
+          <label for="acceptCheckbox" class="accept-label">I have fully read and understood the <strong>Terms &amp; Conditions</strong> and <strong>Privacy Policy</strong> of the Iloilo City Public Library, and I agree to abide by them.</label>
+        </div>
+        <button class="btn-accept" id="btnAcceptPolicies" disabled onclick="acceptPolicies()">
+          <i class="fas fa-circle-check"></i> <span id="btnAcceptLabel">I Agree — Continue</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  /* ── PAGE FLAGS ── */
+  var _flags = document.getElementById('pageFlags').dataset;
+  var _showCaptcha      = _flags.showCaptcha      === 'true';
+  var _showOtp          = _flags.showOtp          === 'true';
+  var _signupEmailError = _flags.signupEmailError === 'true';
+  var _otpExpired       = _flags.otpExpired       === 'true';
+  var _showPending      = _flags.showPending      === 'true';
+
+  /* ── UTILITIES ── */
+  function setHint(id, state, html) {
+    var el = document.getElementById(id); if (!el) return;
+    el.className = 'field-hint ' + state; el.innerHTML = html;
+    el.style.display = html ? 'flex' : 'none';
+  }
+  function clearHintEl(id) {
+    var el = document.getElementById(id); if (!el) return;
+    el.className = 'field-hint'; el.innerHTML = ''; el.style.display = 'none';
+  }
+  function markError(inputId, hintId, msg) {
+    var inp = document.getElementById(inputId);
+    if (inp) { inp.classList.add('input-error'); inp.classList.remove('input-ok'); }
+    if (hintId) setHint(hintId, 'error', '<i class="fas fa-circle-xmark"></i>&nbsp;' + msg);
+    return false;
+  }
+  function markOk(inputId, hintId, msg) {
+    var inp = document.getElementById(inputId);
+    if (inp) { inp.classList.remove('input-error'); inp.classList.add('input-ok'); }
+    if (hintId && msg) setHint(hintId, 'success', '<i class="fas fa-circle-check"></i>&nbsp;' + msg);
+    else if (hintId) clearHintEl(hintId);
+  }
+  function clearMark(inputId, hintId) {
+    var inp = document.getElementById(inputId);
+    if (inp) { inp.classList.remove('input-error', 'input-ok'); }
+    if (hintId) clearHintEl(hintId);
+  }
+  function shakeInput(inputId) {
+    var inp = document.getElementById(inputId); if (!inp) return;
+    inp.style.animation = 'none'; void inp.offsetWidth; inp.style.animation = 'shake .4s ease';
+  }
+  function updateCharCount(textarea, counterId, max) {
+    var len = textarea.value.length; var el = document.getElementById(counterId); if (!el) return;
+    el.textContent = len + ' / ' + max;
+    el.className = 'char-counter' + (len > max * 0.9 ? ' warn' : '');
+  }
+
+  /* ── VALIDATION RULES ── */
+  var EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var NAME_RE    = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'\-\.]{2,50}$/;
+  var PW_FULL_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_#^])[A-Za-z\d@$!%*?&_#^]{8,}$/;
+  var PHONE_RE   = /^[\d\+\-\(\)\s]{7,15}$/;
+  function isValidEmail(v)    { return EMAIL_RE.test(v.trim()); }
+  function isValidName(v)     { return NAME_RE.test(v.trim()); }
+  function isValidPassword(v) { return PW_FULL_RE.test(v); }
+  function isValidPhone(v)    { return PHONE_RE.test(v.trim()); }
+  function getPasswordScore(val) {
+    var score = 0;
+    if (val.length >= 8)           score++;
+    if (/[A-Z]/.test(val))         score++;
+    if (/[a-z]/.test(val))         score++;
+    if (/[0-9]/.test(val))         score++;
+    if (/[@$!%*?&_#^]/.test(val))  score++;
+    return score;
+  }
+
+  /* ── LOGIN FORM ── */
+  function validateLoginForm(e) {
+    var email = document.getElementById('loginEmail');
+    var pass  = document.getElementById('loginPassword');
+    var ok    = true;
+    if (!email.value.trim()) { markError('loginEmail','loginEmailHint','Email address is required.'); shakeInput('loginEmail'); ok=false; }
+    else if (!isValidEmail(email.value)) { markError('loginEmail','loginEmailHint','Enter a valid email address.'); shakeInput('loginEmail'); ok=false; }
+    else { markOk('loginEmail','loginEmailHint',''); }
+    if (!pass.value) { markError('loginPassword','loginPasswordHint','Password is required.'); shakeInput('loginPassword'); ok=false; }
+    else if (pass.value.length < 8) { markError('loginPassword','loginPasswordHint','Password must be at least 8 characters.'); shakeInput('loginPassword'); ok=false; }
+    else { clearMark('loginPassword','loginPasswordHint'); }
+    if (!ok && e) e.preventDefault();
+    return ok;
+  }
+  document.getElementById('loginEmail').addEventListener('input', function(){ if(this.value.trim()) clearMark('loginEmail','loginEmailHint'); });
+  document.getElementById('loginPassword').addEventListener('input', function(){ if(this.value) clearMark('loginPassword','loginPasswordHint'); });
+
+  /* ── CONTACT FORM ── */
+  function validateContactForm(e) {
+    var name=document.getElementById('contactName'),email=document.getElementById('contactEmail'),msg=document.getElementById('contactMsg'),ok=true;
+    if(!name.value.trim()){markError('contactName','contactNameHint','Your name is required.');shakeInput('contactName');ok=false;}
+    else if(name.value.trim().length<2){markError('contactName','contactNameHint','Name must be at least 2 characters.');ok=false;}
+    else{markOk('contactName','contactNameHint','');}
+    if(!email.value.trim()){markError('contactEmail','contactEmailHint','Email address is required.');shakeInput('contactEmail');ok=false;}
+    else if(!isValidEmail(email.value)){markError('contactEmail','contactEmailHint','Enter a valid email address.');shakeInput('contactEmail');ok=false;}
+    else{markOk('contactEmail','contactEmailHint','');}
+    if(!msg.value.trim()){markError('contactMsg','contactMsgHint','Message cannot be empty.');shakeInput('contactMsg');ok=false;}
+    else if(msg.value.trim().length<10){markError('contactMsg','contactMsgHint','Message must be at least 10 characters.');ok=false;}
+    else{markOk('contactMsg','contactMsgHint','');}
+    if(!ok&&e)e.preventDefault();return ok;
+  }
+
+  /* ── SIGNUP — NAME ── */
+  function validateName(input, hintId, label) {
+    var val=input.value.trim();if(!val){clearMark(input.id,hintId);return;}
+    if(val.length<2){markError(input.id,hintId,label+' must be at least 2 characters.');}
+    else if(!isValidName(val)){markError(input.id,hintId,label+' can only contain letters, spaces, hyphens, or apostrophes.');}
+    else{markOk(input.id,hintId,label+' looks good.');}
+  }
+
+  /* ── GOV TOGGLE ── */
+  function toggleGovCheck() {
+    var row=document.getElementById('govCheckRow'),chk=document.getElementById('govCheckbox'),wrap=document.getElementById('officePhoneWrap');
+    chk.checked=!chk.checked; row.classList.toggle('active',chk.checked); wrap.classList.toggle('visible',chk.checked);
+    if(chk.checked){setTimeout(function(){var f=document.getElementById('signupOfficePhone');if(f)f.focus();},320);}
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     FILE UPLOAD — FIX
+     The cosmetic input (#signupIdFilePreview) has no name attr so
+     it is never submitted.  When a file is chosen we copy it via
+     DataTransfer into #hValidId which lives inside the <form>.
+  ══════════════════════════════════════════════════════════════ */
+  function handleFileSelect(input) {
+    var ui    = document.getElementById('fileUploadUI');
+    var icon  = document.getElementById('fuIcon');
+    var iconI = document.getElementById('fuIconI');
+    var title = document.getElementById('fuTitle');
+    var sub   = document.getElementById('fuSub');
+
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+
+    if (file.size > 5 * 1024 * 1024) {
+      setHint('signupIdHint', 'error',
+        '<i class="fas fa-circle-xmark"></i>&nbsp;File too large. Maximum size is 5 MB.');
+      input.value = '';
+      ui.classList.remove('has-file');
+      icon.classList.remove('has-file');
+      title.classList.remove('has-file');
+      title.textContent = 'Click to upload your valid ID';
+      sub.textContent   = 'JPG, PNG, WEBP or PDF · max 5 MB';
+      iconI.className   = 'fas fa-cloud-arrow-up';
+      // Also clear the hidden form input
+      var hid = document.getElementById('hValidId');
+      if (hid) { try { hid.value = ''; } catch(e){} }
+      return;
+    }
+
+    /* ── Transfer the File object into the hidden input inside the form ── */
+    var hid = document.getElementById('hValidId');
+    if (hid) {
+      try {
+        var dt = new DataTransfer();
+        dt.items.add(file);
+        hid.files = dt.files;
+      } catch (e) {
+        /* DataTransfer not available (very old browsers) — fallback:
+           show a warning so the user knows and can try a modern browser. */
+        console.warn('DataTransfer not supported. File may not upload.', e);
+        setHint('signupIdHint', 'error',
+          '<i class="fas fa-circle-xmark"></i>&nbsp;Your browser does not support file transfer. Please use Chrome, Firefox, or Edge.');
+        return;
+      }
+    }
+
+    /* ── Update the cosmetic UI ── */
+    ui.classList.add('has-file');
+    icon.classList.add('has-file');
+    title.classList.add('has-file');
+    iconI.className   = 'fas fa-circle-check';
+    title.textContent = file.name;
+    sub.textContent   = (file.size / 1024).toFixed(0) + ' KB · ' +
+                        file.type.split('/')[1].toUpperCase();
+    setHint('signupIdHint', 'success',
+      '<i class="fas fa-circle-check"></i>&nbsp;File ready to upload.');
+  }
+
+  /* ── CONFIRM PASSWORD ── */
+  function validateConfirmPassword() {
+    var pw1=document.getElementById('signupPassword').value,pw2=document.getElementById('signupConfirmPassword').value,inp=document.getElementById('signupConfirmPassword');
+    if(!pw2){clearMark('signupConfirmPassword','confirmPasswordHint');return;}
+    if(pw1===pw2){inp.classList.remove('input-error');inp.classList.add('input-ok');setHint('confirmPasswordHint','success','<i class="fas fa-circle-check"></i>&nbsp;Passwords match.');}
+    else{inp.classList.add('input-error');inp.classList.remove('input-ok');setHint('confirmPasswordHint','error','<i class="fas fa-circle-xmark"></i>&nbsp;Passwords do not match.');}
+  }
+
+  /* ── PASSWORD STRENGTH ── */
+  function checkPasswordStrength(val) {
+    var el=document.getElementById('strengthText'),score=getPasswordScore(val);
+    var labels=['—','Weak','Fair','Good','Strong','Very Strong'],colors=['rgba(255,255,255,.35)','#ff6363','#ff9800','#f7c948','#48c78e','#2ecc71'];
+    if(el){el.textContent=labels[score]||'—';el.style.color=colors[score]||colors[0];}
+    for(var i=1;i<=5;i++){var seg=document.getElementById('seg'+i);if(!seg)continue;seg.className='strength-seg';if(i<=score)seg.classList.add('s'+score);}
+    var cpw=document.getElementById('signupConfirmPassword');if(cpw&&cpw.value)validateConfirmPassword();
+  }
+  function validatePasswordLive(val) {
+    var hintEl=document.getElementById('passwordInlineHint');
+    if(!val){hintEl.className='email-inline-hint';hintEl.style.display='none';hintEl.innerHTML='';return;}
+    var missing=[];
+    if(val.length<8)missing.push('8+ characters');
+    if(!/[A-Z]/.test(val))missing.push('uppercase letter');
+    if(!/[a-z]/.test(val))missing.push('lowercase letter');
+    if(!/[0-9]/.test(val))missing.push('number');
+    if(!/[@$!%*?&_#^]/.test(val))missing.push('special character (@$!%*?&_#^)');
+    if(missing.length===0){hintEl.className='email-inline-hint avail';hintEl.style.display='flex';hintEl.innerHTML='<i class="fas fa-circle-check"></i>&nbsp;Password meets all requirements.';document.getElementById('signupPassword').classList.remove('input-error');document.getElementById('signupPassword').classList.add('input-ok');}
+    else{hintEl.className='email-inline-hint taken';hintEl.style.display='flex';hintEl.innerHTML='<i class="fas fa-circle-xmark"></i>&nbsp;Missing: '+missing.join(', ')+'.';document.getElementById('signupPassword').classList.remove('input-ok');}
+  }
+  function validatePasswordBlur(){var val=document.getElementById('signupPassword').value;if(val&&!isValidPassword(val))document.getElementById('signupPassword').classList.add('input-error');}
+  function showPasswordError(msg){
+    var pwInput=document.getElementById('signupPassword'),hintEl=document.getElementById('passwordInlineHint');
+    pwInput.classList.add('input-error');pwInput.classList.remove('input-ok');
+    hintEl.className='email-inline-hint taken';hintEl.style.display='flex';hintEl.innerHTML='<i class="fas fa-circle-xmark"></i>&nbsp;'+msg;
+    pwInput.style.animation='none';void pwInput.offsetWidth;pwInput.style.animation='shake .4s ease';pwInput.focus();
+  }
+  function clearPasswordError(){var pwInput=document.getElementById('signupPassword');if(pwInput&&pwInput.value.trim())pwInput.classList.remove('input-error');}
+
+  /* ── EMAIL AVAILABILITY ── */
+  (function(){
+    var emailInput=document.getElementById('signupEmailInput'),hintEl=document.getElementById('emailInlineHint'),submitBtn=document.getElementById('signupSubmitBtn');
+    if(!emailInput||!hintEl)return;
+    var debounceTimer=null,emailIsTaken=false;
+    function setHL(state,msg){hintEl.className='email-inline-hint '+state;hintEl.innerHTML=msg;hintEl.style.display='flex';}
+    function clearHL(){hintEl.className='email-inline-hint';hintEl.innerHTML='';hintEl.style.display='none';emailIsTaken=false;emailInput.classList.remove('input-error','input-ok');if(submitBtn)submitBtn.disabled=false;}
+    emailInput.addEventListener('input',function(){
+      clearTimeout(debounceTimer);var val=emailInput.value.trim();
+      if(!val){clearHL();return;}
+      if(!isValidEmail(val)){emailInput.classList.add('input-error');emailInput.classList.remove('input-ok');setHL('taken','<i class="fas fa-circle-xmark"></i>&nbsp;Enter a valid email address.');if(submitBtn)submitBtn.disabled=true;return;}
+      emailInput.classList.remove('input-error','input-ok');setHL('checking','<span class="check-spinner"></span>&nbsp;Checking availability…');
+      debounceTimer=setTimeout(function(){
+        fetch('/api/check_email?email='+encodeURIComponent(val)).then(function(r){return r.json();}).then(function(data){
+          if(data.taken){emailIsTaken=true;emailInput.classList.add('input-error');emailInput.classList.remove('input-ok');setHL('taken','<i class="fas fa-circle-xmark"></i>&nbsp;This email is already registered. <a style="color:var(--accent);font-weight:700;text-decoration:none;cursor:pointer;" onclick="showForm(\'loginForm\')">Sign in instead?</a>');if(submitBtn)submitBtn.disabled=true;}
+          else{emailIsTaken=false;emailInput.classList.remove('input-error');emailInput.classList.add('input-ok');setHL('avail','<i class="fas fa-circle-check"></i>&nbsp;Email is available');if(submitBtn)submitBtn.disabled=false;}
+        }).catch(function(){clearHL();});
+      },500);
+    });
+    window._getEmailIsTaken=function(){return emailIsTaken;};
+  })();
+
+  /* ── WIZARD STATE ── */
+  var wzCur = 1;
+
+  function wzGoStep(next) {
+    if (next > wzCur && !wzValidate(wzCur)) return;
+    var back = next < wzCur;
+    var curPanel = document.getElementById('wz-panel' + wzCur);
+    curPanel.classList.remove('active', 'wz-back');
+    curPanel.style.display = 'none';
+    wzCur = next;
+    var nextPanel = document.getElementById('wz-panel' + wzCur);
+    nextPanel.style.display = 'block';
+    nextPanel.classList.remove('active', 'wz-back');
+    void nextPanel.offsetWidth;
+    nextPanel.classList.add('active');
+    if (back) nextPanel.classList.add('wz-back');
+    wzUpdateTrack();
+    if (next === 3) wzSyncHidden();
+  }
+
+  function wzUpdateTrack() {
+    for (var i = 1; i <= 3; i++) {
+      var si = document.getElementById('wz-si' + i);
+      var sc = document.getElementById('wz-sc' + i);
+      si.classList.remove('active', 'done');
+      sc.classList.remove('active', 'done');
+      if (i < wzCur)       { si.classList.add('done');   sc.classList.add('done'); }
+      else if (i === wzCur){ si.classList.add('active'); sc.classList.add('active'); }
+      if (i < 3) {
+        var con = document.getElementById('wz-con' + i);
+        var cf  = document.getElementById('wz-cf' + i);
+        con.classList.toggle('done', i < wzCur);
+        cf.style.width = i < wzCur ? '100%' : '0%';
+      }
+    }
+  }
+
+  function wzValidate(step) {
+    if (step === 1) {
+      var fn = document.getElementById('signupFirstname');
+      var ln = document.getElementById('signupLastname');
+      var g  = document.querySelector('input[name="gender"]:checked');
+      var ph = document.getElementById('signupPhone');
+      var ok = true;
+      if (!fn.value.trim() || fn.value.trim().length < 2) {
+        markError('signupFirstname','signupFirstnameHint','First name must be at least 2 characters.');
+        shakeInput('signupFirstname'); ok = false;
+      } else { markOk('signupFirstname','signupFirstnameHint',''); }
+      if (!ln.value.trim() || ln.value.trim().length < 2) {
+        markError('signupLastname','signupLastnameHint','Last name must be at least 2 characters.');
+        shakeInput('signupLastname'); ok = false;
+      } else { markOk('signupLastname','signupLastnameHint',''); }
+      if (!g) {
+        setHint('signupGenderHint','error','<i class="fas fa-circle-xmark"></i>&nbsp;Please select a gender.');
+        ok = false;
+      } else { clearHintEl('signupGenderHint'); }
+      if (!ph.value.trim() || !isValidPhone(ph.value)) {
+        markError('signupPhone','signupPhoneHint','Enter a valid phone number.');
+        shakeInput('signupPhone'); ok = false;
+      } else { markOk('signupPhone','signupPhoneHint',''); }
+      return ok;
+    }
+    if (step === 2) { return true; }
+    return true;
+  }
+
+  function wzSyncHidden() {
+    var map = {
+      hFirstname:  'signupFirstname',
+      hLastname:   'signupLastname',
+      hPhone:      'signupPhone',
+      hSchool:     'signupSchool',
+      hCity:       'signupCity',
+      hProvince:   'signupProvince',
+      hEducation:  'signupEducation',
+      hOccupation: 'signupOccupation'
+    };
+    for (var hid in map) {
+      var src = document.getElementById(map[hid]);
+      var dst = document.getElementById(hid);
+      if (src && dst) dst.value = src.value;
+    }
+    var g = document.querySelector('input[name="gender"]:checked');
+    var hg = document.getElementById('hGender');
+    if (g && hg) hg.value = g.value;
+    var govChk = document.getElementById('govCheckbox');
+    var hGov   = document.getElementById('hGovEmployee');
+    if (govChk && hGov) hGov.value = govChk.checked ? '1' : '';
+    var op  = document.getElementById('signupOfficePhone');
+    var hOp = document.getElementById('hOfficePhone');
+    if (op && hOp) hOp.value = op.value;
+  }
+
+  /* ── SIGNUP FULL VALIDATION (step 3) ── */
+  window.validateSignupForm = function() {
+    var ok = true;
+    var em = document.getElementById('signupEmailInput');
+    if (!em.value.trim()) { markError('signupEmailInput','emailInlineHint','Email address is required.'); shakeInput('signupEmailInput'); ok=false; }
+    else if (!isValidEmail(em.value)) { markError('signupEmailInput','emailInlineHint','Enter a valid email address.'); shakeInput('signupEmailInput'); ok=false; }
+    else if (window._getEmailIsTaken && window._getEmailIsTaken()) { shakeInput('signupEmailInput'); ok=false; }
+    var pw = document.getElementById('signupPassword');
+    if (!pw.value) { markError('signupPassword','passwordInlineHint','Password is required.'); shakeInput('signupPassword'); ok=false; }
+    else if (!isValidPassword(pw.value)) { markError('signupPassword','passwordInlineHint','Password does not meet all requirements.'); shakeInput('signupPassword'); ok=false; }
+    var cpw = document.getElementById('signupConfirmPassword');
+    if (!cpw.value) { cpw.classList.add('input-error'); setHint('confirmPasswordHint','error','<i class="fas fa-circle-xmark"></i>&nbsp;Please confirm your password.'); shakeInput('signupConfirmPassword'); ok=false; }
+    else if (pw.value !== cpw.value) { cpw.classList.add('input-error'); setHint('confirmPasswordHint','error','<i class="fas fa-circle-xmark"></i>&nbsp;Passwords do not match.'); shakeInput('signupConfirmPassword'); ok=false; }
+    return ok;
+  };
+
+  /* ── FORGOT PASSWORD ── */
+  function handleForgotSubmit(e) {
+    var emailEl=document.getElementById('forgotEmail'),val=emailEl?emailEl.value.trim():'';
+    if(!val){markError('forgotEmail','forgotEmailHint','Email address is required.');shakeInput('forgotEmail');if(e)e.preventDefault();return false;}
+    if(!isValidEmail(val)){markError('forgotEmail','forgotEmailHint','Enter a valid email address.');shakeInput('forgotEmail');if(e)e.preventDefault();return false;}
+    markOk('forgotEmail','forgotEmailHint','');
+    document.getElementById('forgotSubmitBtn').style.display='none';
+    document.getElementById('forgotLoading').style.display='block';
+    return true;
+  }
+  document.getElementById('forgotEmail').addEventListener('input',function(){if(this.value.trim())clearMark('forgotEmail','forgotEmailHint');});
+
+  /* ── SIGNUP ATTEMPT (policies gate) ── */
+  var _signupTcAccepted = false;
+  function handleSignupAttempt() {
+    if (!validateSignupForm()) return;
+    var pwVal = document.getElementById('signupPassword').value, score = getPasswordScore(pwVal);
+    if (score < 3) { showPasswordError('Password is too weak. Add uppercase, numbers &amp; special characters.'); return; }
+    if (_signupTcAccepted) { document.getElementById('signupFormElement').submit(); return; }
+    openPoliciesModal(true);
+  }
+
+  /* ── SHOW FORM (with signup-wide class) ── */
+  function showForm(formId) {
+    document.querySelectorAll('.form-content').forEach(function(f){f.style.display='none';f.classList.remove('fade-in');});
+    var target = document.getElementById(formId); if (!target) return;
+    target.style.display = 'block'; void target.offsetWidth; target.classList.add('fade-in');
+    var box = document.getElementById('formBox');
+    box.classList.add('active');
+    if (formId === 'signupForm') { box.classList.add('signup-wide'); }
+    else { box.classList.remove('signup-wide'); }
+    if (formId === 'signupForm') {
+      wzCur = 1;
+      for (var i = 1; i <= 3; i++) {
+        var p = document.getElementById('wz-panel' + i);
+        if (p) { p.style.display = i === 1 ? 'block' : 'none'; p.classList.toggle('active', i === 1); p.classList.remove('wz-back'); }
+      }
+      wzUpdateTrack();
+    }
+  }
+
+  document.getElementById('getStartedBtn').addEventListener('click', function(){ showForm('loginForm'); });
+  document.getElementById('createBtn').addEventListener('click',     function(){ showForm('signupForm'); });
+  document.getElementById('contactBtn').addEventListener('click',    function(){ showForm('contactForm'); });
+
+  document.getElementById('closeForm').addEventListener('click', function(){
+    var box = document.getElementById('formBox');
+    box.classList.remove('active','signup-wide');
+    setTimeout(function(){ document.querySelectorAll('.form-content').forEach(function(f){ f.style.display='none'; f.classList.remove('fade-in'); }); }, 450);
+  });
+
+  function togglePassword(inputId, btn) {
+    var inp = document.getElementById(inputId), icon = btn.querySelector('i');
+    if (inp.type === 'password') { inp.type = 'text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+    else { inp.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+  }
+
+  /* ── PIN MODAL UTILS ── */
+  function togglePw(inputId, btn) {
+    var inp = document.getElementById(inputId), icon = btn.querySelector('i');
+    if (inp.type === 'password') { inp.type = 'text'; icon.classList.replace('bi-eye','bi-eye-slash'); }
+    else { inp.type = 'password'; icon.classList.replace('bi-eye-slash','bi-eye'); }
+  }
+
+  function initPinDigitRow(selector){
+    var digits=Array.from(document.querySelectorAll(selector));if(!digits.length)return;
+    digits.forEach(function(d,i){
+      var isLetterSlot=d.classList.contains('lfp-otp-digit')&&parseInt(d.dataset.oidx)<3;
+      var isNumericSlot=d.classList.contains('lfp-otp-digit')&&parseInt(d.dataset.oidx)>=3;
+      var isPinDigit=d.classList.contains('login-pin-digit')||d.classList.contains('lfp-pin-digit');
+      d.addEventListener('input',function(e){
+        var raw=e.target.value,ch=raw[raw.length-1]||'';
+        if(isPinDigit){d.value=/\d/.test(ch)?ch:'';}
+        else if(isLetterSlot){d.value=/[a-zA-Z]/.test(ch)?ch.toUpperCase():'';}
+        else if(isNumericSlot){d.value=/\d/.test(ch)?ch:'';}
+        else{d.value=ch;}
+        d.classList.toggle('pin-filled',!!d.value);
+        if(d.value&&i<digits.length-1)digits[i+1].focus();
+      });
+      d.addEventListener('keydown',function(e){
+        if(e.key==='Backspace'){if(!d.value&&i>0){digits[i-1].value='';digits[i-1].classList.remove('pin-filled');digits[i-1].focus();}else{d.value='';d.classList.remove('pin-filled');}}
+        if(e.key==='ArrowLeft'&&i>0)digits[i-1].focus();
+        if(e.key==='ArrowRight'&&i<digits.length-1)digits[i+1].focus();
+      });
+      d.addEventListener('paste',function(e){
+        e.preventDefault();var pasted=(e.clipboardData||window.clipboardData).getData('text').toUpperCase();var cur=i;
+        for(var j=0;j<pasted.length&&cur<digits.length;j++){
+          var target=digits[cur];
+          var tIsLetter=target.classList.contains('lfp-otp-digit')&&parseInt(target.dataset.oidx)<3;
+          var tIsNumeric=target.classList.contains('lfp-otp-digit')&&parseInt(target.dataset.oidx)>=3;
+          var tIsPin=target.classList.contains('login-pin-digit')||target.classList.contains('lfp-pin-digit');
+          var ch=pasted[j];
+          if((tIsLetter&&/[A-Z]/.test(ch))||(tIsNumeric&&/\d/.test(ch))||(tIsPin&&/\d/.test(ch))){target.value=ch;target.classList.add('pin-filled');cur++;}
+        }
+        digits[Math.min(cur,digits.length-1)].focus();
+      });
+    });
+  }
+  function getPinValue(selector){return Array.from(document.querySelectorAll(selector)).map(function(d){return d.value;}).join('');}
+  function shakePinRow(rowId){var row=document.getElementById(rowId);if(!row)return;row.classList.remove('pin-row-shake');void row.offsetWidth;row.classList.add('pin-row-shake');setTimeout(function(){row.classList.remove('pin-row-shake');},450);}
+  function showPinError(elId,msg){var el=document.getElementById(elId);if(!el)return;el.textContent=msg;el.style.display='block';}
+  function hidePinError(elId){var el=document.getElementById(elId);if(el)el.style.display='none';}
+
+  initPinDigitRow('.login-pin-digit');
+  initPinDigitRow('.lfp-otp-digit');
+  initPinDigitRow('.lfp-pin-digit');
+  (function(){var backdrop=document.getElementById('loginPinBackdrop');if(backdrop){var first=backdrop.querySelector('.login-pin-digit');if(first)setTimeout(function(){first.focus();},200);}})();
+
+  /* ── PIN VERIFY ── */
+  function loginPinVerify(){
+    var pin=getPinValue('.login-pin-digit');hidePinError('loginPinError');
+    if(pin.length<6){shakePinRow('loginPinRow');showPinError('loginPinError','Please enter all 6 digits.');return;}
+    var remember=document.getElementById('loginPinRemember')&&document.getElementById('loginPinRemember').checked;
+    var btn=document.getElementById('loginPinVerifyBtn');btn.disabled=true;btn.innerHTML='<span style="opacity:.6;font-size:.85rem;">Verifying…</span>';
+    fetch('/verify_pin',{method:'POST',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify({pin:pin,remember:remember})})
+    .then(function(r){return r.json();}).then(function(data){
+      if(data.success){window.location.href=data.redirect||'/dashboard';}
+      else{shakePinRow('loginPinRow');showPinError('loginPinError',data.message||'Incorrect PIN. Please try again.');
+        if(data.attempts_left!==undefined){var attEl=document.getElementById('loginPinAttempts');if(attEl)attEl.textContent=data.attempts_left+' attempt(s) remaining.';}
+        document.querySelectorAll('.login-pin-digit').forEach(function(d){d.value='';d.classList.remove('pin-filled');});
+        document.querySelector('.login-pin-digit').focus();btn.disabled=false;btn.innerHTML='<i class="bi bi-shield-check-fill"></i> Verify PIN';}
+    }).catch(function(){showPinError('loginPinError','Network error. Please try again.');btn.disabled=false;btn.innerHTML='<i class="bi bi-shield-check-fill"></i> Verify PIN';});
+  }
+
+  /* ── FORGOT PIN FLOW ── */
+  var _lfpTimerInt=null;
+  function openLoginForgotPin(){
+    var overlay=document.getElementById('loginForgotPinOverlay');if(!overlay)return;
+    document.getElementById('lfp-step1').style.display='flex';document.getElementById('lfp-step2').style.display='none';document.getElementById('lfp-step3').style.display='none';
+    hidePinError('lfpError1');hidePinError('lfpError2');hidePinError('lfpError3');
+    var pwEl=document.getElementById('lfpPassword');if(pwEl)pwEl.value='';
+    overlay.style.display='flex';if(pwEl)setTimeout(function(){pwEl.focus();},150);
+  }
+  function closeLoginForgotPin(){var o=document.getElementById('loginForgotPinOverlay');if(o)o.style.display='none';clearInterval(_lfpTimerInt);}
+  function startLfpTimer(secs){
+    clearInterval(_lfpTimerInt);var s=secs,timerEl=document.getElementById('lfpTimer');
+    function tick(){if(!timerEl)return;var m=Math.floor(s/60),sec=s%60;timerEl.textContent=m+':'+(sec<10?'0':'')+sec;if(s<=0){clearInterval(_lfpTimerInt);timerEl.textContent='Expired';timerEl.style.color='var(--danger)';}s--;}
+    tick();_lfpTimerInt=setInterval(tick,1000);
+  }
+  function lfpStep1Submit(){
+    var pw=document.getElementById('lfpPassword').value;hidePinError('lfpError1');
+    if(!pw){showPinError('lfpError1','Please enter your account password.');return;}
+    fetch('/forgot_pin/verify_password',{method:'POST',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify({password:pw})})
+    .then(function(r){return r.json();}).then(function(data){
+      if(data.success){var descEl=document.getElementById('lfpOtpDesc');if(descEl&&data.email_hint)descEl.textContent='OTP sent to '+data.email_hint+'.';
+        document.getElementById('lfp-step1').style.display='none';document.getElementById('lfp-step2').style.display='flex';
+        startLfpTimer(300);document.querySelectorAll('.lfp-otp-digit').forEach(function(d){d.value='';d.classList.remove('pin-filled');});
+        var firstOtp=document.querySelector('.lfp-otp-digit');if(firstOtp)setTimeout(function(){firstOtp.focus();},150);}
+      else{showPinError('lfpError1',data.message||'Incorrect password.');}
+    }).catch(function(){showPinError('lfpError1','Network error. Please try again.');});
+  }
+  function lfpStep2Submit(){
+    var otp=Array.from(document.querySelectorAll('.lfp-otp-digit')).map(function(d){return d.value;}).join('').toUpperCase();
+    hidePinError('lfpError2');if(otp.length<6){showPinError('lfpError2','Enter all 6 OTP characters.');return;}
+    fetch('/forgot_pin/verify_otp',{method:'POST',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify({otp:otp})})
+    .then(function(r){return r.json();}).then(function(data){
+      if(data.success){clearInterval(_lfpTimerInt);document.getElementById('lfp-step2').style.display='none';document.getElementById('lfp-step3').style.display='flex';
+        document.querySelectorAll('.lfp-pin-digit').forEach(function(d){d.value='';d.classList.remove('pin-filled');});
+        var firstNew=document.querySelector('.lfp-pin-digit[data-pg="new"]');if(firstNew)setTimeout(function(){firstNew.focus();},150);}
+      else{showPinError('lfpError2',data.message||'Invalid OTP. Please try again.');document.querySelectorAll('.lfp-otp-digit').forEach(function(d){d.value='';d.classList.remove('pin-filled');});var first=document.querySelector('.lfp-otp-digit');if(first)first.focus();}
+    }).catch(function(){showPinError('lfpError2','Network error. Please try again.');});
+  }
+  function lfpStep3Submit(){
+    var newPin=getPinValue('.lfp-pin-digit[data-pg="new"]'),confirmPin=getPinValue('.lfp-pin-digit[data-pg="confirm"]');
+    hidePinError('lfpError3');
+    if(newPin.length<6){showPinError('lfpError3','Please fill in all 6 digits for New PIN.');return;}
+    if(confirmPin.length<6){showPinError('lfpError3','Please fill in all 6 digits for Confirm PIN.');return;}
+    if(newPin!==confirmPin){showPinError('lfpError3','PINs do not match. Please re-enter.');return;}
+    fetch('/forgot_pin/set_new',{method:'POST',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify({pin:newPin})})
+    .then(function(r){return r.json();}).then(function(data){
+      if(data.success){closeLoginForgotPin();var attEl=document.getElementById('loginPinAttempts');if(attEl)attEl.textContent='PIN reset successfully. Enter your new PIN.';
+        hidePinError('loginPinError');document.querySelectorAll('.login-pin-digit').forEach(function(d){d.value='';d.classList.remove('pin-filled');});var first=document.querySelector('.login-pin-digit');if(first)first.focus();}
+      else{showPinError('lfpError3',data.message||'Failed to save new PIN. Please try again.');}
+    }).catch(function(){showPinError('lfpError3','Network error. Please try again.');});
+  }
+
+  /* ── POLICIES MODAL ── */
+  var _policiesSignupMode=false,hasScrolledToBottom=false;
+  function openPoliciesModal(isSignup){
+    _policiesSignupMode=!!isSignup;
+    document.getElementById('btnAcceptLabel').textContent=isSignup?'I Agree — Create My Account':'I Agree — Continue';
+    if(!hasScrolledToBottom){var body=document.getElementById('policiesBody');body.scrollTop=0;document.getElementById('readProgressBar').style.width='0%';document.getElementById('acceptRow').classList.remove('unlocked');document.getElementById('scrollNotice').classList.remove('hidden');document.getElementById('acceptCheckbox').checked=false;document.getElementById('btnAcceptPolicies').disabled=true;}
+    document.getElementById('policiesModal').classList.add('show');
+  }
+  function closePoliciesModal(){document.getElementById('policiesModal').classList.remove('show');}
+  document.getElementById('policiesBody').addEventListener('scroll',function(){
+    var el=document.getElementById('policiesBody'),tot=el.scrollHeight-el.clientHeight,pct=tot>0?Math.min(100,(el.scrollTop/tot)*100):100;
+    document.getElementById('readProgressBar').style.width=pct+'%';
+    if(pct>=98&&!hasScrolledToBottom){hasScrolledToBottom=true;document.getElementById('acceptRow').classList.add('unlocked');document.getElementById('scrollNotice').classList.add('hidden');}
+  });
+  function onAcceptChange(){document.getElementById('btnAcceptPolicies').disabled=!document.getElementById('acceptCheckbox').checked;}
+  function acceptPolicies(){
+    if(!document.getElementById('acceptCheckbox').checked)return;
+    closePoliciesModal();document.getElementById('policiesBadge').classList.add('accepted');
+    if(_policiesSignupMode){_signupTcAccepted=true;var tag=document.getElementById('policyAcceptedTag');if(tag)tag.classList.add('show');document.getElementById('signupFormElement').submit();}
+  }
+  document.getElementById('policiesModal').addEventListener('click',function(e){if(e.target===this)closePoliciesModal();});
+  function closeModal(id){document.getElementById(id).classList.remove('show');}
+  document.querySelectorAll('.modal-overlay').forEach(function(o){
+    o.addEventListener('click',function(e){if(e.target===this&&this.id!=='policiesModal'&&this.id!=='pendingModal'&&this.id!=='qrLoginModal')closeModal(this.id);});
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    document.querySelectorAll('.modal-overlay.show').forEach(function(m){
+      if(m.id==='policiesModal')closePoliciesModal();else if(m.id==='pendingModal'){/* no close */}else closeModal(m.id);
+    });
+  });
+
+  function selectCaptchaOption(el,val){document.querySelectorAll('.captcha-option').forEach(function(o){o.classList.remove('selected');});el.classList.add('selected');document.getElementById('captchaAnswerInput').value=val;}
+  var captchaForm=document.getElementById('captchaForm');
+  if(captchaForm){captchaForm.addEventListener('submit',function(e){if(!document.getElementById('captchaAnswerInput').value){e.preventDefault();alert('Please select an answer');}});}
+  function openForgotModal(){document.getElementById('forgotPasswordModal').classList.add('show');setTimeout(function(){var el=document.getElementById('forgotEmail');if(el)el.focus();},350);}
+
+  /* ── OTP MODAL ── */
+  (function(){
+    var boxes=Array.from(document.querySelectorAll('.otp-box')),letterBoxes=Array.from(document.querySelectorAll('.otp-letter')),numberBoxes=Array.from(document.querySelectorAll('.otp-number')),dots=Array.from(document.querySelectorAll('.otp-dot')),hiddenOtp=document.getElementById('otpHiddenInput'),submitBtn=document.getElementById('otpSubmitBtn'),boxWrap=document.getElementById('otpBoxes'),alertEl=document.getElementById('otpAlert'),alertMsg=document.getElementById('otpAlertMsg'),timerEl=document.getElementById('timerCount'),timerRow=document.getElementById('otpTimerRow'),resendLink=document.getElementById('resendLink'),resendSpinner=document.getElementById('resendSpinner'),expiredBanner=document.getElementById('otpExpiredBanner'),iconWrap=document.getElementById('otpIconWrap'),iconInner=document.getElementById('otpIconInner'),timerInterval=null,isExpired=false;
+    var SCHEME={letter:{base_border:'rgba(159,193,225,.3)',base_bg:'rgba(159,193,225,.07)',fill_border:'rgba(159,193,225,.55)',fill_bg:'rgba(159,193,225,.1)',focus_border:'rgba(159,193,225,.85)',focus_bg:'rgba(159,193,225,.12)',focus_shadow:'rgba(159,193,225,.2)'},number:{base_border:'rgba(72,199,142,.3)',base_bg:'rgba(72,199,142,.07)',fill_border:'rgba(72,199,142,.55)',fill_bg:'rgba(72,199,142,.1)',focus_border:'rgba(72,199,142,.85)',focus_bg:'rgba(72,199,142,.12)',focus_shadow:'rgba(72,199,142,.2)'}};
+    function isLetterBox(inp){return letterBoxes.includes(inp);}function scheme(inp){return isLetterBox(inp)?SCHEME.letter:SCHEME.number;}function isValidChar(inp,ch){return isLetterBox(inp)?/^[a-zA-Z]$/.test(ch):/^[0-9]$/.test(ch);}
+    function styleBase(inp){if(inp.classList.contains('locked'))return;var s=scheme(inp);inp.style.borderColor=inp.value?s.fill_border:s.base_border;inp.style.background=inp.value?s.fill_bg:s.base_bg;inp.style.boxShadow='none';inp.style.transform='translateY(0)';}
+    function styleFocus(inp){if(inp.classList.contains('locked'))return;var s=scheme(inp);inp.style.borderColor=s.focus_border;inp.style.background=s.focus_bg;inp.style.boxShadow='0 0 0 3px '+s.focus_shadow;inp.style.transform='translateY(-2px)';}
+    function styleError(inp){inp.style.borderColor='rgba(255,99,99,.6)';inp.style.background='rgba(255,99,99,.08)';inp.style.boxShadow='0 0 0 3px rgba(255,99,99,.15)';inp.style.transform='translateX(-4px)';setTimeout(function(){inp.style.transform='translateX(4px)';},80);setTimeout(function(){inp.style.transform='translateX(0)';styleBase(inp);},200);}
+    function styleLocked(inp){inp.style.borderColor='rgba(255,152,0,.3)';inp.style.background='rgba(255,152,0,.04)';inp.style.opacity='.45';inp.style.pointerEvents='none';inp.style.transform='translateY(0)';inp.style.boxShadow='none';}
+    boxes.forEach(function(b){styleBase(b);});
+    function getCode(){return boxes.map(function(b){return b.value;}).join('');}
+    function updateDots(){dots.forEach(function(d,i){d.classList.toggle('filled',!!boxes[i].value);});hiddenOtp.value=getCode();submitBtn.disabled=getCode().length<6||isExpired;}
+    function enterExpiredState(){if(isExpired)return;isExpired=true;clearInterval(timerInterval);timerEl.textContent='00:00';timerEl.classList.remove('urgent');timerEl.classList.add('expired');timerRow.classList.add('expired-state');boxes.forEach(function(b){b.value='';b.classList.add('locked');b.classList.remove('filled');styleLocked(b);});dots.forEach(function(d){d.classList.remove('filled');});hiddenOtp.value='';submitBtn.disabled=true;iconWrap.classList.add('expired');iconInner.className='fas fa-clock-rotate-left';expiredBanner.classList.add('show');hideAlert();resendLink.classList.add('active');}
+    function resetToFresh(){isExpired=false;timerEl.classList.remove('urgent','expired');timerRow.classList.remove('expired-state');iconWrap.classList.remove('expired');iconInner.className='fas fa-envelope-open-text';expiredBanner.classList.remove('show');hideAlert();boxes.forEach(function(b){b.value='';b.classList.remove('locked','filled');b.style.opacity='1';b.style.pointerEvents='auto';styleBase(b);});dots.forEach(function(d){d.classList.remove('filled');});hiddenOtp.value='';submitBtn.disabled=true;resendLink.classList.remove('active');startTimer(300);setTimeout(function(){boxes[0].focus();},120);}
+    function startTimer(secs){clearInterval(timerInterval);var s=secs;timerInterval=setInterval(function(){s--;timerEl.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');if(s<=30&&!isExpired)timerEl.classList.add('urgent');if(s<=0)enterExpiredState();},1000);}
+    window.doResend=function(){if(resendSpinner.classList.contains('show'))return;resendSpinner.classList.add('show');resendLink.classList.remove('active');fetch('/resend_otp',{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(function(data){resendSpinner.classList.remove('show');if(data.success){resetToFresh();alertEl.style.cssText='background:rgba(72,199,142,.1);border-color:rgba(72,199,142,.28);color:#48c78e;';alertMsg.textContent='A new OTP has been sent to your email!';alertEl.classList.remove('show');void alertEl.offsetWidth;alertEl.classList.add('show');setTimeout(function(){alertEl.classList.remove('show');alertEl.style.cssText='';},4000);}else{showAlert(data.message||'Failed to resend. Please try again.');resendLink.classList.add('active');}}).catch(function(){resendSpinner.classList.remove('show');showAlert('Network error. Please try again.');resendLink.classList.add('active');});};
+    function showAlert(msg){alertMsg.textContent=msg;alertEl.classList.remove('show');void alertEl.offsetWidth;alertEl.classList.add('show');if(!isExpired)shakeBoxes();}
+    function hideAlert(){alertEl.classList.remove('show');alertEl.style.cssText='';}
+    function shakeBoxes(){boxWrap.classList.remove('shake');void boxWrap.offsetWidth;boxWrap.classList.add('shake');setTimeout(function(){boxes.forEach(function(b){b.value='';styleBase(b);});hiddenOtp.value='';submitBtn.disabled=true;dots.forEach(function(d){d.classList.remove('filled');});boxWrap.classList.remove('shake');boxes[0].focus();},420);}
+    boxes.forEach(function(inp,i){
+      inp.addEventListener('focus',function(){if(isExpired){inp.blur();return;}styleFocus(inp);hideAlert();});
+      inp.addEventListener('blur',function(){styleBase(inp);});
+      inp.addEventListener('input',function(e){if(isExpired){inp.value='';return;}var raw=e.target.value,last=raw[raw.length-1]||'';if(!last){inp.value='';styleBase(inp);updateDots();return;}if(!isValidChar(inp,last)){inp.value='';styleError(inp);showAlert(isLetterBox(inp)?'First 3 boxes accept letters only (A–Z).':'Last 3 boxes accept numbers only (0–9).');return;}inp.value=isLetterBox(inp)?last.toUpperCase():last;styleBase(inp);updateDots();if(i<boxes.length-1)boxes[i+1].focus();});
+      inp.addEventListener('keydown',function(e){if(isExpired){e.preventDefault();return;}if(e.key==='Backspace'){if(!inp.value&&i>0){boxes[i-1].value='';styleBase(boxes[i-1]);boxes[i-1].focus();}else{inp.value='';styleBase(inp);}updateDots();}if(e.key==='ArrowLeft'&&i>0)boxes[i-1].focus();if(e.key==='ArrowRight'&&i<boxes.length-1)boxes[i+1].focus();});
+      inp.addEventListener('paste',function(e){if(isExpired){e.preventDefault();return;}e.preventDefault();var pasted=(e.clipboardData||window.clipboardData).getData('text');var cur=i;for(var j=0;j<pasted.length&&cur<boxes.length;j++){var ch=pasted[j],box=boxes[cur];if(isValidChar(box,ch)){box.value=isLetterBox(box)?ch.toUpperCase():ch;styleBase(box);cur++;}}boxes[Math.min(cur,boxes.length-1)].focus();updateDots();});
+    });
+    window.handleOtpSubmit=function(e){if(isExpired||getCode().length<6){e.preventDefault();return false;}return true;};
+    if(_otpExpired){timerEl.textContent='00:00';enterExpiredState();}
+    else{startTimer(300);if(document.getElementById('otpModal').classList.contains('show')){setTimeout(function(){boxes[0].focus();},400);}}
+  })();
+
+  /* ── QR LOGIN MODAL ── */
+  (function(){
+    'use strict';
+    var qrToken=null,pollInterval=null,timerInt=null,totalSecs=60,remSecs=60,isOpen=false;
+    function el(id){return document.getElementById(id);}
+    window.openQrModal=function(){isOpen=true;el('qrLoginModal').classList.add('show');generateQrCode();};
+    window.closeQrModal=function(){isOpen=false;el('qrLoginModal').classList.remove('show');stopAll();resetModal();};
+    el('qrLoginModal').addEventListener('click',function(e){if(e.target===this)closeQrModal();});
+    window.generateQrCode=function(){resetModal();showQrLoading(true);fetch('/qr/generate',{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(function(data){if(!data.success||!isOpen)return;qrToken=data.token;var img=el('qrCodeImg');img.onload=function(){showQrLoading(false);img.style.display='block';};img.onerror=function(){img.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(data.scan_url);showQrLoading(false);img.style.display='block';};img.src=data.qr_data_url;totalSecs=remSecs=data.expires_in||60;startTimer();startPolling();}).catch(function(){showQrBanner('error','circle-exclamation','Failed to generate QR code.');});};
+    function startTimer(){stopTimer();updateTimerUI();timerInt=setInterval(function(){remSecs--;updateTimerUI();if(remSecs<=0){stopTimer();showQrExpired();}},1000);}
+    function updateTimerUI(){var pct=(remSecs/totalSecs)*100,mins=String(Math.floor(remSecs/60)).padStart(2,'0'),secs=String(remSecs%60).padStart(2,'0');var bar=el('qrTimerBar'),cnt=el('qrTimerCount');bar.style.width=pct+'%';cnt.textContent=mins+':'+secs;if(remSecs<=15){bar.classList.add('urgent');cnt.classList.add('urgent');cnt.classList.remove('expired');}else{bar.classList.remove('urgent');cnt.classList.remove('urgent','expired');}}
+    function showQrExpired(){stopPolling();el('qrTimerBar').style.width='0%';el('qrTimerCount').classList.add('expired');el('qrTimerCount').textContent='00:00';showQrBanner('warning','arrows-rotate','Code expired — generating a new one…');setTimeout(function(){if(isOpen)generateQrCode();},1800);}
+    function stopTimer(){clearInterval(timerInt);timerInt=null;}
+    function startPolling(){stopPolling();pollInterval=setInterval(function(){if(!qrToken||!isOpen){stopPolling();return;}fetch('/qr/check/'+qrToken,{headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(function(data){if(data.status==='confirmed'&&data.redirect_url){stopAll();el('qrDialogIcon').classList.add('confirmed');el('qrDialogIconInner').className='fas fa-circle-check';el('qrWaitingDots').classList.add('hidden');el('qrCodeImg').style.opacity='.3';showQrBanner('success','circle-check','Login approved! Redirecting you now…');setTimeout(function(){window.location.href=data.redirect_url;},1400);}else if(data.status==='expired'){showQrExpired();}else if(data.status==='rejected'){stopAll();showQrBanner('error','circle-exclamation',data.reason||'Login was rejected.');}}).catch(function(){});},2000);}
+    function stopPolling(){clearInterval(pollInterval);pollInterval=null;}
+    function stopAll(){stopTimer();stopPolling();}
+    function showQrLoading(show){el('qrLoading').style.display=show?'flex':'none';el('qrCodeImg').style.display='none';el('qrExpiredOverlay').style.display='none';}
+    function showQrBanner(type,icon,msg){var b=el('qrStatusBanner');b.className='qr-status-banner show '+type;el('qrStatusIcon').className='fas fa-'+icon+' me-1';el('qrStatusMsg').textContent=msg;}
+    function resetModal(){qrToken=null;stopAll();remSecs=totalSecs=60;el('qrStatusBanner').className='qr-status-banner';el('qrExpiredOverlay').style.display='none';el('qrCodeImg').style.display='none';el('qrCodeImg').style.opacity='1';el('qrCodeImg').src='';el('qrLoading').style.display='flex';el('qrTimerBar').style.width='100%';el('qrTimerBar').classList.remove('urgent');el('qrTimerCount').textContent='01:00';el('qrTimerCount').className='qr-mono';el('qrDialogIcon').className='qr-dialog-icon';el('qrDialogIconInner').className='fas fa-qrcode';el('qrWaitingDots').classList.remove('hidden');}
+  })();
+
+  /* ── PAGE INIT ROUTING ── */
+  if(_showPending){showForm('loginForm');}
+  else if(_showCaptcha||_showOtp){showForm('loginForm');}
+  else if(_signupEmailError){showForm('signupForm');}
+  else{showForm('loginForm');}
+  </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+
+<style>
+  /* ── TOPBAR ── */
+  .topbar {
+    position:fixed; top:0; left:0; right:0; z-index:1100;
+    background:rgba(30,45,61,0.95); backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(159,193,225,0.12);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 40px; height:60px;
+  }
+  .brand-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; flex-shrink:0; }
+  .brand-img  { width:34px; height:34px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+  .brand-text { font-weight:700; font-size:1.1rem; letter-spacing:-.02em; white-space:nowrap; }
+
+  /* ── DESKTOP NAV ── */
+  .nav-links     { display:flex; gap:4px; align-items:center; }
+  .nav-links a {
+    color:rgba(255,255,255,.65); text-decoration:none; font-weight:500;
+    font-size:.88rem; padding:6px 12px; border-radius:8px; transition:.18s; white-space:nowrap;
+  }
+  .nav-links a:hover  { background:rgba(255,255,255,.08); color:#fff; }
+  .nav-links a.active { background:rgba(159,193,225,.15); color:#9fc1e1; }
+  .dropdown-menu {
+    background:#253545; border:1px solid rgba(255,255,255,.1);
+    border-radius:12px; padding:6px; min-width:210px;
+    box-shadow:0 16px 40px rgba(0,0,0,.4);
+  }
+  .dropdown-menu .dropdown-item {
+    color:rgba(255,255,255,.8); font-size:.88rem; font-weight:500;
+    border-radius:8px; padding:8px 14px; transition:.15s;
+  }
+  .dropdown-menu .dropdown-item:hover { background:rgba(159,193,225,.12); color:#fff; }
+
+  .topbar-right { display:flex; align-items:center; gap:8px; }
+  .menu-toggle  { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; padding:4px; flex-shrink:0; }
+
+  /* ── MOBILE NAV DRAWER ── */
+  @media (max-width:992px) {
+    .topbar      { padding:0 16px; }
+    .menu-toggle { display:block; }
+
+    .nav-links {
+      position:fixed; top:60px; left:0; right:0; bottom:0;
+      background:rgba(20,32,44,0.98); backdrop-filter:blur(24px);
+      flex-direction:column; align-items:stretch;
+      padding:12px; gap:2px; overflow-y:auto;
+      transform:translateX(-100%);
+      transition:transform .3s cubic-bezier(.4,0,.2,1);
+      z-index:1099; border-right:1px solid rgba(159,193,225,.1);
+      width:min(320px,88vw);
+    }
+    .nav-links.open { transform:translateX(0); }
+
+    .nav-section-label {
+      font-size:.65rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:rgba(159,193,225,.5);
+      padding:14px 12px 6px; display:block;
+    }
+    .nav-links a {
+      padding:10px 14px; font-size:.92rem; border-radius:10px;
+      display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.75);
+    }
+    .nav-links a:hover  { background:rgba(255,255,255,.07); color:#fff; }
+    .nav-links a.active { background:rgba(159,193,225,.13); color:#9fc1e1; }
+
+    .nav-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1098; }
+    .nav-overlay.show { display:block; }
+  }
+  @media (max-width:480px) { .brand-text { display:none; } }
+  @media (max-width:360px) {
+    .topbar    { padding:0 10px; height:54px; }
+    .nav-links { top:54px; }
+    .menu-toggle { font-size:1.4rem; }
+  }
+</style>
+
+
+<!-- ══════════════════════════════
+     TOPBAR HTML
+══════════════════════════════ -->
+<header class="topbar">
+  <a href="/librarian/home" class="brand-logo">
+    <img src="/static/images/logo.png" alt="Logo" class="brand-img">
+    <span class="brand-text">Iloilo City Public Library</span>
+  </a>
+
+  <!-- DESKTOP NAV -->
+  <nav class="nav-links d-none d-lg-flex" id="navLinksDesktop">
+    <a href="/librarian/home">
+      <i class="bi bi-house-door-fill me-1"></i> Home
+    </a>
+    <a href="#">
+      <i class="bi bi-people-fill me-1"></i> Member Records
+    </a>
+    <a href="/librarian_dashboard">
+      <i class="bi bi-speedometer2 me-1"></i> Dashboard
+    </a>
+
+    <!-- Management Dropdown -->
+    <div class="dropdown">
+      <a class="dropdown-toggle text-decoration-none d-flex align-items-center gap-1"
+         href="#" role="button" data-bs-toggle="dropdown">
+        <i class="bi bi-kanban-fill"></i> Management
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="/librarian/library-cards"><i class="bi bi-journal-plus me-2"></i>Add Borrow</a></li>
+        <li><a class="dropdown-item" href="/librarian_user_management"><i class="bi bi-people-fill"> </i>User Management</a></li>
+        <li><a class="dropdown-item" href="/librarian_book_management"><i class="bi bi-book-fill me-2"></i>Book Management</a></li>
+      </ul>
+    </div>
+
+    <a href="/librarian/announcements"">
+      <i class="bi bi-megaphone me-1"></i> Announcement
+    </a>
+    <a href="/librarian/inventory"">
+      <i class="bi bi-boxes me-1"></i> Inventory
+    </a>
+  </nav>
+
+  <div class="topbar-right"></div>
+  <button class="menu-toggle d-lg-none" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
+</header>
+
+
+<!-- ══════════════════════════════
+     MOBILE NAV DRAWER
+══════════════════════════════ -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<nav class="nav-links d-lg-none" id="navLinksMobile">
+  <span class="nav-section-label">Main</span>
+  <a href="/librarian/home""><i class="bi bi-house-door-fill"></i>Home</a>
+  <a href="#"><i class="bi bi-people-fill"></i>Member Records</a>
+  <a href="/librarian_dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a>
+  <a href="/librarian/announcements"><i class="bi bi-megaphone"></i>Announcement</a>
+  <a href="/librarian/inventory"><i class="bi bi-boxes"></i>Inventory</a>
+
+  <span class="nav-section-label" style="margin-top:6px;">Management</span>
+  <a href="#"><i class="bi bi-journal-plus"></i> Add Borrow</a>
+  <a href="/librarian_book_management">
+    <i class="bi bi-book-fill"></i> Book Management
+  </a>
+</nav>
+
+
+<!-- ══════════════════════════════
+     TOPBAR JS
+══════════════════════════════ -->
+<script>
+  (function () {
+    const menuToggle = document.getElementById('menuToggle');
+    const navMobile  = document.getElementById('navLinksMobile');
+    const navOverlay = document.getElementById('navOverlay');
+
+    if (!menuToggle || !navMobile || !navOverlay) return;
+
+    function openMobileNav() {
+      navMobile.classList.add('open');
+      navOverlay.classList.add('show');
+      menuToggle.querySelector('i').className = 'bi bi-x';
+    }
+    function closeMobileNav() {
+      navMobile.classList.remove('open');
+      navOverlay.classList.remove('show');
+      if (menuToggle.querySelector('i'))
+        menuToggle.querySelector('i').className = 'bi bi-list';
+    }
+    window.closeMobileNav = closeMobileNav;
+
+    menuToggle.addEventListener('click', () =>
+      navMobile.classList.contains('open') ? closeMobileNav() : openMobileNav()
+    );
+    navOverlay.addEventListener('click', closeMobileNav);
+  })();
+</script>

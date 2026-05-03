@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Inventory Status | Iloilo Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --accent:     #9fc1e1;
+      --accent2:    #48c78e;
+      --bg1:        #1e2d3d;
+      --bg2:        #2f3f4d;
+      --bg3:        #42586b;
+      --card:       rgba(255,255,255,0.06);
+      --card-b:     rgba(255,255,255,0.10);
+      --tl:         #dae8f5;
+      --danger:     #ff6363;
+      --warn:       #ff9800;
+      --mono:       'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+      background: rgba(30,45,61,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(159,193,225,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
+    }
+    .brand-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; }
+    .brand-img  { width:34px; height:34px; border-radius:8px; object-fit:cover; }
+    .brand-text { font-weight:700; font-size:1.1rem; letter-spacing:-.02em; }
+    .nav-links  { display:flex; gap:4px; align-items:center; }
+    .nav-links a { color:rgba(255,255,255,.65); text-decoration:none; font-weight:500; font-size:.88rem; padding:6px 12px; border-radius:8px; transition:.18s; white-space:nowrap; }
+    .nav-links a:hover { background:rgba(255,255,255,.08); color:#fff; }
+    .nav-links a.active { background:rgba(159,193,225,.15); color:var(--accent); }
+    .dropdown-menu { background:#253545; border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:6px; min-width:210px; box-shadow:0 16px 40px rgba(0,0,0,.4); }
+    .dropdown-menu .dropdown-item { color:rgba(255,255,255,.8); font-size:.88rem; font-weight:500; border-radius:8px; padding:8px 14px; transition:.15s; }
+    .dropdown-menu .dropdown-item:hover { background:rgba(159,193,225,.12); color:#fff; }
+    .dropdown-submenu { position:relative; }
+    .dropdown-submenu .dropdown-menu { top:0; left:100%; margin-left:4px; display:none; }
+    .dropdown-submenu:hover .dropdown-menu { display:block; }
+    .btn-logout { background:rgba(255,99,99,.15); color:#ff9999; border:1px solid rgba(255,99,99,.25); border-radius:20px; padding:6px 16px; font-size:.85rem; font-weight:600; text-decoration:none; transition:.2s; }
+    .btn-logout:hover { background:rgba(255,99,99,.25); color:#fff; }
+    .menu-toggle { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; }
+
+    @media (max-width:992px) {
+      .topbar { padding:0 16px; }
+      .menu-toggle { display:block; }
+      .btn-logout.d-lg-block { display:none!important; }
+      .nav-links { position:fixed; top:60px; left:0; right:0; bottom:0; background:rgba(30,45,61,.98); backdrop-filter:blur(20px); flex-direction:column; align-items:stretch; padding:16px; gap:4px; overflow-y:auto; transform:translateX(-100%); transition:transform .3s; z-index:1099; }
+      .nav-links.open { transform:translateX(0); }
+      .nav-links a { padding:12px 16px; font-size:1rem; }
+    }
+    @media (max-width:480px) { .brand-text { display:none; } }
+
+    /* ── PAGE LAYOUT ── */
+    .page-wrap { padding: 80px 40px 60px; max-width: 1500px; margin: 0 auto; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:28px; }
+    .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; }
+    .page-header h1 span { color:var(--accent); }
+    .page-header p { color:var(--tl); font-size:.88rem; margin-top:4px; }
+    .header-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-action-top {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,.08); color:#fff;
+      border:1px solid rgba(255,255,255,.15); border-radius:12px; padding:9px 18px;
+      font-size:.88rem; font-weight:600; font-family:'DM Sans',sans-serif;
+      cursor:pointer; transition:.2s; white-space:nowrap;
+    }
+    .btn-action-top:hover { background:rgba(255,255,255,.14); border-color:var(--accent); color:var(--accent); }
+    .btn-action-top.primary { background:var(--accent); color:#0d1a24; border-color:var(--accent); }
+    .btn-action-top.primary:hover { background:#b8d4ec; color:#0d1a24; }
+
+    /* ── STATS ROW ── */
+    .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+    .stat-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(8px); transition:.2s; }
+    .stat-card:hover { background:var(--card-b); transform:translateY(-2px); }
+    .stat-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+    .stat-icon.blue   { background:rgba(159,193,225,.18); color:var(--accent); }
+    .stat-icon.green  { background:rgba(72,199,142,.18);  color:var(--accent2); }
+    .stat-icon.orange { background:rgba(255,152,0,.18);   color:var(--warn); }
+    .stat-icon.red    { background:rgba(255,99,99,.18);   color:var(--danger); }
+    .stat-label { font-size:.73rem; color:var(--tl); margin-bottom:2px; }
+    .stat-val   { font-size:1.4rem; font-weight:700; line-height:1; }
+
+    /* ── TOOLBAR ── */
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+    .search-box { position:relative; flex:1; min-width:240px; max-width:380px; }
+    .search-box i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; }
+    .search-box input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 14px 9px 38px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .search-box input::placeholder { color:rgba(255,255,255,.4); }
+    .search-box input:focus { border-color:var(--accent); background:rgba(255,255,255,.11); }
+    .filter-sel { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 13px; font-size:.88rem; font-family:'DM Sans',sans-serif; cursor:pointer; outline:none; transition:.2s; }
+    .filter-sel option { background:#253545; }
+    .filter-sel:focus { border-color:var(--accent); }
+    .results-lbl { font-size:.82rem; color:var(--tl); margin-left:auto; white-space:nowrap; }
+
+    /* ── TABLE CARD ── */
+    .tbl-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; backdrop-filter:blur(10px); }
+    .tbl-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:1000px; }
+    thead tr { background:rgba(159,193,225,.09); }
+    thead th { padding:13px 16px; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--accent); white-space:nowrap; }
+    tbody tr { border-bottom:1px solid rgba(255,255,255,.05); transition:.15s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:rgba(255,255,255,.05); }
+    td { padding:12px 16px; font-size:.85rem; color:var(--tl); vertical-align:middle; }
+    td .book-title { font-weight:600; color:#fff; font-size:.88rem; }
+    td .book-sub   { font-size:.73rem; color:var(--tl); margin-top:1px; }
+
+    .isbn-cell { font-family:var(--mono); font-size:.77rem; color:rgba(255,255,255,.55); }
+    .cat-pill  { display:inline-block; background:rgba(159,193,225,.12); color:var(--accent); border-radius:6px; padding:2px 8px; font-size:.72rem; font-weight:600; }
+
+    .badge-status { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:.72rem; font-weight:700; white-space:nowrap; }
+    .badge-available { background:rgba(72,199,142,.15); color:var(--accent2); border:1px solid rgba(72,199,142,.3); }
+    .badge-damaged   { background:rgba(255,152,0,.15);  color:var(--warn);    border:1px solid rgba(255,152,0,.3); }
+    .badge-lost      { background:rgba(255,99,99,.15);  color:var(--danger);  border:1px solid rgba(255,99,99,.3); }
+
+    .copy-pill { display:inline-block; border-radius:6px; padding:2px 8px; font-size:.73rem; font-weight:700; }
+    .copy-pill.damaged { background:rgba(255,152,0,.15); color:var(--warn); }
+    .copy-pill.lost    { background:rgba(255,99,99,.15); color:var(--danger); }
+    .copy-pill.none    { color:rgba(255,255,255,.3); font-size:.73rem; }
+
+    .stock-bar-wrap { display:flex; align-items:center; gap:8px; min-width:90px; }
+    .stock-bar { flex:1; height:5px; background:rgba(255,255,255,.12); border-radius:4px; overflow:hidden; }
+    .stock-fill { height:100%; border-radius:4px; }
+    .stock-fill.high   { background:var(--accent2); }
+    .stock-fill.medium { background:#ffc107; }
+    .stock-fill.low    { background:var(--danger); }
+    .stock-text { font-size:.72rem; color:var(--tl); white-space:nowrap; }
+
+    .shelf-badge { display:inline-flex; align-items:center; gap:4px; font-size:.73rem; color:var(--accent); }
+
+    .act-btn { display:inline-flex; align-items:center; gap:5px; background:transparent; border:1px solid rgba(255,255,255,.15); border-radius:8px; color:#fff; padding:5px 11px; font-size:.78rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; white-space:nowrap; }
+    .act-btn:hover { background:rgba(255,255,255,.1); border-color:var(--accent); color:var(--accent); }
+
+    .empty-row td { text-align:center; padding:56px 20px; color:var(--tl); }
+    .empty-row td i { font-size:3rem; opacity:.35; display:block; margin-bottom:10px; }
+
+    /* ── PAGINATION ── */
+    .pag-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:14px 18px; border-top:1px solid rgba(255,255,255,.07); }
+    .pag-info { font-size:.8rem; color:var(--tl); }
+    .pag-btns { display:flex; gap:5px; }
+    .pag-btn  { width:32px; height:32px; border-radius:7px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#fff; font-size:.8rem; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.18s; }
+    .pag-btn:hover:not(:disabled) { background:rgba(255,255,255,.12); border-color:var(--accent); }
+    .pag-btn.active { background:var(--accent); color:#0d1a24; font-weight:700; border-color:var(--accent); }
+    .pag-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+    /* ── MODALS ── */
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(5px); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .overlay.open { opacity:1; pointer-events:all; }
+    .m-box { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.18); border-radius:20px; padding:30px; width:100%; max-width:520px; max-height:92vh; overflow-y:auto; box-shadow:0 28px 70px rgba(0,0,0,.55); transform:translateY(18px); transition:transform .25s; }
+    .overlay.open .m-box { transform:translateY(0); }
+    .m-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+    .m-title { font-size:1.1rem; font-weight:700; letter-spacing:-.02em; }
+    .m-close { background:none; border:none; color:rgba(255,255,255,.45); font-size:1.3rem; cursor:pointer; transition:.18s; line-height:1; }
+    .m-close:hover { color:#fff; }
+
+    .f-section { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--accent); margin-bottom:10px; margin-top:18px; }
+    .f-section:first-of-type { margin-top:0; }
+    .f-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .f-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .fg { margin-bottom:13px; }
+    .fg label { display:block; font-size:.78rem; color:var(--tl); margin-bottom:5px; font-weight:600; }
+    .fg input, .fg select { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:9px; color:#fff; padding:9px 12px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .fg input:focus, .fg select:focus { border-color:var(--accent); background:rgba(255,255,255,.10); }
+    .fg select option { background:#253545; }
+    .f-divider { border:none; border-top:1px solid rgba(255,255,255,.08); margin:16px 0; }
+    .err-msg { color:var(--danger); font-size:.78rem; margin-top:5px; display:none; }
+    .inv-section { background:rgba(72,199,142,.07); border:1px solid rgba(72,199,142,.18); border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+    .inv-section-title { font-size:.75rem; font-weight:700; color:var(--accent2); text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px; }
+    .btn-submit { width:100%; background:var(--accent); color:#0d1a24; border:none; border-radius:11px; padding:11px; font-size:.92rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; margin-top:6px; }
+    .btn-submit:hover { background:#b8d4ec; }
+    .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
+
+    /* Detail modal */
+    .detail-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-label { font-size:.8rem; color:var(--tl); }
+    .detail-value { font-size:.85rem; font-weight:600; color:#fff; text-align:right; max-width:60%; }
+
+    /* ── TOAST ── */
+    .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
+    .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:12px 16px; font-size:.84rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; }
+    .toast-msg.success { border-color:rgba(72,199,142,.4); }
+    .toast-msg.error   { border-color:rgba(255,99,99,.4); }
+    @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+    @media (max-width:768px) {
+      .page-wrap { padding:76px 14px 50px; }
+      .f-grid2, .f-grid3 { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  {% include 'librarian_template/topbar_template.html' %} 
+  {% include 'librarian_template/sidebar_template.html' %}
+
+  <!-- MAIN -->
+  <div class="page-wrap">
+
+    <div class="page-header">
+      <div>
+        <h1><i class="bi bi-boxes me-2" style="color:var(--accent)"></i>Inventory <span>Status</span></h1>
+        <p>Track and monitor all book inventory across the library</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-action-top" onclick="refreshAll()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+        <button class="btn-action-top primary" onclick="exportCSV()"><i class="bi bi-download"></i> Export CSV</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-book-fill"></i></div>
+        <div><div class="stat-label">Total Titles</div><div class="stat-val" id="statTotal">—</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
+        <div><div class="stat-label">Available</div><div class="stat-val" id="statAvail">—</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="bi bi-tools"></i></div>
+        <div><div class="stat-label">Damaged</div><div class="stat-val" id="statDamaged">—</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+        <div><div class="stat-label">Lost</div><div class="stat-val" id="statLost">—</div></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" placeholder="Search title, author, ISBN, shelf…" oninput="applyFilters()">
+      </div>
+      <select class="filter-sel" id="filterCategory" onchange="applyFilters()">
+        <option value="">All Categories</option>
+      </select>
+      <select class="filter-sel" id="filterStatus" onchange="applyFilters()">
+        <option value="">All Statuses</option>
+        <option value="Available">Available</option>
+        <option value="Damaged">Damaged</option>
+        <option value="Lost">Lost</option>
+      </select>
+      <select class="filter-sel" id="sortSelect" onchange="applyFilters()">
+        <option value="title_asc">Title A→Z</option>
+        <option value="title_desc">Title Z→A</option>
+        <option value="stock_asc">Stock ↑</option>
+        <option value="stock_desc">Stock ↓</option>
+        <option value="date_desc">Newest First</option>
+        <option value="date_asc">Oldest First</option>
+      </select>
+      <span class="results-lbl" id="resultsLbl">Loading…</span>
+    </div>
+
+    <div class="tbl-card">
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title / Author</th>
+              <th>ISBN</th>
+              <th>Category</th>
+              <th>Genre</th>
+              <th>Publisher</th>
+              <th>Total</th>
+              <th>Available</th>
+              <th>Damaged</th>
+              <th>Lost</th>
+              <th>Status</th>
+              <th>Shelf</th>
+              <th>Stock</th>
+              <th>Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr class="empty-row"><td colspan="15"><i class="bi bi-hourglass-split"></i>Loading inventory…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pag-bar" id="pagBar" style="display:none">
+        <span class="pag-info" id="pagInfo"></span>
+        <div class="pag-btns" id="pagBtns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="overlay" id="detailModal">
+    <div class="m-box">
+      <div class="m-head">
+        <span class="m-title" id="detailTitle"><i class="bi bi-eye me-2" style="color:var(--accent)"></i>Book Detail</span>
+        <button class="m-close" onclick="closeModal('detailModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div id="detailBody"></div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="overlay" id="editModal">
+    <div class="m-box">
+      <div class="m-head">
+        <span class="m-title"><i class="bi bi-pencil-square me-2" style="color:var(--accent)"></i>Edit Inventory</span>
+        <button class="m-close" onclick="closeModal('editModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <p id="editBookLabel" style="color:var(--tl);font-size:.83rem;margin-bottom:18px;line-height:1.5;"></p>
+
+      <p class="f-section">Copy Counts</p>
+      <div class="inv-section">
+        <div class="inv-section-title"><i class="bi bi-stack me-1"></i>Inventory Numbers</div>
+        <div class="f-grid3">
+          <div class="fg"><label>Total Copies</label><input type="number" id="editTotal" min="0" placeholder="0"></div>
+          <div class="fg"><label>Available</label><input type="number" id="editAvailable" min="0" placeholder="0"></div>
+          <div class="fg"><label>Damaged</label><input type="number" id="editDamaged" min="0" placeholder="0"></div>
+        </div>
+        <div class="f-grid2">
+          <div class="fg"><label>Lost</label><input type="number" id="editLost" min="0" placeholder="0"></div>
+          <div class="fg">
+            <label>Status</label>
+            <select id="editStatus">
+              <option value="Available">Available</option>
+              <option value="Damaged">Damaged</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <hr class="f-divider">
+      <p class="f-section">Physical Location</p>
+      <div class="fg"><label>Shelf Location</label><input type="text" id="editShelf" placeholder="e.g. Section A - Row 3"></div>
+
+      <p class="err-msg" id="editErr"></p>
+      <button class="btn-submit" id="editSubmitBtn" onclick="saveInventory()">
+        <i class="bi bi-save me-1"></i> Save Changes
+      </button>
+    </div>
+  </div>
+{% include 'librarian_template/footer_template.html' %}
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let allBooks = [], filtered = [], currentPage = 1, editingId = null;
+    const PER_PAGE = 10;
+
+    window.addEventListener('DOMContentLoaded', () => { loadSummary(); loadInventory(); });
+
+    async function refreshAll() {
+      allBooks = []; filtered = [];
+      document.getElementById('tableBody').innerHTML = `<tr class="empty-row"><td colspan="15"><i class="bi bi-hourglass-split"></i>Refreshing…</td></tr>`;
+      await loadSummary(); await loadInventory();
+      showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Inventory refreshed', 'success');
+    }
+
+    async function loadSummary() {
+      try {
+        const res = await fetch('/api/inventory/summary');
+        const d   = await res.json();
+        document.getElementById('statTotal').textContent   = d.total_titles ?? '—';
+        document.getElementById('statAvail').textContent   = d.available    ?? '—';
+        document.getElementById('statDamaged').textContent = d.damaged      ?? '—';
+        document.getElementById('statLost').textContent    = d.lost         ?? '—';
+      } catch {
+        ['statTotal','statAvail','statDamaged','statLost'].forEach(id => document.getElementById(id).textContent = '—');
+      }
+    }
+
+    async function loadInventory() {
+      try {
+        const res  = await fetch('/api/inventory');
+        const data = await res.json();
+        allBooks   = data.books || [];
+        buildCategoryFilter();
+        applyFilters();
+      } catch {
+        document.getElementById('tableBody').innerHTML = `<tr class="empty-row"><td colspan="15"><i class="bi bi-exclamation-circle"></i>Failed to load inventory. Please refresh.</td></tr>`;
+        document.getElementById('resultsLbl').textContent = 'Error';
+      }
+    }
+
+    function buildCategoryFilter() {
+      const cats = [...new Set(allBooks.map(b=>b.category).filter(Boolean))].sort();
+      const sel  = document.getElementById('filterCategory');
+      sel.innerHTML = '<option value="">All Categories</option>';
+      cats.forEach(c => { const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+    }
+
+    function applyFilters() {
+      const q       = document.getElementById('searchInput').value.toLowerCase();
+      const catF    = document.getElementById('filterCategory').value;
+      const statusF = document.getElementById('filterStatus').value;
+      const sortVal = document.getElementById('sortSelect').value;
+
+      filtered = allBooks.filter(b => {
+        const mQ = !q || [b.title,b.author,b.isbn,b.category,b.genre,b.publisher,b.shelf_location].some(v=>(v||'').toLowerCase().includes(q));
+        const mC = !catF    || b.category === catF;
+        const mS = !statusF || b.status   === statusF;
+        return mQ && mC && mS;
+      });
+
+      filtered.sort((a,b) => {
+        if (sortVal==='title_asc')  return (a.title||'').localeCompare(b.title||'');
+        if (sortVal==='title_desc') return (b.title||'').localeCompare(a.title||'');
+        if (sortVal==='stock_asc')  return (a.available_copies||0)-(b.available_copies||0);
+        if (sortVal==='stock_desc') return (b.available_copies||0)-(a.available_copies||0);
+        if (sortVal==='date_asc')   return new Date(a.date_added||0)-new Date(b.date_added||0);
+        if (sortVal==='date_desc')  return new Date(b.date_added||0)-new Date(a.date_added||0);
+        return 0;
+      });
+
+      currentPage = 1; renderTable(); renderPagination();
+      document.getElementById('resultsLbl').textContent = `${filtered.length} result${filtered.length!==1?'s':''}`;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const start = (currentPage-1)*PER_PAGE;
+      const page  = filtered.slice(start, start+PER_PAGE);
+
+      if (!page.length) {
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="15"><i class="bi bi-search"></i>No results match your filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = page.map((b,i) => {
+        const total=b.total_copies||0, avail=b.available_copies||0, damaged=b.damaged_copies||0, lost=b.lost_copies||0;
+        const pct    = total ? Math.round((avail/total)*100) : 0;
+        const fillCls = pct>60?'high':pct>30?'medium':'low';
+        const badgeCls = {Available:'badge-available',Damaged:'badge-damaged',Lost:'badge-lost'}[b.status]||'badge-available';
+        const badgeIcon = {Available:'bi-check-circle-fill',Damaged:'bi-tools',Lost:'bi-x-circle-fill'}[b.status]||'bi-question-circle';
+        const shelf = b.shelf_location
+          ? `<span class="shelf-badge"><i class="bi bi-geo-alt-fill me-1"></i>${esc(b.shelf_location)}</span>`
+          : `<span style="color:rgba(255,255,255,.25);font-size:.73rem">—</span>`;
+
+        return `<tr>
+          <td style="color:rgba(255,255,255,.35);font-size:.73rem">${start+i+1}</td>
+          <td><div class="book-title">${esc(b.title)}</div><div class="book-sub">${esc(b.author)}</div></td>
+          <td class="isbn-cell">${esc(b.isbn)}</td>
+          <td>${b.category?`<span class="cat-pill">${esc(b.category)}</span>`:'<span style="color:rgba(255,255,255,.25)">—</span>'}</td>
+          <td style="font-size:.82rem">${esc(b.genre||'—')}</td>
+          <td style="font-size:.75rem;color:var(--tl)">${esc(b.publisher||'—')}</td>
+          <td style="text-align:center;font-weight:700;color:#fff">${total}</td>
+          <td style="text-align:center;font-weight:700;color:${avail===0?'var(--danger)':'var(--accent2)'}">${avail}</td>
+          <td style="text-align:center">${damaged>0?`<span class="copy-pill damaged">${damaged}</span>`:`<span class="copy-pill none">—</span>`}</td>
+          <td style="text-align:center">${lost>0?`<span class="copy-pill lost">${lost}</span>`:`<span class="copy-pill none">—</span>`}</td>
+          <td><span class="badge-status ${badgeCls}"><i class="bi ${badgeIcon}"></i>${esc(b.status||'—')}</span></td>
+          <td>${shelf}</td>
+          <td><div class="stock-bar-wrap"><div class="stock-bar"><div class="stock-fill ${fillCls}" style="width:${pct}%"></div></div><span class="stock-text">${pct}%</span></div></td>
+          <td style="font-size:.75rem;color:var(--tl)">${esc(b.date_added||'—')}</td>
+          <td>
+            <div style="display:flex;gap:5px">
+              <button class="act-btn" onclick="showDetail(${b.id})" title="View"><i class="bi bi-eye"></i></button>
+              <button class="act-btn" onclick="openEditModal(${b.id})" title="Edit"><i class="bi bi-pencil"></i></button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderPagination() {
+      const total = filtered.length, pages = Math.ceil(total/PER_PAGE);
+      const bar = document.getElementById('pagBar');
+      if (pages<=1) { bar.style.display='none'; return; }
+      bar.style.display = 'flex';
+      const s=(currentPage-1)*PER_PAGE+1, e=Math.min(currentPage*PER_PAGE,total);
+      document.getElementById('pagInfo').textContent = `Showing ${s}–${e} of ${total}`;
+      let lo=Math.max(1,currentPage-2), hi=Math.min(pages,currentPage+2);
+      let html=`<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+      if(lo>1) html+=`<button class="pag-btn" onclick="goPage(1)">1</button>${lo>2?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}`;
+      for(let p=lo;p<=hi;p++) html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      if(hi<pages) html+=`${hi<pages-1?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}<button class="pag-btn" onclick="goPage(${pages})">${pages}</button>`;
+      html+=`<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+      document.getElementById('pagBtns').innerHTML = html;
+    }
+
+    function goPage(p) {
+      const pages=Math.ceil(filtered.length/PER_PAGE);
+      if(p<1||p>pages) return;
+      currentPage=p; renderTable(); renderPagination();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function showDetail(id) {
+      const b = allBooks.find(x=>x.id===id); if(!b) return;
+      document.getElementById('detailTitle').innerHTML = `<i class="bi bi-book-fill me-2" style="color:var(--accent)"></i>${esc(b.title)}`;
+      const rows = [
+        ['Author', b.author], ['ISBN', b.isbn], ['Category', b.category||'—'],
+        ['Genre', b.genre||'—'], ['Publisher', b.publisher||'—'],
+        ['Total Copies', b.total_copies||0],
+        ['Available', `<span style="color:var(--accent2)">${b.available_copies||0}</span>`],
+        ['Damaged', `<span style="color:var(--warn)">${b.damaged_copies||0}</span>`],
+        ['Lost', `<span style="color:var(--danger)">${b.lost_copies||0}</span>`],
+        ['Status', b.status||'—'], ['Shelf', b.shelf_location||'—'],
+        ['Date Added', b.date_added||'—']
+      ];
+      document.getElementById('detailBody').innerHTML = rows.map(([l,v]) =>
+        `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`
+      ).join('');
+      openModal('detailModal');
+    }
+
+    function openEditModal(id) {
+      const b = allBooks.find(x=>x.id===id); if(!b) return;
+      editingId = id;
+      document.getElementById('editBookLabel').textContent = `📖 ${b.title} — ${b.author}`;
+      document.getElementById('editTotal').value     = b.total_copies     || 0;
+      document.getElementById('editAvailable').value = b.available_copies || 0;
+      document.getElementById('editDamaged').value   = b.damaged_copies   || 0;
+      document.getElementById('editLost').value      = b.lost_copies      || 0;
+      document.getElementById('editStatus').value    = b.status           || 'Available';
+      document.getElementById('editShelf').value     = b.shelf_location   || '';
+      document.getElementById('editErr').style.display = 'none';
+      document.getElementById('editSubmitBtn').disabled = false;
+      openModal('editModal');
+    }
+
+    async function saveInventory() {
+      const total   = parseInt(document.getElementById('editTotal').value)     || 0;
+      const avail   = parseInt(document.getElementById('editAvailable').value) || 0;
+      const damaged = parseInt(document.getElementById('editDamaged').value)   || 0;
+      const lost    = parseInt(document.getElementById('editLost').value)      || 0;
+      const status  = document.getElementById('editStatus').value;
+      const shelf   = document.getElementById('editShelf').value.trim();
+      const errEl   = document.getElementById('editErr');
+
+      if (avail > total)         { errEl.textContent='Available cannot exceed total.';       errEl.style.display='block'; return; }
+      if (damaged+lost > total)  { errEl.textContent='Damaged + Lost cannot exceed total.'; errEl.style.display='block'; return; }
+
+      errEl.style.display = 'none';
+      const btn = document.getElementById('editSubmitBtn');
+      btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Saving…';
+
+      try {
+        const res  = await fetch(`/api/inventory/${editingId}/update`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ total_copies:total, available_copies:avail, damaged_copies:damaged, lost_copies:lost, status, shelf_location:shelf||null })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message||'Update failed');
+
+        const idx = allBooks.findIndex(x=>x.id===editingId);
+        if (idx!==-1) Object.assign(allBooks[idx], { total_copies:total, available_copies:avail, damaged_copies:damaged, lost_copies:lost, status, shelf_location:shelf||null });
+
+        closeModal('editModal'); applyFilters(); await loadSummary();
+        showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Inventory updated', 'success');
+      } catch(e) {
+        errEl.textContent = e.message||'An error occurred.'; errEl.style.display='block';
+      } finally {
+        btn.disabled=false; btn.innerHTML='<i class="bi bi-save me-1"></i> Save Changes';
+      }
+    }
+
+    function exportCSV() {
+      const headers=['#','Title','Author','ISBN','Category','Genre','Publisher','Total','Available','Damaged','Lost','Status','Shelf','Date Added'];
+      const rows=filtered.map((b,i)=>[i+1,b.title,b.author,b.isbn,b.category||'',b.genre||'',b.publisher||'',b.total_copies||0,b.available_copies||0,b.damaged_copies||0,b.lost_copies||0,b.status,b.shelf_location||'',b.date_added||'']);
+      const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+      a.download=`inventory_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+      showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> CSV exported', 'success');
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+    ['detailModal','editModal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', e => { if(e.target===document.getElementById(id)) closeModal(id); });
+    });
+    document.addEventListener('keydown', e => { if(e.key==='Escape') ['detailModal','editModal'].forEach(closeModal); });
+
+    function showToast(msg, type='') {
+      const t=document.createElement('div'); t.className=`toast-msg ${type}`; t.innerHTML=msg;
+      document.getElementById('toastWrap').appendChild(t); setTimeout(()=>t.remove(),3800);
+    }
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    const menuToggle=document.getElementById('menuToggle'), navLinks=document.getElementById('navLinks');
+    menuToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+    document.addEventListener('click',e=>{ if(!menuToggle.contains(e.target)&&!navLinks.contains(e.target)) navLinks.classList.remove('open'); });
+  </script>
+</body>
+</html>

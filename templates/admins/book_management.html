@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Book Management | Iloilo Public Library</title>
+  <link rel="icon" href="/static/images/logo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent:   #9fc1e1;
+      --accent2:  #48c78e;
+      --bg1:      #1e2d3d;
+      --bg2:      #2f3f4d;
+      --bg3:      #42586b;
+      --card:     rgba(255,255,255,0.06);
+      --card-b:   rgba(255,255,255,0.10);
+      --tl:       rgba(255,255,255,.55);
+      --danger:   #ff6363;
+      --warn:     #ff9800;
+      --gold:     #f5c842;
+      --border:   rgba(255,255,255,.08);
+      --surface:  rgba(255,255,255,0.05);
+      --mono:     'DM Mono', monospace;
+      --topbar-h: 60px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #dde8f2;
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: 100vw;
+      padding-top: var(--topbar-h);
+      padding-bottom: 0;
+    }
+    @media (max-width: 992px) { body { padding-bottom: 76px; } }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+      background: rgba(30,45,61,0.97); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(159,193,225,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: var(--topbar-h);
+    }
+    .brand-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; }
+    .brand-img  { width:34px; height:34px; border-radius:8px; background: rgba(159,193,225,.2); display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:var(--accent); flex-shrink:0; }
+    .brand-text { font-weight:700; font-size:1.1rem; }
+    .nav-links  { display:flex; gap:4px; align-items:center; }
+    .nav-links a { color:rgba(255,255,255,.65); text-decoration:none; font-weight:500; font-size:.88rem; padding:6px 12px; border-radius:8px; transition:.18s; }
+    .nav-links a:hover  { background:rgba(255,255,255,.08); color:#fff; }
+    .nav-links a.active { background:rgba(159,193,225,.15); color:var(--accent); }
+    .menu-toggle { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; }
+    @media (max-width:992px) { .topbar { padding:0 16px; } .menu-toggle { display:block; } .nav-links { display:none; } }
+    @media (max-width:480px) { .brand-text { display:none; } }
+
+    /* ── PAGE LAYOUT ── */
+    .page-wrap { padding: 0 40px; max-width: 100%; }
+    @media (max-width: 768px) { .page-wrap { padding: 0 16px; } }
+    @media (max-width: 480px) { .page-wrap { padding: 0 12px; } }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 24px 40px 0;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:12px;
+    }
+    .page-header-left { display:flex; align-items:center; gap:14px; }
+    .page-header-icon {
+      width:48px; height:48px; border-radius:14px;
+      background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.3rem; color:var(--accent); flex-shrink:0;
+    }
+    .page-title { font-size:1.5rem; font-weight:700; letter-spacing:-.03em; color:#fff; }
+    .page-sub   { font-size:.82rem; color:var(--tl); margin-top:2px; }
+    @media (max-width:768px) {
+      .page-header { padding: 20px 16px 0; }
+      .page-title  { font-size: 1.2rem; }
+      .page-header-icon { width:40px; height:40px; font-size:1.1rem; }
+    }
+    @media (max-width:480px) {
+      .page-header { padding: 16px 12px 0; }
+      .page-sub    { display: none; }
+    }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display:flex; align-items:center; gap:10px;
+      flex-wrap:wrap; padding:16px 40px 0;
+    }
+    @media (max-width:768px) { .toolbar { padding: 14px 16px 0; } }
+    @media (max-width:480px) { .toolbar { padding: 12px 12px 0; gap: 8px; } }
+
+    .search-wrap { position:relative; flex:1; min-width:160px; max-width:340px; }
+    @media (max-width:480px) { .search-wrap { max-width:100%; width:100%; flex:none; } }
+    .search-wrap i { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.3); font-size:.85rem; pointer-events:none; }
+    .search-input { width:100%; padding:9px 12px 9px 34px; background:rgba(255,255,255,.07); border:1px solid var(--border); border-radius:10px; color:#fff; font-size:.84rem; font-family:'DM Sans',sans-serif; outline:none; transition:.18s; }
+    .search-input:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.10); }
+    .search-input::placeholder { color:rgba(255,255,255,.3); }
+
+    .toolbar-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid var(--border); background:rgba(255,255,255,.06); color:#fff; white-space:nowrap; }
+    .toolbar-btn:hover { background:rgba(255,255,255,.12); }
+    .toolbar-btn.primary { background:var(--accent); color:#0d1a24; border-color:transparent; }
+    .toolbar-btn.primary:hover { background:#b8d4ec; }
+    .toolbar-btn.danger  { background:rgba(255,99,99,.12); color:var(--danger); border-color:rgba(255,99,99,.25); }
+    .toolbar-btn.danger:hover { background:rgba(255,99,99,.22); }
+
+    .filter-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(159,193,225,.25); background:rgba(159,193,225,.08); color:var(--accent); white-space:nowrap; position:relative; }
+    .filter-btn:hover { background:rgba(159,193,225,.16); border-color:rgba(159,193,225,.4); }
+    .filter-active-dot { position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; background:var(--accent2); border:2px solid #1e2d3d; display:none; }
+    .filter-active-dot.show { display:block; }
+
+    @media (max-width:480px) {
+      .toolbar-btn .btn-label, .filter-btn .btn-label { display: none; }
+      .toolbar-btn, .filter-btn { padding: 9px 12px; }
+    }
+
+    .sel-bar { display:none; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 40px 0; font-size:.82rem; color:var(--tl); }
+    .sel-bar.visible { display:flex; }
+    @media (max-width:768px) { .sel-bar { padding: 8px 16px 0; } }
+    @media (max-width:480px) { .sel-bar { padding: 8px 12px 0; } }
+
+    /* ── TABLE CARD ── */
+    .tbl-card {
+      margin: 16px 40px 40px;
+      background:rgba(255,255,255,.05); backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.09); border-radius:18px;
+      overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,.2);
+    }
+    @media (max-width:768px) { .tbl-card { margin: 14px 16px 32px; border-radius:14px; } }
+    @media (max-width:480px) { .tbl-card { margin: 12px 12px 24px; border-radius:12px; } }
+
+    .tbl-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    table { width:100%; border-collapse:collapse; min-width:860px; }
+    thead tr { background:rgba(255,255,255,.04); }
+    th { padding:11px 12px; text-align:left; font-size:.68rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:rgba(255,255,255,.4); border-bottom:1px solid var(--border); white-space:nowrap; }
+    td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; color:#dde8f2; }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:rgba(159,193,225,.04); }
+    tbody tr { cursor:pointer; transition:.12s; }
+    .book-title { font-weight:600; font-size:.86rem; color:#eef4fb; }
+    .book-sub   { font-size:.76rem; color:var(--tl); margin-top:2px; }
+    .isbn-cell  { font-family:'DM Mono',monospace; font-size:.78rem; color:var(--tl); }
+    .cat-pill   { display:inline-block; padding:2px 9px; border-radius:20px; background:rgba(159,193,225,.12); color:var(--accent); border:1px solid rgba(159,193,225,.22); font-size:.72rem; font-weight:600; }
+    .inv-mini   { display:flex; align-items:center; gap:5px; font-size:.82rem; }
+    .inv-dot    { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .inv-dot.green  { background:var(--accent2); }
+    .inv-dot.orange { background:var(--warn); }
+    .inv-dot.red    { background:var(--danger); }
+    .borrow-badge { display:inline-flex; align-items:center; gap:4px; font-size:.72rem; font-weight:600; padding:2px 8px; border-radius:20px; }
+    .borrow-badge.yes { background:rgba(72,199,142,.1); color:var(--accent2); border:1px solid rgba(72,199,142,.2); }
+    .borrow-badge.no  { background:rgba(255,255,255,.05); color:rgba(255,255,255,.3); border:1px solid var(--border); }
+    .act-btn { display:inline-flex; align-items:center; gap:4px; padding:5px 9px; border-radius:8px; font-size:.75rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; background:rgba(255,255,255,.06); border:1px solid var(--border); color:#dde8f2; transition:.15s; white-space:nowrap; }
+    .act-btn:hover { background:rgba(255,255,255,.12); }
+    .act-btn.del { background:rgba(255,99,99,.08); color:var(--danger); border-color:rgba(255,99,99,.2); }
+    .act-btn.del:hover { background:rgba(255,99,99,.18); }
+    .empty-row td { text-align:center; padding:48px 20px; color:rgba(255,255,255,.25); font-size:.9rem; }
+    .empty-row td i { display:block; font-size:2rem; margin-bottom:10px; opacity:.3; }
+    .cb { accent-color:var(--accent); width:15px; height:15px; cursor:pointer; }
+
+    .pag-bar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-top:1px solid var(--border); flex-wrap:wrap; gap:8px; }
+    .pag-info { font-size:.78rem; color:var(--tl); }
+    .pag-btns { display:flex; gap:4px; flex-wrap:wrap; }
+    .pag-btn { padding:5px 11px; border-radius:8px; font-size:.78rem; font-weight:600; background:rgba(255,255,255,.06); border:1px solid var(--border); color:#dde8f2; cursor:pointer; transition:.15s; }
+    .pag-btn:hover  { background:rgba(255,255,255,.12); }
+    .pag-btn.active { background:var(--accent); color:#0d1a24; border-color:transparent; }
+    .pag-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+    /* ── SHARED MODAL BASE ── */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(6px);
+      z-index:2000; display:flex; align-items:center; justify-content:center;
+      padding:16px; opacity:0; pointer-events:none; transition:opacity .2s;
+      overflow-y:auto;
+    }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal-box {
+      background:linear-gradient(150deg,#1e2d3d,#273848);
+      border:1px solid rgba(159,193,225,.18); border-radius:18px;
+      width:100%; max-width:560px;
+      max-height:calc(100dvh - 32px);
+      overflow-y:auto;
+      box-shadow:0 24px 60px rgba(0,0,0,.55);
+      transform:translateY(16px) scale(.98);
+      transition:transform .25s cubic-bezier(.22,1,.36,1);
+      /* prevent content from being cut off */
+      -webkit-overflow-scrolling:touch;
+    }
+    .modal-overlay.open .modal-box { transform:translateY(0) scale(1); }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.07); position:sticky; top:0; background:linear-gradient(150deg,#1e2d3d,#273848); z-index:1; }
+    .modal-title { font-size:1.05rem; font-weight:700; color:#fff; }
+    .modal-body  { padding:18px 20px; }
+    .modal-foot  { padding:14px 20px; border-top:1px solid rgba(255,255,255,.07); display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; position:sticky; bottom:0; background:linear-gradient(150deg,#1e2d3d,#273848); }
+    .form-group { margin-bottom:13px; }
+    .form-label { display:block; font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:rgba(255,255,255,.5); margin-bottom:5px; }
+    .form-control { width:100%; padding:9px 12px; background:rgba(255,255,255,.07); border:1px solid var(--border); border-radius:10px; color:#fff; font-size:.86rem; font-family:'DM Sans',sans-serif; outline:none; transition:.18s; appearance:none; -webkit-appearance:none; }
+    .form-control:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.10); }
+    .form-control::placeholder { color:rgba(255,255,255,.3); }
+    .form-control option { background:#1e2d3d; color:#dde8f2; }
+    textarea.form-control { resize:vertical; min-height:72px; }
+    .form-grid   { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    @media (max-width:480px) {
+      .form-grid, .form-grid-3 { grid-template-columns:1fr; }
+    }
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:10px; padding:10px 14px; gap:12px; }
+    .toggle-label { font-size:.86rem; color:#dde8f2; font-weight:500; }
+    .toggle-sub   { font-size:.74rem; color:rgba(255,255,255,.35); margin-top:2px; }
+    .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; inset:0; background:rgba(255,255,255,.12); border-radius:24px; transition:.3s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+    .toggle-switch input:checked + .toggle-slider { background:var(--accent2); }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
+    .status-pills { display:flex; gap:7px; flex-wrap:wrap; }
+    .status-pill { padding:6px 12px; border-radius:8px; font-size:.78rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:rgba(255,255,255,.06); color:rgba(255,255,255,.5); transition:.18s; }
+    .status-pill.active.ok   { background:rgba(72,199,142,.15); color:var(--accent2); border-color:rgba(72,199,142,.35); }
+    .status-pill.active.dmg  { background:rgba(255,152,0,.15);  color:var(--warn);    border-color:rgba(255,152,0,.35); }
+    .status-pill.active.lost { background:rgba(255,99,99,.15);  color:var(--danger);  border-color:rgba(255,99,99,.35); }
+    .inv-counter { display:flex; align-items:center; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .inv-counter-btn { width:34px; height:38px; border:none; background:transparent; color:#dde8f2; font-size:1.1rem; cursor:pointer; transition:.15s; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .inv-counter-btn:hover { background:rgba(255,255,255,.1); }
+    .inv-counter input { flex:1; border:none; background:transparent; color:#fff; text-align:center; font-size:.9rem; font-weight:600; font-family:'DM Mono',monospace; outline:none; min-width:0; width:100%; }
+    .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .6s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .vm-close { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:rgba(255,255,255,.5); font-size:1rem; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.18s; flex-shrink:0; }
+    .vm-close:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .vm-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid var(--border); background:rgba(255,255,255,.06); color:#fff; white-space:nowrap; }
+    .vm-btn:hover { background:rgba(255,255,255,.12); }
+    .vm-btn.primary { background:var(--accent); color:#0d1a24; border-color:transparent; }
+    .vm-btn.primary:hover { background:#b8d4ec; }
+    .vm-btn.success { background:rgba(72,199,142,.15); color:var(--accent2); border-color:rgba(72,199,142,.3); }
+    .vm-btn.success:hover { background:rgba(72,199,142,.25); }
+    .vm-btn.danger  { background:rgba(255,99,99,.12); color:var(--danger); border-color:rgba(255,99,99,.25); }
+    .vm-btn.danger:hover { background:rgba(255,99,99,.22); }
+    .err-msg { font-size:.78rem; color:var(--danger); display:none; }
+
+    /* ══ ADD BOOK WIZARD ══ */
+    #addModal .modal-box { max-width:680px; }
+    #addModal .modal-box .modal-head { border-bottom: none; padding-bottom: 0; }
+
+    .wizard-stepper {
+      display:flex; align-items:flex-start; gap:0;
+      padding:16px 20px 0; background:rgba(0,0,0,.15);
+      border-bottom:1px solid rgba(255,255,255,.07);
+      overflow-x:auto; -webkit-overflow-scrolling:touch;
+    }
+    .wizard-stepper::-webkit-scrollbar { height:0; }
+    .wz-step { display:flex; align-items:center; gap:0; flex:1; min-width:0; }
+    .wz-step:last-child { flex:none; }
+    .wz-dot-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; flex-shrink:0; }
+    .wz-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.12); color:rgba(255,255,255,.35); transition:.3s; }
+    .wz-dot.active { background:var(--accent); border-color:var(--accent); color:#0d1a24; }
+    .wz-dot.done   { background:rgba(72,199,142,.2); border-color:var(--accent2); color:var(--accent2); }
+    .wz-label { font-size:.64rem; font-weight:600; color:rgba(255,255,255,.35); white-space:nowrap; padding-bottom:10px; transition:.3s; }
+    .wz-label.active { color:var(--accent); }
+    .wz-label.done   { color:var(--accent2); }
+    .wz-line { flex:1; height:2px; background:rgba(255,255,255,.08); margin:0 4px; margin-bottom:10px; transition:.3s; min-width:12px; }
+    .wz-line.done { background:rgba(72,199,142,.35); }
+
+    @media (max-width:480px) {
+      .wz-label { display:none; }
+      .wz-dot   { width:24px; height:24px; font-size:.65rem; }
+      .wz-line  { min-width:8px; }
+    }
+
+    .wizard-body { padding:20px 20px 0; }
+    .wz-pane { display:none; animation:paneIn .25s ease; }
+    .wz-pane.active { display:block; }
+    @keyframes paneIn { from{opacity:0;transform:translateX(12px)} to{opacity:1;transform:none} }
+
+    .wizard-footer {
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:8px;
+      padding:16px 20px;
+      border-top:1px solid rgba(255,255,255,.07);
+      margin-top:18px;
+      position:sticky; bottom:0;
+      background:linear-gradient(150deg,#1e2d3d,#273848);
+    }
+    .wz-progress-txt { font-size:.75rem; color:rgba(255,255,255,.35); }
+    .wz-nav { display:flex; gap:8px; flex-wrap:wrap; }
+
+    .isbn-bar { background:rgba(159,193,225,.05); border:1px solid rgba(159,193,225,.14); border-radius:13px; padding:14px 16px 12px; margin-bottom:16px; }
+    .isbn-bar-title { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+    .isbn-row { display:flex; gap:8px; align-items:stretch; }
+    .isbn-row .form-control { flex:1; font-family:var(--mono); letter-spacing:.04em; min-width:0; }
+    .isbn-row .form-control.valid   { border-color:var(--accent2) !important; }
+    .isbn-row .form-control.invalid { border-color:var(--danger)  !important; }
+    .btn-fetch { display:inline-flex; align-items:center; gap:7px; padding:0 14px; background:linear-gradient(135deg,#2a5070,#1e3d56); border:1px solid rgba(159,193,225,.35); border-radius:10px; color:var(--accent); font-size:.82rem; font-weight:700; font-family:'DM Sans',sans-serif; white-space:nowrap; cursor:pointer; transition:.2s; flex-shrink:0; }
+    .btn-fetch:hover:not(:disabled) { background:linear-gradient(135deg,#345f84,#26496a); border-color:var(--accent); }
+    .btn-fetch:disabled { opacity:.45; cursor:not-allowed; }
+    @media (max-width:420px) {
+      .isbn-row { flex-direction:column; }
+      .btn-fetch { padding:10px 14px; justify-content:center; }
+    }
+    .isbn-hint { font-size:.72rem; margin-top:5px; min-height:16px; }
+    .isbn-hint.ok  { color:var(--accent2); }
+    .isbn-hint.bad { color:var(--danger); }
+    .isbn-source-badge { display:none; align-items:center; gap:5px; font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:20px; margin-top:6px; }
+    .isbn-source-badge.show { display:inline-flex; }
+    .isbn-source-badge.google      { background:rgba(72,199,142,.12);  color:var(--accent2); border:1px solid rgba(72,199,142,.25); }
+    .isbn-source-badge.openlibrary { background:rgba(159,193,225,.12); color:var(--accent);  border:1px solid rgba(159,193,225,.25); }
+    .isbn-source-badge.cache       { background:rgba(245,200,66,.1);   color:var(--gold);    border:1px solid rgba(245,200,66,.25); }
+    .fetch-alert { padding:9px 12px; border-radius:9px; font-size:.81rem; font-weight:600; margin-top:10px; display:none; align-items:center; gap:8px; }
+    .fetch-alert.show    { display:flex; }
+    .fetch-alert.success { background:rgba(72,199,142,.1);  border:1px solid rgba(72,199,142,.3);  color:var(--accent2); }
+    .fetch-alert.error   { background:rgba(255,99,99,.1);   border:1px solid rgba(255,99,99,.3);   color:var(--danger); }
+    .fetch-alert.warn    { background:rgba(255,152,0,.1);   border:1px solid rgba(255,152,0,.3);   color:var(--warn); }
+    .cover-strip { display:none; gap:12px; align-items:flex-start; padding:10px 12px; background:rgba(159,193,225,.05); border:1px solid rgba(159,193,225,.12); border-radius:10px; margin-top:10px; }
+    .cover-strip.show { display:flex; animation:stripIn .3s ease; }
+    @keyframes stripIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:none} }
+    .cover-img { width:42px; height:58px; object-fit:cover; border-radius:6px; flex-shrink:0; border:1px solid rgba(255,255,255,.12); }
+    .cover-meta .cm-title  { font-weight:700; font-size:.84rem; color:#fff; }
+    .cover-meta .cm-author { font-size:.74rem; color:var(--tl); margin-top:2px; }
+    .cover-meta .cm-tags   { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+    .cover-meta .cm-tag    { font-size:.67rem; font-weight:700; padding:2px 7px; border-radius:5px; }
+    .cm-tag.lang  { background:rgba(159,193,225,.14); color:var(--accent); }
+    .cm-tag.pages { background:rgba(72,199,142,.14);  color:var(--accent2); }
+    .cm-tag.year  { background:rgba(245,200,66,.12);  color:var(--gold); }
+    @keyframes fieldPop { 0%{background:rgba(159,193,225,.2)} 60%{background:rgba(159,193,225,.08)} 100%{background:rgba(255,255,255,.07)} }
+    .autofilled { animation:fieldPop .65s ease forwards; }
+
+    .copy-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+    @media (max-width:420px) { .copy-cards { grid-template-columns:1fr; gap:8px; } }
+    .copy-card { border-radius:12px; padding:12px 10px; border:1px solid; text-align:center; }
+    .copy-card.total   { background:rgba(159,193,225,.07); border-color:rgba(159,193,225,.2); }
+    .copy-card.damaged { background:rgba(255,152,0,.06);    border-color:rgba(255,152,0,.2); }
+    .copy-card.lost    { background:rgba(255,99,99,.06);    border-color:rgba(255,99,99,.18); }
+    .copy-card-label { font-size:.65rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; }
+    .copy-card.total   .copy-card-label { color:var(--accent); }
+    .copy-card.damaged .copy-card-label { color:var(--warn); }
+    .copy-card.lost    .copy-card-label { color:var(--danger); }
+    .avail-display { display:flex; align-items:center; gap:12px; background:rgba(72,199,142,.08); border:1px solid rgba(72,199,142,.18); border-radius:12px; padding:12px 14px; margin-bottom:16px; }
+    .avail-val { font-size:1.8rem; font-weight:700; color:var(--accent2); line-height:1; flex-shrink:0; }
+    .avail-info { flex:1; min-width:0; }
+    .avail-label { font-size:.75rem; font-weight:700; color:var(--accent2); }
+    .avail-formula { font-size:.72rem; color:rgba(255,255,255,.35); margin-top:2px; }
+    .review-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    @media (max-width:480px) { .review-grid { grid-template-columns:1fr; } }
+    .review-item { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:10px 13px; }
+    .review-item label { font-size:.65rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.38); display:block; margin-bottom:3px; }
+    .review-item span  { font-size:.85rem; color:#fff; font-weight:500; word-break:break-word; }
+    .review-item span.muted { color:rgba(255,255,255,.3); font-style:italic; font-weight:400; }
+    .review-cover { width:54px; height:76px; object-fit:cover; border-radius:8px; border:1px solid rgba(255,255,255,.15); flex-shrink:0; }
+    .review-cover-ph { width:54px; height:76px; border-radius:8px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:rgba(255,255,255,.2); font-size:1.3rem; }
+    .wz-section { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); display:flex; align-items:center; gap:8px; margin:14px 0 10px; }
+    .wz-section::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.08); }
+    .wz-section:first-child { margin-top:0; }
+    .wz-section.green { color:var(--accent2); }
+
+    /* ══ FILTER MODAL ══ */
+    #filterModal {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.65); backdrop-filter:blur(8px);
+      z-index:2500; display:flex; align-items:center; justify-content:center;
+      padding:16px; opacity:0; pointer-events:none; transition:opacity .2s;
+    }
+    #filterModal.open { opacity:1; pointer-events:all; }
+    .filter-modal-box {
+      background:linear-gradient(150deg,#1e2d3d,#273848);
+      border:1px solid rgba(159,193,225,.2); border-radius:20px;
+      width:100%; max-width:640px;
+      height:calc(100dvh - 32px);
+      max-height:620px;
+      display:flex; flex-direction:column;
+      box-shadow:0 28px 70px rgba(0,0,0,.6);
+      transform:translateY(18px) scale(.98);
+      transition:transform .28s cubic-bezier(.22,1,.36,1);
+      overflow:hidden;
+    }
+    #filterModal.open .filter-modal-box { transform:translateY(0) scale(1); }
+    @media (max-width:480px) {
+      #filterModal { padding:0; align-items:flex-end; }
+      .filter-modal-box { border-radius:20px 20px 0 0; max-height:90dvh; height:auto; }
+    }
+    .filter-modal-head {
+      padding:16px 20px 12px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      display:flex; align-items:center; justify-content:space-between;
+      flex-shrink:0;
+    }
+    .fm-head-left { display:flex; align-items:center; gap:11px; }
+    .fm-head-icon { width:36px; height:36px; border-radius:11px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.22); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:.95rem; flex-shrink:0; }
+    .fm-title { font-size:.95rem; font-weight:700; color:#fff; }
+    .fm-sub   { font-size:.72rem; color:rgba(255,255,255,.38); margin-top:1px; }
+    .fm-rail-wrap { display:grid; grid-template-columns:140px 1fr; flex:1; min-height:0; overflow:hidden; }
+    @media (max-width:400px) { .fm-rail-wrap { grid-template-columns:100px 1fr; } }
+    .fm-rail-nav { background:rgba(0,0,0,.22); border-right:1px solid rgba(255,255,255,.06); padding:6px 0; overflow-y:auto; }
+    .fm-rail-nav::-webkit-scrollbar { width:3px; }
+    .fm-rail-nav::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:3px; }
+    .fm-rail-item { padding:9px 12px; font-size:.78rem; color:rgba(255,255,255,.42); cursor:pointer; display:flex; align-items:center; gap:7px; border-left:2px solid transparent; transition:.15s; user-select:none; }
+    .fm-rail-item i { font-size:.75rem; flex-shrink:0; opacity:.7; }
+    .fm-rail-item:hover { color:rgba(255,255,255,.75); background:rgba(255,255,255,.03); }
+    .fm-rail-item.active { color:var(--accent); background:rgba(159,193,225,.07); border-left-color:var(--accent); }
+    .fm-rail-item.active i { opacity:1; }
+    .fm-rail-badge { margin-left:auto; font-size:.62rem; font-weight:700; padding:1px 5px; border-radius:20px; background:rgba(72,199,142,.18); color:var(--accent2); border:1px solid rgba(72,199,142,.28); flex-shrink:0; }
+    @media (max-width:400px) {
+      .fm-rail-item { padding:9px 8px; gap:0; }
+      .fm-rail-item span { display:none; }
+      .fm-rail-item i { opacity:1; }
+    }
+    .fm-rail-content { padding:16px; overflow-y:auto; }
+    .fm-rail-content::-webkit-scrollbar { width:4px; }
+    .fm-rail-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:4px; }
+    .fm-pane { display:none; animation:fmPaneIn .2s ease; }
+    .fm-pane.active { display:block; }
+    @keyframes fmPaneIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:none} }
+    .fm-pane-label { font-size:.68rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .fm-pane-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+    .fm-pane-hint { font-size:.62rem; font-weight:600; letter-spacing:.05em; color:rgba(255,255,255,.22); text-transform:lowercase; font-style:italic; }
+    .fm-search-wrap { position:relative; margin-bottom:10px; }
+    .fm-search-wrap i { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.3); font-size:.8rem; pointer-events:none; }
+    .fm-search-inp { width:100%; padding:7px 10px 7px 28px; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:9px; color:#fff; font-size:.82rem; font-family:'DM Sans',sans-serif; outline:none; transition:.15s; -webkit-appearance:none; appearance:none; }
+    .fm-search-inp:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.09); }
+    .fm-search-inp::placeholder { color:rgba(255,255,255,.26); }
+    .fm-tag-cloud { display:flex; flex-wrap:wrap; gap:6px; }
+    .fm-tc { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; font-size:.78rem; cursor:pointer; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05); color:rgba(255,255,255,.48); transition:.15s; user-select:none; }
+    .fm-tc:hover { border-color:rgba(255,255,255,.2); color:#fff; background:rgba(255,255,255,.08); }
+    .fm-tc.on { background:rgba(159,193,225,.14); color:var(--accent); border-color:rgba(159,193,225,.38); }
+    .fm-tc.sz-lg { font-size:.83rem; padding:6px 12px; }
+    .fm-tc.sz-sm { font-size:.72rem; padding:4px 8px; }
+    .fm-tc-count { font-size:.66rem; font-weight:700; opacity:.55; background:rgba(255,255,255,.08); border-radius:20px; padding:1px 5px; min-width:20px; text-align:center; }
+    .fm-tc.on .fm-tc-count { opacity:.85; background:rgba(255,255,255,.12); }
+    .fm-col-list { display:flex; flex-direction:column; gap:6px; }
+    .fm-cl-item { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:9px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.04); cursor:pointer; transition:.15s; user-select:none; }
+    .fm-cl-item:hover { border-color:rgba(255,255,255,.16); background:rgba(255,255,255,.07); }
+    .fm-cl-item.on   { border-color:rgba(159,193,225,.35); background:rgba(159,193,225,.08); }
+    .fm-cl-item.on-g { border-color:rgba(72,199,142,.32);  background:rgba(72,199,142,.08); }
+    .fm-cl-item.on-o { border-color:rgba(255,152,0,.3);    background:rgba(255,152,0,.08); }
+    .fm-cl-item.on-r { border-color:rgba(255,99,99,.28);   background:rgba(255,99,99,.08); }
+    .fm-cl-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .fm-cl-label { font-size:.8rem; color:rgba(255,255,255,.55); flex:1; transition:.15s; }
+    .fm-cl-item.on .fm-cl-label, .fm-cl-item.on-g .fm-cl-label, .fm-cl-item.on-o .fm-cl-label, .fm-cl-item.on-r .fm-cl-label { color:#fff; }
+    .fm-cl-bar-wrap { flex:1; height:4px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; max-width:60px; }
+    .fm-cl-bar { height:100%; border-radius:3px; transition:width .4s ease; }
+    .fm-cl-count { font-size:.7rem; font-weight:700; color:rgba(255,255,255,.35); min-width:24px; text-align:right; }
+    .fm-cl-item.on .fm-cl-count { color:var(--accent); }
+    .fm-cl-item.on-g .fm-cl-count { color:var(--accent2); }
+    .fm-cl-item.on-o .fm-cl-count { color:var(--warn); }
+    .fm-cl-item.on-r .fm-cl-count { color:var(--danger); }
+    .fm-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; cursor:pointer; transition:.15s; gap:8px; }
+    .fm-toggle-row:hover { background:rgba(255,255,255,.07); }
+    .fm-toggle-row.on { background:rgba(159,193,225,.07); border-color:rgba(159,193,225,.3); }
+    .fm-toggle-label { font-size:.82rem; color:rgba(255,255,255,.6); font-weight:500; }
+    .fm-toggle-sub   { font-size:.7rem; color:rgba(255,255,255,.3); margin-top:1px; }
+    .fm-borrow-count { font-size:.7rem; font-weight:700; color:rgba(255,255,255,.3); background:rgba(255,255,255,.07); border-radius:20px; padding:1px 7px; white-space:nowrap; }
+    .fm-date-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .fm-date-lbl  { font-size:.72rem; color:rgba(255,255,255,.35); margin-bottom:4px; }
+    .fm-shortcut-row { display:flex; flex-wrap:wrap; gap:5px; }
+    .fm-shortcut { display:inline-flex; align-items:center; padding:5px 10px; border-radius:8px; font-size:.76rem; cursor:pointer; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05); color:rgba(255,255,255,.45); transition:.15s; user-select:none; }
+    .fm-shortcut:hover { border-color:rgba(255,255,255,.2); color:#fff; }
+    .fm-shortcut.on { background:rgba(159,193,225,.13); color:var(--accent); border-color:rgba(159,193,225,.35); }
+    .fm-chip-bar { display:flex; flex-wrap:wrap; gap:5px; padding:8px 20px; border-top:1px solid rgba(255,255,255,.06); min-height:40px; align-items:center; background:rgba(0,0,0,.15); flex-shrink:0; }
+    .fm-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:.72rem; background:rgba(159,193,225,.1); color:var(--accent); border:1px solid rgba(159,193,225,.22); }
+    .fm-chip-x { opacity:.55; cursor:pointer; margin-left:2px; font-size:.7rem; }
+    .fm-chip-x:hover { opacity:1; }
+    .fm-no-active { font-size:.76rem; color:rgba(255,255,255,.22); font-style:italic; }
+    .filter-modal-foot { padding:12px 20px; border-top:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; flex-wrap:wrap; }
+    .fm-match-count { font-size:.78rem; color:rgba(255,255,255,.4); }
+    .fm-match-count strong { color:var(--accent2); font-weight:700; }
+
+    /* ══ VIEW DETAIL MODAL ══ */
+    #viewModal {
+      position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(6px);
+      z-index:3000; display:flex; align-items:center; justify-content:center;
+      padding:16px; opacity:0; pointer-events:none; transition:opacity .25s;
+    }
+    #viewModal.open { opacity:1; pointer-events:all; }
+    .vm-box {
+      background:linear-gradient(150deg,#1e2d3d,#273848);
+      border:1px solid rgba(159,193,225,.18); border-radius:20px;
+      width:100%; max-width:780px;
+      height:calc(100dvh - 32px);
+      max-height:660px;
+      overflow:hidden; display:flex; flex-direction:column;
+      box-shadow:0 32px 80px rgba(0,0,0,.6);
+      transform:translateY(20px) scale(.98);
+      transition:transform .28s cubic-bezier(.22,1,.36,1);
+    }
+    #viewModal.open .vm-box { transform:translateY(0) scale(1); }
+    @media (max-width:480px) {
+      #viewModal { padding:0; align-items:flex-end; }
+      .vm-box { border-radius:20px 20px 0 0; max-height:92dvh; height:auto; }
+    }
+    .vm-head { display:flex; align-items:flex-start; gap:14px; padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.07); flex-shrink:0; }
+    .vm-cover { width:62px; height:88px; border-radius:8px; object-fit:cover; flex-shrink:0; border:1px solid rgba(255,255,255,.12); }
+    .vm-cover-ph { width:62px; height:88px; border-radius:8px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:rgba(255,255,255,.2); }
+    @media (max-width:380px) {
+      .vm-cover, .vm-cover-ph { width:48px; height:68px; }
+    }
+    .vm-head-info { flex:1; min-width:0; padding-top:3px; }
+    .vm-badge-row { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:7px; }
+    .vm-badge { font-size:.66rem; font-weight:700; padding:2px 9px; border-radius:20px; letter-spacing:.04em; text-transform:uppercase; }
+    .vm-badge.cat      { background:rgba(159,193,225,.14); color:var(--accent); border:1px solid rgba(159,193,225,.25); }
+    .vm-badge.borrow   { background:rgba(72,199,142,.12);  color:var(--accent2); border:1px solid rgba(72,199,142,.25); }
+    .vm-badge.noborrow { background:rgba(255,255,255,.06); color:rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.1); }
+    .vm-badge.status-ok   { background:rgba(72,199,142,.1);  color:var(--accent2); border:1px solid rgba(72,199,142,.2); }
+    .vm-badge.status-dmg  { background:rgba(255,152,0,.1);   color:var(--warn);    border:1px solid rgba(255,152,0,.2); }
+    .vm-badge.status-lost { background:rgba(255,99,99,.1);   color:var(--danger);  border:1px solid rgba(255,99,99,.2); }
+    .vm-title    { font-size:1.1rem; font-weight:700; letter-spacing:-.025em; color:#fff; line-height:1.25; margin-bottom:3px; word-break:break-word; }
+    .vm-subtitle { font-size:.8rem; color:rgba(255,255,255,.5); margin-bottom:5px; }
+    .vm-author   { font-size:.85rem; color:var(--tl); }
+    .vm-tabs { display:flex; gap:2px; padding:0 20px; border-bottom:1px solid rgba(255,255,255,.07); flex-shrink:0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .vm-tabs::-webkit-scrollbar { height:0; }
+    .vm-tab { padding:10px 14px; font-size:.8rem; font-weight:600; color:rgba(255,255,255,.4); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:.18s; white-space:nowrap; flex-shrink:0; }
+    .vm-tab:hover  { color:rgba(255,255,255,.7); }
+    .vm-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .vm-tab i { margin-right:5px; font-size:.76rem; }
+    .vm-body { overflow-y:auto; flex:1; padding:18px 20px; -webkit-overflow-scrolling:touch; }
+    .vm-pane { display:none; }
+    .vm-pane.active { display:block; }
+    .vm-fields { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:480px) { .vm-fields { grid-template-columns:1fr; } }
+    .vm-field  { display:flex; flex-direction:column; gap:4px; }
+    .vm-field.full { grid-column:1 / -1; }
+    .vm-field label { font-size:.66rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.35); }
+    .vm-field span { font-size:.86rem; color:#dde8f2; font-weight:500; word-break:break-word; }
+    .vm-field span.muted { color:rgba(255,255,255,.3); font-weight:400; font-style:italic; }
+    .vm-desc-box { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:12px 14px; font-size:.82rem; color:var(--tl); line-height:1.65; max-height:110px; overflow-y:auto; }
+    .vm-section-lbl { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; margin-top:16px; display:flex; align-items:center; gap:7px; }
+    .vm-section-lbl:first-child { margin-top:0; }
+    .vm-section-lbl::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+    .vm-inv-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+    @media (max-width:400px) { .vm-inv-cards { grid-template-columns:repeat(2,1fr); } }
+    .vm-inv-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px 12px; text-align:center; }
+    .vm-inv-val { font-size:1.5rem; font-weight:700; line-height:1; }
+    .vm-inv-val.blue   { color:var(--accent); }
+    .vm-inv-val.green  { color:var(--accent2); }
+    .vm-inv-val.orange { color:var(--warn); }
+    .vm-inv-val.red    { color:var(--danger); }
+    .vm-inv-lbl { font-size:.68rem; color:rgba(255,255,255,.4); margin-top:4px; }
+    .vm-foot { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-top:1px solid rgba(255,255,255,.07); flex-shrink:0; gap:8px; flex-wrap:wrap; }
+    .vm-foot-meta { font-size:.73rem; color:rgba(255,255,255,.3); }
+    .vm-foot-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
+    /* ══ INVENTORY QUICK-EDIT ══ */
+    #invModal {
+      position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(6px);
+      z-index:3500; display:flex; align-items:center; justify-content:center;
+      padding:16px; opacity:0; pointer-events:none; transition:opacity .2s;
+    }
+    #invModal.open { opacity:1; pointer-events:all; }
+    .inv-modal-box {
+      background:linear-gradient(150deg,#1e2d3d,#273848);
+      border:1px solid rgba(72,199,142,.22); border-radius:20px;
+      width:100%; max-width:520px;
+      max-height:calc(100dvh - 32px);
+      overflow-y:auto; -webkit-overflow-scrolling:touch;
+      box-shadow:0 24px 60px rgba(0,0,0,.6);
+      transform:translateY(16px) scale(.98);
+      transition:transform .25s cubic-bezier(.22,1,.36,1);
+    }
+    #invModal.open .inv-modal-box { transform:translateY(0) scale(1); }
+    @media (max-width:480px) {
+      #invModal { padding:0; align-items:flex-end; }
+      .inv-modal-box { border-radius:20px 20px 0 0; max-height:92dvh; }
+    }
+    .inv-modal-head { display:flex; align-items:center; gap:12px; padding:18px 20px 14px; border-bottom:1px solid rgba(255,255,255,.07); position:sticky; top:0; background:linear-gradient(150deg,#1e2d3d,#273848); z-index:1; }
+    .inv-modal-icon { width:38px; height:38px; border-radius:12px; background:rgba(72,199,142,.12); border:1px solid rgba(72,199,142,.25); display:flex; align-items:center; justify-content:center; color:var(--accent2); font-size:1rem; flex-shrink:0; }
+    .inv-modal-head-info { flex:1; min-width:0; }
+    .inv-modal-title { font-size:.95rem; font-weight:700; color:#fff; }
+    .inv-modal-sub   { font-size:.74rem; color:rgba(255,255,255,.4); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .inv-modal-body  { padding:20px; }
+    .inv-modal-foot  { padding:14px 20px; border-top:1px solid rgba(255,255,255,.07); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; position:sticky; bottom:0; background:linear-gradient(150deg,#1e2d3d,#273848); }
+    .shelf-preview { margin-top:6px; font-size:.75rem; color:var(--accent); display:flex; align-items:center; gap:5px; }
+
+    /* ══ EDIT MODAL ══ */
+    #editModal .modal-box { max-width:820px; }
+    .edit-inv-section { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:14px; margin-bottom:12px; }
+    .edit-inv-section-title { font-size:.68rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+    .edit-inv-section-title.green { color:var(--accent2); }
+    .edit-inv-section-title.blue  { color:var(--accent); }
+    #editModal .vm-tabs { padding: 0 20px; }
+    #editModal .modal-head { position:sticky; top:0; background:linear-gradient(150deg,#1e2d3d,#273848); z-index:1; }
+
+    /* ══ DELETE CONFIRM ══ */
+    #confirmModal {
+      position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(6px);
+      z-index:4000; display:flex; align-items:center; justify-content:center;
+      padding:16px; opacity:0; pointer-events:none; transition:opacity .2s;
+    }
+    #confirmModal.open { opacity:1; pointer-events:all; }
+    .cm-box { background:#1e2d3d; border:1px solid rgba(255,99,99,.2); border-radius:16px; padding:24px 22px; max-width:400px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.6); }
+    .cm-icon  { font-size:1.8rem; color:var(--danger); margin-bottom:12px; }
+    .cm-title { font-size:1rem; font-weight:700; color:#fff; margin-bottom:7px; }
+    .cm-msg   { font-size:.84rem; color:var(--tl); margin-bottom:20px; line-height:1.6; }
+    .cm-btns  { display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
+
+    /* ── TOAST ── */
+    .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:calc(100vw - 32px); }
+    .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:11px 16px; font-size:.83rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; }
+    .toast-msg.success { border-color:rgba(72,199,142,.4); }
+    .toast-msg.error   { border-color:rgba(255,99,99,.4); }
+    @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+    @media (max-width:480px) {
+      .toast-wrap { left:12px; right:12px; bottom:86px; }
+    }
+
+    /* ── Active Filter Chips area ── */
+    #activeChips { padding:8px 40px 0; flex-wrap:wrap; gap:6px; }
+    @media (max-width:768px) { #activeChips { padding:8px 16px 0; } }
+    @media (max-width:480px) { #activeChips { padding:8px 12px 0; } }
+
+    /* ── Scrollbar styling ── */
+    .vm-body::-webkit-scrollbar, .inv-modal-box::-webkit-scrollbar, .modal-box::-webkit-scrollbar { width:4px; }
+    .vm-body::-webkit-scrollbar-thumb, .inv-modal-box::-webkit-scrollbar-thumb, .modal-box::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:4px; }
+  </style>
+</head>
+<body>
+{% include 'admin_template/topbar_template.html' %}
+{% include 'admin_template/sidebar_template.html' %}
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-header-icon"><i class="bi bi-book"></i></div>
+    <div>
+      <div class="page-title">Book Management</div>
+      <div class="page-sub">Manage the library collection and inventory</div>
+    </div>
+  </div>
+  <button class="toolbar-btn primary" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> <span class="btn-label">Add Book</span></button>
+</div>
+
+<!-- ── TOOLBAR ── -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="bi bi-search"></i>
+    <input type="text" class="search-input" id="searchInput" placeholder="Search title, author, ISBN…" oninput="applyFilters()">
+  </div>
+  <button class="filter-btn" onclick="openFilterModal()">
+    <i class="bi bi-sliders2"></i>
+    <span class="btn-label">Filters</span>
+    <span class="filter-active-count" id="filterCount"></span>
+    <span class="filter-active-dot" id="filterDot"></span>
+  </button>
+  <button class="toolbar-btn" onclick="clearAllFilters()"><i class="bi bi-x-circle"></i> <span class="btn-label">Clear</span></button>
+</div>
+
+<!-- Active filter chips -->
+<div id="activeChips" style="display:none;"></div>
+
+<div class="sel-bar" id="selBar">
+  <span id="selCount">0 selected</span>
+  <button class="toolbar-btn danger" onclick="bulkDelete()"><i class="bi bi-trash3"></i> <span class="btn-label">Delete selected</span></button>
+  <button class="toolbar-btn" onclick="clearSelection()"><i class="bi bi-x"></i> <span class="btn-label">Clear</span></button>
+</div>
+
+<!-- ── TABLE ── -->
+<div class="tbl-card">
+  <div class="tbl-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" class="cb" id="checkAll" onchange="toggleAllCheck(this)"></th>
+          <th style="width:34px"></th>
+          <th>#</th>
+          <th>Title / Author</th>
+          <th>ISBN</th>
+          <th>Category</th>
+          <th>Class / Genre</th>
+          <th>Copies</th>
+          <th>Shelf</th>
+          <th>Borrowable</th>
+          <th>Date Added</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr class="empty-row"><td colspan="12"><i class="bi bi-hourglass-split"></i>Loading books…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pag-bar" id="pagBar" style="display:none">
+    <span class="pag-info" id="pagInfo"></span>
+    <div class="pag-btns" id="pagBtns"></div>
+  </div>
+</div>
+
+
+<!-- ══ FILTER MODAL ══ -->
+<div id="filterModal">
+  <div class="filter-modal-box">
+    <div class="filter-modal-head">
+      <div class="fm-head-left">
+        <div class="fm-head-icon"><i class="bi bi-sliders2"></i></div>
+        <div>
+          <div class="fm-title">Advanced Filters</div>
+          <div class="fm-sub">Refine your book collection</div>
+        </div>
+      </div>
+      <button class="vm-close" onclick="closeFilterModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="fm-rail-wrap">
+      <div class="fm-rail-nav" id="fmRailNav">
+        <div class="fm-rail-item active" data-pane="cat" onclick="fmSwitchPane('cat', this)">
+          <i class="bi bi-tag-fill"></i><span>Category</span>
+          <span class="fm-rail-badge" id="frb-cat" style="display:none">0</span>
+        </div>
+        <div class="fm-rail-item" data-pane="genre" onclick="fmSwitchPane('genre', this)">
+          <i class="bi bi-grid-fill"></i><span>Genre</span>
+          <span class="fm-rail-badge" id="frb-genre" style="display:none">0</span>
+        </div>
+        <div class="fm-rail-item" data-pane="status" onclick="fmSwitchPane('status', this)">
+          <i class="bi bi-circle-fill"></i><span>Status</span>
+          <span class="fm-rail-badge" id="frb-status" style="display:none">0</span>
+        </div>
+        <div class="fm-rail-item" data-pane="avail" onclick="fmSwitchPane('avail', this)">
+          <i class="bi bi-bar-chart-fill"></i><span>Availability</span>
+          <span class="fm-rail-badge" id="frb-avail" style="display:none">0</span>
+        </div>
+        <div class="fm-rail-item" data-pane="borrow" onclick="fmSwitchPane('borrow', this)">
+          <i class="bi bi-bookmark-fill"></i><span>Borrowing</span>
+          <span class="fm-rail-badge" id="frb-borrow" style="display:none">0</span>
+        </div>
+        <div class="fm-rail-item" data-pane="lang" onclick="fmSwitchPane('lang', this)">
+          <i class="bi bi-globe2"></i><span>Language</span>
+          <span class="fm-rail-badge" id="frb-lang" style="display:none">0</span>
+        </div>
+        <div class="fm-rail-item" data-pane="date" onclick="fmSwitchPane('date', this)">
+          <i class="bi bi-calendar3"></i><span>Date</span>
+          <span class="fm-rail-badge" id="frb-date" style="display:none">0</span>
+        </div>
+      </div>
+      <div class="fm-rail-content">
+        <div class="fm-pane active" id="fm-pane-cat">
+          <div class="fm-pane-label">Category <span class="fm-pane-hint">multi-select</span></div>
+          <div class="fm-search-wrap">
+            <i class="bi bi-search"></i>
+            <input class="fm-search-inp" placeholder="Search category…" oninput="fmFilterCloud('fm-cat-cloud', this.value)">
+          </div>
+          <div class="fm-tag-cloud" id="fm-cat-cloud"></div>
+        </div>
+        <div class="fm-pane" id="fm-pane-genre">
+          <div class="fm-pane-label">Genre / Class <span class="fm-pane-hint">multi-select</span></div>
+          <div class="fm-tag-cloud" id="fm-genre-cloud"></div>
+        </div>
+        <div class="fm-pane" id="fm-pane-status">
+          <div class="fm-pane-label">Book Status <span class="fm-pane-hint">single select</span></div>
+          <div class="fm-col-list" id="fm-status-list">
+            <div class="fm-cl-item on" data-val="" onclick="fmSingleSelect(this,'status')">
+              <span class="fm-cl-dot" style="background:var(--accent)"></span>
+              <span class="fm-cl-label">Any status</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" style="width:100%;background:var(--accent)"></div></div>
+              <span class="fm-cl-count" id="fm-sc-any">—</span>
+            </div>
+            <div class="fm-cl-item" data-val="Available" onclick="fmSingleSelect(this,'status')">
+              <span class="fm-cl-dot" style="background:var(--accent2)"></span>
+              <span class="fm-cl-label">Available</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" id="fm-sb-avail" style="background:var(--accent2)"></div></div>
+              <span class="fm-cl-count" id="fm-sc-available">—</span>
+            </div>
+            <div class="fm-cl-item" data-val="Damaged" onclick="fmSingleSelect(this,'status')">
+              <span class="fm-cl-dot" style="background:var(--warn)"></span>
+              <span class="fm-cl-label">Damaged</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" id="fm-sb-damaged" style="background:var(--warn)"></div></div>
+              <span class="fm-cl-count" id="fm-sc-damaged">—</span>
+            </div>
+            <div class="fm-cl-item" data-val="Lost" onclick="fmSingleSelect(this,'status')">
+              <span class="fm-cl-dot" style="background:var(--danger)"></span>
+              <span class="fm-cl-label">Lost</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" id="fm-sb-lost" style="background:var(--danger)"></div></div>
+              <span class="fm-cl-count" id="fm-sc-lost">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="fm-pane" id="fm-pane-avail">
+          <div class="fm-pane-label">Copy Availability <span class="fm-pane-hint">single select</span></div>
+          <div class="fm-col-list" id="fm-avail-list">
+            <div class="fm-cl-item on" data-val="" onclick="fmSingleSelect(this,'avail')">
+              <span class="fm-cl-dot" style="background:var(--accent)"></span>
+              <span class="fm-cl-label">All</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" style="width:100%;background:var(--accent)"></div></div>
+              <span class="fm-cl-count" id="fm-ac-all">—</span>
+            </div>
+            <div class="fm-cl-item" data-val="in_stock" onclick="fmSingleSelect(this,'avail')">
+              <span class="fm-cl-dot" style="background:var(--accent2)"></span>
+              <span class="fm-cl-label">In stock (≥3)</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" id="fm-ab-instock" style="background:var(--accent2)"></div></div>
+              <span class="fm-cl-count" id="fm-ac-instock">—</span>
+            </div>
+            <div class="fm-cl-item" data-val="low" onclick="fmSingleSelect(this,'avail')">
+              <span class="fm-cl-dot" style="background:var(--warn)"></span>
+              <span class="fm-cl-label">Low (1–2 left)</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" id="fm-ab-low" style="background:var(--warn)"></div></div>
+              <span class="fm-cl-count" id="fm-ac-low">—</span>
+            </div>
+            <div class="fm-cl-item" data-val="none" onclick="fmSingleSelect(this,'avail')">
+              <span class="fm-cl-dot" style="background:var(--danger)"></span>
+              <span class="fm-cl-label">None available</span>
+              <div class="fm-cl-bar-wrap"><div class="fm-cl-bar" id="fm-ab-none" style="background:var(--danger)"></div></div>
+              <span class="fm-cl-count" id="fm-ac-none">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="fm-pane" id="fm-pane-borrow">
+          <div class="fm-pane-label">Borrowing Policy</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="fm-toggle-row on" id="fm-brow-all" onclick="fmSelectBorrow('all')">
+              <div style="flex:1;min-width:0">
+                <div class="fm-toggle-label">All books</div>
+                <div class="fm-toggle-sub">Show regardless of borrow setting</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span class="fm-borrow-count" id="fm-bc-all">—</span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                  <input type="radio" name="fmBorrow" id="fmBorrowAll" checked onchange="fmSelectBorrow('all')">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="fm-toggle-row" id="fm-brow-yes" onclick="fmSelectBorrow('yes')">
+              <div style="flex:1;min-width:0">
+                <div class="fm-toggle-label"><i class="bi bi-bookmark-check-fill" style="color:var(--accent2);margin-right:5px"></i>Borrowable</div>
+                <div class="fm-toggle-sub">Visible on student browse page</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span class="fm-borrow-count" id="fm-bc-yes">—</span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                  <input type="radio" name="fmBorrow" id="fmBorrowYes" onchange="fmSelectBorrow('yes')">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="fm-toggle-row" id="fm-brow-no" onclick="fmSelectBorrow('no')">
+              <div style="flex:1;min-width:0">
+                <div class="fm-toggle-label"><i class="bi bi-bookmark-x" style="color:var(--danger);margin-right:5px"></i>Not borrowable</div>
+                <div class="fm-toggle-sub">Reference / restricted copies</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span class="fm-borrow-count" id="fm-bc-no">—</span>
+                <label class="toggle-switch" onclick="event.stopPropagation()">
+                  <input type="radio" name="fmBorrow" id="fmBorrowNo" onchange="fmSelectBorrow('no')">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fm-pane" id="fm-pane-lang">
+          <div class="fm-pane-label">Language <span class="fm-pane-hint">multi-select</span></div>
+          <div class="fm-tag-cloud" id="fm-lang-cloud"></div>
+        </div>
+        <div class="fm-pane" id="fm-pane-date">
+          <div class="fm-pane-label">Date Added</div>
+          <div class="fm-date-grid">
+            <div><div class="fm-date-lbl">From</div><input type="date" class="form-control" id="fmDateFrom" oninput="fmUpdateDate()"></div>
+            <div><div class="fm-date-lbl">To</div><input type="date" class="form-control" id="fmDateTo" oninput="fmUpdateDate()"></div>
+          </div>
+          <div class="fm-date-lbl" style="margin-bottom:7px">Quick select</div>
+          <div class="fm-shortcut-row">
+            <div class="fm-shortcut" onclick="fmDateShortcut('today',this)">Today</div>
+            <div class="fm-shortcut" onclick="fmDateShortcut('week',this)">This week</div>
+            <div class="fm-shortcut" onclick="fmDateShortcut('month',this)">This month</div>
+            <div class="fm-shortcut" onclick="fmDateShortcut('quarter',this)">This quarter</div>
+            <div class="fm-shortcut" onclick="fmDateShortcut('year',this)">This year</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fm-chip-bar" id="fmChipBar">
+      <span class="fm-no-active" id="fmNoActive">No filters active</span>
+    </div>
+    <div class="filter-modal-foot">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="fm-match-count" id="fmMatchCount"><strong>—</strong> books match</span>
+        <button class="vm-btn" onclick="fmResetAll()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+      </div>
+      <button class="vm-btn primary" onclick="fmApply()"><i class="bi bi-check-lg"></i> Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ ADD BOOK WIZARD MODAL ══ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-head" style="padding-bottom:0;border-bottom:none">
+      <span class="modal-title"><i class="bi bi-plus-circle-fill" style="margin-right:8px;color:var(--accent)"></i>Add New Book</span>
+      <button class="vm-close" onclick="closeAddModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="wizard-stepper" id="wzStepper">
+      <div class="wz-step">
+        <div class="wz-dot-wrap"><div class="wz-dot active" id="wzDot0">1</div><div class="wz-label active" id="wzLbl0">ISBN</div></div>
+        <div class="wz-line" id="wzLine0"></div>
+      </div>
+      <div class="wz-step">
+        <div class="wz-dot-wrap"><div class="wz-dot" id="wzDot1">2</div><div class="wz-label" id="wzLbl1">Book Info</div></div>
+        <div class="wz-line" id="wzLine1"></div>
+      </div>
+      <div class="wz-step">
+        <div class="wz-dot-wrap"><div class="wz-dot" id="wzDot2">3</div><div class="wz-label" id="wzLbl2">Library</div></div>
+        <div class="wz-line" id="wzLine2"></div>
+      </div>
+      <div class="wz-step">
+        <div class="wz-dot-wrap"><div class="wz-dot" id="wzDot3">4</div><div class="wz-label" id="wzLbl3">Inventory</div></div>
+        <div class="wz-line" id="wzLine3"></div>
+      </div>
+      <div class="wz-step">
+        <div class="wz-dot-wrap"><div class="wz-dot" id="wzDot4">5</div><div class="wz-label" id="wzLbl4">Review</div></div>
+      </div>
+    </div>
+
+    <form id="addBookForm" onsubmit="handleAddSubmit(event)">
+      <input type="hidden" name="isbn_meta_json" id="addMetaJson">
+      <input type="hidden" name="page_count"     id="addPageCount">
+      <input type="hidden" name="api_source"     id="addApiSource">
+      <input type="hidden" name="thumbnail_url"  id="addThumbnailHidden">
+      <input type="hidden" name="status"         id="addStatus" value="Available">
+
+      <div class="wizard-body">
+        <!-- Step 1: ISBN -->
+        <div class="wz-pane active" id="wzPane0">
+          <div class="isbn-bar" style="margin-bottom:0">
+            <div class="isbn-bar-title"><i class="bi bi-upc-scan"></i> ISBN Auto-Cataloging</div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">ISBN <span style="color:var(--danger)">*</span></label>
+              <div class="isbn-row">
+                <input type="text" name="isbn" id="addIsbn" class="form-control" placeholder="e.g. 978-0-06-112008-4" autocomplete="off" spellcheck="false" oninput="onIsbnInput()" required>
+                <button type="button" class="btn-fetch" id="btnFetch" onclick="fetchBookByIsbn()" disabled>
+                  <i class="bi bi-cloud-download-fill"></i>
+                  <span id="fetchBtnLabel">Fetch Data</span>
+                </button>
+              </div>
+              <div class="isbn-hint" id="isbnHint"></div>
+              <span class="isbn-source-badge" id="sourceBadge"></span>
+            </div>
+            <div class="fetch-alert" id="fetchAlert"></div>
+            <div class="cover-strip" id="coverStrip">
+              <img id="coverImg" class="cover-img" src="" alt="Cover">
+              <div class="cover-meta">
+                <div class="cm-title"  id="cmTitle"></div>
+                <div class="cm-author" id="cmAuthor"></div>
+                <div class="cm-tags"   id="cmTags"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px;background:rgba(159,193,225,.05);border:1px solid rgba(159,193,225,.1);border-radius:10px;padding:11px 13px;">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.7;margin:0"><i class="bi bi-info-circle" style="color:var(--accent);margin-right:6px"></i>Enter an ISBN and click <strong style="color:var(--accent)">Fetch Data</strong> to auto-fill. You can also skip and fill in manually.</p>
+          </div>
+        </div>
+
+        <!-- Step 2: Book Information -->
+        <div class="wz-pane" id="wzPane1">
+          <div class="wz-section"><i class="bi bi-book-fill"></i> Bibliographic Details</div>
+          <div class="form-group"><label class="form-label">Title <span style="color:var(--danger)">*</span></label><input type="text" name="title" id="addTitle" class="form-control" placeholder="Full book title" required></div>
+          <div class="form-group"><label class="form-label">Subtitle</label><input type="text" name="subtitle" id="addSubtitle" class="form-control" placeholder="Subtitle (if any)"></div>
+          <div class="form-group"><label class="form-label">Author(s) <span style="color:var(--danger)">*</span></label><input type="text" name="author" id="addAuthor" class="form-control" placeholder="e.g. J.K. Rowling" required></div>
+          <div class="form-group"><label class="form-label">Publisher</label><input type="text" name="publisher" id="addPublisher" class="form-control" placeholder="Publisher name"></div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Edition</label><input type="text" name="edition" id="addEdition" class="form-control" placeholder="e.g. 3rd"></div>
+            <div class="form-group"><label class="form-label">Language</label><input type="text" name="language" id="addLanguage" class="form-control" placeholder="e.g. en"></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Category</label><input type="text" name="category" id="addCategory" class="form-control" placeholder="e.g. Fiction"></div>
+            <div class="form-group"><label class="form-label">Class / Genre</label><input type="text" name="class" id="addGenre" class="form-control" placeholder="e.g. Novel"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="addPubDate" class="form-control" placeholder="e.g. 2001 or 2001-06-26"></div>
+          <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="addDescription" class="form-control" rows="3" placeholder="Brief book description…"></textarea></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Cover Image URL</label><input type="url" name="thumbnail_url_display" id="addThumbnail" class="form-control" placeholder="https://…" oninput="document.getElementById('addThumbnailHidden').value=this.value"></div>
+        </div>
+
+        <!-- Step 3: Library Classification -->
+        <div class="wz-pane" id="wzPane2">
+          <div class="wz-section"><i class="bi bi-building"></i> Library Classification</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Call Number</label><input type="text" name="call_number" class="form-control" placeholder="e.g. 823.914 ROW"></div>
+            <div class="form-group"><label class="form-label">Class</label><input type="text" name="class" class="form-control" placeholder="e.g. PR6068"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Shelf Location</label><input type="text" name="shelf_location" id="addShelf" class="form-control" placeholder="e.g. A-Row 2, Section 3"></div>
+          <div class="wz-section" style="margin-top:18px"><i class="bi bi-calendar3"></i> Acquisition</div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Date Received</label><input type="date" name="date_received" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Copyright Year</label><input type="text" name="copy_right" class="form-control" placeholder="e.g. 2001"></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Source of Fund</label><input type="text" name="source_of_fund" class="form-control" placeholder="e.g. Donation"></div>
+            <div class="form-group"><label class="form-label">Cost Price (₱)</label><input type="number" name="cost_price" class="form-control" placeholder="0.00" min="0" step="0.01"></div>
+          </div>
+        </div>
+
+        <!-- Step 4: Inventory -->
+        <div class="wz-pane" id="wzPane3">
+          <div class="wz-section green"><i class="bi bi-stack"></i> Copy Counts</div>
+          <div class="copy-cards">
+            <div class="copy-card total">
+              <div class="copy-card-label">Total Copies</div>
+              <div class="inv-counter"><button type="button" class="inv-counter-btn" onclick="adj('addTotal',-1)"><i class="bi bi-dash"></i></button><input type="number" name="total_copies" id="addTotal" min="0" value="1"><button type="button" class="inv-counter-btn" onclick="adj('addTotal',1)"><i class="bi bi-plus"></i></button></div>
+            </div>
+            <div class="copy-card damaged">
+              <div class="copy-card-label">Damaged</div>
+              <div class="inv-counter"><button type="button" class="inv-counter-btn" onclick="adj('addDamaged',-1)"><i class="bi bi-dash"></i></button><input type="number" name="damaged_copies" id="addDamaged" min="0" value="0"><button type="button" class="inv-counter-btn" onclick="adj('addDamaged',1)"><i class="bi bi-plus"></i></button></div>
+            </div>
+            <div class="copy-card lost">
+              <div class="copy-card-label">Lost</div>
+              <div class="inv-counter"><button type="button" class="inv-counter-btn" onclick="adj('addLost',-1)"><i class="bi bi-dash"></i></button><input type="number" name="lost_copies" id="addLost" min="0" value="0"><button type="button" class="inv-counter-btn" onclick="adj('addLost',1)"><i class="bi bi-plus"></i></button></div>
+            </div>
+          </div>
+          <div class="avail-display" id="addAvailDisplay">
+            <div class="avail-val" id="addAvailVal">1</div>
+            <div class="avail-info">
+              <div class="avail-label">Available Copies</div>
+              <div class="avail-formula">Total − Damaged − Lost (auto-computed)</div>
+            </div>
+          </div>
+          <div class="wz-section green"><i class="bi bi-circle-fill"></i> Status</div>
+          <div class="form-group">
+            <div class="status-pills">
+              <div class="status-pill ok active" data-status="Available" onclick="addSelectStatus(this)"><i class="bi bi-check-circle-fill"></i> Available</div>
+              <div class="status-pill dmg"       data-status="Damaged"   onclick="addSelectStatus(this)"><i class="bi bi-tools"></i> Damaged</div>
+              <div class="status-pill lost"      data-status="Lost"      onclick="addSelectStatus(this)"><i class="bi bi-x-circle-fill"></i> Lost</div>
+            </div>
+          </div>
+          <div class="wz-section green"><i class="bi bi-bookmark-fill"></i> Borrowing</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label"><i class="bi bi-bookmark-check-fill" style="color:var(--accent2);margin-right:6px"></i>Allow Borrowing</div><div class="toggle-sub">Visible to students on the browse page</div></div>
+            <label class="toggle-switch"><input type="checkbox" name="is_borrowable" id="addBorrowable" value="1" checked><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <!-- Step 5: Review -->
+        <div class="wz-pane" id="wzPane4">
+          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px">
+            <div id="reviewCoverWrap"><div class="review-cover-ph" id="reviewCoverPh"><i class="bi bi-book"></i></div><img id="reviewCoverImg" class="review-cover" src="" alt="Cover" style="display:none"></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:3px;word-break:break-word" id="reviewTitle">—</div>
+              <div style="font-size:.8rem;color:rgba(255,255,255,.5)" id="reviewSubtitle"></div>
+              <div style="font-size:.84rem;color:var(--tl);margin-top:3px" id="reviewAuthor">—</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px" id="reviewBadges"></div>
+            </div>
+          </div>
+          <div class="wz-section"><i class="bi bi-journal-text"></i> Bibliographic</div>
+          <div class="review-grid" id="reviewBiblio"></div>
+          <div class="wz-section"><i class="bi bi-building"></i> Library</div>
+          <div class="review-grid" id="reviewLib"></div>
+          <div class="wz-section"><i class="bi bi-boxes"></i> Inventory</div>
+          <div class="review-grid" id="reviewInv"></div>
+          <div style="background:rgba(72,199,142,.07);border:1px solid rgba(72,199,142,.18);border-radius:10px;padding:10px 13px;margin-top:10px;font-size:.8rem;color:rgba(255,255,255,.5)"><i class="bi bi-check-circle-fill" style="color:var(--accent2);margin-right:7px"></i>Everything look correct? Click <strong style="color:#fff">Save Book</strong> to add to the library.</div>
+        </div>
+      </div>
+
+      <div class="wizard-footer">
+        <span class="wz-progress-txt" id="wzProgressTxt">Step 1 of 5</span>
+        <div class="wz-nav">
+          <span class="err-msg" id="addErr" style="margin:0 8px 0 0;align-self:center"></span>
+          <button type="button" class="vm-btn" id="wzPrevBtn" onclick="wzPrev()" style="display:none"><i class="bi bi-chevron-left"></i> Back</button>
+          <button type="button" class="vm-btn" onclick="closeAddModal()">Cancel</button>
+          <button type="button" class="vm-btn primary" id="wzNextBtn" onclick="wzNext()">Next <i class="bi bi-chevron-right"></i></button>
+          <button type="submit" class="vm-btn primary" id="addSubmitBtn" style="display:none"><i class="bi bi-save"></i> Save Book</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══ VIEW DETAIL MODAL ══ -->
+<div id="viewModal">
+  <div class="vm-box">
+    <div class="vm-head">
+      <div class="vm-cover-ph" id="vmCoverPh"><i class="bi bi-book" style="font-size:1.3rem;opacity:.3"></i></div>
+      <img class="vm-cover" id="vmCoverImg" src="" alt="Cover" style="display:none" onerror="this.style.display='none';document.getElementById('vmCoverPh').style.display='flex'">
+      <div class="vm-head-info">
+        <div class="vm-badge-row" id="vmBadges"></div>
+        <div class="vm-title"    id="vmTitle">—</div>
+        <div class="vm-subtitle" id="vmSubtitle"></div>
+        <div class="vm-author"   id="vmAuthor">—</div>
+      </div>
+      <button class="vm-close" onclick="closeViewModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="vm-tabs">
+      <div class="vm-tab active" onclick="vmTab(0)"><i class="bi bi-journal-text"></i>Bibliographic</div>
+      <div class="vm-tab"        onclick="vmTab(1)"><i class="bi bi-building"></i>Library</div>
+      <div class="vm-tab"        onclick="vmTab(2)"><i class="bi bi-boxes"></i>Inventory</div>
+    </div>
+    <div class="vm-body">
+      <div class="vm-pane active" id="vmPane0">
+        <div class="vm-fields">
+          <div class="vm-field"><label>Title</label><span id="vf-title">—</span></div>
+          <div class="vm-field"><label>Subtitle</label><span id="vf-subtitle">—</span></div>
+          <div class="vm-field"><label>Author(s)</label><span id="vf-author">—</span></div>
+          <div class="vm-field"><label>Publisher</label><span id="vf-publisher">—</span></div>
+          <div class="vm-field"><label>ISBN</label><span id="vf-isbn" style="font-family:'DM Mono',monospace;font-size:.8rem">—</span></div>
+          <div class="vm-field"><label>Edition</label><span id="vf-edition">—</span></div>
+          <div class="vm-field"><label>Published date</label><span id="vf-pubdate">—</span></div>
+          <div class="vm-field"><label>Language</label><span id="vf-language">—</span></div>
+          <div class="vm-field"><label>Page count</label><span id="vf-pages">—</span></div>
+          <div class="vm-field"><label>Category</label><span id="vf-category">—</span></div>
+          <div class="vm-field"><label>Class / Genre</label><span id="vf-genre">—</span></div>
+          <div class="vm-field full"><label>Description</label><div class="vm-desc-box" id="vf-desc">—</div></div>
+        </div>
+      </div>
+      <div class="vm-pane" id="vmPane1">
+        <div class="vm-section-lbl"><i class="bi bi-upc me-1"></i>Classification</div>
+        <div class="vm-fields">
+          <div class="vm-field"><label>Call number</label><span id="vf-call">—</span></div>
+          <div class="vm-field"><label>Class</label><span id="vf-class">—</span></div>
+          <div class="vm-field"><label>Shelf location</label><span id="vf-shelf">—</span></div>
+          <div class="vm-field"><label>Copyright</label><span id="vf-copyright">—</span></div>
+        </div>
+        <div class="vm-section-lbl"><i class="bi bi-calendar3 me-1"></i>Dates</div>
+        <div class="vm-fields">
+          <div class="vm-field"><label>Date received</label><span id="vf-received">—</span></div>
+          <div class="vm-field"><label>Date added</label><span id="vf-added">—</span></div>
+        </div>
+        <div class="vm-section-lbl"><i class="bi bi-cash-coin me-1"></i>Acquisition</div>
+        <div class="vm-fields">
+          <div class="vm-field"><label>Source of fund</label><span id="vf-fund">—</span></div>
+          <div class="vm-field"><label>Cost price</label><span id="vf-cost">—</span></div>
+        </div>
+      </div>
+      <div class="vm-pane" id="vmPane2">
+        <div class="vm-section-lbl"><i class="bi bi-stack me-1"></i>Copy Counts</div>
+        <div class="vm-inv-cards">
+          <div class="vm-inv-card"><div class="vm-inv-val blue"   id="vi-total">—</div><div class="vm-inv-lbl">Total</div></div>
+          <div class="vm-inv-card"><div class="vm-inv-val green"  id="vi-avail">—</div><div class="vm-inv-lbl">Available</div></div>
+          <div class="vm-inv-card"><div class="vm-inv-val orange" id="vi-dmg">—</div><div class="vm-inv-lbl">Damaged</div></div>
+          <div class="vm-inv-card"><div class="vm-inv-val red"    id="vi-lost">—</div><div class="vm-inv-lbl">Lost</div></div>
+        </div>
+        <div class="vm-section-lbl"><i class="bi bi-info-circle me-1"></i>Status &amp; borrowing</div>
+        <div class="vm-fields">
+          <div class="vm-field"><label>Status</label><span id="vi-status">—</span></div>
+          <div class="vm-field"><label>Allow borrowing</label><span id="vi-borrow">—</span></div>
+          <div class="vm-field"><label>Shelf location</label><span id="vi-shelf">—</span></div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="vm-btn success" style="width:100%" onclick="openInvModal()"><i class="bi bi-pencil-square"></i> Edit Inventory</button>
+        </div>
+      </div>
+    </div>
+    <div class="vm-foot">
+      <span class="vm-foot-meta" id="vmFootMeta"></span>
+      <div class="vm-foot-actions">
+        <button class="vm-btn danger"  onclick="vmDelete()"><i class="bi bi-trash3"></i> Delete</button>
+        <button class="vm-btn"         onclick="closeViewModal()">Close</button>
+        <button class="vm-btn primary" onclick="vmEdit()"><i class="bi bi-pencil"></i> Edit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ INVENTORY QUICK-EDIT MODAL ══ -->
+<div id="invModal">
+  <div class="inv-modal-box">
+    <div class="inv-modal-head">
+      <div class="inv-modal-icon"><i class="bi bi-boxes"></i></div>
+      <div class="inv-modal-head-info">
+        <div class="inv-modal-title">Edit Inventory</div>
+        <div class="inv-modal-sub" id="invModalSub">Adjusting copy counts &amp; availability</div>
+      </div>
+      <button class="vm-close" onclick="closeInvModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="inv-modal-body">
+      <input type="hidden" id="invBookId">
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2);margin-bottom:10px;display:flex;align-items:center;gap:7px"><i class="bi bi-stack"></i> Copy Counts <span style="flex:1;height:1px;background:rgba(255,255,255,.07)"></span></div>
+      <div class="copy-cards" style="margin-bottom:12px">
+        <div class="copy-card total">
+          <div class="copy-card-label">Total Copies</div>
+          <div class="inv-counter"><button class="inv-counter-btn" type="button" onclick="adjustCounter('invTotal',-1)"><i class="bi bi-dash"></i></button><input type="number" id="invTotal" min="0" value="1" oninput="refreshAvail()"><button class="inv-counter-btn" type="button" onclick="adjustCounter('invTotal',1)"><i class="bi bi-plus"></i></button></div>
+        </div>
+        <div class="copy-card damaged">
+          <div class="copy-card-label">Damaged</div>
+          <div class="inv-counter"><button class="inv-counter-btn" type="button" onclick="adjustCounter('invDamaged',-1)"><i class="bi bi-dash"></i></button><input type="number" id="invDamaged" min="0" value="0" oninput="refreshAvail()"><button class="inv-counter-btn" type="button" onclick="adjustCounter('invDamaged',1)"><i class="bi bi-plus"></i></button></div>
+        </div>
+        <div class="copy-card lost">
+          <div class="copy-card-label">Lost</div>
+          <div class="inv-counter"><button class="inv-counter-btn" type="button" onclick="adjustCounter('invLost',-1)"><i class="bi bi-dash"></i></button><input type="number" id="invLost" min="0" value="0" oninput="refreshAvail()"><button class="inv-counter-btn" type="button" onclick="adjustCounter('invLost',1)"><i class="bi bi-plus"></i></button></div>
+        </div>
+      </div>
+      <div class="avail-display">
+        <div class="avail-val" id="invAvailVal">1</div>
+        <div class="avail-info">
+          <div class="avail-label">Available Copies</div>
+          <div class="avail-formula" id="invAvailFormula">1 − 0 − 0 = 1</div>
+        </div>
+      </div>
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2);margin-bottom:10px;display:flex;align-items:center;gap:7px"><i class="bi bi-circle-fill"></i> Status <span style="flex:1;height:1px;background:rgba(255,255,255,.07)"></span></div>
+      <div class="form-group">
+        <div class="status-pills">
+          <div class="status-pill ok active" data-status="Available" onclick="selectStatus(this)"><i class="bi bi-check-circle-fill"></i> Available</div>
+          <div class="status-pill dmg"       data-status="Damaged"   onclick="selectStatus(this)"><i class="bi bi-tools"></i> Damaged</div>
+          <div class="status-pill lost"      data-status="Lost"      onclick="selectStatus(this)"><i class="bi bi-x-circle-fill"></i> Lost</div>
+        </div>
+        <input type="hidden" id="invStatus" value="Available">
+      </div>
+      <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent2);margin:16px 0 10px;display:flex;align-items:center;gap:7px"><i class="bi bi-geo-alt-fill"></i> Location &amp; Borrowing <span style="flex:1;height:1px;background:rgba(255,255,255,.07)"></span></div>
+      <div class="form-group">
+        <label class="form-label">Shelf Location</label>
+        <input type="text" id="invShelf" class="form-control" placeholder="e.g. A-12, Section 3">
+        <div class="shelf-preview" id="shelfPreview" style="display:none"><i class="bi bi-geo-alt-fill"></i><span id="shelfPreviewText"></span></div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Borrowing</label>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Allow borrowing</div><div class="toggle-sub">Visible on the student browse page</div></div>
+          <label class="toggle-switch"><input type="checkbox" id="invBorrowable"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </div>
+    <div class="inv-modal-foot">
+      <div style="font-size:.74rem;color:rgba(255,255,255,.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px" id="invModalBookTitle"></div>
+      <div style="display:flex;gap:8px">
+        <button class="vm-btn" onclick="closeInvModal()">Cancel</button>
+        <button class="vm-btn success" onclick="submitInventory()"><i class="bi bi-check-lg"></i> Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ EDIT BOOK MODAL ══ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box" style="max-width:820px">
+    <div class="modal-head">
+      <span class="modal-title"><i class="bi bi-pencil-square" style="margin-right:8px;color:var(--accent)"></i>Edit Book — <span id="editModalTitle" style="color:var(--tl);font-weight:500;font-size:.9rem;word-break:break-word"></span></span>
+      <button class="vm-close" onclick="closeEditModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="vm-tabs" style="padding:0 20px">
+      <div class="vm-tab active" id="editTab0" onclick="editTabSwitch(0)"><i class="bi bi-book-fill"></i> Book Info</div>
+      <div class="vm-tab"        id="editTab1" onclick="editTabSwitch(1)"><i class="bi bi-boxes"></i> Inventory</div>
+    </div>
+    <form id="editForm">
+      <input type="hidden" name="book_id" id="editBookId">
+      <div class="modal-body" style="padding-top:16px">
+        <div id="editPane0">
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin-bottom:12px"><i class="bi bi-journal-text"></i> Bibliographic <span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Title <span style="color:var(--danger)">*</span></label><input type="text" name="title" id="editTitle" class="form-control" required></div><div class="form-group"><label class="form-label">Subtitle</label><input type="text" name="subtitle" id="editSubtitle" class="form-control"></div></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Author(s) <span style="color:var(--danger)">*</span></label><input type="text" name="author" id="editAuthor" class="form-control" required></div><div class="form-group"><label class="form-label">Publisher</label><input type="text" name="publisher" id="editPublisher" class="form-control"></div></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">ISBN <span style="color:var(--danger)">*</span></label><input type="text" name="isbn" id="editIsbn" class="form-control" required style="font-family:'DM Mono',monospace"></div><div class="form-group"><label class="form-label">Edition</label><input type="text" name="edition" id="editEdition" class="form-control" placeholder="e.g. 3rd"></div></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Category</label><input type="text" name="category" id="editCategory" class="form-control"></div><div class="form-group"><label class="form-label">Class / Genre</label><input type="text" name="class" id="editClass" class="form-control"></div></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="editPubDate" class="form-control"></div><div class="form-group"><label class="form-label">Language</label><input type="text" name="language" id="editLanguage" class="form-control"></div></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Page Count</label><input type="number" name="page_count" id="editPageCount" class="form-control" min="1"></div><div class="form-group"><label class="form-label">Cover / Thumbnail URL</label><input type="url" name="thumbnail_url" id="editThumbnail" class="form-control" placeholder="https://…"></div></div>
+          <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="editDescription" class="form-control" rows="3"></textarea></div>
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin:16px 0 12px"><i class="bi bi-building"></i> Library Classification <span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Call Number</label><input type="text" name="call_number" id="editCallNumber" class="form-control"></div><div class="form-group"><label class="form-label">Copyright</label><input type="text" name="copy_right" id="editCopyRight" class="form-control"></div></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Date Received</label><input type="date" name="date_received" id="editDateReceived" class="form-control"></div><div class="form-group"><label class="form-label">Source of Fund</label><input type="text" name="source_of_fund" id="editSourceOfFund" class="form-control"></div></div>
+          <div class="form-group" style="max-width:220px"><label class="form-label">Cost Price (₱)</label><input type="number" name="cost_price" id="editCostPrice" class="form-control" min="0" step="0.01"></div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Borrowing</label>
+            <div class="toggle-row"><div><div class="toggle-label"><i class="bi bi-bookmark-check-fill" style="color:var(--accent2);margin-right:6px"></i>Allow Borrowing</div><div class="toggle-sub">Visible on the student browse page</div></div><label class="toggle-switch"><input type="checkbox" name="is_borrowable" id="editBorrowable" value="1"><span class="toggle-slider"></span></label></div>
+          </div>
+        </div>
+        <div id="editPane1" style="display:none">
+          <div class="edit-inv-section">
+            <div class="edit-inv-section-title green"><i class="bi bi-stack"></i> Copy Counts</div>
+            <div class="copy-cards">
+              <div class="copy-card total">
+                <div class="copy-card-label">Total</div>
+                <div class="inv-counter"><button type="button" class="inv-counter-btn" onclick="adjEdit('editInvTotal',-1)"><i class="bi bi-dash"></i></button><input type="number" name="total_copies" id="editInvTotal" min="0" value="1" oninput="refreshEditAvail()"><button type="button" class="inv-counter-btn" onclick="adjEdit('editInvTotal',1)"><i class="bi bi-plus"></i></button></div>
+              </div>
+              <div class="copy-card damaged">
+                <div class="copy-card-label">Damaged</div>
+                <div class="inv-counter"><button type="button" class="inv-counter-btn" onclick="adjEdit('editInvDamaged',-1)"><i class="bi bi-dash"></i></button><input type="number" name="damaged_copies" id="editInvDamaged" min="0" value="0" oninput="refreshEditAvail()"><button type="button" class="inv-counter-btn" onclick="adjEdit('editInvDamaged',1)"><i class="bi bi-plus"></i></button></div>
+              </div>
+              <div class="copy-card lost">
+                <div class="copy-card-label">Lost</div>
+                <div class="inv-counter"><button type="button" class="inv-counter-btn" onclick="adjEdit('editInvLost',-1)"><i class="bi bi-dash"></i></button><input type="number" name="lost_copies" id="editInvLost" min="0" value="0" oninput="refreshEditAvail()"><button type="button" class="inv-counter-btn" onclick="adjEdit('editInvLost',1)"><i class="bi bi-plus"></i></button></div>
+              </div>
+            </div>
+            <div class="avail-display" style="margin-bottom:0">
+              <div class="avail-val" id="editAvailVal">1</div>
+              <div class="avail-info">
+                <div class="avail-label">Available Copies</div>
+                <div class="avail-formula" id="editAvailFormula">Auto-computed on save</div>
+              </div>
+            </div>
+          </div>
+          <div class="edit-inv-section">
+            <div class="edit-inv-section-title green"><i class="bi bi-circle-fill"></i> Book Status</div>
+            <div class="status-pills" id="editStatusPills">
+              <div class="status-pill ok active" data-status="Available" onclick="editSelectStatus(this)"><i class="bi bi-check-circle-fill"></i> Available</div>
+              <div class="status-pill dmg"       data-status="Damaged"   onclick="editSelectStatus(this)"><i class="bi bi-tools"></i> Damaged</div>
+              <div class="status-pill lost"      data-status="Lost"      onclick="editSelectStatus(this)"><i class="bi bi-x-circle-fill"></i> Lost</div>
+            </div>
+            <input type="hidden" name="status" id="editInvStatus" value="Available">
+          </div>
+          <div class="edit-inv-section" style="margin-bottom:0">
+            <div class="edit-inv-section-title blue"><i class="bi bi-geo-alt-fill"></i> Shelf Location</div>
+            <div class="form-group" style="margin-bottom:0"><label class="form-label">Shelf / Row</label><input type="text" name="shelf_location" id="editInvShelf" class="form-control" placeholder="e.g. A-Row 2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot" style="justify-content:space-between;align-items:center">
+        <p class="err-msg" id="editErr" style="margin:0;flex:1;display:none"></p>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="vm-btn" onclick="closeEditModal()">Cancel</button>
+          <button type="button" class="vm-btn primary" id="editSubmitBtn" onclick="submitEdit()"><i class="bi bi-check-lg"></i> Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ── DELETE CONFIRM ── -->
+<div id="confirmModal">
+  <div class="cm-box">
+    <div class="cm-icon"><i class="bi bi-trash3-fill"></i></div>
+    <div class="cm-title" id="cmTitle">Delete book?</div>
+    <div class="cm-msg"   id="cmMsg">This action cannot be undone.</div>
+    <div class="cm-btns">
+      <button class="vm-btn" onclick="closeConfirm()">Cancel</button>
+      <button class="vm-btn danger" id="cmConfirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+{% include 'admin_template/footer_template.html' %}
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script id="allBooksData" type="application/json">
+{{ books | tojson | safe }}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+const allBooks = JSON.parse(document.getElementById('allBooksData').textContent || '[]');
+console.log(allBooks);
+const PER_PAGE = 20;
+let currentPage = 1;
+let filtered = [...allBooks];
+let activeFilters = { cat: [], genre: [], status: '', avail: '', borrow: 'all', lang: [], dateFrom: '', dateTo: '' };
+
+function esc(s) {
+  if (s===null||s===undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function showToast(msg, type='') {
+  const t=document.createElement('div'); t.className=`toast-msg ${type}`; t.innerHTML=msg;
+  document.getElementById('toastWrap').appendChild(t); setTimeout(()=>t.remove(),3800);
+}
+
+/* FILTER MODAL */
+function fmBuildClouds() {
+  const catCounts = {};
+  allBooks.forEach(b => { if (b.category) catCounts[b.category] = (catCounts[b.category] || 0) + 1; });
+  const catEntries = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+  const maxCat = catEntries[0]?.[1] || 1;
+  const catCloud = document.getElementById('fm-cat-cloud');
+  catCloud.innerHTML = catEntries.length ? catEntries.map(([name, count]) => {
+    const sz = count / maxCat > .6 ? 'sz-lg' : count / maxCat < .25 ? 'sz-sm' : '';
+    return `<div class="fm-tc ${sz}" data-val="${esc(name)}" onclick="fmToggleTag(this,'cat')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;
+  }).join('') : '<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No categories found</span>';
+
+  const genreCounts = {};
+  allBooks.forEach(b => { const g = b.genre || b.class; if (g) genreCounts[g] = (genreCounts[g] || 0) + 1; });
+  const genreEntries = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]);
+  const maxGenre = genreEntries[0]?.[1] || 1;
+  const genreCloud = document.getElementById('fm-genre-cloud');
+  genreCloud.innerHTML = genreEntries.length
+    ? genreEntries.map(([name, count]) => {
+        const sz = count / maxGenre > .6 ? 'sz-lg' : count / maxGenre < .25 ? 'sz-sm' : '';
+        return `<div class="fm-tc ${sz}" data-val="${esc(name)}" onclick="fmToggleTag(this,'genre')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;
+      }).join('')
+    : '<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No genre data found</span>';
+
+  const langCounts = {};
+  allBooks.forEach(b => { if (b.language) langCounts[b.language] = (langCounts[b.language] || 0) + 1; });
+  const langEntries = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
+  const maxLang = langEntries[0]?.[1] || 1;
+  const langCloud = document.getElementById('fm-lang-cloud');
+  langCloud.innerHTML = langEntries.length
+    ? langEntries.map(([name, count]) => {
+        const sz = count / maxLang > .6 ? 'sz-lg' : count / maxLang < .25 ? 'sz-sm' : '';
+        return `<div class="fm-tc ${sz}" data-val="${esc(name)}" onclick="fmToggleTag(this,'lang')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;
+      }).join('')
+    : '<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No language data found</span>';
+
+  const total   = allBooks.length;
+  const avail   = allBooks.filter(b => b.status === 'Available').length;
+  const damaged = allBooks.filter(b => b.status === 'Damaged').length;
+  const lost    = allBooks.filter(b => b.status === 'Lost').length;
+  document.getElementById('fm-sc-any').textContent       = total;
+  document.getElementById('fm-sc-available').textContent = avail;
+  document.getElementById('fm-sc-damaged').textContent   = damaged;
+  document.getElementById('fm-sc-lost').textContent      = lost;
+  if(total){
+    document.getElementById('fm-sb-avail').style.width   = (avail   / total * 100) + '%';
+    document.getElementById('fm-sb-damaged').style.width = (damaged / total * 100) + '%';
+    document.getElementById('fm-sb-lost').style.width    = (lost    / total * 100) + '%';
+  }
+
+  const inStock = allBooks.filter(b => (b.available_copies ?? 0) >= 3).length;
+  const low     = allBooks.filter(b => { const a = b.available_copies ?? 0; return a > 0 && a <= 2; }).length;
+  const none    = allBooks.filter(b => (b.available_copies ?? 0) === 0).length;
+  document.getElementById('fm-ac-all').textContent     = total;
+  document.getElementById('fm-ac-instock').textContent = inStock;
+  document.getElementById('fm-ac-low').textContent     = low;
+  document.getElementById('fm-ac-none').textContent    = none;
+  if(total){
+    document.getElementById('fm-ab-instock').style.width = (inStock / total * 100) + '%';
+    document.getElementById('fm-ab-low').style.width     = (low     / total * 100) + '%';
+    document.getElementById('fm-ab-none').style.width    = Math.max(none / total * 100, 3) + '%';
+  }
+
+  const borrowYes = allBooks.filter(b =>  b.is_borrowable).length;
+  const borrowNo  = allBooks.filter(b => !b.is_borrowable).length;
+  document.getElementById('fm-bc-all').textContent = total;
+  document.getElementById('fm-bc-yes').textContent = borrowYes;
+  document.getElementById('fm-bc-no').textContent  = borrowNo;
+}
+
+function openFilterModal() { fmSyncFromState(); document.getElementById('filterModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeFilterModal() { document.getElementById('filterModal').classList.remove('open'); document.body.style.overflow=''; }
+function fmSwitchPane(id, el) {
+  document.querySelectorAll('.fm-rail-item').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.fm-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('fm-pane-' + id).classList.add('active');
+}
+function fmToggleTag(el, group) {
+  const val = el.dataset.val;
+  el.classList.toggle('on');
+  if (el.classList.contains('on')) { if (!activeFilters[group].includes(val)) activeFilters[group].push(val); }
+  else { activeFilters[group] = activeFilters[group].filter(v => v !== val); }
+  fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+}
+function fmSingleSelect(el, group) {
+  const list = el.parentElement;
+  list.querySelectorAll('.fm-cl-item').forEach(i => i.className = 'fm-cl-item');
+  const val = el.dataset.val;
+  if      (!val)                el.classList.add('on');
+  else if (val==='Available'||val==='in_stock') el.classList.add('on-g');
+  else if (val==='Damaged'   ||val==='low')     el.classList.add('on-o');
+  else if (val==='Lost'      ||val==='none')    el.classList.add('on-r');
+  activeFilters[group] = val;
+  fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+}
+function fmSelectBorrow(val) {
+  activeFilters.borrow = val;
+  ['all','yes','no'].forEach(k => {
+    document.getElementById('fm-brow-'+k).classList.toggle('on', k===val);
+    document.getElementById('fmBorrow'+k.charAt(0).toUpperCase()+k.slice(1)).checked = (k===val);
+  });
+  fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+}
+function fmFilterCloud(cloudId, q) {
+  document.querySelectorAll('#'+cloudId+' .fm-tc').forEach(tc => {
+    const label = tc.childNodes[0].textContent.toLowerCase();
+    tc.style.display = (!q || label.includes(q.toLowerCase())) ? '' : 'none';
+  });
+}
+function fmDateShortcut(type, el) {
+  document.querySelectorAll('.fm-shortcut').forEach(d => d.classList.remove('on'));
+  el.classList.add('on');
+  const now = new Date(), pad = n => String(n).padStart(2,'0');
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  let from = new Date(), to = new Date();
+  if      (type==='today')   { from = to = new Date(); }
+  else if (type==='week')    { from = new Date(); from.setDate(now.getDate()-now.getDay()); }
+  else if (type==='month')   { from = new Date(now.getFullYear(),now.getMonth(),1); }
+  else if (type==='quarter') { const q=Math.floor(now.getMonth()/3); from=new Date(now.getFullYear(),q*3,1); }
+  else if (type==='year')    { from = new Date(now.getFullYear(),0,1); }
+  document.getElementById('fmDateFrom').value = fmt(from);
+  document.getElementById('fmDateTo').value   = fmt(to);
+  activeFilters.dateFrom = fmt(from);
+  activeFilters.dateTo   = fmt(to);
+  fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+}
+function fmUpdateDate() {
+  activeFilters.dateFrom = document.getElementById('fmDateFrom').value;
+  activeFilters.dateTo   = document.getElementById('fmDateTo').value;
+  document.querySelectorAll('.fm-shortcut').forEach(d => d.classList.remove('on'));
+  fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+}
+function fmSyncFromState() {
+  document.querySelectorAll('#fm-cat-cloud .fm-tc').forEach(tc => tc.classList.toggle('on', activeFilters.cat.includes(tc.dataset.val)));
+  document.querySelectorAll('#fm-genre-cloud .fm-tc').forEach(tc => tc.classList.toggle('on', activeFilters.genre.includes(tc.dataset.val)));
+  document.querySelectorAll('#fm-lang-cloud .fm-tc').forEach(tc => tc.classList.toggle('on', activeFilters.lang.includes(tc.dataset.val)));
+  document.querySelectorAll('#fm-status-list .fm-cl-item').forEach(el => {
+    el.className='fm-cl-item';
+    if(el.dataset.val===activeFilters.status){
+      const v=el.dataset.val;
+      if(!v)el.classList.add('on'); else if(v==='Available')el.classList.add('on-g'); else if(v==='Damaged')el.classList.add('on-o'); else if(v==='Lost')el.classList.add('on-r');
+    }
+  });
+  document.querySelectorAll('#fm-avail-list .fm-cl-item').forEach(el => {
+    el.className='fm-cl-item';
+    if(el.dataset.val===activeFilters.avail){
+      const v=el.dataset.val;
+      if(!v)el.classList.add('on'); else if(v==='in_stock')el.classList.add('on-g'); else if(v==='low')el.classList.add('on-o'); else if(v==='none')el.classList.add('on-r');
+    }
+  });
+  fmSelectBorrow(activeFilters.borrow);
+  document.getElementById('fmDateFrom').value = activeFilters.dateFrom||'';
+  document.getElementById('fmDateTo').value   = activeFilters.dateTo  ||'';
+  fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+}
+function fmUpdateMatchCount() { const n=fmCountMatches(); document.getElementById('fmMatchCount').innerHTML=`<strong>${n}</strong> book${n!==1?'s':''} match`; }
+function fmCountMatches() {
+  return allBooks.filter(b => {
+    if(activeFilters.cat.length   &&!activeFilters.cat.includes(b.category))           return false;
+    if(activeFilters.genre.length &&!activeFilters.genre.includes(b.genre||b.class))   return false;
+    if(activeFilters.status       &&b.status!==activeFilters.status)                   return false;
+    if(activeFilters.lang.length  &&!activeFilters.lang.includes(b.language))          return false;
+    if(activeFilters.borrow==='yes'&&!b.is_borrowable) return false;
+    if(activeFilters.borrow==='no' && b.is_borrowable) return false;
+    if(activeFilters.avail){const av=b.available_copies??0;if(activeFilters.avail==='in_stock'&&av<3)return false;if(activeFilters.avail==='low'&&(av===0||av>2))return false;if(activeFilters.avail==='none'&&av>0)return false;}
+    if(activeFilters.dateFrom&&b.date_added&&b.date_added<activeFilters.dateFrom)return false;
+    if(activeFilters.dateTo  &&b.date_added&&b.date_added>activeFilters.dateTo)  return false;
+    return true;
+  }).length;
+}
+function fmUpdateRailBadges() {
+  const rb=(id,n)=>{const el=document.getElementById('frb-'+id);el.textContent=n;el.style.display=n?'':'none';};
+  rb('cat',activeFilters.cat.length); rb('genre',activeFilters.genre.length); rb('status',activeFilters.status?1:0);
+  rb('avail',activeFilters.avail?1:0); rb('borrow',activeFilters.borrow!=='all'?1:0); rb('lang',activeFilters.lang.length);
+  rb('date',(activeFilters.dateFrom||activeFilters.dateTo)?1:0);
+}
+function fmUpdateChips() {
+  const bar=document.getElementById('fmChipBar'); bar.innerHTML=''; let any=false;
+  const addChip=(label,clearFn)=>{any=true;const chip=document.createElement('div');chip.className='fm-chip';chip.innerHTML=`${esc(label)}<span class="fm-chip-x">✕</span>`;chip.querySelector('.fm-chip-x').onclick=clearFn;bar.appendChild(chip);};
+  activeFilters.cat.forEach(v=>addChip('Cat: '+v,()=>{activeFilters.cat=activeFilters.cat.filter(x=>x!==v);document.querySelectorAll('#fm-cat-cloud .fm-tc').forEach(el=>{if(el.dataset.val===v)el.classList.remove('on');});fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();}));
+  activeFilters.genre.forEach(v=>addChip('Genre: '+v,()=>{activeFilters.genre=activeFilters.genre.filter(x=>x!==v);document.querySelectorAll('#fm-genre-cloud .fm-tc').forEach(el=>{if(el.dataset.val===v)el.classList.remove('on');});fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();}));
+  if(activeFilters.status)addChip('Status: '+activeFilters.status,()=>{activeFilters.status='';document.querySelector('#fm-status-list .fm-cl-item[data-val=""]').click();fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();});
+  if(activeFilters.avail)addChip('Avail: '+activeFilters.avail.replace('in_stock','In stock').replace('none','None'),()=>{activeFilters.avail='';document.querySelector('#fm-avail-list .fm-cl-item[data-val=""]').click();fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();});
+  if(activeFilters.borrow!=='all')addChip(activeFilters.borrow==='yes'?'Borrowable':'Not borrowable',()=>{fmSelectBorrow('all');fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();});
+  activeFilters.lang.forEach(v=>addChip('Lang: '+v,()=>{activeFilters.lang=activeFilters.lang.filter(x=>x!==v);document.querySelectorAll('#fm-lang-cloud .fm-tc').forEach(el=>{if(el.dataset.val===v)el.classList.remove('on');});fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();}));
+  if(activeFilters.dateFrom||activeFilters.dateTo)addChip('Date: '+(activeFilters.dateFrom||'…')+' → '+(activeFilters.dateTo||'…'),()=>{activeFilters.dateFrom='';activeFilters.dateTo='';document.getElementById('fmDateFrom').value='';document.getElementById('fmDateTo').value='';document.querySelectorAll('.fm-shortcut').forEach(d=>d.classList.remove('on'));fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderFilterChips();});
+  if(!any)bar.innerHTML='<span class="fm-no-active">No filters active</span>';
+}
+function fmApply() { closeFilterModal(); applyFilters(); renderFilterChips(); }
+function fmResetAll() { activeFilters={cat:[],genre:[],status:'',avail:'',borrow:'all',lang:[],dateFrom:'',dateTo:''}; fmSyncFromState(); fmUpdateChips(); fmUpdateRailBadges(); fmUpdateMatchCount(); }
+
+function applyFilters() {
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  filtered=allBooks.filter(b=>{
+    if(q){const hay=`${b.title} ${b.author} ${b.isbn} ${b.category} ${b.class} ${b.genre}`.toLowerCase();if(!hay.includes(q))return false;}
+    if(activeFilters.cat.length   &&!activeFilters.cat.includes(b.category))           return false;
+    if(activeFilters.genre.length &&!activeFilters.genre.includes(b.genre||b.class))   return false;
+    if(activeFilters.status       &&b.status!==activeFilters.status)                   return false;
+    if(activeFilters.lang.length  &&!activeFilters.lang.includes(b.language))          return false;
+    if(activeFilters.borrow==='yes'&&!b.is_borrowable)return false;
+    if(activeFilters.borrow==='no' && b.is_borrowable)return false;
+    if(activeFilters.avail){const av=b.available_copies??0;if(activeFilters.avail==='in_stock'&&av<3)return false;if(activeFilters.avail==='low'&&(av===0||av>2))return false;if(activeFilters.avail==='none'&&av>0)return false;}
+    if(activeFilters.dateFrom&&b.date_added&&b.date_added<activeFilters.dateFrom)return false;
+    if(activeFilters.dateTo  &&b.date_added&&b.date_added>activeFilters.dateTo)  return false;
+    return true;
+  });
+  currentPage=1; renderTable(); renderPagination();
+}
+
+function renderFilterChips() {
+  const chips=document.getElementById('activeChips'); chips.innerHTML=''; let count=0;
+  const add=(label,clearFn)=>{count++;const chip=document.createElement('div');chip.style.cssText='display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;background:rgba(159,193,225,.12);color:var(--accent);border:1px solid rgba(159,193,225,.25);cursor:pointer';chip.innerHTML=`${label}<span style="opacity:.6;font-size:.9em">×</span>`;chip.onclick=()=>{clearFn();applyFilters();renderFilterChips();};chips.appendChild(chip);};
+  activeFilters.cat.forEach(v=>add('Category: '+v,()=>{activeFilters.cat=activeFilters.cat.filter(x=>x!==v);}));
+  activeFilters.genre.forEach(v=>add('Genre: '+v,()=>{activeFilters.genre=activeFilters.genre.filter(x=>x!==v);}));
+  activeFilters.lang.forEach(v=>add('Language: '+v,()=>{activeFilters.lang=activeFilters.lang.filter(x=>x!==v);}));
+  if(activeFilters.status)add('Status: '+activeFilters.status,()=>{activeFilters.status='';});
+  if(activeFilters.avail)add('Avail: '+activeFilters.avail.replace('in_stock','In stock').replace('none','None'),()=>{activeFilters.avail='';});
+  if(activeFilters.borrow!=='all')add(activeFilters.borrow==='yes'?'Borrowable':'Not borrowable',()=>{activeFilters.borrow='all';});
+  if(activeFilters.dateFrom||activeFilters.dateTo)add('Date: '+(activeFilters.dateFrom||'…')+' → '+(activeFilters.dateTo||'…'),()=>{activeFilters.dateFrom='';activeFilters.dateTo='';});
+  chips.style.display=count>0?'flex':'none';
+  const dot=document.getElementById('filterDot'),countEl=document.getElementById('filterCount');
+  dot.classList.toggle('show',count>0); countEl.textContent=count; countEl.classList.toggle('show',count>0);
+}
+
+function clearAllFilters() {
+  activeFilters={cat:[],genre:[],status:'',avail:'',borrow:'all',lang:[],dateFrom:'',dateTo:''};
+  document.getElementById('searchInput').value=''; applyFilters(); renderFilterChips();
+}
+
+/* TABLE */
+function renderTable(){
+  const tbody=document.getElementById('tableBody');
+  const start=(currentPage-1)*PER_PAGE;
+  const page=filtered.slice(start,start+PER_PAGE);
+  if(!page.length){tbody.innerHTML=`<tr class="empty-row"><td colspan="12"><i class="bi bi-search"></i>No books match your search.</td></tr>`;return;}
+  tbody.innerHTML=page.map((b,i)=>{
+    const avail=b.available_copies??0,total=b.total_copies??0,damaged=b.damaged_copies??0,lost=b.lost_copies??0;
+    let dotCls='green';
+    if(b.status==='Lost')dotCls='red';else if(b.status==='Damaged')dotCls='orange';else if(avail===0)dotCls='orange';
+    const shelf=b.shelf_location?`<span style="font-size:.75rem;color:var(--accent)"><i class="bi bi-geo-alt-fill me-1"></i>${esc(b.shelf_location)}</span>`:`<span style="color:rgba(255,255,255,.25);font-size:.75rem">—</span>`;
+    const borrowBadge=b.is_borrowable?`<span class="borrow-badge yes"><i class="bi bi-bookmark-check-fill"></i> Yes</span>`:`<span class="borrow-badge no"><i class="bi bi-bookmark-x"></i> No</span>`;
+    const thumbCell=b.thumbnail_url?`<img src="${esc(b.thumbnail_url)}" alt="" style="width:30px;height:42px;object-fit:cover;border-radius:5px;border:1px solid rgba(255,255,255,.12)">`:`<div style="width:30px;height:42px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center"><i class="bi bi-book" style="font-size:.6rem;opacity:.3"></i></div>`;
+    return `<tr data-id="${b.id}" onclick="openViewModal(${b.id})">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="cb row-cb" onchange="updateSelCount()"></td>
+      <td style="padding:8px 6px">${thumbCell}</td>
+      <td style="color:rgba(255,255,255,.35);font-size:.73rem">${start+i+1}</td>
+      <td><div class="book-title">${esc(b.title)}</div><div class="book-sub">${esc(b.author)}</div></td>
+      <td class="isbn-cell">${esc(b.isbn||'—')}</td>
+      <td>${b.category?`<span class="cat-pill">${esc(b.category)}</span>`:'<span style="color:rgba(255,255,255,.25)">—</span>'}</td>
+      <td style="font-size:.82rem">${esc(b.class||b.genre||'—')}</td>
+      <td><div class="inv-mini"><span class="inv-dot ${dotCls}"></span><span>${avail}/${total}</span></div>${damaged>0?`<div style="font-size:.72rem;color:var(--warn);margin-top:2px"><i class="bi bi-tools me-1"></i>${damaged}</div>`:''}${lost>0?`<div style="font-size:.72rem;color:var(--danger);margin-top:2px"><i class="bi bi-x-circle me-1"></i>${lost}</div>`:''}</td>
+      <td>${shelf}</td>
+      <td>${borrowBadge}</td>
+      <td style="font-size:.75rem;color:var(--tl)">${esc(b.date_added||'—')}</td>
+      <td onclick="event.stopPropagation()">
+        <div style="display:flex;gap:4px;flex-wrap:nowrap">
+          <button class="act-btn" onclick="openViewModal(${b.id})"><i class="bi bi-eye"></i></button>
+          <button class="act-btn" onclick="openEditModal(${b.id})"><i class="bi bi-pencil"></i></button>
+          <button class="act-btn del" onclick="confirmDeleteOne(${b.id},'${esc(b.title).replace(/'/g,"\\'")}')"><i class="bi bi-trash3"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPagination(){
+  const total=filtered.length,pages=Math.ceil(total/PER_PAGE);
+  const bar=document.getElementById('pagBar');
+  if(total===0){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const start=(currentPage-1)*PER_PAGE+1,end=Math.min(currentPage*PER_PAGE,total);
+  document.getElementById('pagInfo').textContent=`Showing ${start}–${end} of ${total} books`;
+  let html=`<button class="pag-btn" ${currentPage===1?'disabled':''} onclick="goPage(${currentPage-1})"><i class="bi bi-chevron-left"></i></button>`;
+  for(let p=1;p<=pages;p++){
+    if(pages>7&&(p>3&&p<pages-1&&Math.abs(p-currentPage)>1)){if(p===4||p===pages-2)html+=`<span class="pag-btn" style="pointer-events:none;opacity:.4">…</span>`;continue;}
+    html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  }
+  html+=`<button class="pag-btn" ${currentPage===pages?'disabled':''} onclick="goPage(${currentPage+1})"><i class="bi bi-chevron-right"></i></button>`;
+  document.getElementById('pagBtns').innerHTML=html;
+}
+function goPage(p){const pages=Math.ceil(filtered.length/PER_PAGE);if(p<1||p>pages)return;currentPage=p;renderTable();renderPagination();document.querySelector('.tbl-card').scrollIntoView({behavior:'smooth',block:'start'});}
+function toggleAllCheck(m){document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=m.checked);updateSelCount();}
+function updateSelCount(){const n=document.querySelectorAll('.row-cb:checked').length;document.getElementById('selCount').textContent=`${n} selected`;document.getElementById('selBar').classList.toggle('visible',n>0);document.getElementById('checkAll').indeterminate=n>0&&n<document.querySelectorAll('.row-cb').length;}
+function clearSelection(){document.querySelectorAll('.row-cb,#checkAll').forEach(cb=>{cb.checked=false;cb.indeterminate=false;});document.getElementById('selBar').classList.remove('visible');}
+
+/* ISBN */
+function cleanIsbn(raw){return raw.replace(/[^0-9Xx]/g,'').toUpperCase();}
+function validIsbn10(s){if(s.length!==10)return false;let t=0;for(let i=0;i<9;i++){if(!/\d/.test(s[i]))return false;t+=parseInt(s[i])*(10-i);}const c=s[9];t+=(c==='X'?10:parseInt(c));return t%11===0;}
+function validIsbn13(s){if(s.length!==13||!/^\d+$/.test(s))return false;let t=0;for(let i=0;i<12;i++)t+=parseInt(s[i])*(i%2===0?1:3);return(10-t%10)%10===parseInt(s[12]);}
+function validateIsbn(raw){const c=cleanIsbn(raw);return{valid:validIsbn10(c)||validIsbn13(c),cleaned:c};}
+function onIsbnInput(){
+  const raw=document.getElementById('addIsbn').value,inp=document.getElementById('addIsbn'),hint=document.getElementById('isbnHint'),btn=document.getElementById('btnFetch');
+  inp.classList.remove('valid','invalid');hint.textContent='';hint.className='isbn-hint';btn.disabled=true;
+  if(!raw.trim())return;
+  const{valid,cleaned}=validateIsbn(raw);
+  if(valid){inp.classList.add('valid');hint.textContent=`✓ Valid ${cleaned.length===13?'ISBN-13':'ISBN-10'} — ready to fetch`;hint.className='isbn-hint ok';btn.disabled=false;}
+  else if(cleaned.length>0){inp.classList.add('invalid');hint.textContent=cleaned.length>=10?'✗ Invalid checksum':`${cleaned.length}/10 digits entered`;hint.className='isbn-hint bad';}
+}
+function setFetchAlert(type,html){const el=document.getElementById('fetchAlert'),icons={success:'bi-check-circle-fill',error:'bi-x-circle-fill',warn:'bi-exclamation-triangle-fill'};el.innerHTML=`<i class="bi ${icons[type]||'bi-info-circle'}"></i> ${html}`;el.className=`fetch-alert show ${type}`;}
+function clearFetchAlert(){const el=document.getElementById('fetchAlert');el.className='fetch-alert';el.innerHTML='';}
+function autofill(id,val){if(!val)return;const el=document.getElementById(id);if(!el)return;el.value=val;el.classList.remove('autofilled');void el.offsetWidth;el.classList.add('autofilled');setTimeout(()=>el.classList.remove('autofilled'),700);}
+function showCoverStrip(data){const strip=document.getElementById('coverStrip'),img=document.getElementById('coverImg');if(data.thumbnail){img.src=data.thumbnail;img.style.display='block';}else{img.style.display='none';}document.getElementById('cmTitle').textContent=data.title||'Unknown Title';document.getElementById('cmAuthor').textContent=data.authors||'Unknown Author';const tags=[];if(data.language)tags.push(`<span class="cm-tag lang">${data.language.toUpperCase()}</span>`);if(data.page_count)tags.push(`<span class="cm-tag pages">${data.page_count} pp.</span>`);if(data.published_date)tags.push(`<span class="cm-tag year">${String(data.published_date).substring(0,4)}</span>`);document.getElementById('cmTags').innerHTML=tags.join('');strip.classList.add('show');}
+function hideCoverStrip(){document.getElementById('coverStrip').classList.remove('show');}
+function showSourceBadge(source,fromCache){const badge=document.getElementById('sourceBadge');let cls='',icon='',label='';if(fromCache){cls='cache';icon='bi-lightning-fill';label='Loaded from cache';}else if((source||'').toLowerCase().includes('google')){cls='google';icon='bi-google';label='Google Books';}else{cls='openlibrary';icon='bi-journal-bookmark-fill';label='Open Library';}badge.className=`isbn-source-badge show ${cls}`;badge.innerHTML=`<i class="bi ${icon}"></i>${label}`;}
+
+async function fetchBookByIsbn(){
+  const raw=document.getElementById('addIsbn').value.trim(),{valid,cleaned}=validateIsbn(raw);if(!valid)return;
+  clearFetchAlert();hideCoverStrip();
+  const btn=document.getElementById('btnFetch'),lbl=document.getElementById('fetchBtnLabel'),badge=document.getElementById('sourceBadge');
+  badge.className='isbn-source-badge';btn.disabled=true;lbl.innerHTML='<span class="spin"></span> Fetching…';
+  try{
+    const res=await fetch('/api/fetch-book-by-isbn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isbn:cleaned})});
+    const ct=res.headers.get('content-type')||'';
+    if(!ct.includes('application/json')){setFetchAlert('warn',`Server error (${res.status}).`);return;}
+    const data=await res.json();
+    if(!res.ok||!data.success){setFetchAlert('warn',data.message||'No book found. Fill in manually.');return;}
+    const d=data.data;
+    autofill('addTitle',d.title);autofill('addSubtitle',d.subtitle);autofill('addAuthor',d.authors);
+    autofill('addPublisher',d.publisher);autofill('addCategory',d.category);autofill('addGenre',d.genre);
+    autofill('addPubDate',d.published_date);autofill('addLanguage',d.language);
+    autofill('addDescription',d.description);autofill('addThumbnail',d.thumbnail);
+    document.getElementById('addThumbnailHidden').value=d.thumbnail||'';
+    document.getElementById('addPageCount').value=d.page_count||'';
+    document.getElementById('addApiSource').value=data.source||'';
+    document.getElementById('addMetaJson').value=JSON.stringify(d);
+    showCoverStrip(d);showSourceBadge(data.source,data.from_cache);
+    setFetchAlert('success',data.from_cache?`Loaded from cache <span style="opacity:.65">(${data.source})</span>`:`Fetched from <strong>${data.source}</strong>. Review before saving.`);
+  }catch(err){setFetchAlert('error','Network error. Try again.');}
+  finally{btn.disabled=false;lbl.innerHTML='<i class="bi bi-cloud-download-fill"></i> Re-Fetch';}
+}
+
+/* WIZARD */
+let wzStep = 0;
+const WZ_TOTAL = 5;
+function wzGoTo(n){
+  document.querySelectorAll('.wz-pane').forEach((p,i)=>p.classList.toggle('active',i===n));
+  for(let i=0;i<WZ_TOTAL;i++){
+    const dot=document.getElementById(`wzDot${i}`),lbl=document.getElementById(`wzLbl${i}`);
+    if(!dot)continue;
+    dot.className='wz-dot'+(i<n?' done':i===n?' active':'');
+    if(dot.classList.contains('done'))dot.innerHTML='<i class="bi bi-check-lg" style="font-size:.7rem"></i>';
+    else dot.textContent=i+1;
+    lbl&&(lbl.className='wz-label'+(i<n?' done':i===n?' active':''));
+    const line=document.getElementById(`wzLine${i}`);
+    if(line)line.classList.toggle('done',i<n);
+  }
+  document.getElementById('wzProgressTxt').textContent=`Step ${n+1} of ${WZ_TOTAL}`;
+  document.getElementById('wzPrevBtn').style.display=n>0?'':'none';
+  const isLast=n===WZ_TOTAL-1;
+  document.getElementById('wzNextBtn').style.display=isLast?'none':'';
+  document.getElementById('addSubmitBtn').style.display=isLast?'':'none';
+  if(isLast)buildReview();
+  wzStep=n;
+}
+function wzNext(){
+  if(wzStep===1){
+    const title=document.getElementById('addTitle').value.trim(),author=document.getElementById('addAuthor').value.trim();
+    if(!title||!author){const err=document.getElementById('addErr');err.textContent='Title and Author are required.';err.style.display='block';setTimeout(()=>err.style.display='none',2500);return;}
+  }
+  document.getElementById('addErr').style.display='none';
+  if(wzStep<WZ_TOTAL-1)wzGoTo(wzStep+1);
+}
+function wzPrev(){if(wzStep>0)wzGoTo(wzStep-1);}
+
+function buildReview(){
+  const g=id=>document.getElementById(id)?.value||'';
+  const rv=(label,val)=>`<div class="review-item"><label>${label}</label><span ${!val?'class="muted"':''}>${esc(val)||'—'}</span></div>`;
+  document.getElementById('reviewTitle').textContent=g('addTitle')||'—';
+  document.getElementById('reviewSubtitle').textContent=g('addSubtitle');
+  document.getElementById('reviewAuthor').textContent=g('addAuthor')||'—';
+  const thumb=g('addThumbnail');
+  const imgEl=document.getElementById('reviewCoverImg'),phEl=document.getElementById('reviewCoverPh');
+  if(thumb){imgEl.src=thumb;imgEl.style.display='block';phEl.style.display='none';}else{imgEl.style.display='none';phEl.style.display='flex';}
+  const isbn=g('addIsbn');
+  document.getElementById('reviewBadges').innerHTML=
+    `<span style="font-size:.7rem;font-family:'DM Mono',monospace;background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.2);color:var(--accent);padding:2px 9px;border-radius:20px">${isbn||'No ISBN'}</span>`+
+    `<span style="font-size:.7rem;font-weight:700;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);padding:2px 9px;border-radius:20px">${g('addCategory')||'No category'}</span>`;
+  document.getElementById('reviewBiblio').innerHTML=rv('Publisher',g('addPublisher'))+rv('Edition',g('addEdition'))+rv('Published',g('addPubDate'))+rv('Language',g('addLanguage'))+rv('Genre',g('addGenre'))+rv('Pages',g('addPageCount'));
+  document.getElementById('reviewLib').innerHTML=rv('Call number',document.querySelector('[name="call_number"]')?.value||'')+rv('Shelf',g('addShelf'))+rv('Date received',document.querySelector('[name="date_received"]')?.value||'')+rv('Source of fund',document.querySelector('[name="source_of_fund"]')?.value||'');
+  const total=parseInt(document.getElementById('addTotal').value)||0,damaged=parseInt(document.getElementById('addDamaged').value)||0,lost=parseInt(document.getElementById('addLost').value)||0,avail=Math.max(0,total-damaged-lost);
+  document.getElementById('reviewInv').innerHTML=rv('Total copies',total)+rv('Available',avail)+rv('Damaged',damaged)+rv('Lost',lost)+rv('Status',document.getElementById('addStatus').value)+rv('Borrowable',document.getElementById('addBorrowable').checked?'Yes':'No');
+}
+
+function refreshAvailDisplay(){const t=parseInt(document.getElementById('addTotal').value)||0,d=parseInt(document.getElementById('addDamaged').value)||0,l=parseInt(document.getElementById('addLost').value)||0;document.getElementById('addAvailVal').textContent=Math.max(0,t-d-l);}
+document.querySelectorAll('#addTotal,#addDamaged,#addLost').forEach(el=>el?.addEventListener('input',refreshAvailDisplay));
+function addSelectStatus(el){document.querySelectorAll('#wzPane3 .status-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('addStatus').value=el.dataset.status;}
+function adj(id,delta){const el=document.getElementById(id);el.value=Math.max(0,(parseInt(el.value)||0)+delta);refreshAvailDisplay();}
+
+async function handleAddSubmit(e){
+  e.preventDefault();
+  const btn=document.getElementById('addSubmitBtn'),err=document.getElementById('addErr');
+  err.style.display='none';btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving…';
+  const vt=document.getElementById('addThumbnail'),ht=document.getElementById('addThumbnailHidden');
+  if(vt&&ht)ht.value=vt.value.trim();
+  try{
+    const fd=new FormData(e.target),res=await fetch('/add_book',{method:'POST',body:fd});
+    const json=await res.json();
+    if(json.success){closeAddModal();resetAddForm();showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Book added successfully','success');setTimeout(()=>location.reload(),1200);}
+    else{err.textContent=json.message||'Failed to add book.';err.style.display='block';}
+  }catch{err.textContent='Network error.';err.style.display='block';}
+  finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-save"></i> Save Book';}
+}
+
+function resetAddForm(){
+  document.getElementById('addBookForm').reset();hideCoverStrip();clearFetchAlert();
+  document.getElementById('sourceBadge').className='isbn-source-badge';
+  document.getElementById('isbnHint').textContent='';
+  document.getElementById('addIsbn').classList.remove('valid','invalid');
+  document.getElementById('btnFetch').disabled=true;
+  document.getElementById('fetchBtnLabel').innerHTML='<i class="bi bi-cloud-download-fill"></i> Fetch Data';
+  document.querySelectorAll('#wzPane3 .status-pill').forEach(p=>{p.classList.remove('active');if(p.dataset.status==='Available')p.classList.add('active');});
+  document.getElementById('addStatus').value='Available';
+  wzGoTo(0);
+}
+
+function openAddModal(){resetAddForm();document.getElementById('addModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('addModal').addEventListener('click',function(e){if(e.target===this)closeAddModal();});
+
+/* VIEW MODAL */
+let _vmCurrentId=null;
+function openViewModal(id){
+  const b=allBooks.find(x=>x.id===id);if(!b)return;_vmCurrentId=id;
+  const ci=document.getElementById('vmCoverImg'),cp=document.getElementById('vmCoverPh');
+  if(b.thumbnail_url){ci.src=b.thumbnail_url;ci.style.display='block';cp.style.display='none';}else{ci.style.display='none';cp.style.display='flex';}
+  document.getElementById('vmTitle').textContent=b.title||'—';
+  document.getElementById('vmSubtitle').textContent=b.subtitle||'';
+  document.getElementById('vmAuthor').textContent=b.author||'—';
+  const sc=b.status==='Damaged'?'status-dmg':b.status==='Lost'?'status-lost':'status-ok';
+  document.getElementById('vmBadges').innerHTML=(b.category?`<span class="vm-badge cat">${esc(b.category)}</span>`:'')+`<span class="vm-badge ${sc}">${esc(b.status||'Available')}</span>`+(b.is_borrowable?`<span class="vm-badge borrow"><i class="bi bi-bookmark-check-fill me-1"></i>Borrowable</span>`:`<span class="vm-badge noborrow"><i class="bi bi-bookmark-x me-1"></i>Not borrowable</span>`);
+  const sv=(el,val)=>{const e=document.getElementById(el);if(!e)return;if(val!==null&&val!==undefined&&val!==''){e.textContent=val;e.className='';}else{e.textContent='—';e.className='muted';}};
+  sv('vf-title',b.title);sv('vf-subtitle',b.subtitle);sv('vf-author',b.author);sv('vf-publisher',b.publisher);
+  sv('vf-isbn',b.isbn);sv('vf-edition',b.edition);sv('vf-pubdate',b.published_date);sv('vf-language',b.language);
+  sv('vf-pages',b.page_count?b.page_count+' pages':'');sv('vf-category',b.category);sv('vf-genre',b.class||b.genre);
+  const desc=document.getElementById('vf-desc');desc.textContent=b.description||'—';desc.style.color=b.description?'':'rgba(255,255,255,.25)';
+  sv('vf-call',b.call_number);sv('vf-class',b.class||b.genre);sv('vf-shelf',b.shelf_location);sv('vf-copyright',b.copy_right);
+  sv('vf-received',b.date_received);sv('vf-added',b.date_added);sv('vf-fund',b.source_of_fund);
+  sv('vf-cost',(b.cost_price!=null&&b.cost_price!==0)?'₱'+Number(b.cost_price).toLocaleString('en-PH',{minimumFractionDigits:2}):'');
+  document.getElementById('vi-total').textContent=b.total_copies??'—';
+  document.getElementById('vi-avail').textContent=b.available_copies??'—';
+  document.getElementById('vi-dmg').textContent=b.damaged_copies??'—';
+  document.getElementById('vi-lost').textContent=b.lost_copies??'—';
+  sv('vi-status',b.status);sv('vi-shelf',b.shelf_location);
+  const be=document.getElementById('vi-borrow');be.textContent=b.is_borrowable?'Yes — visible on browse page':'No';be.className=b.is_borrowable?'':'muted';
+  document.getElementById('vmFootMeta').textContent=`ID: ${b.id}`+(b.created_at?` · Added ${b.created_at}`:'');
+  vmTab(0);document.getElementById('viewModal').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeViewModal(){document.getElementById('viewModal').classList.remove('open');document.body.style.overflow='';}
+function vmTab(n){document.querySelectorAll('.vm-tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.vm-pane').forEach((p,i)=>p.classList.toggle('active',i===n));}
+function vmEdit(){if(_vmCurrentId===null)return;closeViewModal();setTimeout(()=>openEditModal(_vmCurrentId),150);}
+function vmDelete(){if(_vmCurrentId===null)return;const b=allBooks.find(x=>x.id===_vmCurrentId);if(!b)return;closeViewModal();setTimeout(()=>confirmDeleteOne(b.id,b.title),150);}
+document.getElementById('viewModal').addEventListener('click',function(e){if(e.target===this)closeViewModal();});
+
+/* INVENTORY */
+function refreshAvail(){const t=parseInt(document.getElementById('invTotal').value)||0,d=parseInt(document.getElementById('invDamaged').value)||0,l=parseInt(document.getElementById('invLost').value)||0,a=Math.max(0,t-d-l);document.getElementById('invAvailVal').textContent=a;document.getElementById('invAvailFormula').textContent=`${t} − ${d} − ${l} = ${a}`;}
+function _populateInvModal(b){
+  document.getElementById('invBookId').value=b.id;
+  document.getElementById('invTotal').value=b.total_copies??1;
+  document.getElementById('invDamaged').value=b.damaged_copies??0;
+  document.getElementById('invLost').value=b.lost_copies??0;
+  document.getElementById('invShelf').value=b.shelf_location??'';
+  document.getElementById('invBorrowable').checked=b.is_borrowable??true;
+  document.getElementById('invModalSub').textContent=`Adjusting: ${b.title}`;
+  document.getElementById('invModalBookTitle').textContent=b.title;
+  const s=b.status||'Available';
+  document.getElementById('invStatus').value=s;
+  document.querySelectorAll('.inv-modal-box .status-pill').forEach(p=>{p.classList.remove('active');if(p.dataset.status===s)p.classList.add('active');});
+  refreshAvail();updateShelfPreview();
+}
+function openInvModal(){if(_vmCurrentId===null)return;const b=allBooks.find(x=>x.id===_vmCurrentId);if(!b)return;closeViewModal();setTimeout(()=>{_populateInvModal(b);document.getElementById('invModal').classList.add('open');document.body.style.overflow='hidden';},150);}
+function closeInvModal(){document.getElementById('invModal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('invModal').addEventListener('click',function(e){if(e.target===this)closeInvModal();});
+function adjustCounter(id,delta){const el=document.getElementById(id);el.value=Math.max(0,(parseInt(el.value)||0)+delta);refreshAvail();}
+function selectStatus(el){el.closest('.status-pills').querySelectorAll('.status-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('invStatus').value=el.dataset.status;}
+function updateShelfPreview(){const val=document.getElementById('invShelf').value.trim(),pr=document.getElementById('shelfPreview');if(val){pr.style.display='flex';document.getElementById('shelfPreviewText').textContent=val;}else{pr.style.display='none';}}
+document.getElementById('invShelf').addEventListener('input',updateShelfPreview);
+
+async function submitInventory(){
+  const id=document.getElementById('invBookId').value,total=parseInt(document.getElementById('invTotal').value)||0,
+    damaged=parseInt(document.getElementById('invDamaged').value)||0,lost=parseInt(document.getElementById('invLost').value)||0,
+    avail=Math.max(0,total-damaged-lost),status=document.getElementById('invStatus').value,
+    shelf=document.getElementById('invShelf').value.trim(),borrowable=document.getElementById('invBorrowable').checked?1:0;
+  const form=new FormData();
+  form.append('book_id',id);form.append('total_copies',total);form.append('available_copies',avail);
+  form.append('damaged_copies',damaged);form.append('lost_copies',lost);form.append('status',status);
+  form.append('shelf_location',shelf);form.append('is_borrowable',borrowable);
+  try{
+    const res=await fetch('/update_inventory',{method:'POST',body:form}),json=await res.json();
+    if(json.success){closeInvModal();showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Inventory updated','success');setTimeout(()=>location.reload(),1000);}
+    else showToast(`<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> ${json.message||'Update failed'}`,'error');
+  }catch{showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Network error','error');}
+}
+
+/* EDIT */
+function refreshEditAvail(){const t=parseInt(document.getElementById('editInvTotal').value)||0,d=parseInt(document.getElementById('editInvDamaged').value)||0,l=parseInt(document.getElementById('editInvLost').value)||0,a=Math.max(0,t-d-l);document.getElementById('editAvailVal').textContent=a;document.getElementById('editAvailFormula').textContent=`${t} − ${d} − ${l} = ${a}`;}
+function editTabSwitch(n){document.getElementById('editPane0').style.display=n===0?'':'none';document.getElementById('editPane1').style.display=n===1?'':'none';document.getElementById('editTab0').classList.toggle('active',n===0);document.getElementById('editTab1').classList.toggle('active',n===1);if(n===1)refreshEditAvail();}
+function adjEdit(id,delta){const el=document.getElementById(id);el.value=Math.max(0,(parseInt(el.value)||0)+delta);refreshEditAvail();}
+function editSelectStatus(el){document.querySelectorAll('#editStatusPills .status-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('editInvStatus').value=el.dataset.status;}
+
+function openEditModal(id){
+  const b=allBooks.find(x=>x.id===id);if(!b)return;
+  document.getElementById('editModalTitle').textContent=b.title||'';
+  document.getElementById('editBookId').value=b.id;
+  ['Title','Subtitle','Author','Publisher','Isbn','Edition','Category'].forEach(f=>{const el=document.getElementById('edit'+f);if(el)el.value=b[f.toLowerCase()]||'';});
+  document.getElementById('editClass').value=b.class||b.genre||'';
+  document.getElementById('editPubDate').value=b.published_date||'';
+  document.getElementById('editLanguage').value=b.language||'';
+  document.getElementById('editPageCount').value=b.page_count||'';
+  document.getElementById('editDescription').value=b.description||'';
+  document.getElementById('editThumbnail').value=b.thumbnail_url||'';
+  document.getElementById('editCallNumber').value=b.call_number||'';
+  document.getElementById('editCopyRight').value=b.copy_right||'';
+  document.getElementById('editDateReceived').value=b.date_received||'';
+  document.getElementById('editSourceOfFund').value=b.source_of_fund||'';
+  document.getElementById('editCostPrice').value=b.cost_price||'';
+  document.getElementById('editBorrowable').checked=!!b.is_borrowable;
+  document.getElementById('editInvTotal').value=b.total_copies??1;
+  document.getElementById('editInvDamaged').value=b.damaged_copies??0;
+  document.getElementById('editInvLost').value=b.lost_copies??0;
+  document.getElementById('editInvShelf').value=b.shelf_location||'';
+  const s=b.status||'Available';
+  document.getElementById('editInvStatus').value=s;
+  document.querySelectorAll('#editStatusPills .status-pill').forEach(p=>{p.classList.remove('active');if(p.dataset.status===s)p.classList.add('active');});
+  editTabSwitch(0);
+  const errEl=document.getElementById('editErr');if(errEl){errEl.textContent='';errEl.style.display='none';}
+  document.getElementById('editModal').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeEditModal(){document.getElementById('editModal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+
+async function submitEdit(){
+  const btn=document.getElementById('editSubmitBtn'),err=document.getElementById('editErr');
+  err.textContent='';err.style.display='none';btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving…';
+  try{
+    const fd=new FormData(document.getElementById('editForm'));
+    if(!document.getElementById('editBorrowable').checked)fd.set('is_borrowable','0');
+    const res=await fetch('/update_book',{method:'POST',body:fd}),json=await res.json();
+    if(json.success){closeEditModal();showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Book updated','success');setTimeout(()=>location.reload(),1000);}
+    else{err.textContent=json.message||'Update failed.';err.style.display='block';}
+  }catch{err.textContent='Network error.';err.style.display='block';}
+  finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-check-lg"></i> Save Changes';}
+}
+
+/* DELETE */
+let _deleteTarget=null;
+function confirmDeleteOne(id,title){_deleteTarget={id,title,isBulk:false};document.getElementById('cmTitle').textContent='Delete book?';document.getElementById('cmMsg').textContent=`"${title}" will be permanently removed.`;document.getElementById('cmConfirmBtn').onclick=execDelete;document.getElementById('confirmModal').classList.add('open');}
+function bulkDelete(){const ids=[...document.querySelectorAll('.row-cb:checked')].map(cb=>parseInt(cb.closest('tr').dataset.id));if(!ids.length)return;_deleteTarget={isBulk:true,ids};document.getElementById('cmTitle').textContent=`Delete ${ids.length} books?`;document.getElementById('cmMsg').textContent='These books will be permanently removed.';document.getElementById('cmConfirmBtn').onclick=execBulkDelete;document.getElementById('confirmModal').classList.add('open');}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');_deleteTarget=null;}
+async function execDelete(){if(!_deleteTarget)return;const id=_deleteTarget.id;closeConfirm();try{const res=await fetch(`/delete_book/${id}`,{method:'POST'}),json=await res.json();if(json.success){showToast('<i class="bi bi-trash3-fill" style="color:var(--danger)"></i> Book deleted','error');setTimeout(()=>location.reload(),1000);}else showToast(`<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> ${json.message||'Delete failed'}`,'error');}catch{showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Network error','error');}}
+async function execBulkDelete(){if(!_deleteTarget||!_deleteTarget.ids)return;const ids=_deleteTarget.ids;closeConfirm();let failed=0;for(const id of ids){try{const res=await fetch(`/delete_book/${id}`,{method:'POST'}),json=await res.json();if(!json.success)failed++;}catch{failed++;}}if(failed===0)showToast(`<i class="bi bi-trash3-fill" style="color:var(--danger)"></i> ${ids.length} books deleted`,'error');else showToast(`<i class="bi bi-exclamation-triangle-fill" style="color:var(--warn)"></i> ${failed} deletion(s) failed`,'');setTimeout(()=>location.reload(),1000);}
+
+/* Backdrop + escape */
+document.getElementById('filterModal').addEventListener('click',function(e){if(e.target===this)closeFilterModal();});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  if(document.getElementById('confirmModal').classList.contains('open')){closeConfirm();return;}
+  if(document.getElementById('invModal').classList.contains('open')){closeInvModal();return;}
+  if(document.getElementById('viewModal').classList.contains('open')){closeViewModal();return;}
+  if(document.getElementById('editModal').classList.contains('open')){closeEditModal();return;}
+  if(document.getElementById('addModal').classList.contains('open')){closeAddModal();return;}
+  if(document.getElementById('filterModal').classList.contains('open')){closeFilterModal();return;}
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  fmBuildClouds(); applyFilters(); renderFilterChips(); fmUpdateMatchCount();
+});
+</script>
+</body>
+</html>

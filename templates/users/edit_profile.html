@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Edit Profile | Iloilo Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%); background-attachment: fixed; color: #fff; min-height: 100vh; overflow-x: hidden; }
+
+    /* ── PAGE ── */
+    .page-wrap { padding: 80px 40px 60px; max-width: 1000px; margin: 0 auto; }
+    .page-header { text-align:center; padding:32px 0 28px; }
+    .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; margin-bottom:6px; }
+    .page-header h1 span { color:var(--accent); }
+    .page-header p { color:var(--tl); font-size:.88rem; }
+
+    /* ── PROFILE CARD ── */
+    .profile-card { background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:20px; overflow:hidden; backdrop-filter:blur(10px); }
+
+    /* ── AVATAR BANNER ── */
+    .avatar-banner { display:flex; align-items:center; gap:20px; padding:24px 28px; background:rgba(159,193,225,.06); border-bottom:1px solid rgba(255,255,255,.07); }
+    .ep-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#5a8ab0); display:flex; align-items:center; justify-content:center; font-size:1.7rem; font-weight:700; color:#fff; border:3px solid rgba(255,255,255,.15); box-shadow:0 4px 18px rgba(0,0,0,.3); flex-shrink:0; user-select:none; letter-spacing:-.02em; }
+    .avatar-info h3 { font-size:1rem; font-weight:700; color:#fff; margin-bottom:3px; }
+    .avatar-info p  { font-size:.78rem; color:var(--tl); margin:0; }
+    .avatar-badge { display:inline-flex; align-items:center; gap:5px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); border-radius:20px; padding:2px 10px; font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-top:6px; }
+    .avatar-badge .dot { width:5px; height:5px; border-radius:50%; background:var(--accent2); }
+
+    /* ── SECTION ── */
+    .section-head { display:flex; align-items:center; gap:8px; padding:14px 22px 12px; border-bottom:1px solid rgba(255,255,255,0.06); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--accent); }
+    .full-row { border-bottom:1px solid rgba(255,255,255,.07); }
+
+    /* ── TWO / THREE COLUMN GRIDS ── */
+    .cols-wrap-2 { display:grid; grid-template-columns:1fr 1fr; }
+    .cols-wrap-3 { display:grid; grid-template-columns:1fr 1fr 1fr; }
+    .col-panel { display:flex; flex-direction:column; }
+    .col-panel + .col-panel { border-left:1px solid rgba(255,255,255,.07); }
+
+    /* ── FIELD ROW ── */
+    .field-row { display:flex; align-items:center; justify-content:space-between; padding:14px 22px; border-bottom:1px solid rgba(255,255,255,.05); transition:.18s; }
+    .field-row:last-child { border-bottom:none; }
+    .field-row:not(.readonly):hover { background:rgba(255,255,255,.04); }
+    .field-row.readonly { opacity:.5; cursor:not-allowed; }
+    .field-inner { display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
+    .field-icon { width:34px; height:34px; background:rgba(159,193,225,.1); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.88rem; color:var(--accent); flex-shrink:0; }
+    .field-label { font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:2px; }
+    .field-value { font-size:.88rem; color:rgba(255,255,255,.85); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .field-value.empty { color:rgba(255,255,255,.25); font-style:italic; }
+    .field-edit-btn { background:rgba(159,193,225,.08); border:1px solid rgba(159,193,225,.15); color:var(--accent); width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.78rem; cursor:pointer; transition:.18s; flex-shrink:0; margin-left:10px; }
+    .field-edit-btn:hover { background:rgba(159,193,225,.2); border-color:rgba(159,193,225,.35); color:#fff; transform:scale(1.08); }
+
+    /* Toggle row for is_government */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:15px 22px; border-bottom:1px solid rgba(255,255,255,.05); }
+    .toggle-inner { display:flex; align-items:center; gap:14px; flex:1; }
+    .toggle-text h4 { font-size:.88rem; font-weight:600; color:rgba(255,255,255,.85); margin:0 0 2px; }
+    .toggle-text p  { font-size:.73rem; color:rgba(255,255,255,.35); margin:0; }
+    .ep-toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
+    .ep-toggle input { opacity:0; width:0; height:0; }
+    .ep-toggle-slider { position:absolute; inset:0; border-radius:26px; background:rgba(255,255,255,.12); cursor:pointer; transition:.3s; }
+    .ep-toggle-slider::before { content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,.6); left:3px; bottom:3px; transition:.3s; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+    .ep-toggle input:checked + .ep-toggle-slider { background:rgba(72,199,142,.7); }
+    .ep-toggle input:checked + .ep-toggle-slider::before { transform:translateX(20px); background:#fff; }
+
+    /* ── EDIT MODAL ── */
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(5px); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .overlay.open { opacity:1; pointer-events:all; }
+    .m-box { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.18); border-radius:20px; padding:28px; width:100%; max-width:420px; box-shadow:0 28px 70px rgba(0,0,0,.55); transform:translateY(18px); transition:transform .25s; }
+    .overlay.open .m-box { transform:translateY(0); }
+    .m-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .m-title { font-size:.95rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:8px; }
+    .m-close { background:none; border:none; color:rgba(255,255,255,.45); font-size:1.3rem; cursor:pointer; transition:.18s; }
+    .m-close:hover { color:#fff; }
+    .fg { margin-bottom:0; }
+    .fg label { display:block; font-size:.75rem; color:var(--tl); margin-bottom:5px; font-weight:600; }
+    .fg input, .fg select, .fg textarea {
+      width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+      border-radius:9px; color:#fff; padding:9px 12px; font-size:.88rem;
+      font-family:'DM Sans',sans-serif; outline:none; transition:.2s;
+    }
+    .fg input::placeholder, .fg textarea::placeholder { color:rgba(255,255,255,.35); }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent); background:rgba(255,255,255,.10); }
+    .fg select option { background:#253545; }
+    .fg textarea { resize:vertical; min-height:72px; }
+    .m-footer { display:flex; gap:10px; margin-top:20px; }
+    .btn-cancel { flex:1; background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.15); border-radius:10px; padding:10px; font-size:.88rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; }
+    .btn-cancel:hover { background:rgba(255,255,255,.14); }
+    .btn-save { flex:1; background:var(--accent); color:#0d1a24; border:none; border-radius:10px; padding:10px; font-size:.88rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-save:hover { background:#b8d4ec; }
+    .btn-save:disabled { opacity:.55; cursor:not-allowed; }
+    .btn-save .spin-icon { animation:spin .6s linear infinite; display:none; }
+    .btn-save.loading .spin-icon { display:inline; }
+    .btn-save.loading .save-label { display:none; }
+
+    /* ── TOAST ── */
+    .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
+    .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:12px 16px; font-size:.84rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; }
+    .toast-msg.success { border-color:rgba(72,199,142,.4); }
+    .toast-msg.error   { border-color:rgba(255,99,99,.4); }
+    @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:860px) {
+      .cols-wrap-3 { grid-template-columns:1fr 1fr; }
+      .cols-wrap-3 .col-panel:nth-child(3) { grid-column:1/-1; border-left:none; border-top:1px solid rgba(255,255,255,.07); }
+    }
+    @media (max-width:640px) {
+      .page-wrap { padding:76px 14px 50px; }
+      .cols-wrap-2, .cols-wrap-3 { grid-template-columns:1fr; }
+      .col-panel + .col-panel { border-left:none !important; border-top:1px solid rgba(255,255,255,.07); }
+      .avatar-banner { flex-direction:column; text-align:center; }
+    }
+  </style>
+  <script src="/static/js/appearance.js"></script>
+</head>
+<body>
+  {% include 'user_template/topbar_template.html' %}
+  {% include 'user_template/profile_sidebar_template.html' %}
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1><i class="bi bi-person-gear me-2" style="color:var(--accent)"></i>Edit <span>Profile</span></h1>
+      <p>Keep your information up to date</p>
+    </div>
+
+    <div class="profile-card">
+
+      <!-- ── AVATAR BANNER ── -->
+      <div class="avatar-banner">
+        <div class="ep-avatar" id="epAvatar">
+          {{ (user.firstname[0] | upper) if user.firstname else '?' }}{{ (user.lastname[0] | upper) if user.lastname else '' }}
+        </div>
+        <div class="avatar-info">
+          <h3 id="epDisplayName">{{ user.firstname or '' }} {{ user.lastname or '' }}</h3>
+          <p>{{ user.email }}</p>
+          <span class="avatar-badge"><span class="dot"></span> Member</span>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           SECTION 1 — ACCOUNT (read-only)
+      ══════════════════════════════════ -->
+      <div class="full-row">
+        <div class="section-head"><i class="bi bi-shield-fill-check"></i> Account</div>
+        <div class="field-row readonly">
+          <div class="field-inner">
+            <div class="field-icon"><i class="bi bi-at"></i></div>
+            <div>
+              <div class="field-label">Username / Email</div>
+              <div class="field-value">{{ user.email }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="field-row readonly">
+          <div class="field-inner">
+            <div class="field-icon"><i class="bi bi-calendar3"></i></div>
+            <div>
+              <div class="field-label">Member Since</div>
+              <div class="field-value">{{ user.member_since }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           SECTION 2 — PERSONAL (2 cols)
+      ══════════════════════════════════ -->
+      <div class="full-row">
+        <div class="section-head"><i class="bi bi-person-fill"></i> Personal Information</div>
+        <div class="cols-wrap-2">
+          <div class="col-panel">
+            <!-- First Name -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-person"></i></div>
+                <div>
+                  <div class="field-label">First Name</div>
+                  <div class="field-value {{ 'empty' if not user.firstname }}" id="firstNameDisplay" data-original="{{ user.firstname or '' }}">{{ user.firstname or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('firstName','First Name','text','f_firstname')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- Last Name -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-person"></i></div>
+                <div>
+                  <div class="field-label">Last Name</div>
+                  <div class="field-value {{ 'empty' if not user.lastname }}" id="lastNameDisplay" data-original="{{ user.lastname or '' }}">{{ user.lastname or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('lastName','Last Name','text','f_lastname')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- Age -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-123"></i></div>
+                <div>
+                  <div class="field-label">Age</div>
+                  <div class="field-value {{ 'empty' if not user.age }}" id="ageDisplay" data-original="{{ user.age or '' }}">{{ user.age or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('age','Age','number','f_age')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+          </div>
+
+          <div class="col-panel">
+            <!-- Gender -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-gender-ambiguous"></i></div>
+                <div>
+                  <div class="field-label">Gender</div>
+                  <div class="field-value {{ 'empty' if not user.gender }}" id="genderDisplay" data-original="{{ user.gender or '' }}">{{ user.gender or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('gender','Gender','select-gender','f_gender')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- School -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-mortarboard"></i></div>
+                <div>
+                  <div class="field-label">School / Institution</div>
+                  <div class="field-value {{ 'empty' if not user.school }}" id="schoolDisplay" data-original="{{ user.school or '' }}">{{ user.school or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('school','School / Institution','text','f_school')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- Education Level -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-book"></i></div>
+                <div>
+                  <div class="field-label">Education Level</div>
+                  <div class="field-value {{ 'empty' if not user.education_level }}" id="educationLevelDisplay" data-original="{{ user.education_level or '' }}">{{ user.education_level or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('educationLevel','Education Level','select-education','f_education_level')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════
+           SECTION 3 — CONTACT & LOCATION (3 cols)
+      ══════════════════════════════════ -->
+      <div class="full-row">
+        <div class="section-head"><i class="bi bi-telephone-fill"></i> Contact &amp; Location</div>
+        <div class="cols-wrap-3">
+          <div class="col-panel">
+            <!-- Phone -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-telephone-fill"></i></div>
+                <div>
+                  <div class="field-label">Phone Number</div>
+                  <div class="field-value {{ 'empty' if not user.phone }}" id="phoneDisplay" data-original="{{ user.phone or '' }}">{{ user.phone or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('phone','Phone Number','text','f_phone')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- Office Phone -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-telephone-plus"></i></div>
+                <div>
+                  <div class="field-label">Office Phone</div>
+                  <div class="field-value {{ 'empty' if not user.office_phone }}" id="officePhoneDisplay" data-original="{{ user.office_phone or '' }}">{{ user.office_phone or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('officePhone','Office Phone','text','f_office_phone')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+          </div>
+
+          <div class="col-panel">
+            <!-- City -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-building"></i></div>
+                <div>
+                  <div class="field-label">City / Municipality</div>
+                  <div class="field-value {{ 'empty' if not user.city }}" id="cityDisplay" data-original="{{ user.city or '' }}">{{ user.city or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('city','City / Municipality','text','f_city')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- Province -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-map"></i></div>
+                <div>
+                  <div class="field-label">Province</div>
+                  <div class="field-value {{ 'empty' if not user.province }}" id="provinceDisplay" data-original="{{ user.province or '' }}">{{ user.province or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('province','Province','text','f_province')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+          </div>
+
+          <div class="col-panel">
+            <!-- Occupation -->
+            <div class="field-row">
+              <div class="field-inner">
+                <div class="field-icon"><i class="bi bi-briefcase-fill"></i></div>
+                <div>
+                  <div class="field-label">Occupation</div>
+                  <div class="field-value {{ 'empty' if not user.occupation }}" id="occupationDisplay" data-original="{{ user.occupation or '' }}">{{ user.occupation or '—' }}</div>
+                </div>
+              </div>
+              <button class="field-edit-btn" onclick="openModal('occupation','Occupation','text','f_occupation')"><i class="bi bi-pencil-fill"></i></button>
+            </div>
+            <!-- Is Government (toggle) -->
+            <div class="toggle-row">
+              <div class="toggle-inner">
+                <div class="field-icon"><i class="bi bi-shield-check"></i></div>
+                <div class="toggle-text">
+                  <h4>Government Employee</h4>
+                  <p>Check if you work in the public sector</p>
+                </div>
+              </div>
+              <label class="ep-toggle">
+                <input type="checkbox" id="govToggle" {% if user.is_government %}checked{% endif %}>
+                <span class="ep-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .profile-card -->
+  </div><!-- end .page-wrap -->
+
+  <!-- ── EDIT MODAL ── -->
+  <div class="overlay" id="editOverlay">
+    <div class="m-box">
+      <div class="m-head">
+        <span class="m-title"><i class="bi bi-pencil-fill"></i> <span id="modalTitleText">Edit</span></span>
+        <button class="m-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="fg" id="modalBody"></div>
+      <div class="m-footer">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" id="saveBtn">
+          <i class="bi bi-arrow-clockwise spin-icon"></i>
+          <span class="save-label"><i class="bi bi-check-circle me-1"></i> Save Changes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  {% include 'user_template/footer_template.html' %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  (function () {
+
+    /* ── Field map: field key → display element id ── */
+    const fieldMap = {
+      firstName:      'firstNameDisplay',
+      lastName:       'lastNameDisplay',
+      age:            'ageDisplay',
+      gender:         'genderDisplay',
+      school:         'schoolDisplay',
+      educationLevel: 'educationLevelDisplay',
+      phone:          'phoneDisplay',
+      officePhone:    'officePhoneDisplay',
+      city:           'cityDisplay',
+      province:       'provinceDisplay',
+      occupation:     'occupationDisplay',
+    };
+
+    let currentField = '', currentDisplayId = '';
+
+    /* ── Build modal input HTML ── */
+    function buildInput(type, value) {
+      const esc = (s) => s.replace(/"/g, '&quot;');
+      if (type === 'number') {
+        return `<input type="number" min="1" max="120" id="modalInput" value="${esc(value)}" placeholder="Enter age">`;
+      }
+      if (type === 'select-gender') {
+        const opts = ['Male','Female','Non-binary','Prefer not to say'];
+        return `<select id="modalInput">
+          <option value="">— Select gender —</option>
+          ${opts.map(o => `<option value="${o}"${value===o?' selected':''}>${o}</option>`).join('')}
+        </select>`;
+      }
+      if (type === 'select-education') {
+        const opts = ['Elementary','High School','Senior High School','Vocational / Technical','College / Bachelor\'s','Graduate School','Post-Graduate (PhD / Doctorate)'];
+        return `<select id="modalInput">
+          <option value="">— Select level —</option>
+          ${opts.map(o => `<option value="${o}"${value===o?' selected':''}>${o}</option>`).join('')}
+        </select>`;
+      }
+      // default text / tel
+      return `<input type="text" id="modalInput" value="${esc(value)}" placeholder="Enter ${currentField.replace(/([A-Z])/g,' $1').toLowerCase()}">`;
+    }
+
+    /* ── Open modal ── */
+    window.openModal = function(field, label, type) {
+      currentField     = field;
+      currentDisplayId = fieldMap[field];
+      const raw   = document.getElementById(currentDisplayId).innerText.trim();
+      const value = raw === '—' ? '' : raw;
+
+      document.getElementById('modalTitleText').textContent = label;
+      document.getElementById('modalBody').innerHTML =
+        `<label>${label}</label>${buildInput(type, value)}`;
+
+      document.getElementById('editOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('modalInput')?.focus(), 60);
+    };
+
+    /* ── Close modal ── */
+    window.closeModal = function() {
+      document.getElementById('editOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    /* ── Click outside closes ── */
+    document.getElementById('editOverlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('editOverlay')) closeModal();
+    });
+
+    /* ── Keyboard ESC ── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    /* ── Enter submits ── */
+    document.getElementById('modalBody').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        document.getElementById('saveBtn').click();
+      }
+    });
+
+    /* ── Save ── */
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const input     = document.getElementById('modalInput');
+      const newVal    = input ? input.value.trim() : '';
+      const displayEl = document.getElementById(currentDisplayId);
+      const original  = displayEl.dataset.original || '';
+      const saveBtn   = document.getElementById('saveBtn');
+
+      saveBtn.classList.add('loading');
+      saveBtn.disabled = true;
+
+      // Optimistic update
+      displayEl.innerText = newVal || '—';
+      displayEl.classList.toggle('empty', !newVal);
+      closeModal();
+
+      // Update avatar name preview if name fields changed
+      if (currentField === 'firstName' || currentField === 'lastName') {
+        updateAvatarPreview();
+      }
+
+      fetch('/user/update_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `field=${encodeURIComponent(currentField)}&value=${encodeURIComponent(newVal || '')}`
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          displayEl.dataset.original = newVal;
+          showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> ${currentField.replace(/([A-Z])/g,' $1')} updated`, 'success');
+        } else {
+          // Revert
+          displayEl.innerText = original || '—';
+          displayEl.classList.toggle('empty', !original);
+          showToast(`<i class="bi bi-exclamation-triangle-fill" style="color:var(--danger)"></i> ${d.message || 'Update failed'}`, 'error');
+        }
+      })
+      .catch(() => {
+        displayEl.innerText = original || '—';
+        displayEl.classList.toggle('empty', !original);
+        showToast('<i class="bi bi-wifi-off" style="color:var(--danger)"></i> Request failed', 'error');
+      })
+      .finally(() => {
+        saveBtn.classList.remove('loading');
+        saveBtn.disabled = false;
+      });
+    });
+
+    /* ── Government toggle ── */
+    document.getElementById('govToggle').addEventListener('change', function () {
+      const val = this.checked ? '1' : '0';
+      fetch('/user/update_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `field=isGovernment&value=${val}`
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Government status ${this.checked ? 'enabled' : 'disabled'}`, 'success');
+        } else {
+          this.checked = !this.checked; // revert
+          showToast(`<i class="bi bi-exclamation-triangle-fill" style="color:var(--danger)"></i> ${d.message || 'Update failed'}`, 'error');
+        }
+      })
+      .catch(() => {
+        this.checked = !this.checked;
+        showToast('<i class="bi bi-wifi-off" style="color:var(--danger)"></i> Request failed', 'error');
+      });
+    });
+
+    /* ── Avatar preview update ── */
+    function updateAvatarPreview() {
+      const fn = (document.getElementById('firstNameDisplay')?.innerText || '').replace('—','').trim();
+      const ln = (document.getElementById('lastNameDisplay')?.innerText  || '').replace('—','').trim();
+      const av = document.getElementById('epAvatar');
+      const dn = document.getElementById('epDisplayName');
+      if (av) av.textContent = (fn[0] || '?').toUpperCase() + (ln[0] || '').toUpperCase();
+      if (dn) dn.textContent = [fn, ln].filter(Boolean).join(' ') || 'Your Name';
+    }
+
+    /* ── Toast ── */
+    function showToast(msg, type = '') {
+      const t = document.createElement('div');
+      t.className = `toast-msg ${type}`;
+      t.innerHTML = msg;
+      document.getElementById('toastWrap').appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+  }());
+  </script>
+</body>
+</html>

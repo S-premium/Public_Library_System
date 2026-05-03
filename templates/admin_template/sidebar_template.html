@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<!-- sidebar_template.html -->
+<!-- 
+  This template contains the floating right sidebar (desktop) and right-side drawer (mobile).
+  Include this file after the topbar template in your page's <body> section.
+  
+  Dependencies: Bootstrap 5 CSS/JS, Font Awesome, Bootstrap Icons (already included in main page)
+-->
+
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     CSS VARIABLES
+  ═══════════════════════════════════════════════════════════ */
+  :root {
+    --accent:  #9fc1e1;
+    --accent2: #48c78e;
+    --danger:  #ff6363;
+    --warn:    #ff9800;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     FLOATING RIGHT SIDEBAR — desktop (> 992px)
+  ═══════════════════════════════════════════════════════════ */
+  .side-dock {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(calc(100% - 14px));
+    z-index: 1050;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+  }
+
+  .side-tab {
+    width: 14px;
+    height: 72px;
+    background: rgba(159,193,225,.18);
+    border: 1px solid rgba(159,193,225,.25);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+
+  .side-tab::after {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 28px;
+    background: rgba(159,193,225,.6);
+    border-radius: 3px;
+  }
+
+  .side-dock:hover .side-tab,
+  .side-dock.open .side-tab {
+    background: rgba(159,193,225,.3);
+  }
+
+  .side-dock:hover,
+  .side-dock.open {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .side-panel {
+    background: rgba(25,38,52,0.97);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(159,193,225,.18);
+    border-right: none;
+    border-radius: 18px 0 0 18px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    min-width: 64px;
+  }
+
+  .side-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.15rem;
+    transition: .2s;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+
+  .side-btn:hover { transform: scale(1.08); }
+
+  .side-btn-cal {
+    background: rgba(72,199,142,.15);
+    border: 1px solid rgba(72,199,142,.3);
+    color: #48c78e;
+  }
+  .side-btn-cal:hover {
+    background: rgba(72,199,142,.28);
+    border-color: rgba(72,199,142,.55);
+    color: #6ddaa8;
+  }
+
+  .side-btn-req {
+    background: rgba(255,152,0,.15);
+    border: 1px solid rgba(255,152,0,.3);
+    color: #ffb74d;
+  }
+  .side-btn-req:hover {
+    background: rgba(255,152,0,.28);
+    border-color: rgba(255,152,0,.55);
+    color: #ffc96e;
+  }
+
+  .side-btn-logout {
+    background: rgba(255,99,99,.15);
+    border: 1px solid rgba(255,99,99,.25);
+    color: #ff9999;
+  }
+  .side-btn-logout:hover {
+    background: rgba(255,99,99,.28);
+    border-color: rgba(255,99,99,.5);
+    color: #fff;
+  }
+
+  .side-dot {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--danger);
+    border: 2px solid #1e2d3d;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: .55rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .side-dot.show { display: flex; }
+
+  .side-divider {
+    width: 32px;
+    height: 1px;
+    background: rgba(255,255,255,.1);
+    margin: 2px 0;
+    flex-shrink: 0;
+  }
+
+  .side-btn-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .side-tip {
+    position: absolute;
+    right: calc(100% + 10px);
+    background: rgba(15,25,35,.92);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity .18s, transform .18s;
+    border: 1px solid rgba(255,255,255,.1);
+  }
+
+  .side-btn-wrap:hover .side-tip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (max-width: 992px) {
+    .side-dock { display: none !important; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     RIGHT-SIDE DRAWER — mobile only (≤ 992px)
+  ═══════════════════════════════════════════════════════════ */
+
+  /* Backdrop */
+  .drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+    background: rgba(0,0,0,0);
+    transition: background .3s;
+    pointer-events: none;
+  }
+  .drawer-backdrop.open {
+    background: rgba(0,0,0,.45);
+    pointer-events: all;
+  }
+  @media (max-width: 992px) {
+    .drawer-backdrop { display: block; }
+  }
+
+  /*
+    Key fix: the whole drawer (tab + panel) slides together as one unit.
+    translateX(calc(100% - 18px)) = panel fully hidden, only the tab peeks out.
+    translateX(0)                 = fully open.
+  */
+  .mob-drawer {
+    display: none;
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(calc(100% - 18px));
+    z-index: 1051;
+    flex-direction: row;
+    align-items: center;
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+  }
+
+  .mob-drawer.open {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  @media (max-width: 992px) {
+    .mob-drawer { display: flex; }
+  }
+
+  /* Pull tab */
+  .mob-drawer-tab {
+    width: 18px;
+    height: 80px;
+    background: rgba(159,193,225,.18);
+    border: 1px solid rgba(159,193,225,.25);
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .2s;
+  }
+
+  .mob-drawer-tab::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 32px;
+    background: rgba(159,193,225,.6);
+    border-radius: 3px;
+  }
+
+  .mob-drawer.open .mob-drawer-tab {
+    background: rgba(159,193,225,.3);
+  }
+
+  /* Panel — no independent transform, it moves with the parent */
+  .mob-drawer-panel {
+    background: rgba(25,38,52,0.97);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(159,193,225,.18);
+    border-right: none;
+    border-radius: 18px 0 0 18px;
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    width: 72px;
+  }
+
+  /* Each icon + label stack */
+  .mob-drawer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Buttons — slightly bigger than desktop but not huge */
+  .mob-drawer-btn {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: transform .15s;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mob-drawer-btn:active { transform: scale(.91); }
+
+  .mob-drawer-btn-cal {
+    background: rgba(72,199,142,.15);
+    border: 1px solid rgba(72,199,142,.3);
+    color: #48c78e;
+  }
+
+  .mob-drawer-btn-req {
+    background: rgba(255,152,0,.15);
+    border: 1px solid rgba(255,152,0,.3);
+    color: #ffb74d;
+  }
+
+  .mob-drawer-btn-logout {
+    background: rgba(255,99,99,.15);
+    border: 1px solid rgba(255,99,99,.25);
+    color: #ff9999;
+  }
+
+  /* Small labels */
+  .mob-drawer-label {
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .mob-label-cal    { color: rgba(72,199,142,.8); }
+  .mob-label-req    { color: rgba(255,180,80,.8); }
+  .mob-label-logout { color: rgba(255,130,130,.8); }
+
+  .mob-drawer-divider {
+    width: 36px;
+    height: 1px;
+    background: rgba(255,255,255,.1);
+    flex-shrink: 0;
+  }
+
+  /* Badge dot */
+  .mob-drawer-dot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--danger);
+    border: 2px solid #1e2d3d;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: .55rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .mob-drawer-dot.show { display: flex; }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DESKTOP SIDEBAR
+═══════════════════════════════════════════════════════════ -->
+<div class="side-dock" id="sideDock">
+  <div class="side-tab" id="sideTab" title="Quick Actions"></div>
+  <div class="side-panel">
+    <div class="side-btn-wrap">
+      <span class="side-tip">Event Calendar</span>
+      <a href="/admin/event" class="side-btn side-btn-cal" title="Event Calendar">
+        <i class="bi bi-calendar-week"></i>
+      </a>
+    </div>
+    <div class="side-divider"></div>
+    <div class="side-btn-wrap">
+      <span class="side-tip">Account Requests</span>
+      <a href="/admin/account-requests" class="side-btn side-btn-req" title="Account Requests">
+        <i class="bi bi-app-indicator"></i>
+        <span class="side-dot" id="acctReqDot"></span>
+      </a>
+    </div>
+    <div class="side-divider"></div>
+    <div class="side-btn-wrap">
+      <span class="side-tip">Logout</span>
+      <a href="/logout" class="side-btn side-btn-logout" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MOBILE BACKDROP
+═══════════════════════════════════════════════════════════ -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MOBILE RIGHT-SIDE DRAWER
+     Tab + panel are ONE element that slides together.
+═══════════════════════════════════════════════════════════ -->
+<div class="mob-drawer" id="mobDrawer">
+
+  <!-- Pull tab (always peeking out, click to toggle) -->
+  <div class="mob-drawer-tab" id="mobDrawerTab" title="Quick Actions"></div>
+
+  <!-- Panel slides in with the tab as one unit -->
+  <div class="mob-drawer-panel">
+
+    <div class="mob-drawer-item">
+      <a href="/admin/event" class="mob-drawer-btn mob-drawer-btn-cal" title="Event Calendar">
+        <i class="bi bi-calendar-week"></i>
+      </a>
+      <span class="mob-drawer-label mob-label-cal">Calendar</span>
+    </div>
+
+    <div class="mob-drawer-divider"></div>
+
+    <div class="mob-drawer-item">
+      <a href="/admin/account-requests" class="mob-drawer-btn mob-drawer-btn-req" title="Account Requests">
+        <i class="bi bi-app-indicator"></i>
+        <span class="mob-drawer-dot" id="mobReqDot"></span>
+      </a>
+      <span class="mob-drawer-label mob-label-req">Requests</span>
+    </div>
+
+    <div class="mob-drawer-divider"></div>
+
+    <div class="mob-drawer-item">
+      <a href="/logout" class="mob-drawer-btn mob-drawer-btn-logout" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+      <span class="mob-drawer-label mob-label-logout">Logout</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+
+    /* ── Desktop sidebar — hover + click to pin ── */
+    const sideDock = document.getElementById('sideDock');
+    const sideTab  = document.getElementById('sideTab');
+    let pinned = false;
+
+    if (sideTab && sideDock) {
+      sideTab.addEventListener('click', function (e) {
+        e.stopPropagation();
+        pinned = !pinned;
+        sideDock.classList.toggle('open', pinned);
+      });
+      document.addEventListener('click', function (e) {
+        if (pinned && sideDock && !sideDock.contains(e.target)) {
+          pinned = false;
+          sideDock.classList.remove('open');
+        }
+      });
+    }
+
+    /* ── Mobile drawer — tab toggles the whole unit ── */
+    const mobDrawer = document.getElementById('mobDrawer');
+    const mobTab    = document.getElementById('mobDrawerTab');
+    const backdrop  = document.getElementById('drawerBackdrop');
+    let drawerOpen  = false;
+
+    function openDrawer() {
+      drawerOpen = true;
+      mobDrawer.classList.add('open');
+      backdrop.classList.add('open');
+    }
+
+    function closeDrawer() {
+      drawerOpen = false;
+      mobDrawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+
+    if (mobTab) {
+      mobTab.addEventListener('click', function (e) {
+        e.stopPropagation();
+        drawerOpen ? closeDrawer() : openDrawer();
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeDrawer);
+    }
+
+    document.addEventListener('click', function (e) {
+      if (drawerOpen && mobDrawer && !mobDrawer.contains(e.target)) {
+        closeDrawer();
+      }
+    });
+
+    /* ── Pending request count — updates all dots & badges ── */
+    async function loadPendingRequestCount() {
+      try {
+        const res  = await fetch('/api/admin/account-requests');
+        const data = await res.json();
+        const pendingRequests = (data.requests || []).filter(r => r.status === 'pending');
+        const n = pendingRequests.length;
+
+        const setDot = (id, show) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (show) {
+            el.textContent = n > 9 ? '9+' : n;
+            el.classList.add('show');
+            el.style.display = '';
+          } else {
+            el.classList.remove('show');
+            el.style.display = 'none';
+          }
+        };
+
+        setDot('acctReqDot',     n > 0); // Desktop sidebar dot
+        setDot('mobReqDot',      n > 0); // Mobile drawer dot
+        setDot('navReqBadge',    n > 0); // Topbar badge (desktop)
+        setDot('mobileReqBadge', n > 0); // Topbar badge (mobile)
+      } catch (error) {
+        console.debug('Could not fetch account requests:', error);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadPendingRequestCount);
+    } else {
+      loadPendingRequestCount();
+    }
+
+  })();
+</script>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Member Records | Iloilo Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%); background-attachment: fixed; color: #fff; min-height: 100vh; overflow-x: hidden; }
+
+    /* PAGE */
+    .page-wrap { padding: 80px 40px 60px; max-width: 1300px; margin: 0 auto; }
+
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:28px; }
+    .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; }
+    .page-header h1 span { color:var(--accent); }
+    .page-header p { color:var(--tl); font-size:.88rem; margin-top:4px; }
+
+    /* TOOLBAR */
+    .toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+    .search-box { position:relative; }
+    .search-box i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; }
+    .search-box input { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 14px 9px 38px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; width:280px; }
+    .search-box input::placeholder { color:rgba(255,255,255,.4); }
+    .search-box input:focus { border-color:var(--accent); background:rgba(255,255,255,.11); width:320px; }
+    .total-badge { background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); border-radius:20px; padding:7px 18px; font-size:.84rem; font-weight:600; color:var(--accent); }
+    .total-badge span { color:#fff; margin-left:4px; }
+
+    /* CARDS */
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:16px; }
+
+    .member-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:20px 22px; backdrop-filter:blur(10px); transition:transform .25s,box-shadow .25s,border-color .25s; animation:fadeUp .35s ease both; position:relative; overflow:hidden; }
+    .member-card::after { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:0; transition:opacity .3s; }
+    .member-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.3); border-color:rgba(159,193,225,.25); }
+    .member-card:hover::after { opacity:1; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+    .card-top { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .avatar { width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#5a8fb5); display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:700; color:#1e2f3c; flex-shrink:0; box-shadow:0 4px 14px rgba(159,193,225,.22); }
+    .card-name { font-weight:700; font-size:.93rem; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .card-uname { font-size:.75rem; color:rgba(218,232,245,.45); margin-top:2px; }
+
+    .card-badges { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+    .pill { display:inline-flex; align-items:center; gap:4px; font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:8px; text-transform:uppercase; letter-spacing:.04em; }
+    .pill-role    { background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.25); color:var(--accent); }
+    .pill-active  { background:rgba(72,199,142,.1);  border:1px solid rgba(72,199,142,.25);  color:var(--accent2); }
+    .pill-offline { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.45); }
+    .pill-locked  { background:rgba(255,99,99,.1);   border:1px solid rgba(255,99,99,.25);   color:var(--danger); }
+    .blink { width:6px; height:6px; border-radius:50%; background:currentColor; display:inline-block; animation:blink 2s infinite; }
+    .pill-offline .blink { animation:none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    .card-footer-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .last-seen-mini { font-size:.71rem; color:rgba(218,232,245,.38); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px; }
+    .btn-view { background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); color:var(--accent); font-family:'DM Sans',sans-serif; font-weight:600; font-size:.77rem; padding:6px 13px; border-radius:9px; cursor:pointer; transition:.18s; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+    .btn-view:hover { background:rgba(159,193,225,.22); border-color:var(--accent); }
+
+    .no-results { grid-column:1/-1; text-align:center; padding:60px 20px; color:rgba(218,232,245,.35); }
+    .no-results i { font-size:3rem; display:block; margin-bottom:12px; }
+
+    /* DETAIL PANEL */
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(5px); z-index:2000; opacity:0; pointer-events:none; transition:opacity .3s; }
+    .overlay.open { opacity:1; pointer-events:all; }
+
+    .detail-panel { position:fixed; top:0; right:0; bottom:0; width:min(440px,100vw); background:linear-gradient(180deg,#1e2d3d 0%,#1a2a38 100%); border-left:1px solid rgba(159,193,225,.15); z-index:2001; overflow-y:auto; transform:translateX(110%); transition:transform .35s cubic-bezier(.4,0,.2,1); box-shadow:-10px 0 40px rgba(0,0,0,.45); }
+    .detail-panel.open { transform:translateX(0); }
+
+    .panel-header { padding:20px 22px 16px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#1e2d3d; z-index:1; }
+    .panel-title { font-size:.95rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px; }
+    .panel-title i { color:var(--accent); }
+    .close-btn { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); color:var(--accent); width:32px; height:32px; border-radius:9px; font-size:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.18s; }
+    .close-btn:hover { background:rgba(255,255,255,.14); }
+
+    .panel-body { padding:22px; }
+    .panel-avatar { width:68px; height:68px; border-radius:16px; background:linear-gradient(135deg,var(--accent),#5a8fb5); display:flex; align-items:center; justify-content:center; font-size:1.7rem; font-weight:700; color:#1e2f3c; margin:0 auto 10px; box-shadow:0 8px 24px rgba(159,193,225,.28); }
+    .panel-name  { text-align:center; font-size:1.15rem; font-weight:700; color:#fff; }
+    .panel-uname { text-align:center; color:rgba(218,232,245,.4); font-size:.81rem; margin-bottom:18px; margin-top:2px; }
+
+    .detail-section { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); margin:18px 0 9px; opacity:.7; }
+    .detail-row { display:flex; justify-content:space-between; align-items:center; padding:9px 13px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); margin-bottom:7px; }
+    .detail-label { font-size:.78rem; color:rgba(218,232,245,.5); font-weight:500; }
+    .detail-value { font-size:.83rem; font-weight:600; color:#fff; text-align:right; }
+
+    .attempts-bar  { height:4px; border-radius:3px; background:rgba(255,255,255,.08); margin-top:8px; overflow:hidden; }
+    .attempts-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent2),#22c55e); transition:width .5s; }
+    .attempts-fill.warn   { background:linear-gradient(90deg,#fbbf24,#f59e0b); }
+    .attempts-fill.danger { background:linear-gradient(90deg,var(--danger),#dc2626); }
+
+    @media (max-width:768px) { .page-wrap { padding:76px 14px 50px; } .search-box input, .search-box input:focus { width:100%; } }
+    @media (max-width:480px) { .toolbar { flex-direction:column; align-items:stretch; } }
+  </style>
+</head>
+<body>
+{% include 'librarian_template/topbar_template.html' %} 
+{% include 'librarian_template/sidebar_template.html' %}
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <div>
+        <h1><i class="bi bi-people-fill me-2" style="color:var(--accent)"></i>Library <span>Members</span></h1>
+        <p>View and monitor all registered members and administrators</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" placeholder="Search name, username…">
+      </div>
+      <div class="total-badge">Total Members: <span>{{ users|length }}</span></div>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+      {% if users %}
+        {% for user in users %}
+        <div class="member-card"
+          data-name="{{ user.firstname|e }} {{ user.lastname|e }}"
+          data-username="{{ user.username|e }}"
+          data-id="{{ user.id|int }}"
+          data-status="{{ user.status|e }}"
+          data-locked="{{ 'true' if user.is_locked else 'false' }}"
+          data-lock-until="{{ user.lock_until.strftime('%I:%M %p') if user.lock_until else '' }}"
+          data-failed="{{ user.failed_attempts|int }}"
+          data-last-seen="{{ user.last_seen.strftime('%Y-%m-%d %I:%M %p') if user.last_seen else 'Never' }}"
+          data-registered="{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}"
+          style="animation-delay:{{ loop.index0 * 0.05 }}s"
+        >
+          <div class="card-top">
+            <div class="avatar">{{ (user.firstname[0] ~ user.lastname[0])|upper }}</div>
+            <div>
+              <div class="card-name">{{ user.firstname|e }} {{ user.lastname|e }}</div>
+              <div class="card-uname">@{{ user.username|e }}</div>
+            </div>
+          </div>
+
+          <div class="card-badges">
+            <span class="pill pill-role"><i class="bi bi-person-fill"></i>Member</span>
+            {% if user.status == 'active' %}
+            <span class="pill pill-active"><span class="blink"></span> Active</span>
+            {% else %}
+            <span class="pill pill-offline"><span class="blink"></span> Offline</span>
+            {% endif %}
+            {% if user.is_locked %}
+            <span class="pill pill-locked"><i class="bi bi-lock-fill"></i> Locked</span>
+            {% endif %}
+          </div>
+
+          <div class="card-footer-row">
+            <span class="last-seen-mini">
+              <i class="bi bi-clock me-1"></i>
+              {% if user.last_seen %}{{ user.last_seen.strftime('%b %d, %Y') }}{% else %}Never{% endif %}
+            </span>
+            <button class="btn-view" onclick="openPanel(this.closest('.member-card'))">
+              <i class="bi bi-eye"></i> View
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="no-results"><i class="bi bi-people"></i>No members found.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closePanel()"></div>
+
+  <!-- Detail Panel -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="panel-header">
+      <span class="panel-title"><i class="bi bi-person-lines-fill"></i> Member Details</span>
+      <button class="close-btn" onclick="closePanel()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-avatar" id="panelAvatar">--</div>
+      <div class="panel-name"  id="panelName">—</div>
+      <div class="panel-uname" id="panelUname">—</div>
+
+      <div class="detail-section">Account Info</div>
+      <div class="detail-row"><span class="detail-label">Role</span><span class="detail-value"><span class="pill pill-role"><i class="bi bi-person-fill"></i> User</span></span></div>
+      <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value" id="panelStatus">—</span></div>
+      <div class="detail-row"><span class="detail-label">Lock Status</span><span class="detail-value" id="panelLock">—</span></div>
+      <div class="detail-row" id="lockUntilRow" style="display:none"><span class="detail-label">Locked Until</span><span class="detail-value" id="panelLockUntil">—</span></div>
+
+      <div class="detail-section">Activity</div>
+      <div class="detail-row"><span class="detail-label">Last Seen</span><span class="detail-value" id="panelLastSeen">—</span></div>
+      <div class="detail-row"><span class="detail-label">Registered</span><span class="detail-value" id="panelRegistered">—</span></div>
+      <div class="detail-row"><span class="detail-label">Failed Attempts</span><span class="detail-value" id="panelAttempts">—</span></div>
+      <div class="attempts-bar"><div class="attempts-fill" id="attemptsFill" style="width:0%"></div></div>
+    </div>
+  </div>
+{% include 'librarian_template/footer_template.html' %}
+  <script>
+    // Search
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const q=this.value.toLowerCase().trim();
+      const cards=document.querySelectorAll('.member-card');
+      let visible=0;
+      cards.forEach(c=>{ const show=(c.dataset.name.toLowerCase().includes(q)||c.dataset.username.toLowerCase().includes(q)); c.style.display=show?'':'none'; if(show) visible++; });
+      let noMsg=document.getElementById('noResultsMsg');
+      if(visible===0){ if(!noMsg){ noMsg=document.createElement('div'); noMsg.id='noResultsMsg'; noMsg.className='no-results'; noMsg.innerHTML='<i class="bi bi-search"></i> No members match your search.'; document.getElementById('cardsGrid').appendChild(noMsg); } }
+      else if(noMsg) noMsg.remove();
+    });
+
+    function openPanel(card) {
+      const d=card.dataset;
+      const words=d.name.trim().split(/\s+/);
+      document.getElementById('panelAvatar').textContent=((words[0]?.[0]||'')+(words[1]?.[0]||'')).toUpperCase()||'?';
+      document.getElementById('panelName').textContent=d.name;
+      document.getElementById('panelUname').textContent='@'+d.username;
+      document.getElementById('panelLastSeen').textContent=d.lastSeen;
+      document.getElementById('panelRegistered').textContent=d.registered;
+
+      const sEl=document.getElementById('panelStatus');
+      sEl.innerHTML=d.status==='active'
+        ?'<span class="pill pill-active"><span class="blink"></span> Active</span>'
+        :'<span class="pill pill-offline"><span class="blink" style="animation:none"></span> Offline</span>';
+
+      const lEl=document.getElementById('panelLock'), lRow=document.getElementById('lockUntilRow');
+      if(d.locked==='true'){
+        lEl.innerHTML='<span class="pill pill-locked"><i class="bi bi-lock-fill"></i> Locked</span>';
+        if(d.lockUntil){ document.getElementById('panelLockUntil').textContent=d.lockUntil; lRow.style.display=''; }
+        else lRow.style.display='none';
+      } else {
+        lEl.innerHTML='<span class="pill pill-active"><i class="bi bi-unlock-fill"></i> Unlocked</span>';
+        lRow.style.display='none';
+      }
+
+      const att=parseInt(d.failed)||0;
+      document.getElementById('panelAttempts').textContent=att+' / 5';
+      const fill=document.getElementById('attemptsFill');
+      fill.style.width=Math.min((att/5)*100,100)+'%';
+      fill.className='attempts-fill'+(att>=5?' danger':att>=3?' warn':'');
+
+      document.getElementById('overlay').classList.add('open');
+      document.getElementById('detailPanel').classList.add('open');
+      document.body.style.overflow='hidden';
+    }
+
+    function closePanel() {
+      document.getElementById('overlay').classList.remove('open');
+      document.getElementById('detailPanel').classList.remove('open');
+      document.body.style.overflow='';
+    }
+
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') closePanel(); });
+
+    const menuToggle=document.getElementById('menuToggle'), navLinks=document.getElementById('navLinks');
+    menuToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+    document.addEventListener('click',e=>{ if(!menuToggle.contains(e.target)&&!navLinks.contains(e.target)) navLinks.classList.remove('open'); });
+  </script>
+  <script src="{{ url_for('static', filename='js/admin/admin_management.js') }}"></script>
+</body>
+</html>

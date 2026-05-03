@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Settings | Iloilo Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    :root {
+      --accent:   #9fc1e1;
+      --accent2:  #48c78e;
+      --bg1:      #1e2d3d;
+      --bg2:      #2f3f4d;
+      --bg3:      #42586b;
+      --card:     rgba(255,255,255,0.06);
+      --card-b:   rgba(255,255,255,0.10);
+      --border:   rgba(255,255,255,0.08);
+      --border-a: rgba(159,193,225,0.25);
+      --tl:       #dae8f5;
+      --danger:   #ff6363;
+      --warn:     #ff9800;
+      --gold:     #f5c842;
+      --sidebar-w: 280px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .settings-shell { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .settings-sidebar {
+      width: var(--sidebar-w); flex-shrink: 0;
+      background: rgba(20,32,44,0.75); backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top:0; left:0; bottom:0; z-index:200;
+      overflow-y: auto;
+      transition: transform .3s cubic-bezier(.16,.84,.44,1);
+    }
+    .settings-sidebar::-webkit-scrollbar { width: 3px; }
+    .settings-sidebar::-webkit-scrollbar-thumb { background: rgba(159,193,225,.2); border-radius: 3px; }
+    .sidebar-back {
+      display:flex; align-items:center; gap:9px; padding:18px 20px 14px;
+      text-decoration:none; color:rgba(255,255,255,.55);
+      font-size:.82rem; font-weight:600; transition:.18s;
+      border-bottom:1px solid var(--border);
+    }
+    .sidebar-back:hover { color: var(--accent); }
+    .sidebar-back .back-circle {
+      width:28px; height:28px; border-radius:8px;
+      background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.18);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.85rem; color:var(--accent); transition:.18s; flex-shrink:0;
+    }
+    .sidebar-back:hover .back-circle { background:rgba(159,193,225,.2); transform:translateX(-2px); }
+    .sidebar-profile {
+      display:flex; flex-direction:column; align-items:center;
+      padding:24px 20px 20px; border-bottom:1px solid var(--border);
+    }
+    .avatar-wrap { position:relative; margin-bottom:14px; }
+    .avatar-circle {
+      width:78px; height:78px; border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),#5a8ab0);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.65rem; font-weight:700; color:#fff;
+      border:3px solid rgba(255,255,255,.15);
+      box-shadow:0 6px 24px rgba(0,0,0,.35); cursor:pointer; transition:.2s;
+    }
+    .avatar-circle:hover { border-color:var(--accent); box-shadow:0 6px 28px rgba(159,193,225,.25); }
+    .profile-name { font-size:.98rem; font-weight:700; color:#fff; text-align:center; margin-bottom:4px; }
+    .profile-email { font-size:.76rem; color:rgba(255,255,255,.38); text-align:center; margin-bottom:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px; }
+    .profile-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.25);
+      color:var(--accent2); border-radius:20px; padding:3px 12px;
+      font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    }
+    .sidebar-nav { padding:14px 12px; flex:1; }
+    .nav-section-label {
+      font-size:.62rem; font-weight:700; letter-spacing:.12em;
+      text-transform:uppercase; color:rgba(255,255,255,.25); padding:8px 10px 6px;
+    }
+    .nav-item {
+      display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px;
+      color:rgba(255,255,255,.6); font-size:.86rem; font-weight:500;
+      cursor:pointer; transition:.18s; margin-bottom:2px;
+      text-decoration:none; user-select:none; position:relative;
+    }
+    .nav-item:hover { background:rgba(255,255,255,.06); color:rgba(255,255,255,.9); }
+    .nav-item.active { background:rgba(159,193,225,.14); color:var(--accent); font-weight:600; }
+    .nav-item.active::before {
+      content:''; position:absolute; left:0; top:25%; bottom:25%;
+      width:3px; border-radius:0 3px 3px 0; background:var(--accent);
+    }
+    .nav-item i { width:18px; text-align:center; font-size:.95rem; flex-shrink:0; }
+    .nav-badge { margin-left:auto; background:rgba(255,99,99,.2); color:#ff9999; border-radius:20px; padding:1px 8px; font-size:.65rem; font-weight:700; }
+    .nav-badge.green { background:rgba(72,199,142,.15); color:var(--accent2); }
+    .sidebar-bottom { padding:12px 12px 20px; border-top:1px solid var(--border); }
+
+    /* ── MAIN ── */
+    .settings-main { margin-left:var(--sidebar-w); flex:1; padding:0 0 60px; min-height:100vh; }
+    .main-topbar {
+      position:sticky; top:0; z-index:100;
+      background:rgba(30,45,61,.9); backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding:0 36px; height:60px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .topbar-title { font-size:1rem; font-weight:700; letter-spacing:-.02em; display:flex; align-items:center; gap:10px; }
+    .topbar-title i { color:var(--accent); }
+    .topbar-right { display:flex; align-items:center; gap:10px; }
+    .content-wrap { padding:32px 36px; max-width:820px; }
+    .settings-section { display:none; }
+    .settings-section.active { display:block; }
+    .sec-heading { margin-bottom:24px; }
+    .sec-heading h2 { font-size:1.45rem; font-weight:700; letter-spacing:-.03em; margin-bottom:5px; }
+    .sec-heading h2 span { color:var(--accent); }
+    .sec-heading p { font-size:.85rem; color:var(--tl); }
+    .settings-search { margin-bottom:28px; position:relative; }
+    .settings-search i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; }
+    .settings-search input {
+      width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+      border-radius:12px; color:#fff; padding:12px 16px 12px 42px;
+      font-size:.92rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s;
+    }
+    .settings-search input::placeholder { color:rgba(255,255,255,.3); }
+    .settings-search input:focus { border-color:var(--accent); background:rgba(255,255,255,.09); box-shadow:0 0 0 3px rgba(159,193,225,.12); }
+    .quick-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px; margin-bottom:28px; }
+    .quick-card {
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:18px 16px; cursor:pointer; transition:.22s;
+      display:flex; flex-direction:column; align-items:flex-start; gap:10px;
+      backdrop-filter:blur(6px); position:relative; overflow:hidden;
+    }
+    .quick-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),transparent); opacity:0; transition:.22s; }
+    .quick-card:hover { background:var(--card-b); transform:translateY(-3px); box-shadow:0 10px 28px rgba(0,0,0,.2); }
+    .quick-card:hover::after { opacity:1; }
+    .qc-icon { width:36px; height:36px; border-radius:10px; background:rgba(159,193,225,.12); display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--accent); transition:.22s; }
+    .quick-card:hover .qc-icon { background:rgba(159,193,225,.22); }
+    .qc-label { font-size:.82rem; font-weight:600; color:rgba(255,255,255,.8); }
+
+    .block { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:18px; backdrop-filter:blur(8px); }
+    .block-head { display:flex; align-items:center; justify-content:space-between; padding:14px 20px 12px; border-bottom:1px solid var(--border); }
+    .block-title { font-size:.78rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent); display:flex; align-items:center; gap:8px; }
+    .block-action { font-size:.75rem; font-weight:600; color:var(--accent); background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); border-radius:8px; padding:4px 12px; cursor:pointer; transition:.18s; }
+    .block-action:hover { background:rgba(159,193,225,.2); color:#fff; }
+
+    .setting-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 20px; border-bottom:1px solid rgba(255,255,255,.04);
+      transition:.18s; gap:16px;
+    }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-row:hover { background:rgba(255,255,255,.03); }
+    .sr-left { display:flex; align-items:center; gap:13px; flex:1; min-width:0; }
+    .sr-icon { width:34px; height:34px; border-radius:9px; background:rgba(159,193,225,.1); display:flex; align-items:center; justify-content:center; font-size:.88rem; color:var(--accent); flex-shrink:0; }
+    .sr-icon.green  { background:rgba(72,199,142,.1);  color:var(--accent2); }
+    .sr-icon.warn   { background:rgba(255,152,0,.1);    color:var(--warn); }
+    .sr-icon.danger { background:rgba(255,99,99,.1);    color:var(--danger); }
+    .sr-icon.gold   { background:rgba(245,200,66,.1);   color:var(--gold); }
+    .sr-label { font-size:.88rem; font-weight:600; color:rgba(255,255,255,.85); margin-bottom:2px; }
+    .sr-sub   { font-size:.75rem; color:rgba(255,255,255,.35); }
+    .toggle { position:relative; width:40px; height:22px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; position:absolute; }
+    .toggle-track { position:absolute; inset:0; border-radius:22px; background:rgba(255,255,255,.12); cursor:pointer; transition:.25s; }
+    .toggle input:checked + .toggle-track { background:var(--accent2); }
+    .toggle-track::after { content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; transition:.25s; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+    .toggle input:checked + .toggle-track::after { transform:translateX(18px); }
+    .sr-select { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:8px; color:#fff; padding:6px 10px; font-size:.82rem; font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; transition:.18s; min-width:120px; }
+    .sr-select option { background:#253545; }
+    .sr-select:focus { border-color:var(--accent); }
+    .sr-btn { background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); color:var(--accent); border-radius:8px; padding:6px 14px; font-size:.78rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; white-space:nowrap; }
+    .sr-btn:hover { background:rgba(159,193,225,.2); color:#fff; }
+    .sr-btn.danger { background:rgba(255,99,99,.1); border-color:rgba(255,99,99,.25); color:var(--danger); }
+    .sr-btn.danger:hover { background:rgba(255,99,99,.2); color:#fff; }
+    .sr-value { font-size:.82rem; color:var(--tl); white-space:nowrap; }
+
+    /* ── PERSONAL TABS ── */
+    .personal-tabs {
+      display: flex; gap: 4px;
+      background: rgba(0,0,0,.2); border-radius: 12px; padding: 4px;
+      margin-bottom: 22px; border: 1px solid rgba(255,255,255,.06);
+    }
+    .personal-tab {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 9px 12px; border-radius: 9px; cursor: pointer;
+      font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.4);
+      transition: .2s; border: none; background: none; font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+    }
+    .personal-tab i { font-size: .88rem; }
+    .personal-tab:hover { color: rgba(255,255,255,.75); background: rgba(255,255,255,.05); }
+    .personal-tab.active {
+      background: rgba(159,193,225,.14); color: var(--accent);
+      box-shadow: 0 2px 10px rgba(0,0,0,.2);
+    }
+    .personal-tab-badge {
+      background: rgba(245,200,66,.18); color: var(--gold);
+      border-radius: 20px; padding: 1px 7px; font-size: .62rem; font-weight: 700;
+      border: 1px solid rgba(245,200,66,.25);
+    }
+    .personal-tab-panel { display: none; }
+    .personal-tab-panel.active { display: block; }
+
+    /* ── GENDER PILLS ── */
+    .gender-pills { display: flex; gap: 7px; flex-wrap: wrap; }
+    .gender-pill { display: flex; align-items: center; }
+    .gender-pill input[type="radio"] { display: none; }
+    .gender-pill label {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: .82rem; font-weight: 600; color: rgba(218,232,245,.65);
+      cursor: pointer; transition: .18s; user-select: none;
+    }
+    .gender-pill label:hover { background: rgba(159,193,225,.12); border-color: rgba(159,193,225,.35); color: #fff; }
+    .gender-pill input[type="radio"]:checked + label {
+      background: rgba(159,193,225,.18); border-color: var(--accent);
+      color: var(--accent); box-shadow: 0 0 0 2px rgba(159,193,225,.15);
+    }
+    .gender-pill label i { font-size: .75rem; }
+
+    /* ── INLINE EDITOR SLIDE PANEL ── */
+    .inline-editor-wrap {
+      overflow: hidden;
+      max-height: 0; opacity: 0;
+      transition: max-height .28s ease, opacity .28s ease, padding .28s ease;
+      padding: 0 20px;
+    }
+    .inline-editor-wrap.open {
+      max-height: 120px; opacity: 1;
+      padding: 0 20px 14px;
+    }
+
+    /* ── EDUCATION SELECT ── */
+    .edu-select-full {
+      width: 100%; max-width: 340px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 10px; color: #fff; padding: 9px 36px 9px 12px;
+      font-size: .85rem; font-family: 'DM Sans', sans-serif; outline: none;
+      cursor: pointer; transition: .2s;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(159,193,225,.6)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    .edu-select-full option { background: #253545; color: #fff; }
+    .edu-select-full:focus { border-color: var(--accent); background-color: rgba(255,255,255,.10); box-shadow: 0 0 0 3px rgba(159,193,225,.12); }
+
+    /* ── OFFICE PHONE SLIDE ── */
+    .office-phone-wrap {
+      overflow: hidden; max-height: 0; opacity: 0;
+      transition: max-height .3s ease, opacity .3s ease;
+    }
+    .office-phone-wrap.visible { max-height: 80px; opacity: 1; }
+
+    /* ── PASSWORD INPUT ── */
+    .pw-input-wrap { position:relative; flex:1; min-width:160px; max-width:260px; }
+    .pw-input-wrap input {
+      width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+      border-radius:9px; color:#fff; padding:8px 36px 8px 12px;
+      font-family:'DM Mono',monospace; font-size:.82rem; outline:none; transition:.18s;
+    }
+    .pw-input-wrap input:focus { border-color:var(--accent); background:rgba(255,255,255,.1); }
+    .pw-eye { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,.35); cursor:pointer; font-size:.88rem; transition:.18s; padding:0; }
+    .pw-eye:hover { color:var(--accent); }
+    .pw-strength { height:4px; border-radius:4px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:4px; }
+    .pw-strength-fill { height:100%; width:0; border-radius:4px; transition:width .35s,background .35s; }
+    .pw-requirements { padding:14px 20px 18px; border-top:1px solid rgba(255,255,255,.05); background:rgba(0,0,0,.15); }
+    .pw-req-title { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:12px; }
+    .pw-req-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .pw-req-item { display:flex; align-items:center; gap:8px; font-size:.77rem; color:rgba(255,255,255,.35); transition:color .2s; }
+    .pw-req-item.met { color:var(--accent2); }
+    .req-dot { width:18px; height:18px; border-radius:50%; flex-shrink:0; border:1.5px solid rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; font-size:.58rem; transition:.22s; color:transparent; }
+    .pw-req-item.met .req-dot { background:rgba(72,199,142,.2); border-color:var(--accent2); color:var(--accent2); }
+
+    /* ── VALID ID SECTION ── */
+    .vid-lock-banner {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 20px;
+      background: rgba(245,200,66,.06); border-bottom: 1px solid rgba(245,200,66,.12);
+    }
+    .vid-lock-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      background: rgba(245,200,66,.12); border: 1px solid rgba(245,200,66,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; color: var(--gold);
+    }
+    .vid-lock-text h4 { font-size: .88rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .vid-lock-text p  { font-size: .75rem; color: rgba(255,255,255,.4); line-height: 1.55; margin: 0; }
+    .vid-unlock-btn {
+      margin-left: auto; flex-shrink: 0;
+      background: rgba(245,200,66,.12); border: 1px solid rgba(245,200,66,.25);
+      color: var(--gold); border-radius: 9px; padding: 8px 16px;
+      font-size: .78rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; display: flex; align-items: center; gap: 6px;
+    }
+    .vid-unlock-btn:hover { background: rgba(245,200,66,.22); color: #fff; }
+    .vid-pw-gate {
+      padding: 22px 24px; display: none;
+      flex-direction: column; gap: 14px;
+      background: rgba(0,0,0,.18); border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .vid-pw-gate.open { display: flex; }
+    .vid-pw-gate label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; display: block;
+    }
+    .vid-pw-input-row { display: flex; gap: 10px; align-items: center; }
+    .vid-pw-field { flex: 1; position: relative; }
+    .vid-pw-field input {
+      width: 100%; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 10px;
+      color: #fff; padding: 10px 38px 10px 14px;
+      font-family: 'DM Mono', monospace; font-size: .85rem; outline: none; transition: .2s;
+    }
+    .vid-pw-field input:focus { border-color: var(--gold); background: rgba(255,255,255,.1); box-shadow: 0 0 0 3px rgba(245,200,66,.1); }
+    .vid-pw-field .pw-eye { right: 11px; }
+    .vid-pw-confirm-btn {
+      background: rgba(245,200,66,.14); border: 1px solid rgba(245,200,66,.28);
+      color: var(--gold); border-radius: 10px; padding: 10px 20px;
+      font-size: .83rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .vid-pw-confirm-btn:hover { background: rgba(245,200,66,.26); color: #fff; }
+    .vid-pw-confirm-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .vid-pw-error {
+      display: none; background: rgba(255,99,99,.1); border: 1px solid rgba(255,99,99,.25);
+      border-radius: 9px; padding: 9px 14px;
+      font-size: .78rem; color: #ff9090; align-items: center; gap: 8px;
+    }
+    .vid-pw-error.show { display: flex; }
+
+    /* ── AI VALIDATOR UPLOAD AREA ── */
+    .vid-upload-area { padding: 0; display: none; flex-direction: column; gap: 0; }
+    .vid-upload-area.open { display: flex; }
+
+    .vid-ai-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 0;
+    }
+    .vid-ai-title {
+      font-size: .78rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--gold);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .vid-ai-badge {
+      background: rgba(72,199,142,.12); color: var(--accent2);
+      border: 1px solid rgba(72,199,142,.22); border-radius: 20px;
+      padding: 2px 9px; font-size: .62rem; font-weight: 700; letter-spacing: .06em;
+    }
+
+    .vid-dropzone {
+      border: 2px dashed rgba(159,193,225,.22); border-radius: 14px;
+      padding: 28px 20px; text-align: center;
+      background: rgba(159,193,225,.03); cursor: pointer;
+      transition: .2s; position: relative; overflow: hidden;
+      margin: 16px 20px;
+    }
+    .vid-dropzone:hover, .vid-dropzone.drag-over { border-color: rgba(159,193,225,.5); background: rgba(159,193,225,.07); }
+    .vid-dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .vid-dropzone-icon {
+      width: 52px; height: 52px; border-radius: 14px; margin: 0 auto 14px;
+      background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; color: var(--accent);
+    }
+    .vid-dropzone h4 { font-size: .9rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .vid-dropzone p  { font-size: .78rem; color: rgba(255,255,255,.35); margin: 0; line-height: 1.6; }
+    .vid-dropzone .vid-browse { color: var(--accent); font-weight: 700; }
+
+    .vid-preview-wrap { display: none; flex-direction: column; gap: 10px; margin: 0 20px 14px; }
+    .vid-preview-wrap.show { display: flex; }
+    .vid-preview-img { border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,.1); max-height: 180px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.2); }
+    .vid-preview-img img { max-width: 100%; max-height: 180px; object-fit: contain; display: block; }
+    .vid-preview-name { font-size: .8rem; color: var(--tl); display: flex; align-items: center; gap: 7px; }
+    .vid-preview-name i { color: var(--accent); }
+    .vid-preview-name .vid-remove { margin-left: auto; background: none; border: none; color: rgba(255,99,99,.6); cursor: pointer; font-size: .8rem; transition: .18s; padding: 0; display: flex; align-items: center; gap: 4px; font-family: 'DM Sans', sans-serif; }
+    .vid-preview-name .vid-remove:hover { color: var(--danger); }
+
+    /* accepted pills */
+    .vid-pills-section { padding: 0 20px 16px; }
+    .vid-pills-label { font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.28); margin-bottom: 8px; }
+    .vid-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .vid-pill { background: rgba(159,193,225,.08); border: 1px solid rgba(159,193,225,.18); border-radius: 20px; padding: 3px 10px; font-size: .69rem; font-weight: 600; color: rgba(218,232,245,.65); }
+    .vid-pill.school { background: rgba(72,199,142,.07); border-color: rgba(72,199,142,.2); color: rgba(72,199,142,.8); }
+
+    /* scan button (reuses vid-save-btn style) */
+    .vid-save-btn {
+      width: calc(100% - 40px); margin: 0 20px 20px;
+      background: rgba(159,193,225,.14);
+      border: 1.5px solid rgba(159,193,225,.3); color: #fff;
+      border-radius: 12px; padding: 12px;
+      font-size: .88rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .vid-save-btn:hover:not(:disabled) { background: rgba(159,193,225,.25); }
+    .vid-save-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .vid-save-btn .vid-spin { animation: spin .6s linear infinite; display: none; }
+    .vid-save-btn.loading .vid-spin { display: inline; }
+    .vid-save-btn.loading .vid-save-label { display: none; }
+
+    /* results */
+    .vid-results-wrap { display: none; flex-direction: column; gap: 12px; margin: 0 20px 16px; }
+    .vid-results-wrap.show { display: flex; }
+    .vid-res-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; }
+    .vid-res-header.valid   { background: rgba(72,199,142,.08);  border: 1px solid rgba(72,199,142,.2); }
+    .vid-res-header.invalid { background: rgba(255,99,99,.08);   border: 1px solid rgba(255,99,99,.2); }
+    .vid-res-header.warn    { background: rgba(255,152,0,.08);   border: 1px solid rgba(255,152,0,.2); }
+    .vid-res-icon { width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .vid-res-icon.valid   { background: rgba(72,199,142,.15); color: var(--accent2); }
+    .vid-res-icon.invalid { background: rgba(255,99,99,.15);  color: var(--danger); }
+    .vid-res-icon.warn    { background: rgba(255,152,0,.15);  color: var(--warn); }
+    .vid-res-title { font-size: .92rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .vid-res-sub   { font-size: .76rem; color: rgba(255,255,255,.45); line-height: 1.55; }
+    .vid-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .vid-check-item { display: flex; align-items: center; gap: 9px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 10px 12px; }
+    .vid-check-item .cdot { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid; display: flex; align-items: center; justify-content: center; font-size: .65rem; }
+    .vid-check-item.pass .cdot { background: rgba(72,199,142,.2);  border-color: var(--accent2); color: var(--accent2); }
+    .vid-check-item.fail .cdot { background: rgba(255,99,99,.15);  border-color: var(--danger);  color: var(--danger); }
+    .vid-check-item.skip .cdot { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.28); }
+    .vid-check-label { font-size: .78rem; color: rgba(255,255,255,.72); flex: 1; line-height: 1.4; }
+    .vid-check-label span { display: block; font-size: .68rem; color: rgba(255,255,255,.3); margin-top: 1px; }
+    .vid-flag-box {
+      display: none; background: rgba(255,152,0,.07); border: 1px solid rgba(255,152,0,.2);
+      border-radius: 10px; padding: 12px 14px; font-size: .78rem;
+      color: rgba(255,200,80,.85); align-items: flex-start; gap: 9px; line-height: 1.6;
+    }
+    .vid-flag-box.show { display: flex; }
+
+    .vid-locked-notice { padding: 28px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .vid-locked-notice i { font-size: 2rem; color: rgba(245,200,66,.4); display: block; }
+    .vid-locked-notice p { font-size: .82rem; color: rgba(255,255,255,.35); margin: 0; line-height: 1.65; }
+
+    /* ── ACTIVITY ── */
+    .activity-item { display:flex; align-items:flex-start; gap:13px; padding:13px 20px; border-bottom:1px solid rgba(255,255,255,.04); transition:.15s; }
+    .activity-item:last-child { border-bottom:none; }
+    .activity-item:hover { background:rgba(255,255,255,.02); }
+    .act-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); margin-top:5px; flex-shrink:0; }
+    .act-dot.warn { background:var(--warn); }
+    .act-dot.gold { background:var(--gold); }
+    .act-text { font-size:.83rem; color:rgba(255,255,255,.75); flex:1; line-height:1.5; }
+    .act-time { font-size:.72rem; color:rgba(255,255,255,.28); white-space:nowrap; }
+    .act-skeleton { display:flex; align-items:center; gap:13px; padding:13px 20px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .act-skeleton:last-child { border-bottom:none; }
+    .skel-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.1); flex-shrink:0; animation:skelPulse 1.4s ease-in-out infinite; }
+    .skel-line { height:12px; border-radius:6px; background:rgba(255,255,255,.08); animation:skelPulse 1.4s ease-in-out infinite; }
+    .skel-line.long  { flex:1; }
+    .skel-line.short { width:60px; }
+    @keyframes skelPulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
+
+    /* ── THEME ── */
+    .theme-row { display:flex; gap:10px; padding:16px 20px; flex-wrap:wrap; }
+    .theme-swatch { width:44px; height:44px; border-radius:12px; cursor:pointer; border:2px solid transparent; transition:.18s; position:relative; }
+    .theme-swatch:hover { transform:scale(1.1); }
+    .theme-swatch.active { border-color:#fff; }
+    .theme-swatch.active::after { content:'\F26E'; font-family:'bootstrap-icons'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:.9rem; color:#fff; text-shadow:0 0 6px rgba(0,0,0,.5); }
+
+    /* ── STORAGE ── */
+    .storage-bar { height:6px; border-radius:6px; background:rgba(255,255,255,.08); margin:4px 20px 8px; overflow:hidden; }
+    .storage-fill { height:100%; border-radius:6px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .6s ease, background .4s ease; }
+    .storage-label { display:flex; justify-content:space-between; padding:0 20px 14px; }
+    .storage-label span { font-size:.75rem; color:rgba(255,255,255,.4); }
+    .storage-label strong { font-size:.75rem; color:var(--accent); }
+    .storage-breakdown { padding:4px 20px 16px; display:flex; flex-direction:column; gap:9px; }
+    .storage-breakdown-row { display:flex; justify-content:space-between; align-items:center; }
+    .storage-breakdown-row span { font-size:.78rem; color:rgba(255,255,255,.5); display:flex; align-items:center; gap:7px; }
+    .storage-breakdown-row strong { font-size:.75rem; color:var(--tl); }
+    .storage-banner { margin:0 20px 14px; padding:10px 14px; border-radius:10px; display:none; align-items:center; gap:10px; font-size:.8rem; }
+    .storage-banner.warn-banner { background:rgba(255,152,0,.1); border:1px solid rgba(255,152,0,.3); }
+    .storage-banner.full-banner { background:rgba(255,99,99,.1); border:1px solid rgba(255,99,99,.3); }
+    .storage-banner.show { display:flex; }
+
+    /* ── DANGER ZONE ── */
+    .dz-form-label { display:flex; align-items:center; font-size:.73rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:7px; }
+    .dz-radio-card { display:flex; align-items:flex-start; gap:13px; padding:13px 16px; border-radius:12px; cursor:pointer; transition:.18s; }
+    .dz-radio-card.warn   { background:rgba(255,152,0,.07);  border:1.5px solid rgba(255,152,0,.2); }
+    .dz-radio-card.danger { background:rgba(255,99,99,.07);  border:1.5px solid rgba(255,99,99,.2); }
+    .dz-radio-card.warn.selected   { background:rgba(255,152,0,.13); border-color:rgba(255,152,0,.5); }
+    .dz-radio-card.danger.selected { background:rgba(255,99,99,.14); border-color:rgba(255,99,99,.5); }
+    .dz-radio-card input[type="radio"]        { margin-top:3px; flex-shrink:0; accent-color:var(--warn); }
+    .dz-radio-card.danger input[type="radio"] { accent-color:var(--danger); }
+    .dz-field-input { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:10px 14px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; box-sizing:border-box; }
+    .dz-field-input:focus { border-color:rgba(255,99,99,.5); box-shadow:0 0 0 3px rgba(255,99,99,.1); background:rgba(255,255,255,.1); }
+    .dz-field-input[readonly] { background:rgba(255,255,255,.04); color:rgba(255,255,255,.38); cursor:not-allowed; }
+    .dz-pw-wrap { position:relative; }
+    .dz-pw-wrap .dz-field-input { padding-right:42px; font-family:'DM Mono',monospace; }
+    .dz-pw-eye { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:rgba(255,255,255,.28); cursor:pointer; font-size:.9rem; transition:.18s; padding:0; }
+    .dz-pw-eye:hover { color:var(--accent); }
+    .dz-form-error { display:none; background:rgba(255,99,99,.1); border:1px solid rgba(255,99,99,.25); border-radius:9px; padding:10px 14px; font-size:.79rem; color:#ff9090; align-items:center; gap:8px; }
+    .dz-form-error.show { display:flex; }
+    .dz-pending-banner { display:none; margin:16px 20px 0; padding:12px 16px; background:rgba(255,152,0,.1); border:1px solid rgba(255,152,0,.28); border-radius:10px; font-size:.82rem; color:var(--warn); align-items:center; gap:10px; }
+    .dz-pending-banner.show { display:flex; }
+    .dz-submit-btn { width:100%; background:rgba(255,99,99,.15); border:1.5px solid rgba(255,99,99,.3); color:#ff9090; border-radius:10px; padding:13px; font-size:.9rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .dz-submit-btn:hover:not(:disabled) { background:rgba(255,99,99,.28); color:#fff; }
+    .dz-submit-btn:disabled { opacity:.35; cursor:not-allowed; }
+
+    /* ── TOAST ── */
+    .toast-shelf { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+    .t-toast { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:10px; font-size:.83rem; color:#fff; box-shadow:0 8px 28px rgba(0,0,0,.35); animation:tIn .3s ease; min-width:240px; }
+    .t-toast.success { border-color:rgba(72,199,142,.35); }
+    .t-toast.warn    { border-color:rgba(255,152,0,.35); }
+    .t-toast.err     { border-color:rgba(255,99,99,.35); }
+    @keyframes tIn { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+    /* ── MOBILE ── */
+    .mob-sidebar-toggle { display:none; position:fixed; bottom:20px; left:20px; width:44px; height:44px; border-radius:14px; background:var(--bg2); border:1px solid var(--border); color:var(--accent); font-size:1.2rem; align-items:center; justify-content:center; cursor:pointer; z-index:999; box-shadow:0 4px 18px rgba(0,0,0,.35); transition:.18s; }
+    .sidebar-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); z-index:199; }
+    @media (max-width:840px) {
+      .settings-sidebar { transform:translateX(-100%); }
+      .settings-sidebar.mob-open { transform:translateX(0); }
+      .settings-main { margin-left:0; }
+      .mob-sidebar-toggle { display:flex; }
+      .sidebar-backdrop.show { display:block; }
+      .content-wrap { padding:24px 20px; }
+      .main-topbar { padding:0 20px; }
+      .quick-row { grid-template-columns:repeat(2,1fr); }
+      .pw-req-grid { grid-template-columns:1fr; }
+      .personal-tabs { flex-wrap:wrap; }
+      .personal-tab { flex:unset; font-size:.76rem; padding:8px 10px; }
+      .vid-lock-banner { flex-wrap:wrap; }
+      .vid-unlock-btn { width:100%; justify-content:center; margin-left:0; }
+      .vid-check-grid { grid-template-columns:1fr; }
+    }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .login-pin-digit {
+      width:44px; height:52px; background:rgba(255,255,255,.07);
+      border:1.5px solid rgba(159,193,225,.22); border-radius:12px; color:#fff;
+      font-family:'DM Mono',monospace; font-size:1.4rem; font-weight:700;
+      text-align:center; outline:none; transition:.2s; caret-color:var(--accent);
+    }
+    .login-pin-digit:focus { border-color:var(--accent); background:rgba(159,193,225,.1); box-shadow:0 0 0 3px rgba(159,193,225,.18); transform:translateY(-2px); }
+    .login-pin-digit.pin-filled { border-color:rgba(159,193,225,.5); background:rgba(159,193,225,.08); }
+
+    /* ── CUSTOMER SERVICE ── */
+    .cs-shell { display:flex; flex-direction:row; height:620px; background:rgba(15,25,36,.55); border:1px solid rgba(159,193,225,.14); border-radius:20px; overflow:hidden; width:100%; }
+    .cs-left { flex:1; display:flex; flex-direction:column; min-width:0; border-right:1px solid rgba(159,193,225,.10); }
+    .cs-header { display:flex; align-items:center; gap:14px; padding:18px 22px; background:rgba(10,20,30,.6); border-bottom:1px solid rgba(159,193,225,.1); flex-shrink:0; }
+    .cs-bot-avatar { width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#1a3a5a 0%,#0d2035 100%); border:2px solid rgba(159,193,225,.35); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
+    .cs-bot-avatar svg { width:26px; height:26px; }
+    .cs-online-dot { position:absolute; bottom:1px; right:1px; width:11px; height:11px; border-radius:50%; background:var(--accent2); border:2px solid rgba(10,20,30,.8); }
+    .cs-header-info { flex:1; min-width:0; }
+    .cs-bot-name { font-size:.92rem; font-weight:700; color:#fff; }
+    .cs-bot-status { font-size:.72rem; color:var(--accent2); display:flex; align-items:center; gap:5px; margin-top:2px; }
+    .cs-bot-status::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent2); flex-shrink:0; }
+    .cs-chat { flex:1; overflow-y:auto; padding:22px 20px; display:flex; flex-direction:column; gap:18px; }
+    .cs-chat::-webkit-scrollbar { width:3px; }
+    .cs-chat::-webkit-scrollbar-thumb { background:rgba(159,193,225,.18); border-radius:3px; }
+    .cs-msg-row { display:flex; align-items:flex-end; gap:10px; }
+    .cs-msg-row.bot { align-self:flex-start; max-width:90%; }
+    .cs-msg-row.user { align-self:flex-end; flex-direction:row-reverse; max-width:75%; }
+    .cs-msg-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#1a3a5a,#0d2035); border:1.5px solid rgba(159,193,225,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .cs-msg-avatar svg { width:16px; height:16px; }
+    .cs-bubble { padding:12px 16px; border-radius:16px; font-size:.85rem; line-height:1.6; }
+    .cs-msg-row.bot .cs-bubble { background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.16); color:#dae8f5; border-bottom-left-radius:4px; }
+    .cs-msg-row.user .cs-bubble { background:rgba(159,193,225,.22); border:1px solid rgba(159,193,225,.3); color:#fff; border-bottom-right-radius:4px; }
+    .cs-timestamp { font-size:.67rem; color:rgba(255,255,255,.22); margin-top:4px; padding:0 4px; }
+    .cs-msg-row.bot .cs-timestamp { align-self:flex-start; }
+    .cs-msg-row.user .cs-timestamp { align-self:flex-end; }
+    .cs-typing { display:flex; align-items:center; gap:5px; padding:12px 16px; background:rgba(159,193,224,.08); border:1px solid rgba(159,193,225,.12); border-radius:16px; border-bottom-left-radius:4px; width:fit-content; }
+    .cs-typing span { width:7px; height:7px; border-radius:50%; background:var(--accent); animation:typingBounce .9s ease-in-out infinite; }
+    .cs-typing span:nth-child(2) { animation-delay:.15s; }
+    .cs-typing span:nth-child(3) { animation-delay:.3s; }
+    @keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-5px);opacity:1} }
+    .cs-options-panel { width:230px; flex-shrink:0; display:flex; flex-direction:column; background:rgba(10,20,30,.5); overflow-y:auto; padding:16px 14px 20px; }
+    .cs-options-panel::-webkit-scrollbar { width:3px; }
+    .cs-options-panel::-webkit-scrollbar-thumb { background:rgba(159,193,225,.15); border-radius:3px; }
+    .cs-options-label { font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:10px; display:flex; align-items:center; gap:7px; flex-shrink:0; }
+    .cs-options-label i { font-size:.75rem; color:var(--accent); }
+    .cs-options-grid { display:flex; flex-direction:column; gap:6px; flex:1; }
+    .cs-option-btn { display:flex; align-items:flex-start; gap:9px; width:100%; padding:10px 12px; background:rgba(159,193,225,.07); border:1px solid rgba(159,193,225,.15); border-radius:10px; color:rgba(255,255,255,.78); font-size:.8rem; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; text-align:left; line-height:1.4; }
+    .cs-option-btn:hover { background:rgba(159,193,225,.16); border-color:rgba(159,193,225,.35); color:#fff; transform:translateX(2px); }
+    .cs-option-num { width:20px; height:20px; min-width:20px; border-radius:6px; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22); color:var(--accent); font-size:.7rem; font-weight:700; font-family:'DM Mono',monospace; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .cs-option-btn:hover .cs-option-num { background:rgba(159,193,225,.25); }
+    .cs-restart-btn { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; padding:9px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:9px; color:rgba(255,255,255,.35); font-size:.75rem; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; margin-top:12px; flex-shrink:0; }
+    .cs-restart-btn:hover { background:rgba(255,255,255,.1); color:rgba(255,255,255,.7); }
+    @media (max-width:680px) {
+      .cs-shell { flex-direction:column; height:auto; min-height:500px; }
+      .cs-left { border-right:none; border-bottom:1px solid rgba(159,193,225,.10); min-height:340px; max-height:420px; }
+      .cs-options-panel { width:100%; max-height:260px; overflow-y:auto; padding:14px 14px 16px; }
+      .cs-options-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    }
+  </style>
+  <script src="/static/js/appearance.js"></script>
+</head>
+<body>
+
+<div class="settings-shell">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="settings-sidebar" id="settingsSidebar">
+    <a href="/user/home" class="sidebar-back">
+      <div class="back-circle"><i class="bi bi-arrow-left"></i></div>
+      Back to Home
+    </a>
+    <div class="sidebar-profile">
+      <div class="avatar-wrap">
+        <div class="avatar-circle" id="avatarCircle">
+          {{ user.firstname[0] | upper }}{{ user.lastname[0] | upper if user.lastname else '—' }}
+        </div>
+      </div>
+      <div class="profile-name">{{ user.firstname }} {{ user.lastname }}</div>
+      <div class="profile-email">{{ user.email if user.email else user.username }}</div>
+      <span class="profile-badge"><i class="bi bi-check-circle-fill"></i> Active Member</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">General</div>
+      <a class="nav-item active" data-section="overview" onclick="switchSection(this,'overview')">
+        <i class="bi bi-grid-fill"></i> Overview
+      </a>
+      <a class="nav-item" data-section="personal" onclick="switchSection(this,'personal')">
+        <i class="bi bi-person-fill"></i> Personal Details
+      </a>
+      <a class="nav-item" data-section="security" onclick="switchSection(this,'security')">
+        <i class="bi bi-shield-lock-fill"></i> Password &amp; Security
+        <span class="nav-badge">!</span>
+      </a>
+      <div class="nav-section-label" style="margin-top:10px;">Preferences</div>
+      <a class="nav-item" data-section="appearance" onclick="switchSection(this,'appearance')">
+        <i class="bi bi-palette-fill"></i> Appearance
+      </a>
+      <a class="nav-item" data-section="data" onclick="switchSection(this,'data')">
+        <i class="bi bi-cloud-fill"></i> Data &amp; Storage
+      </a>
+      <div class="nav-section-label" style="margin-top:10px;">More</div>
+      <a class="nav-item" data-section="support" onclick="switchSection(this,'support')">
+        <i class="bi bi-headset" style="color:var(--accent2);"></i>
+        <span style="color:rgba(255,255,255,.75);">Customer Service</span>
+        <span class="nav-badge green">AI</span>
+      </a>
+      <a class="nav-item" data-section="danger" onclick="switchSection(this,'danger')">
+        <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i>
+        <span style="color:rgba(255,100,100,.75);">Danger Zone</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="/logout" style="color:rgba(255,100,100,.65);">
+        <i class="bi bi-box-arrow-right" style="color:rgba(255,100,100,.65);"></i> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="settings-main">
+    <div class="main-topbar">
+      <div class="topbar-title">
+        <i class="bi bi-gear-fill"></i>
+        <span id="mainTopbarTitle">Settings</span>
+      </div>
+      <div class="topbar-right">
+        <button class="sr-btn" onclick="showToast('All settings saved','success')">
+          <i class="bi bi-check2 me-1"></i> Save Changes
+        </button>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+
+      <!-- Search -->
+      <div class="settings-search">
+        <i class="bi bi-search"></i>
+        <input type="text" id="settingsSearch" placeholder="Find a setting… (e.g. password, theme)" oninput="searchSettings(this.value)">
+      </div>
+
+      <!-- ══ OVERVIEW ══ -->
+      <div class="settings-section active" id="sec-overview">
+        <div class="sec-heading">
+          <h2>Good to see you, <span>{{ user.firstname }} {{ user.lastname }}</span> 👋</h2>
+          <p>Manage everything about your account from here.</p>
+        </div>
+        <div class="quick-row">
+          <div class="quick-card" onclick="switchSectionByKey('personal')">
+            <div class="qc-icon"><i class="bi bi-person-fill"></i></div>
+            <div class="qc-label">Personal Details</div>
+          </div>
+          <div class="quick-card" onclick="switchSectionByKey('security')">
+            <div class="qc-icon" style="background:rgba(255,99,99,.1);color:var(--danger);"><i class="bi bi-shield-lock-fill"></i></div>
+            <div class="qc-label">Password &amp; Security</div>
+          </div>
+          <div class="quick-card" onclick="switchSectionByKey('appearance')">
+            <div class="qc-icon" style="background:rgba(72,199,142,.1);color:var(--accent2);"><i class="bi bi-palette-fill"></i></div>
+            <div class="qc-label">Appearance</div>
+          </div>
+          <div class="quick-card" onclick="switchSectionByKey('data')">
+            <div class="qc-icon" style="background:rgba(255,152,0,.1);color:var(--warn);"><i class="bi bi-cloud-fill"></i></div>
+            <div class="qc-label">Data &amp; Storage</div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head">
+            <span class="block-title"><i class="bi bi-person-badge-fill"></i> Account Summary</span>
+            <button class="block-action" onclick="switchSectionByKey('personal')">Edit</button>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon"><i class="bi bi-at"></i></div><div><div class="sr-label">Username / Email</div><div class="sr-sub">{{ user.email }}</div></div></div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon green"><i class="bi bi-check-circle-fill"></i></div><div><div class="sr-label">Account Status</div><div class="sr-sub">Active &amp; Verified</div></div></div>
+            <span class="sr-value" style="color:var(--accent2);">● Active</span>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon gold"><i class="bi bi-calendar3"></i></div><div><div class="sr-label">Member Since</div><div class="sr-sub">{{ user.member_since if user.member_since else 'N/A' }}</div></div></div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon"><i class="bi bi-book-fill"></i></div><div><div class="sr-label">Books Borrowed</div><div class="sr-sub">Lifetime total</div></div></div>
+            <span class="sr-value">{{ user.total_borrowed if user.total_borrowed else '0' }}</span>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head">
+            <span class="block-title"><i class="bi bi-clock-history"></i> Recent Activity</span>
+            <button class="block-action" id="activityRefreshBtn" onclick="loadRecentActivity(true)">
+              <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+          </div>
+          <div id="activityList">
+            <div class="act-skeleton"><div class="skel-dot"></div><div class="skel-line long"></div><div class="skel-line short"></div></div>
+            <div class="act-skeleton"><div class="skel-dot"></div><div class="skel-line long" style="animation-delay:.1s"></div><div class="skel-line short" style="animation-delay:.1s"></div></div>
+            <div class="act-skeleton"><div class="skel-dot"></div><div class="skel-line long" style="animation-delay:.2s"></div><div class="skel-line short" style="animation-delay:.2s"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PERSONAL DETAILS ══ -->
+      <div class="settings-section" id="sec-personal">
+        <div class="sec-heading">
+          <h2>Personal <span>Details</span></h2>
+          <p>Update your profile information and manage your valid ID.</p>
+        </div>
+        <div class="personal-tabs" role="tablist">
+          <button class="personal-tab active" id="ptab-info" onclick="switchPersonalTab('info')" role="tab">
+            <i class="bi bi-person-fill"></i> Profile Info
+          </button>
+          <button class="personal-tab" id="ptab-contact" onclick="switchPersonalTab('contact')" role="tab">
+            <i class="bi bi-telephone-fill"></i> Contact &amp; Location
+          </button>
+          <button class="personal-tab" id="ptab-work" onclick="switchPersonalTab('work')" role="tab">
+            <i class="bi bi-briefcase-fill"></i> Occupation
+          </button>
+          <button class="personal-tab" id="ptab-id" onclick="switchPersonalTab('id')" role="tab">
+            <i class="bi bi-card-image"></i> Valid ID
+            <span class="personal-tab-badge">Secure</span>
+          </button>
+        </div>
+
+        <!-- ── TAB: Profile Info ── -->
+        <div class="personal-tab-panel active" id="ppanel-info">
+          <div class="block">
+            <div class="block-head"><span class="block-title"><i class="bi bi-person-fill"></i> Basic Info</span></div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-person"></i></div><div><div class="sr-label">First Name</div><div class="sr-sub" id="disp-firstName">{{ user.firstname if user.firstname else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'First Name','text','{{ user.firstname }}','firstName')">Edit</button>
+            </div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-person"></i></div><div><div class="sr-label">Last Name</div><div class="sr-sub" id="disp-lastName">{{ user.lastname if user.lastname else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'Last Name','text','{{ user.lastname }}','lastName')">Edit</button>
+            </div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-123"></i></div><div><div class="sr-label">Age</div><div class="sr-sub" id="disp-age">{{ user.age if user.age else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'Age','number','{{ user.age }}','age')">Edit</button>
+            </div>
+            <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:0;padding-bottom:0;border-bottom:none;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;">
+                <div class="sr-left">
+                  <div class="sr-icon"><i class="bi bi-gender-ambiguous"></i></div>
+                  <div><div class="sr-label">Gender</div><div class="sr-sub" id="disp-gender">{{ user.gender if user.gender else '—' }}</div></div>
+                </div>
+                <button class="sr-btn" id="genderEditBtn" onclick="toggleGenderEdit()">Edit</button>
+              </div>
+              <div class="inline-editor-wrap" id="genderEditorWrap">
+                <div class="gender-pills" style="padding-left:47px;padding-bottom:6px;">
+                  <div class="gender-pill">
+                    <input type="radio" name="g_edit" id="ge_male" value="Male" onchange="applyGenderEdit('Male')" {% if user.gender == 'Male' %}checked{% endif %}>
+                    <label for="ge_male"><i class="bi bi-gender-male"></i> Male</label>
+                  </div>
+                  <div class="gender-pill">
+                    <input type="radio" name="g_edit" id="ge_female" value="Female" onchange="applyGenderEdit('Female')" {% if user.gender == 'Female' %}checked{% endif %}>
+                    <label for="ge_female"><i class="bi bi-gender-female"></i> Female</label>
+                  </div>
+                  <div class="gender-pill">
+                    <input type="radio" name="g_edit" id="ge_others" value="Others" onchange="applyGenderEdit('Others')" {% if user.gender == 'Others' %}checked{% endif %}>
+                    <label for="ge_others"><i class="bi bi-circle-half"></i> Others</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="border-bottom:1px solid rgba(255,255,255,.04);"></div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-mortarboard"></i></div><div><div class="sr-label">School / Institution</div><div class="sr-sub" id="disp-school">{{ user.school if user.school else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'School / Institution','text','{{ user.school }}','school')">Edit</button>
+            </div>
+            <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:0;padding-bottom:0;border-bottom:none;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;">
+                <div class="sr-left">
+                  <div class="sr-icon"><i class="bi bi-book"></i></div>
+                  <div><div class="sr-label">Education Level</div><div class="sr-sub" id="disp-educationLevel">{{ user.education_level if user.education_level else '—' }}</div></div>
+                </div>
+                <button class="sr-btn" id="eduEditBtn" onclick="toggleEduEdit()">Edit</button>
+              </div>
+              <div class="inline-editor-wrap" id="eduEditorWrap">
+                <div style="padding-left:47px;padding-bottom:6px;">
+                  <select class="edu-select-full" id="eduSelect" onchange="applyEduEdit(this.value)">
+                    <option value="">— Select level —</option>
+                    <option {% if user.education_level == 'Elementary' %}selected{% endif %}>Elementary</option>
+                    <option {% if user.education_level == 'Junior High School' %}selected{% endif %}>Junior High School</option>
+                    <option {% if user.education_level == 'Senior High School' %}selected{% endif %}>Senior High School</option>
+                    <option {% if user.education_level == 'Vocational / Technical' %}selected{% endif %}>Vocational / Technical</option>
+                    <option {% if user.education_level == 'College (Undergraduate)' %}selected{% endif %}>College (Undergraduate)</option>
+                    <option {% if user.education_level == "Bachelor's Degree" %}selected{% endif %}>Bachelor's Degree</option>
+                    <option {% if user.education_level == "Master's Degree" %}selected{% endif %}>Master's Degree</option>
+                    <option {% if user.education_level == 'Doctorate (PhD)' %}selected{% endif %}>Doctorate (PhD)</option>
+                    <option {% if user.education_level == 'Postdoctoral' %}selected{% endif %}>Postdoctoral</option>
+                    <option {% if user.education_level == 'Others' %}selected{% endif %}>Others</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div style="border-bottom:1px solid rgba(255,255,255,.04);"></div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-at"></i></div><div><div class="sr-label">Email / Username</div><div class="sr-sub">{{ user.email }}</div></div></div>
+              <span class="sr-value" style="font-size:.74rem;color:rgba(255,255,255,.28);">Read-only</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: Contact & Location ── -->
+        <div class="personal-tab-panel" id="ppanel-contact">
+          <div class="block">
+            <div class="block-head"><span class="block-title"><i class="bi bi-telephone-fill"></i> Contact &amp; Location</span></div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-telephone-fill"></i></div><div><div class="sr-label">Phone Number</div><div class="sr-sub" id="disp-phone">{{ user.phone if user.phone else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'Phone Number','text','{{ user.phone }}','phone')">Edit</button>
+            </div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-building"></i></div><div><div class="sr-label">City / Municipality</div><div class="sr-sub" id="disp-city">{{ user.city if user.city else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'City / Municipality','text','{{ user.city }}','city')">Edit</button>
+            </div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-map"></i></div><div><div class="sr-label">Province</div><div class="sr-sub" id="disp-province">{{ user.province if user.province else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'Province','text','{{ user.province }}','province')">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: Occupation ── -->
+        <div class="personal-tab-panel" id="ppanel-work">
+          <div class="block">
+            <div class="block-head"><span class="block-title"><i class="bi bi-briefcase-fill"></i> Occupation</span></div>
+            <div class="setting-row">
+              <div class="sr-left"><div class="sr-icon"><i class="bi bi-briefcase"></i></div><div><div class="sr-label">Occupation</div><div class="sr-sub" id="disp-occupation">{{ user.occupation if user.occupation else '—' }}</div></div></div>
+              <button class="sr-btn" onclick="openInlineEdit(this,'Occupation','text','{{ user.occupation }}','occupation')">Edit</button>
+            </div>
+            <div class="setting-row">
+              <div class="sr-left">
+                <div class="sr-icon warn"><i class="bi bi-shield-check"></i></div>
+                <div>
+                  <div class="sr-label">Government Employee</div>
+                  <div class="sr-sub">Toggle if you work in the public sector</div>
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="govToggle" {% if user.is_government %}checked{% endif %} onchange="handleGovToggle(this)">
+                <div class="toggle-track"></div>
+              </label>
+            </div>
+            <div class="office-phone-wrap {% if user.is_government %}visible{% endif %}" id="officePhoneWrap">
+              <div class="setting-row" style="border-top:1px solid rgba(255,152,0,.1);background:rgba(255,152,0,.04);">
+                <div class="sr-left">
+                  <div class="sr-icon warn"><i class="bi bi-telephone-plus"></i></div>
+                  <div><div class="sr-label">Office Phone</div><div class="sr-sub" id="disp-officePhone">{{ user.office_phone if user.office_phone else '—' }}</div></div>
+                </div>
+                <button class="sr-btn" onclick="openInlineEdit(this,'Office Phone','text','{{ user.office_phone }}','officePhone')">Edit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB: Valid ID ── -->
+        <div class="personal-tab-panel" id="ppanel-id">
+          <div class="block" style="border-color:rgba(245,200,66,.18);">
+            <div class="block-head" style="border-color:rgba(245,200,66,.12);">
+              <span class="block-title" style="color:var(--gold);">
+                <i class="bi bi-card-image"></i> Valid ID
+              </span>
+              <span style="font-size:.72rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px;">
+                <i class="bi bi-lock-fill" style="color:var(--gold);font-size:.7rem;"></i> Password required
+              </span>
+            </div>
+
+            <!-- lock banner -->
+            <div class="vid-lock-banner" id="vidLockBanner">
+              <div class="vid-lock-icon"><i class="bi bi-shield-lock-fill"></i></div>
+              <div class="vid-lock-text">
+                <h4>This section is protected</h4>
+                <p>Changing your Valid ID requires verifying your account password first. Click Unlock to proceed.</p>
+              </div>
+              <button class="vid-unlock-btn" onclick="toggleVidGate()">
+                <i class="bi bi-unlock-fill"></i> Unlock
+              </button>
+            </div>
+
+            <!-- password gate -->
+            <div class="vid-pw-gate" id="vidPwGate">
+              <div>
+                <label>Confirm Your Password</label>
+                <div class="vid-pw-input-row">
+                  <div class="vid-pw-field">
+                    <input type="password" id="vidPwInput" placeholder="Enter account password"
+                           onkeydown="if(event.key==='Enter')verifyVidPassword()">
+                    <button class="pw-eye" onclick="toggleVidPw()"><i class="bi bi-eye" id="vidPwEyeIcon"></i></button>
+                  </div>
+                  <button class="vid-pw-confirm-btn" id="vidPwConfirmBtn" onclick="verifyVidPassword()">
+                    <i class="bi bi-check2-circle"></i> Verify
+                  </button>
+                </div>
+              </div>
+              <div class="vid-pw-error" id="vidPwError">
+                <i class="bi bi-exclamation-circle-fill" style="flex-shrink:0;"></i>
+                <span id="vidPwErrorMsg">Incorrect password. Please try again.</span>
+              </div>
+              <button onclick="cancelVidGate()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:.76rem;cursor:pointer;font-family:'DM Sans',sans-serif;align-self:flex-start;">
+                ← Cancel, go back
+              </button>
+            </div>
+
+            <!-- locked notice (shown before unlock) -->
+            <div class="vid-locked-notice" id="vidLockedNotice">
+              <i class="bi bi-card-image"></i>
+              <p>Your valid government-issued ID is stored securely.<br>Click <strong style="color:rgba(255,255,255,.55);">Unlock</strong> above to view or update it.</p>
+            </div>
+
+            <!-- ══ AI VALIDATOR UPLOAD AREA ══ -->
+            <div class="vid-upload-area" id="vidUploadArea">
+
+              <!-- header -->
+              <div class="vid-ai-header">
+                <span class="vid-ai-title">
+                  <i class="bi bi-cpu-fill"></i> AI ID Validator
+                </span>
+                <span class="vid-ai-badge">
+                  <i class="bi bi-stars" style="font-size:.6rem;"></i> LIRA AI
+                </span>
+              </div>
+
+              <!-- dropzone -->
+              <div class="vid-dropzone" id="vidDropzone"
+                   ondragover="event.preventDefault();this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="handleVidDrop(event)">
+                <input type="file" id="vidFileInput" accept="image/png,image/jpeg,image/jpg,image/webp"
+                       onchange="handleVidFile(this.files[0])">
+                <div class="vid-dropzone-icon"><i class="bi bi-cloud-upload-fill"></i></div>
+                <h4>Drop your ID here or <span class="vid-browse">browse</span></h4>
+                <p>PNG, JPG, WEBP — max 5 MB<br>Clear, well-lit photo · Both sides if applicable</p>
+              </div>
+
+              <!-- preview -->
+              <div class="vid-preview-wrap" id="vidPreviewWrap">
+                <div class="vid-preview-img"><img id="vidPreviewImg" src="" alt="ID Preview"></div>
+                <div class="vid-preview-name">
+                  <i class="bi bi-file-earmark-image-fill"></i>
+                  <span id="vidPreviewName">filename.jpg</span>
+                  <button class="vid-remove" onclick="clearVidPreview()">
+                    <i class="bi bi-x-circle-fill"></i> Remove
+                  </button>
+                </div>
+              </div>
+
+              <!-- accepted pills -->
+              <div class="vid-pills-section">
+                <div class="vid-pills-label">Accepted IDs — Government &amp; School</div>
+                <div class="vid-pills">
+                  <span class="vid-pill">PhilSys</span>
+                  <span class="vid-pill">Passport</span>
+                  <span class="vid-pill">Driver's License</span>
+                  <span class="vid-pill">UMID</span>
+                  <span class="vid-pill">SSS</span>
+                  <span class="vid-pill">PhilHealth</span>
+                  <span class="vid-pill">PRC ID</span>
+                  <span class="vid-pill">Voter's ID</span>
+                  <span class="vid-pill">TIN</span>
+                  <span class="vid-pill">Senior Citizen</span>
+                  <span class="vid-pill">PWD ID</span>
+                  <span class="vid-pill">Postal ID</span>
+                  <span class="vid-pill school">College / University</span>
+                  <span class="vid-pill school">High School</span>
+                  <span class="vid-pill school">Elem + Registration</span>
+                  <span class="vid-pill school">TESDA / Vocational</span>
+                  <span class="vid-pill school">ALS Program</span>
+                </div>
+              </div>
+
+              <!-- scan button -->
+              <button class="vid-save-btn" id="vidScanBtn" onclick="runVidScan()" disabled>
+                <i class="bi bi-arrow-clockwise vid-spin" id="vidScanSpinner"></i>
+                <span class="vid-save-label" id="vidScanLabel">
+                  <i class="bi bi-cpu-fill" style="margin-right:5px;font-size:.85rem;"></i> Scan &amp; Validate ID
+                </span>
+              </button>
+
+              <!-- results -->
+              <div class="vid-results-wrap" id="vidResultsWrap">
+                <div id="vidDetectedTag"></div>
+                <div class="vid-res-header" id="vidResHeader">
+                  <div class="vid-res-icon" id="vidResIcon"></div>
+                  <div>
+                    <div class="vid-res-title" id="vidResTitle"></div>
+                    <div class="vid-res-sub"   id="vidResSub"></div>
+                  </div>
+                </div>
+                <div class="vid-check-grid" id="vidCheckGrid"></div>
+                <div class="vid-flag-box" id="vidFlagBox">
+                  <i class="bi bi-exclamation-triangle-fill" style="flex-shrink:0;font-size:14px;color:var(--warn);margin-top:2px;"></i>
+                  <span id="vidFlagMsg"></span>
+                </div>
+              </div>
+
+              <!-- upload button (appears after successful scan) -->
+              <button class="vid-save-btn" id="vidSaveBtn" style="display:none;" onclick="uploadValidId()">
+                <i class="bi bi-arrow-clockwise vid-spin"></i>
+                <span class="vid-save-label">
+                  <i class="bi bi-cloud-upload-fill me-1"></i> Upload Valid ID
+                </span>
+              </button>
+
+            </div><!-- end vid-upload-area -->
+          </div>
+        </div>
+
+      </div><!-- end sec-personal -->
+
+      <!-- ══ SECURITY ══ -->
+      <div class="settings-section" id="sec-security">
+        <div class="sec-heading">
+          <h2>Password <span>&amp; Security</span></h2>
+          <p>Keep your account secure.</p>
+        </div>
+        <div class="block" style="margin-top:0;">
+          <div class="block-head">
+            <span class="block-title"><i class="bi bi-shield-check-fill"></i> Multi-Factor Authentication</span>
+            <span class="nav-badge green" style="margin-left:0;font-size:.68rem;padding:3px 10px;">Recommended</span>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left">
+              <div class="sr-icon green"><i class="bi bi-envelope-check-fill"></i></div>
+              <div>
+                <div class="sr-label">One-Time Password (OTP)</div>
+                <div class="sr-sub">Send a verification code to your email on login</div>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="mfaOtpToggle" onchange="handleMfaToggle('otp', this)">
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left">
+              <div class="sr-icon" style="background:rgba(245,200,66,.1);color:var(--gold);"><i class="bi bi-123"></i></div>
+              <div>
+                <div class="sr-label">PIN Code</div>
+                <div class="sr-sub">Require a numeric PIN after your password on login</div>
+              </div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="mfaPinToggle" onchange="handleMfaToggle('pin', this)">
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div style="padding:10px 20px 14px;display:flex;align-items:center;gap:8px;font-size:.76rem;color:rgba(255,255,255,.3);border-top:1px solid rgba(255,255,255,.04);">
+            <i class="bi bi-info-circle" style="flex-shrink:0;color:var(--accent);opacity:.6;"></i>
+            When enabled, a one-time code will be sent to your email every time you log in.
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head"><span class="block-title"><i class="bi bi-key-fill"></i> Change Password</span></div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon warn"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">Current Password</div></div></div>
+            <div class="pw-input-wrap">
+              <input type="password" id="curPw" placeholder="Current password">
+              <button class="pw-eye" onclick="togglePw('curPw',this)"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+          <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:0;padding-bottom:0;border-bottom:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+              <div class="sr-left"><div class="sr-icon danger"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">New Password</div></div></div>
+              <div class="pw-input-wrap">
+                <input type="password" id="newPw" placeholder="New password" oninput="checkPwStrength(this.value)">
+                <button class="pw-eye" onclick="togglePw('newPw',this)"><i class="bi bi-eye"></i></button>
+              </div>
+            </div>
+            <div style="padding:10px 20px 0;display:flex;align-items:center;gap:12px;">
+              <div style="flex:1;"><div class="pw-strength"><div class="pw-strength-fill" id="pwBar"></div></div></div>
+              <span id="pwStrengthLabel" style="font-size:.75rem;font-weight:700;min-width:60px;text-align:right;color:rgba(255,255,255,.2);transition:color .3s;">—</span>
+            </div>
+          </div>
+          <div class="pw-requirements">
+            <div class="pw-req-title">All requirements must be met before saving</div>
+            <div class="pw-req-grid">
+              <div class="pw-req-item" id="req-length"><div class="req-dot"><i class="bi bi-check"></i></div>At least 8 characters</div>
+              <div class="pw-req-item" id="req-upper"><div class="req-dot"><i class="bi bi-check"></i></div>Uppercase letter (A–Z)</div>
+              <div class="pw-req-item" id="req-lower"><div class="req-dot"><i class="bi bi-check"></i></div>Lowercase letter (a–z)</div>
+              <div class="pw-req-item" id="req-number"><div class="req-dot"><i class="bi bi-check"></i></div>Number (0–9)</div>
+              <div class="pw-req-item" id="req-special"><div class="req-dot"><i class="bi bi-check"></i></div>Special character (!@#$%…)</div>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">Confirm New Password</div></div></div>
+            <div class="pw-input-wrap">
+              <input type="password" id="confPw" placeholder="Confirm password">
+              <button class="pw-eye" onclick="togglePw('confPw',this)"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+          <div class="setting-row" style="justify-content:flex-end;border-top:1px solid rgba(255,255,255,.06);">
+            <button class="sr-btn" id="pwUpdateBtn" onclick="handlePwChange()">
+              <i class="bi bi-check2 me-1"></i> Update Password
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ APPEARANCE ══ -->
+      <div class="settings-section" id="sec-appearance">
+        <div class="sec-heading"><h2>Appearance <span>Settings</span></h2><p>Customize how the library looks for you.</p></div>
+        <div class="block">
+          <div class="block-head"><span class="block-title"><i class="bi bi-circle-half"></i> Color Theme</span></div>
+          <div class="theme-row">
+            <div class="theme-swatch" data-theme="ocean"    style="background:linear-gradient(135deg,#1e2d3d,#42586b);" onclick="selectTheme(this,'ocean')"    title="Ocean"></div>
+            <div class="theme-swatch" data-theme="midnight" style="background:linear-gradient(135deg,#1a1a2e,#4a1942);" onclick="selectTheme(this,'midnight')" title="Midnight"></div>
+            <div class="theme-swatch" data-theme="forest"   style="background:linear-gradient(135deg,#1a2f1a,#2d5a27);" onclick="selectTheme(this,'forest')"   title="Forest"></div>
+            <div class="theme-swatch" data-theme="amber"    style="background:linear-gradient(135deg,#2a1a0e,#5a3a1a);" onclick="selectTheme(this,'amber')"    title="Amber"></div>
+            <div class="theme-swatch" data-theme="cobalt"   style="background:linear-gradient(135deg,#1a2a3a,#1a3a5a);" onclick="selectTheme(this,'cobalt')"   title="Cobalt"></div>
+            <div class="theme-swatch" data-theme="slate"    style="background:linear-gradient(135deg,#2d2d2d,#555);"    onclick="selectTheme(this,'slate')"    title="Slate"></div>
+          </div>
+          <div style="padding:0 20px 14px;font-size:.75rem;color:rgba(255,255,255,.3);">
+            Selected: <span id="themeName" style="color:var(--accent);">Ocean</span>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head"><span class="block-title"><i class="bi bi-translate"></i> Language</span></div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon"><i class="bi bi-globe2"></i></div><div><div class="sr-label">Interface Language</div><div class="sr-sub">Changes labeled navigation and UI text</div></div></div>
+            <select class="sr-select" id="languageSelect" onchange="saveLanguage(this.value)">
+              <option value="english">English</option>
+              <option value="filipino">Filipino</option>
+              <option value="hiligaynon">Hiligaynon</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ DATA & STORAGE ══ -->
+      <div class="settings-section" id="sec-data">
+        <div class="sec-heading"><h2>Data <span>&amp; Storage</span></h2><p>Manage your storage usage and clear cached data. Each account has a 1 MB limit.</p></div>
+        <div class="block">
+          <div class="block-head">
+            <span class="block-title"><i class="bi bi-cloud-fill"></i> Storage Usage</span>
+            <button class="block-action" onclick="refreshStorage()" id="storageRefreshBtn"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+          </div>
+          <div style="padding:16px 20px 6px;display:flex;justify-content:space-between;align-items:baseline;">
+            <span style="font-size:.88rem;font-weight:600;">Profile &amp; Library Data</span>
+            <span style="font-size:.78rem;" id="storageUsedLabel"><i class="bi bi-hourglass-split" style="opacity:.5;"></i> Loading…</span>
+          </div>
+          <div class="storage-bar"><div class="storage-fill" id="storageBarFill" style="width:0%;"></div></div>
+          <div class="storage-label"><span>0 B</span><strong id="storagePercent" style="transition:color .3s;">—</strong><span>1 MB</span></div>
+          <div class="storage-banner warn-banner" id="storageWarnBanner">
+            <i class="bi bi-exclamation-triangle-fill" style="color:var(--warn);flex-shrink:0;font-size:1rem;"></i>
+            <span style="color:rgba(255,255,255,.85);font-size:.8rem;">Storage is almost full (<strong id="warnPct" style="color:var(--warn);"></strong>% used).</span>
+          </div>
+          <div class="storage-banner full-banner" id="storageFullBanner">
+            <i class="bi bi-x-circle-fill" style="color:var(--danger);flex-shrink:0;font-size:1rem;"></i>
+            <span style="color:rgba(255,255,255,.85);font-size:.8rem;"><strong>Storage is full!</strong> Clear data to free up space.</span>
+          </div>
+          <div class="storage-breakdown" id="storageBreakdown">
+            <div class="storage-breakdown-row"><span><i class="bi bi-clock-history" style="color:var(--accent);"></i> Search History</span><strong id="storHistBytes">—</strong></div>
+            <div class="storage-breakdown-row"><span><i class="bi bi-bookmark-star-fill" style="color:var(--gold);"></i> Favorites</span><strong id="storFavBytes">—</strong></div>
+            <div class="storage-breakdown-row"><span><i class="bi bi-palette-fill" style="color:var(--accent2);"></i> Appearance Prefs</span><strong id="storAppBytes">—</strong></div>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-head"><span class="block-title"><i class="bi bi-trash3-fill"></i> Clear Data</span></div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon warn"><i class="bi bi-bookmark-x-fill"></i></div><div><div class="sr-label">Clear Favorites</div><div class="sr-sub">Remove all bookmarked books</div></div></div>
+            <button class="sr-btn danger" id="clearFavBtn" onclick="clearFavorites()">Clear</button>
+          </div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon danger"><i class="bi bi-clock-history"></i></div><div><div class="sr-label">Clear Search History</div><div class="sr-sub">Erase recent book searches</div></div></div>
+            <button class="sr-btn danger" id="clearHistBtn" onclick="clearSearchHistory()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ CUSTOMER SERVICE ══ -->
+      <div class="settings-section" id="sec-support">
+        <div class="sec-heading"><h2>Customer <span>Service</span></h2><p>Chat with our virtual assistant.</p></div>
+        <div class="cs-shell">
+          <div class="cs-left">
+            <div class="cs-header">
+              <div class="cs-bot-avatar">
+                <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="13" r="6" fill="none" stroke="#9fc1e1" stroke-width="1.8"/><path d="M7 30c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="#9fc1e1" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="13" r="2.5" fill="#9fc1e1"/><rect x="5" y="14" width="4" height="7" rx="2" fill="#48c78e"/><rect x="27" y="14" width="4" height="7" rx="2" fill="#48c78e"/></svg>
+                <div class="cs-online-dot"></div>
+              </div>
+              <div class="cs-header-info">
+                <div class="cs-bot-name">LIRA — Library Assistant</div>
+                <div class="cs-bot-status">Online &amp; ready to help</div>
+              </div>
+            </div>
+            <div class="cs-chat" id="csChat"></div>
+          </div>
+          <div class="cs-options-panel" id="csOptionsPanel">
+            <div class="cs-options-label"><i class="bi bi-ui-checks-grid"></i> Choose an option</div>
+            <div class="cs-options-grid" id="csOptionsGrid"></div>
+            <button class="cs-restart-btn" onclick="csRestart()"><i class="bi bi-arrow-counterclockwise"></i> Start Over</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ DANGER ZONE ══ -->
+      <div class="settings-section" id="sec-danger">
+        <div class="sec-heading"><h2>Danger <span style="color:var(--danger);">Zone</span></h2><p>Submit a request to the library administration.</p></div>
+        <div class="block" style="border-color:rgba(255,99,99,.2);">
+          <div class="block-head" style="border-color:rgba(255,99,99,.15);">
+            <span class="block-title" style="color:var(--danger);"><i class="bi bi-exclamation-octagon-fill"></i> Account Actions</span>
+          </div>
+          <div style="padding:14px 20px;font-size:.82rem;color:rgba(255,255,255,.42);line-height:1.75;border-bottom:1px solid rgba(255,255,255,.04);">
+            Submitting this form will send a request for admin review. Your account stays <strong style="color:rgba(255,255,255,.65);">active</strong> until approved.
+          </div>
+          <div class="dz-pending-banner" id="dzPendingBanner">
+            <i class="bi bi-hourglass-split" style="flex-shrink:0;font-size:1rem;"></i>
+            <span>You already have a pending <strong id="dzPendingType" style="text-transform:capitalize;"></strong> request under review.</span>
+          </div>
+          <form id="dangerZoneForm" onsubmit="submitDangerRequest(event)" style="padding:20px 20px 24px;display:flex;flex-direction:column;gap:20px;">
+            <div>
+              <label class="dz-form-label">Your Email / Username</label>
+              <input type="text" value="{{ user.email if user.email else user.username }}" readonly class="dz-field-input">
+            </div>
+            <div>
+              <label class="dz-form-label">Action Requested <span style="color:var(--danger);margin-left:3px;">*</span></label>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px;">
+                <label class="dz-radio-card warn" id="dzRadioDeactivate">
+                  <input type="radio" name="dz_action" value="deactivate" id="dzActionDeactivate" onchange="dzUpdateRadioStyle()">
+                  <div><div style="font-size:.88rem;font-weight:600;color:var(--warn);margin-bottom:4px;"><i class="bi bi-pause-circle-fill me-1"></i> Deactivate Account</div><div style="font-size:.76rem;color:rgba(255,255,255,.4);line-height:1.55;">Temporarily suspend your account. Reversible by a librarian.</div></div>
+                </label>
+                <label class="dz-radio-card danger" id="dzRadioDelete">
+                  <input type="radio" name="dz_action" value="delete" id="dzActionDelete" onchange="dzUpdateRadioStyle()">
+                  <div><div style="font-size:.88rem;font-weight:600;color:var(--danger);margin-bottom:4px;"><i class="bi bi-trash3-fill me-1"></i> Delete Account Permanently</div><div style="font-size:.76rem;color:rgba(255,255,255,.4);line-height:1.55;">Permanently erase your account. This cannot be undone.</div></div>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label class="dz-form-label">Reason <span style="color:var(--danger);margin-left:3px;">*</span>
+                <span id="dzReasonCount" style="margin-left:auto;font-weight:400;color:rgba(255,255,255,.25);text-transform:none;letter-spacing:0;">0 / 20 min</span>
+              </label>
+              <textarea id="dzReason" rows="4" placeholder="Please explain why…" oninput="dzCountReason(this)" class="dz-field-input" style="resize:vertical;line-height:1.6;padding-top:10px;padding-bottom:10px;"></textarea>
+            </div>
+            <div>
+              <label class="dz-form-label">Confirm Password <span style="color:var(--danger);margin-left:3px;">*</span></label>
+              <div class="dz-pw-wrap">
+                <input type="password" id="dzPassword" placeholder="Enter your current password" class="dz-field-input">
+                <button type="button" class="dz-pw-eye" onclick="toggleDZFormPw()"><i class="bi bi-eye" id="dzPwEyeIcon"></i></button>
+              </div>
+            </div>
+            <div class="dz-form-error" id="dzFormError">
+              <i class="bi bi-exclamation-circle-fill" style="flex-shrink:0;"></i>
+              <span id="dzFormErrorMsg"></span>
+            </div>
+            <div>
+              <button type="submit" class="dz-submit-btn" id="dzSubmitBtn">
+                <i class="bi bi-send-fill"></i> Submit Request to Admin
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="searchEmpty" style="display:none;text-align:center;padding:60px 0;">
+        <i class="bi bi-search" style="font-size:2.5rem;color:rgba(255,255,255,.15);display:block;margin-bottom:16px;"></i>
+        <p style="color:rgba(255,255,255,.35);font-size:.92rem;">No settings found for "<span id="searchQuery"></span>"</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Inline Edit Overlay -->
+<div class="sidebar-backdrop" id="editBackdrop" onclick="closeInlineEdit()"></div>
+<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:500;opacity:0;pointer-events:none;transition:.25s;" id="editOverlay">
+  <div style="background:linear-gradient(150deg,#1e2d3d,#273848);border:1px solid rgba(159,193,225,.18);border-radius:20px;padding:28px;width:100%;max-width:420px;box-shadow:0 28px 70px rgba(0,0,0,.55);transform:translateY(18px);transition:transform .25s;" id="editBox">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <span style="font-size:.95rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:8px;"><i class="bi bi-pencil-fill"></i> <span id="editLabel">Edit</span></span>
+      <button onclick="closeInlineEdit()" style="background:none;border:none;color:rgba(255,255,255,.45);font-size:1.3rem;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div id="editInputWrap"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button onclick="closeInlineEdit()" style="flex:1;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px;font-size:.88rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;">Cancel</button>
+      <button onclick="saveInlineEdit()" style="flex:1;background:var(--accent);color:#0d1a24;border:none;border-radius:10px;padding:10px;font-size:.88rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;"><i class="bi bi-check-circle me-1"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<button class="mob-sidebar-toggle" id="mobToggle" onclick="toggleMobSidebar()"><i class="bi bi-list"></i></button>
+<div class="sidebar-backdrop" id="mobBackdrop" onclick="toggleMobSidebar()"></div>
+<div class="toast-shelf" id="toastShelf"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   PERSONAL TABS
+═══════════════════════════════════════════════ */
+function switchPersonalTab(key) {
+  document.querySelectorAll('.personal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.personal-tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('ptab-' + key).classList.add('active');
+  document.getElementById('ppanel-' + key).classList.add('active');
+  closeGenderEditor(); closeEduEditor();
+}
+
+/* ═══════════════════════════════════════════════
+   GENDER INLINE EDITOR
+═══════════════════════════════════════════════ */
+function toggleGenderEdit() {
+  var wrap = document.getElementById('genderEditorWrap');
+  var btn  = document.getElementById('genderEditBtn');
+  if (wrap.classList.contains('open')) { closeGenderEditor(); return; }
+  wrap.classList.add('open'); btn.textContent = 'Done';
+  var cur = document.getElementById('disp-gender').textContent.trim();
+  var radio = document.querySelector('input[name="g_edit"][value="' + cur + '"]');
+  if (radio) radio.checked = true;
+}
+function closeGenderEditor() {
+  var wrap = document.getElementById('genderEditorWrap');
+  var btn  = document.getElementById('genderEditBtn');
+  if (wrap) wrap.classList.remove('open');
+  if (btn)  btn.textContent = 'Edit';
+}
+async function applyGenderEdit(val) {
+  var body = new FormData(); body.append('field','gender'); body.append('value',val);
+  try {
+    var res  = await fetch('/user/update_profile',{method:'POST',body});
+    var data = await res.json();
+    if (data.success) { document.getElementById('disp-gender').textContent = val; showToast('Gender updated','success'); }
+    else showToast(data.message||'Update failed','err');
+  } catch { showToast('Network error. Please try again.','err'); }
+  setTimeout(closeGenderEditor, 300);
+}
+
+/* ═══════════════════════════════════════════════
+   EDUCATION INLINE EDITOR
+═══════════════════════════════════════════════ */
+function toggleEduEdit() {
+  var wrap = document.getElementById('eduEditorWrap');
+  var btn  = document.getElementById('eduEditBtn');
+  if (wrap.classList.contains('open')) { closeEduEditor(); return; }
+  wrap.classList.add('open'); btn.textContent = 'Done';
+  var cur = document.getElementById('disp-educationLevel').textContent.trim();
+  var sel = document.getElementById('eduSelect');
+  for (var i=0;i<sel.options.length;i++) { if (sel.options[i].text===cur||sel.options[i].value===cur){sel.selectedIndex=i;break;} }
+}
+function closeEduEditor() {
+  var wrap = document.getElementById('eduEditorWrap');
+  var btn  = document.getElementById('eduEditBtn');
+  if (wrap) wrap.classList.remove('open');
+  if (btn)  btn.textContent = 'Edit';
+}
+async function applyEduEdit(val) {
+  if (!val) return;
+  var body = new FormData(); body.append('field','educationLevel'); body.append('value',val);
+  try {
+    var res  = await fetch('/user/update_profile',{method:'POST',body});
+    var data = await res.json();
+    if (data.success) { document.getElementById('disp-educationLevel').textContent = val; showToast('Education level updated','success'); }
+    else showToast(data.message||'Update failed','err');
+  } catch { showToast('Network error. Please try again.','err'); }
+  setTimeout(closeEduEditor, 300);
+}
+
+/* ═══════════════════════════════════════════════
+   GOVERNMENT TOGGLE
+═══════════════════════════════════════════════ */
+async function handleGovToggle(checkbox) {
+  var wrap = document.getElementById('officePhoneWrap');
+  wrap.classList.toggle('visible', checkbox.checked);
+  var body = new FormData(); body.append('field','isGovernment'); body.append('value', checkbox.checked?'1':'0');
+  try {
+    var res  = await fetch('/user/update_profile',{method:'POST',body});
+    var data = await res.json();
+    if (data.success) showToast('Government status '+(checkbox.checked?'enabled':'disabled'),'success');
+    else { checkbox.checked=!checkbox.checked; wrap.classList.toggle('visible',checkbox.checked); showToast(data.message||'Update failed','err'); }
+  } catch { checkbox.checked=!checkbox.checked; wrap.classList.toggle('visible',checkbox.checked); showToast('Network error. Please try again.','err'); }
+}
+
+/* ═══════════════════════════════════════════════
+   VALID ID — PASSWORD GATE
+═══════════════════════════════════════════════ */
+var _vidUnlocked = false;
+
+function toggleVidGate() {
+  document.getElementById('vidLockBanner').style.display   = 'none';
+  document.getElementById('vidLockedNotice').style.display = 'none';
+  document.getElementById('vidPwGate').classList.add('open');
+  setTimeout(() => document.getElementById('vidPwInput').focus(), 100);
+}
+function cancelVidGate() {
+  document.getElementById('vidPwGate').classList.remove('open');
+  document.getElementById('vidPwError').classList.remove('show');
+  document.getElementById('vidPwInput').value = '';
+  if (!_vidUnlocked) {
+    document.getElementById('vidLockBanner').style.display   = '';
+    document.getElementById('vidLockedNotice').style.display = '';
+  }
+}
+function toggleVidPw() {
+  var inp = document.getElementById('vidPwInput');
+  var icon = document.getElementById('vidPwEyeIcon');
+  var show = inp.type==='password';
+  inp.type = show?'text':'password';
+  icon.className = show?'bi bi-eye-slash':'bi bi-eye';
+}
+async function verifyVidPassword() {
+  var pw  = document.getElementById('vidPwInput').value.trim();
+  var err = document.getElementById('vidPwError');
+  var btn = document.getElementById('vidPwConfirmBtn');
+  err.classList.remove('show');
+  if (!pw) { document.getElementById('vidPwErrorMsg').textContent='Please enter your password.'; err.classList.add('show'); return; }
+  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> Verifying…';
+  var body = new FormData(); body.append('password',pw);
+  try {
+    var res  = await fetch('/user/mfa/pin/verify-password',{method:'POST',body});
+    var data = await res.json();
+    if (data.success) {
+      _vidUnlocked = true;
+      document.getElementById('vidPwGate').classList.remove('open');
+      document.getElementById('vidLockBanner').style.display   = 'none';
+      document.getElementById('vidLockedNotice').style.display = 'none';
+      document.getElementById('vidUploadArea').classList.add('open');
+      showToast('Identity verified — you may now update your Valid ID','success');
+    } else {
+      document.getElementById('vidPwErrorMsg').textContent = data.message||'Incorrect password.';
+      err.classList.add('show');
+    }
+  } catch {
+    document.getElementById('vidPwErrorMsg').textContent = 'Network error. Please try again.';
+    err.classList.add('show');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="bi bi-check2-circle"></i> Verify';
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   VALID ID — AI VALIDATOR
+═══════════════════════════════════════════════ */
+var _vidFile       = null;
+var _vidScanResult = null;
+
+var _vidCheckLabels = {
+  photo_present:     ['Photo',    'ID photo present'],
+  name_readable:     ['Name',     'Name legible on ID'],
+  id_number_visible: ['ID No.',   'ID / student number'],
+  official_markings: ['Official', 'Seals & markings'],
+  validity_readable: ['Validity', 'Expiry / school year'],
+};
+
+function handleVidFile(file) {
+  if (!file) return;
+  if (file.size > 5*1024*1024) { showToast('File too large — max 5 MB','err'); return; }
+  if (!['image/png','image/jpeg','image/jpg','image/webp'].includes(file.type)) { showToast('Use PNG, JPG, or WEBP','err'); return; }
+  _vidFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('vidPreviewImg').src = e.target.result;
+    document.getElementById('vidPreviewName').textContent = file.name;
+    document.getElementById('vidPreviewWrap').classList.add('show');
+    document.getElementById('vidDropzone').classList.remove('drag-over');
+    document.getElementById('vidScanBtn').disabled = false;
+    document.getElementById('vidSaveBtn').style.display = 'none';
+    document.getElementById('vidResultsWrap').classList.remove('show');
+    _vidScanResult = null;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleVidDrop(e) {
+  e.preventDefault();
+  document.getElementById('vidDropzone').classList.remove('drag-over');
+  var f = e.dataTransfer.files[0];
+  if (f) handleVidFile(f);
+}
+
+function clearVidPreview() {
+  _vidFile = null; _vidScanResult = null;
+  document.getElementById('vidPreviewWrap').classList.remove('show');
+  document.getElementById('vidPreviewImg').src  = '';
+  document.getElementById('vidFileInput').value = '';
+  document.getElementById('vidScanBtn').disabled = true;
+  document.getElementById('vidSaveBtn').style.display = 'none';
+  document.getElementById('vidResultsWrap').classList.remove('show');
+}
+
+function _vidToBase64(file) {
+  return new Promise(function(res,rej){
+    var r = new FileReader();
+    r.onload  = function(e){ res(e.target.result.split(',')[1]); };
+    r.onerror = function(){ rej(new Error('Read error')); };
+    r.readAsDataURL(file);
+  });
+}
+
+async function runVidScan() {
+  if (!_vidFile) return;
+  var btn  = document.getElementById('vidScanBtn');
+  var lbl  = document.getElementById('vidScanLabel');
+  var spin = document.getElementById('vidScanSpinner');
+  btn.disabled = true;
+  spin.style.display = 'inline';
+  lbl.style.display  = 'none';
+
+  try {
+    var fd = new FormData();
+    fd.append('valid_id', _vidFile);
+
+    var res  = await fetch('/user/scan_valid_id', { method: 'POST', body: fd });
+    var data = await res.json();
+
+    if (!data.success) {
+      showToast(data.message || 'Scan failed — please try again', 'err');
+      return;
+    }
+
+    _vidScanResult = data.result;
+    _vidRenderResults(data.result);
+
+  } catch (e) {
+    showToast('Scan failed — please try again', 'err');
+  } finally {
+    btn.disabled       = false;
+    spin.style.display = 'none';
+    lbl.style.display  = '';
+  }
+}
+function _vidRenderResults(r) {
+  var wrap = document.getElementById('vidResultsWrap');
+  wrap.classList.add('show');
+
+  var isSchool = r.id_category === 'school';
+  var valid    = !!r.valid;
+  var state    = r.flag ? 'warn' : (valid ? 'valid' : 'invalid');
+
+  var tagColor = isSchool
+    ? 'background:rgba(72,199,142,.1);border:1px solid rgba(72,199,142,.22);color:var(--accent2);'
+    : 'background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.2);color:var(--accent);';
+  var tagIcon  = isSchool ? 'bi-mortarboard-fill' : 'bi-bank2';
+  document.getElementById('vidDetectedTag').innerHTML =
+    '<span style="display:inline-flex;align-items:center;gap:6px;'+tagColor+'border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;margin-bottom:4px;">'
+    +'<i class="bi '+tagIcon+'" style="font-size:12px;"></i> '
+    +(r.id_type||r.id_category||'ID')+' — Auto-detected</span>';
+
+  var hdrStyles = {
+    valid:   'background:rgba(72,199,142,.08);border:1px solid rgba(72,199,142,.2);',
+    invalid: 'background:rgba(255,99,99,.08);border:1px solid rgba(255,99,99,.2);',
+    warn:    'background:rgba(255,152,0,.08);border:1px solid rgba(255,152,0,.2);',
+  };
+  var icoStyles = {
+    valid:   'background:rgba(72,199,142,.15);color:var(--accent2);',
+    invalid: 'background:rgba(255,99,99,.15);color:var(--danger);',
+    warn:    'background:rgba(255,152,0,.15);color:var(--warn);',
+  };
+  var icoIcons  = {
+    valid:'bi-patch-check-fill', invalid:'bi-x-circle-fill', warn:'bi-exclamation-triangle-fill'
+  };
+
+  var hdr = document.getElementById('vidResHeader');
+  hdr.className = 'vid-res-header ' + state;
+  hdr.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;' + hdrStyles[state];
+
+  var ico = document.getElementById('vidResIcon');
+  ico.className = 'vid-res-icon ' + state;
+  ico.style.cssText = 'width:46px;height:46px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.25rem;' + icoStyles[state];
+  ico.innerHTML = '<i class="bi ' + icoIcons[state] + '"></i>';
+
+  document.getElementById('vidResTitle').textContent =
+    state==='valid'   ? (r.id_type||'ID')+' — Verified' :
+    state==='warn'    ? 'Validation Warning'             :
+                        'ID Not Verified';
+  var sub = r.summary || 'Scan complete.';
+  if (r.detected_name) sub += ' · ' + r.detected_name;
+  document.getElementById('vidResSub').textContent = sub;
+
+  var grid = document.getElementById('vidCheckGrid');
+  grid.innerHTML = '';
+  Object.keys(_vidCheckLabels).forEach(function(k) {
+    var val  = (r.checks||{})[k];
+    var info = _vidCheckLabels[k];
+    var cls  = val===true ? 'pass' : val===false ? 'fail' : 'skip';
+    var icon = val===true ? 'bi-check-lg' : val===false ? 'bi-x-lg' : 'bi-dash';
+    var dotStyles = {
+      pass: 'background:rgba(72,199,142,.2);border-color:var(--accent2);color:var(--accent2);',
+      fail: 'background:rgba(255,99,99,.15);border-color:var(--danger);color:var(--danger);',
+      skip: 'background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.28);',
+    };
+    var el = document.createElement('div');
+    el.className = 'vid-check-item ' + cls;
+    el.innerHTML =
+      '<div class="cdot" style="'+dotStyles[cls]+'">'
+      +'<i class="bi '+icon+'" style="font-size:11px;"></i></div>'
+      +'<div class="vid-check-label">'+info[1]
+      +'<span>'+info[0]+'</span></div>';
+    grid.appendChild(el);
+  });
+
+  var fb = document.getElementById('vidFlagBox');
+  if (r.flag) { fb.classList.add('show'); document.getElementById('vidFlagMsg').textContent = r.flag; }
+  else { fb.classList.remove('show'); }
+
+  document.getElementById('vidSaveBtn').style.display = valid ? 'flex' : 'none';
+}
+
+async function uploadValidId() {
+  if (!_vidFile) return;
+  var btn = document.getElementById('vidSaveBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+  var fd = new FormData();
+  fd.append('valid_id', _vidFile);
+  if (_vidScanResult) {
+    if (_vidScanResult.id_type)     fd.append('id_type',       _vidScanResult.id_type);
+    if (_vidScanResult.id_category) fd.append('id_category',   _vidScanResult.id_category);
+    if (_vidScanResult.flag)        fd.append('mismatch_flag',  _vidScanResult.flag);
+  }
+  try {
+    var res  = await fetch('/user/upload_valid_id',{method:'POST',body:fd});
+    var data = await res.json();
+    if (data.success) { showToast('Valid ID uploaded successfully ✓','success'); clearVidPreview(); }
+    else showToast(data.message||'Upload failed','err');
+  } catch { showToast('Network error. Please try again.','err'); }
+  finally { btn.classList.remove('loading'); btn.disabled=false; }
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+var sectionTitles = {
+  overview:'Settings', personal:'Personal Details', security:'Password & Security',
+  appearance:'Appearance', data:'Data & Storage', support:'Customer Service', danger:'Danger Zone'
+};
+function switchSection(el, key) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+  var sec = document.getElementById('sec-' + key);
+  if (sec) { sec.classList.add('active'); document.getElementById('mainTopbarTitle').textContent = sectionTitles[key]||'Settings'; }
+  document.getElementById('searchEmpty').style.display = 'none';
+  document.getElementById('settingsSearch').value = '';
+  document.getElementById('settingsSidebar').classList.remove('mob-open');
+  document.getElementById('mobBackdrop').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (key==='data')   loadStorageStats();
+  if (key==='danger') loadDangerZoneStatus();
+  if (key==='support') csInit();
+}
+function switchSectionByKey(key) {
+  var el = document.querySelector('.nav-item[data-section="'+key+'"]');
+  if (el) switchSection(el, key);
+}
+var searchIndex = [
+  {keys:['password','security','login','pin','otp','mfa'],section:'security'},
+  {keys:['personal','name','first','last','age','sex','gender','phone','address','contact','city','province','school','education','occupation','valid id','id'],section:'personal'},
+  {keys:['theme','color','font','appearance','language','display'],section:'appearance'},
+  {keys:['storage','clear','favorites','search history','data'],section:'data'},
+  {keys:['customer','service','support','help','chat','assistant','lira'],section:'support'},
+  {keys:['danger','delete account','deactivate'],section:'danger'},
+];
+function searchSettings(q) {
+  q = q.trim().toLowerCase();
+  if (!q) {
+    document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-overview').classList.add('active');
+    document.getElementById('searchEmpty').style.display='none';
+    document.getElementById('mainTopbarTitle').textContent='Settings'; return;
+  }
+  var match = searchIndex.find(e=>e.keys.some(k=>k.includes(q)||q.includes(k)));
+  if (match) { switchSectionByKey(match.section); document.getElementById('settingsSearch').value=q; }
+  else {
+    document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('searchEmpty').style.display='block';
+    document.getElementById('searchQuery').textContent=q;
+    document.getElementById('mainTopbarTitle').textContent='Search Results';
+  }
+}
+function toggleMobSidebar() {
+  document.getElementById('settingsSidebar').classList.toggle('mob-open');
+  document.getElementById('mobBackdrop').classList.toggle('show');
+}
+
+/* ═══════════════════════════════════════════════
+   INLINE EDIT (modal overlay)
+═══════════════════════════════════════════════ */
+var editRow = null, editFieldKey = null;
+function openInlineEdit(btn, label, type, current, fieldKey) {
+  editRow=btn.closest('.setting-row'); editFieldKey=fieldKey;
+  document.getElementById('editLabel').textContent=label;
+  var w=document.getElementById('editInputWrap');
+  var esc=s=>(s||'').replace(/"/g,'&quot;');
+  w.innerHTML='<input type="'+(type==='number'?'number':'text')+'" id="editInput" value="'+esc(current)+'" placeholder="Enter '+label.toLowerCase()+'" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:9px;color:#fff;padding:10px 12px;font-size:.9rem;font-family:\'DM Sans\',sans-serif;outline:none;transition:.2s;">';
+  var ov=document.getElementById('editOverlay'),bk=document.getElementById('editBackdrop');
+  ov.style.opacity='1'; ov.style.pointerEvents='all';
+  document.getElementById('editBox').style.transform='translateY(0)';
+  bk.classList.add('show'); document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('editInput')?.focus(),60);
+}
+function closeInlineEdit() {
+  var ov=document.getElementById('editOverlay'),bk=document.getElementById('editBackdrop');
+  ov.style.opacity='0'; ov.style.pointerEvents='none';
+  document.getElementById('editBox').style.transform='translateY(18px)';
+  bk.classList.remove('show'); document.body.style.overflow='';
+}
+async function saveInlineEdit() {
+  var val=document.getElementById('editInput')?.value?.trim()||'';
+  if (editFieldKey) {
+    var body=new FormData(); body.append('field',editFieldKey); body.append('value',val||'');
+    try {
+      var res=await fetch('/user/update_profile',{method:'POST',body});
+      var data=await res.json();
+      if (data.success) {
+        var dispEl=document.getElementById('disp-'+editFieldKey);
+        if (dispEl) dispEl.textContent=val||'—';
+        if (editRow) { var sub=editRow.querySelector('.sr-sub'); if(sub) sub.textContent=val||'—'; }
+        showToast('Changes saved','success');
+      } else showToast(data.message||'Failed to save changes','err');
+    } catch { showToast('Network error. Please try again.','err'); }
+  }
+  closeInlineEdit();
+}
+
+/* ═══════════════════════════════════════════════
+   PASSWORD
+═══════════════════════════════════════════════ */
+function togglePw(id,btn) {
+  var inp=document.getElementById(id); var show=inp.type==='password';
+  inp.type=show?'text':'password';
+  btn.innerHTML=show?'<i class="bi bi-eye-slash"></i>':'<i class="bi bi-eye"></i>';
+}
+var pwReqs={'req-length':v=>v.length>=8,'req-upper':v=>/[A-Z]/.test(v),'req-lower':v=>/[a-z]/.test(v),'req-number':v=>/[0-9]/.test(v),'req-special':v=>/[^A-Za-z0-9]/.test(v)};
+function checkPwStrength(v) {
+  var bar=document.getElementById('pwBar'),lbl=document.getElementById('pwStrengthLabel'),met=0;
+  for(var id in pwReqs){var el=document.getElementById(id);var ok=v.length>0&&pwReqs[id](v);el.classList.toggle('met',ok);if(ok)met++;}
+  if(!v){bar.style.width='0';lbl.textContent='—';lbl.style.color='rgba(255,255,255,.2)';return;}
+  var cfg=met<=2?{w:'33%',bg:'#ff6363',t:'Easy'}:met<=4?{w:'66%',bg:'#ff9800',t:'Medium'}:{w:'100%',bg:'#48c78e',t:'Strong'};
+  bar.style.width=cfg.w; bar.style.background=cfg.bg; lbl.textContent=cfg.t; lbl.style.color=cfg.bg;
+}
+async function handlePwChange() {
+  var cur=document.getElementById('curPw').value.trim(),nw=document.getElementById('newPw').value.trim(),cf=document.getElementById('confPw').value.trim();
+  var btn=document.getElementById('pwUpdateBtn');
+  if(!cur||!nw||!cf){showToast('Please fill in all password fields','err');return;}
+  if(nw.length<8){showToast('Password must be at least 8 characters','err');return;}
+  if(!/[A-Z]/.test(nw)){showToast('Needs an uppercase letter','err');return;}
+  if(!/[a-z]/.test(nw)){showToast('Needs a lowercase letter','err');return;}
+  if(!/[0-9]/.test(nw)){showToast('Needs a number','err');return;}
+  if(!/[^A-Za-z0-9]/.test(nw)){showToast('Needs a special character','err');return;}
+  if(nw!==cf){showToast('New passwords do not match','err');return;}
+  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split me-1"></i> Updating…';
+  var body=new FormData(); body.append('current_password',cur); body.append('new_password',nw); body.append('confirm_password',cf);
+  try {
+    var res=await fetch('/user/change_password',{method:'POST',body});
+    var data=await res.json();
+    if(data.success){showToast(data.message||'Password updated successfully ✓','success');['curPw','newPw','confPw'].forEach(id=>document.getElementById(id).value='');checkPwStrength('');}
+    else showToast(data.message||'Failed to update password','err');
+  } catch {showToast('Network error. Please try again.','err');}
+  finally {btn.disabled=false;btn.innerHTML='<i class="bi bi-check2 me-1"></i> Update Password';}
+}
+
+/* ═══════════════════════════════════════════════
+   ACTIVITY
+═══════════════════════════════════════════════ */
+var actIcons={login:'bi-box-arrow-in-right',search:'bi-search',favorite:'bi-bookmark-heart-fill',created:'bi-person-plus-fill',default:'bi-clock-history'};
+var actColors={accent:'var(--accent)',gold:'var(--gold)',warn:'var(--warn)',green:'var(--accent2)',danger:'var(--danger)'};
+async function loadRecentActivity(manual) {
+  var list=document.getElementById('activityList'),btn=document.getElementById('activityRefreshBtn');
+  if(!list)return;
+  list.innerHTML=[0,1,2].map(i=>`<div class="act-skeleton"><div class="skel-dot" style="animation-delay:${i*.1}s"></div><div class="skel-line long" style="animation-delay:${i*.1}s"></div><div class="skel-line short" style="animation-delay:${i*.1}s"></div></div>`).join('');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="bi bi-hourglass-split"></i> Loading…';}
+  try {
+    var res=await fetch('/api/user/recent-activity');
+    var data=await res.json();
+    if(!data.success||!data.activities?.length){list.innerHTML='<div class="activity-item"><div class="act-dot" style="background:rgba(255,255,255,.2);"></div><div class="act-text" style="color:rgba(255,255,255,.35);">No recent activity yet.</div><div class="act-time">—</div></div>';return;}
+    list.innerHTML=data.activities.map(a=>{var dc=actColors[a.color]||'var(--accent)',ic=actIcons[a.type]||actIcons.default;return`<div class="activity-item"><div class="act-dot" style="background:${dc};"></div><div class="act-text"><i class="bi ${ic}" style="color:${dc};opacity:.7;font-size:.75rem;margin-right:5px;"></i>${a.text}</div><div class="act-time">${a.time}</div></div>`;}).join('');
+    if(manual)showToast('Activity refreshed','success');
+  } catch {list.innerHTML='<div class="activity-item"><div class="act-dot" style="background:var(--danger);"></div><div class="act-text" style="color:rgba(255,255,255,.4);">Could not load activity.</div><div class="act-time">—</div></div>';}
+  finally {if(btn){btn.disabled=false;btn.innerHTML='<i class="bi bi-arrow-clockwise"></i> Refresh';}}
+}
+
+/* ═══════════════════════════════════════════════
+   STORAGE
+═══════════════════════════════════════════════ */
+var _warnOnce=false;
+function fmtBytes(b){b=parseInt(b)||0;if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
+async function loadStorageStats(){try{renderStorageUI(await(await fetch('/api/user/storage')).json());}catch{document.getElementById('storageUsedLabel').innerHTML='<span style="color:var(--danger);">Failed to load</span>';}}
+function renderStorageUI(data){
+  var pct=Math.min(parseFloat(data.used_percent)||0,100);
+  document.getElementById('storageUsedLabel').textContent=fmtBytes(data.total_bytes)+' of 1 MB used';
+  document.getElementById('storageUsedLabel').style.color=data.is_full?'var(--danger)':data.is_warning?'var(--warn)':'var(--accent)';
+  document.getElementById('storagePercent').textContent=pct.toFixed(1)+'% used';
+  document.getElementById('storagePercent').style.color=data.is_full?'var(--danger)':data.is_warning?'var(--warn)':'var(--accent)';
+  var fill=document.getElementById('storageBarFill');
+  fill.style.width=pct+'%';
+  fill.style.background=data.is_full?'linear-gradient(90deg,var(--danger),#ff9090)':data.is_warning?'linear-gradient(90deg,var(--warn),#ffc107)':'linear-gradient(90deg,var(--accent),var(--accent2))';
+  document.getElementById('storHistBytes').textContent=fmtBytes(data.history_bytes||0);
+  document.getElementById('storFavBytes').textContent=fmtBytes(data.favorites_bytes||0);
+  document.getElementById('storAppBytes').textContent=fmtBytes(data.appearance_bytes||0);
+  var we=document.getElementById('storageWarnBanner'),fe=document.getElementById('storageFullBanner');
+  if(data.is_full){we.classList.remove('show');fe.classList.add('show');}
+  else if(data.is_warning){document.getElementById('warnPct').textContent=pct.toFixed(1);we.classList.add('show');fe.classList.remove('show');if(!_warnOnce){_warnOnce=true;showToast('⚠️ Storage '+pct.toFixed(0)+'% full','warn');}}
+  else{we.classList.remove('show');fe.classList.remove('show');}
+}
+async function refreshStorage(){var btn=document.getElementById('storageRefreshBtn');btn.innerHTML='<i class="bi bi-hourglass-split"></i> Refreshing…';btn.disabled=true;await loadStorageStats();btn.innerHTML='<i class="bi bi-arrow-clockwise"></i> Refresh';btn.disabled=false;}
+async function clearFavorites(){var btn=document.getElementById('clearFavBtn');if(!confirm('Clear all favorites? This cannot be undone.'))return;btn.disabled=true;btn.textContent='Clearing…';try{var r=await(await fetch('/user/clear_favorites',{method:'POST'})).json();if(r.success){showToast(r.message||'Favorites cleared','success');await loadStorageStats();}else showToast(r.message||'Failed','err');}catch{showToast('Network error.','err');}finally{btn.disabled=false;btn.textContent='Clear';}}
+async function clearSearchHistory(){var btn=document.getElementById('clearHistBtn');if(!confirm('Clear your search history?'))return;btn.disabled=true;btn.textContent='Clearing…';try{var r=await(await fetch('/user/clear_search_history',{method:'POST'})).json();if(r.success){showToast(r.message||'History cleared','success');_warnOnce=false;await loadStorageStats();}else showToast(r.message||'Failed','err');}catch{showToast('Network error.','err');}finally{btn.disabled=false;btn.textContent='Clear';}}
+
+/* ═══════════════════════════════════════════════
+   APPEARANCE
+═══════════════════════════════════════════════ */
+var themeLabels={ocean:'Ocean',midnight:'Midnight',forest:'Forest',amber:'Amber',cobalt:'Cobalt',slate:'Slate'};
+async function selectTheme(el,key){document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('themeName').textContent=themeLabels[key]||key;AppearanceManager.applyTheme(key);var d=await AppearanceManager.save({theme:key});showToast(d.success?'Theme set to '+themeLabels[key]:'Failed to save theme',d.success?'success':'err');}
+async function saveLanguage(lang){AppearanceManager.snapshotOriginals();AppearanceManager.applyLanguage(lang);var d=await AppearanceManager.save({language:lang});showToast(d.success?'Language set to '+lang.charAt(0).toUpperCase()+lang.slice(1):'Failed to save language',d.success?'success':'err');}
+function loadAppearanceUI(prefs){prefs=prefs||AppearanceManager.get();document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.toggle('active',s.dataset.theme===prefs.theme));var n=document.getElementById('themeName');if(n)n.textContent=themeLabels[prefs.theme]||prefs.theme;var l=document.getElementById('languageSelect');if(l)l.value=prefs.language||'english';}
+
+/* ═══════════════════════════════════════════════
+   MFA
+═══════════════════════════════════════════════ */
+async function loadMfaStatus(){try{var d=await(await fetch('/api/user/mfa/status')).json();if(d.otp_enabled!==undefined)document.getElementById('mfaOtpToggle').checked=!!d.otp_enabled;if(d.pin_enabled!==undefined)document.getElementById('mfaPinToggle').checked=!!d.pin_enabled;if(d.pin_expired)showToast('Your PIN has expired. Set a new one to re-enable it.','warn');}catch{}}
+async function handleMfaToggle(type,checkbox){
+  if(type==='otp'){checkbox.disabled=true;var body=new FormData();body.append('type','otp');body.append('enabled',checkbox.checked?'1':'0');try{var d=await(await fetch('/user/mfa/toggle',{method:'POST',body})).json();if(d.success)showToast('OTP '+(checkbox.checked?'enabled':'disabled'),'success');else{checkbox.checked=!checkbox.checked;showToast(d.message||'Failed','err');}}catch{checkbox.checked=!checkbox.checked;showToast('Network error.','err');}finally{checkbox.disabled=false;}}
+  else if(type==='pin'){if(!checkbox.checked){checkbox.disabled=true;var body2=new FormData();body2.append('type','pin');body2.append('enabled','0');try{var d2=await(await fetch('/user/mfa/toggle',{method:'POST',body:body2})).json();if(d2.success)showToast('PIN disabled','success');else{checkbox.checked=true;showToast(d2.message||'Failed','err');}}catch{checkbox.checked=true;showToast('Network error.','err');}finally{checkbox.disabled=false;}}else{checkbox.checked=false;checkbox.disabled=true;openPinSetupModal(checkbox);}}
+}
+function openPinSetupModal(toggleCheckbox){var existing=document.getElementById('pinSetupModal');if(existing)existing.remove();var modal=document.createElement('div');modal.id='pinSetupModal';modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';modal.innerHTML=`<div style="background:linear-gradient(150deg,#1e2d3d,#273848);border:1px solid rgba(159,193,225,.2);border-radius:22px;padding:36px 30px;width:100%;max-width:380px;box-shadow:0 32px 80px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;"><div id="psStep1" style="width:100%;display:flex;flex-direction:column;align-items:center;"><div style="width:54px;height:54px;border-radius:16px;background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px;">🔒</div><h3 style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:8px;">Confirm Password</h3><p style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:20px;line-height:1.6;">Enter your account password to set up your PIN.</p><div style="position:relative;width:100%;"><input type="password" id="psPasswordInput" placeholder="Account password" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;padding:11px 40px 11px 14px;font-family:'DM Mono',monospace;font-size:.85rem;outline:none;"><button type="button" onclick="togglePsPassword()" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.9rem;" id="psEyeBtn"><i class="bi bi-eye"></i></button></div><div id="psError1" style="display:none;width:100%;background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.25);border-radius:9px;padding:9px 14px;font-size:.78rem;color:#ff9090;margin-top:10px;text-align:center;"></div><div style="display:flex;gap:10px;margin-top:16px;width:100%;"><button onclick="closePinSetupModal()" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:11px;font-size:.85rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;">Cancel</button><button onclick="psStep1Submit()" style="flex:1;background:rgba(159,193,225,.18);border:1.5px solid rgba(159,193,225,.3);color:#fff;border-radius:10px;padding:11px;font-size:.85rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="bi bi-arrow-right"></i> Continue</button></div></div><div id="psStep2" style="width:100%;display:none;flex-direction:column;align-items:center;"><div style="width:54px;height:54px;border-radius:16px;background:rgba(72,199,142,.1);border:1px solid rgba(72,199,142,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px;">🔑</div><h3 style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:8px;">Set Your PIN</h3><p style="font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:20px;line-height:1.6;">Enter a 6-digit numeric PIN. Valid for <strong style="color:#fff;">1 week</strong>.</p><div style="display:flex;gap:8px;justify-content:center;" id="psDigitRow"><input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pidx="0"><input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pidx="1"><input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pidx="2"><input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pidx="3"><input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pidx="4"><input class="login-pin-digit" type="password" inputmode="numeric" maxlength="1" data-pidx="5"></div><div id="psError2" style="display:none;width:100%;background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.25);border-radius:9px;padding:9px 14px;font-size:.78rem;color:#ff9090;margin-top:10px;text-align:center;"></div><button onclick="psStep2Submit()" style="width:100%;margin-top:16px;background:rgba(72,199,142,.15);border:1.5px solid rgba(72,199,142,.3);color:#48c78e;border-radius:11px;padding:12px;font-size:.9rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;"><i class="bi bi-shield-check"></i> Save PIN</button><button onclick="closePinSetupModal()" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:.76rem;cursor:pointer;margin-top:10px;font-family:'DM Sans',sans-serif;">Cancel</button></div></div>`;
+  document.body.appendChild(modal);modal._toggleCheckbox=toggleCheckbox;initPsDigits();setTimeout(()=>document.getElementById('psPasswordInput')?.focus(),150);
+}
+function closePinSetupModal(){var m=document.getElementById('pinSetupModal');if(m){if(m._toggleCheckbox)m._toggleCheckbox.disabled=false;m.remove();}}
+function togglePsPassword(){var i=document.getElementById('psPasswordInput'),b=document.getElementById('psEyeBtn'),s=i.type==='password';i.type=s?'text':'password';b.innerHTML=s?'<i class="bi bi-eye-slash"></i>':'<i class="bi bi-eye"></i>';}
+async function psStep1Submit(){var pw=document.getElementById('psPasswordInput').value.trim(),err=document.getElementById('psError1');err.style.display='none';if(!pw){err.textContent='Please enter your password.';err.style.display='block';return;}var body=new FormData();body.append('password',pw);try{var d=await(await fetch('/user/mfa/pin/verify-password',{method:'POST',body})).json();if(d.success){document.getElementById('psStep1').style.display='none';document.getElementById('psStep2').style.display='flex';initPsDigits();setTimeout(()=>{var f=document.querySelector('#psDigitRow .login-pin-digit');if(f)f.focus();},100);}else{err.textContent=d.message||'Incorrect password.';err.style.display='block';}}catch{err.textContent='Network error.';err.style.display='block';}}
+function initPsDigits(){var digits=Array.from(document.querySelectorAll('#psDigitRow .login-pin-digit'));digits.forEach(d=>{var f=d.cloneNode(true);d.parentNode.replaceChild(f,d);});var fresh=Array.from(document.querySelectorAll('#psDigitRow .login-pin-digit'));fresh.forEach((d,i)=>{d.addEventListener('input',e=>{var v=e.target.value.replace(/\D/g,'');d.value=v?v[v.length-1]:'';d.classList.toggle('pin-filled',!!d.value);if(d.value&&i<fresh.length-1)fresh[i+1].focus();});d.addEventListener('keydown',e=>{if(e.key==='Backspace'){if(!d.value&&i>0){fresh[i-1].value='';fresh[i-1].classList.remove('pin-filled');fresh[i-1].focus();}else{d.value='';d.classList.remove('pin-filled');}}if(e.key==='ArrowLeft'&&i>0)fresh[i-1].focus();if(e.key==='ArrowRight'&&i<fresh.length-1)fresh[i+1].focus();});});}
+function getPsPin(){return Array.from(document.querySelectorAll('#psDigitRow .login-pin-digit')).map(d=>d.value).join('');}
+async function psStep2Submit(){var pin=getPsPin(),err=document.getElementById('psError2');err.style.display='none';if(pin.length<6){err.textContent='Please fill in all 6 digits.';err.style.display='block';return;}var body=new FormData();body.append('pin',pin);try{var d=await(await fetch('/user/mfa/set-pin',{method:'POST',body})).json();if(d.success){var m=document.getElementById('pinSetupModal');if(m&&m._toggleCheckbox){m._toggleCheckbox.checked=true;m._toggleCheckbox.disabled=false;}closePinSetupModal();showToast('PIN enabled successfully ✓ — valid for 1 week','success');}else{err.textContent=d.message||'Failed to save PIN.';err.style.display='block';}}catch{err.textContent='Network error.';err.style.display='block';}}
+
+/* ═══════════════════════════════════════════════
+   DANGER ZONE
+═══════════════════════════════════════════════ */
+function dzUpdateRadioStyle(){document.getElementById('dzRadioDeactivate').classList.toggle('selected',document.getElementById('dzActionDeactivate').checked);document.getElementById('dzRadioDelete').classList.toggle('selected',document.getElementById('dzActionDelete').checked);}
+function dzCountReason(el){var l=el.value.trim().length,lb=document.getElementById('dzReasonCount');if(l>=20){lb.textContent=l+' chars ✓';lb.style.color='var(--accent2)';}else{lb.textContent=l+' / 20 min';lb.style.color='rgba(255,255,255,.25)';}}
+function toggleDZFormPw(){var i=document.getElementById('dzPassword'),ic=document.getElementById('dzPwEyeIcon');if(i.type==='password'){i.type='text';ic.className='bi bi-eye-slash';}else{i.type='password';ic.className='bi bi-eye';}}
+function dzShowError(msg){document.getElementById('dzFormErrorMsg').textContent=msg;document.getElementById('dzFormError').classList.add('show');}
+function dzHideError(){document.getElementById('dzFormError').classList.remove('show');}
+async function loadDangerZoneStatus(){try{var d=await(await fetch('/api/user/account-request/status')).json();if(d.pending){document.getElementById('dzPendingType').textContent=d.request_type;document.getElementById('dzPendingBanner').classList.add('show');var btn=document.getElementById('dzSubmitBtn');if(btn)btn.disabled=true;}}catch{}}
+async function submitDangerRequest(e){e.preventDefault();dzHideError();var action=document.querySelector('input[name="dz_action"]:checked')?.value,reason=document.getElementById('dzReason').value.trim(),password=document.getElementById('dzPassword').value.trim(),btn=document.getElementById('dzSubmitBtn');if(!action){dzShowError('Please select an action.');return;}if(reason.length<20){dzShowError('Please provide a reason of at least 20 characters.');return;}if(!password){dzShowError('Please enter your current password to confirm.');return;}btn.disabled=true;btn.innerHTML='<i class="bi bi-hourglass-split"></i> Submitting…';var body=new FormData();body.append('action',action);body.append('reason',reason);body.append('password',password);try{var d=await(await fetch('/user/submit-account-request',{method:'POST',body})).json();if(d.success){document.getElementById('dangerZoneForm').innerHTML=`<div style="text-align:center;padding:44px 20px 28px;"><i class="bi bi-send-check-fill" style="font-size:2.6rem;color:var(--accent2);display:block;margin-bottom:16px;"></i><strong style="font-size:1.05rem;color:#fff;display:block;margin-bottom:10px;">Request Submitted</strong><p style="font-size:.84rem;color:rgba(255,255,255,.45);line-height:1.7;">Your <strong style="color:var(--tl);text-transform:capitalize;">${action}</strong> request has been sent.</p></div>`;showToast('Request submitted successfully','success');}else{dzShowError(d.message||'Failed to submit request.');btn.disabled=false;btn.innerHTML='<i class="bi bi-send-fill"></i> Submit Request to Admin';}}catch{dzShowError('Network error. Please try again.');btn.disabled=false;btn.innerHTML='<i class="bi bi-send-fill"></i> Submit Request to Admin';}}
+
+/* ═══════════════════════════════════════════════
+   CUSTOMER SERVICE
+═══════════════════════════════════════════════ */
+var BOT_AVA=`<svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="13" r="6" fill="none" stroke="#9fc1e1" stroke-width="1.8"/><path d="M7 30c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="#9fc1e1" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="13" r="2.5" fill="#9fc1e1"/><rect x="5" y="14" width="4" height="7" rx="2" fill="#48c78e"/><rect x="27" y="14" width="4" height="7" rx="2" fill="#48c78e"/></svg>`;
+var CS_TREE={root:{msg:"Hello! I'm <strong>LIRA</strong>, your Iloilo Public Library virtual assistant. 👋<br><br>How can I help you today?",options:[{label:'Library Hours & Location',next:'hours'},{label:'Borrowing & Return Policies',next:'borrow'},{label:'Account & Membership',next:'account'},{label:'Books & Catalog',next:'catalog'},{label:'Fines & Fees',next:'fines'},{label:'Technical Support',next:'techsup'},{label:'Other Concerns',next:'other'}]},hours:{msg:"Here's what you'd like to know about our hours and location:",options:[{label:'What are the library hours?',next:'hours_schedule'},{label:'Where is the library located?',next:'hours_location'},{label:'Are we open on holidays?',next:'hours_holiday'},{label:'← Back to main menu',next:'root'}]},hours_schedule:{msg:"🕐 <strong>Library Operating Hours</strong><br><br>Monday – Friday: <strong>8:00 AM – 6:00 PM</strong><br>Saturday: <strong>8:00 AM – 5:00 PM</strong><br>Sunday: <strong>Closed</strong>",options:[{label:'← Back',next:'hours'},{label:'⌂ Main menu',next:'root'}]},hours_location:{msg:"📍 Iloilo Public Library, Iloilo City, Western Visayas, Philippines.",options:[{label:'← Back',next:'hours'},{label:'⌂ Main menu',next:'root'}]},hours_holiday:{msg:"📅 The library is <strong>closed on all national public holidays</strong>.",options:[{label:'← Back',next:'hours'},{label:'⌂ Main menu',next:'root'}]},borrow:{msg:"What would you like to know about borrowing and returns?",options:[{label:'How many books can I borrow?',next:'borrow_limit'},{label:'How long can I keep a book?',next:'borrow_period'},{label:'How do I renew a book?',next:'borrow_renew'},{label:'How do I return a book?',next:'borrow_return'},{label:'← Back to main menu',next:'root'}]},borrow_limit:{msg:"📚 Regular members may borrow up to <strong>3 books</strong>.",options:[{label:'← Back',next:'borrow'},{label:'⌂ Main menu',next:'root'}]},borrow_period:{msg:"📅 Standard loan period is <strong>7 days</strong>. Fine: <strong>₱2.00/day</strong>.",options:[{label:'← Back',next:'borrow'},{label:'⌂ Main menu',next:'root'}]},borrow_renew:{msg:"🔄 Renew online via your Borrowed Books section or visit the circulation desk.",options:[{label:'← Back',next:'borrow'},{label:'⌂ Main menu',next:'root'}]},borrow_return:{msg:"↩️ Return books to the <strong>circulation desk</strong> during library hours.",options:[{label:'← Back',next:'borrow'},{label:'⌂ Main menu',next:'root'}]},account:{msg:"What do you need help with regarding your account?",options:[{label:'How do I register?',next:'acct_register'},{label:'I forgot my password',next:'acct_password'},{label:'How do I update my profile?',next:'acct_update'},{label:'My account is locked',next:'acct_locked'},{label:'← Back to main menu',next:'root'}]},acct_register:{msg:"📝 Visit the library with a valid government ID and fill out a membership form.",options:[{label:'← Back',next:'account'},{label:'⌂ Main menu',next:'root'}]},acct_password:{msg:"🔑 Reset your password from <strong>Password &amp; Security</strong> in Settings.",options:[{label:'← Back',next:'account'},{label:'⌂ Main menu',next:'root'}]},acct_update:{msg:"✏️ Go to <strong>Settings → Personal Details</strong> to update your info.",options:[{label:'← Back',next:'account'},{label:'⌂ Main menu',next:'root'}]},acct_locked:{msg:"🔒 Accounts lock after <strong>5 failed attempts</strong>. Wait 15 minutes or visit the library.",options:[{label:'← Back',next:'account'},{label:'⌂ Main menu',next:'root'}]},catalog:{msg:"What would you like to know about our book collection?",options:[{label:'How do I search for a book?',next:'cat_search'},{label:'Can I request a book?',next:'cat_request'},{label:'← Back to main menu',next:'root'}]},cat_search:{msg:"🔍 Use the search bar to find books by <strong>title</strong>, <strong>author</strong>, or <strong>ISBN</strong>.",options:[{label:'← Back',next:'catalog'},{label:'⌂ Main menu',next:'root'}]},cat_request:{msg:"📬 Submit a purchase suggestion at the circulation desk.",options:[{label:'← Back',next:'catalog'},{label:'⌂ Main menu',next:'root'}]},fines:{msg:"What would you like to know about fines?",options:[{label:'How much is the overdue fine?',next:'fine_rate'},{label:'How do I pay my fines?',next:'fine_pay'},{label:'← Back to main menu',next:'root'}]},fine_rate:{msg:"💸 Fines are <strong>₱2.00 per book per day</strong> after the due date.",options:[{label:'← Back',next:'fines'},{label:'⌂ Main menu',next:'root'}]},fine_pay:{msg:"💳 Pay fines <strong>in person at the circulation desk</strong>. Cash only.",options:[{label:'← Back',next:'fines'},{label:'⌂ Main menu',next:'root'}]},techsup:{msg:"What technical issue are you experiencing?",options:[{label:'Cannot log in',next:'tech_login'},{label:'Storage full warning',next:'tech_storage'},{label:'← Back to main menu',next:'root'}]},tech_login:{msg:"🔐 Ensure Caps Lock is off. After 5 failed attempts, accounts lock for 15 minutes.",options:[{label:'← Back',next:'techsup'},{label:'⌂ Main menu',next:'root'}]},tech_storage:{msg:"☁️ Go to <strong>Data &amp; Storage</strong> and clear history or favorites.",options:[{label:'← Back',next:'techsup'},{label:'⌂ Main menu',next:'root'}]},other:{msg:"What else can I help you with?",options:[{label:'Events & Programs',next:'other_events'},{label:'Contact a Librarian',next:'other_contact'},{label:'← Back to main menu',next:'root'}]},other_events:{msg:"📢 The library hosts reading clubs, storytelling sessions, and workshops.",options:[{label:'← Back',next:'other'},{label:'⌂ Main menu',next:'root'}]},other_contact:{msg:"📞 Visit the circulation desk or email: iloilopubliclibrary@iloilocity.gov.ph",options:[{label:'← Back',next:'other'},{label:'⌂ Main menu',next:'root'}]}};
+var csState={currentNode:null,initialized:false};
+function csNow(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+function csBotAvaHTML(){return`<div class="cs-msg-avatar">${BOT_AVA}</div>`;}
+function csAppendMsg(html,role='bot'){var chat=document.getElementById('csChat'),ts=csNow(),row=document.createElement('div');row.className='cs-msg-row '+role;row.innerHTML=role==='bot'?`${csBotAvaHTML()}<div><div class="cs-bubble">${html}</div><div class="cs-timestamp">${ts}</div></div>`:`<div><div class="cs-bubble">${html}</div><div class="cs-timestamp">${ts}</div></div>`;chat.appendChild(row);chat.scrollTop=chat.scrollHeight;}
+function csShowTyping(){var chat=document.getElementById('csChat'),row=document.createElement('div');row.className='cs-msg-row bot';row.id='csTypingRow';row.innerHTML=`${csBotAvaHTML()}<div class="cs-typing"><span></span><span></span><span></span></div>`;chat.appendChild(row);chat.scrollTop=chat.scrollHeight;}
+function csHideTyping(){var el=document.getElementById('csTypingRow');if(el)el.remove();}
+function csRenderOptions(node){var grid=document.getElementById('csOptionsGrid');grid.innerHTML='';if(!node.options||!node.options.length)return;node.options.forEach((opt,i)=>{var btn=document.createElement('button');btn.className='cs-option-btn';btn.innerHTML=`<span class="cs-option-num">${i+1}</span>${opt.label}`;btn.onclick=()=>csSelectOption(i,opt);grid.appendChild(btn);});}
+function csSelectOption(idx,opt){var node=CS_TREE[csState.currentNode];if(!node)return;var label=node.options[idx]?.label||opt.label;csAppendMsg(`${idx+1}. ${label}`,'user');var nextKey=opt.next||'root',nextNode=CS_TREE[nextKey]||CS_TREE['root'];csState.currentNode=nextKey;csShowTyping();setTimeout(()=>{csHideTyping();csAppendMsg(nextNode.msg);if(nextNode.action)nextNode.action();csRenderOptions(nextNode);},650);}
+function csRestart(){document.getElementById('csChat').innerHTML='';csGoTo('root');}
+function csGoTo(key){var node=CS_TREE[key]||CS_TREE['root'];csState.currentNode=key;csShowTyping();setTimeout(()=>{csHideTyping();csAppendMsg(node.msg);if(node.action)node.action();csRenderOptions(node);},600);}
+function csInit(){if(csState.initialized)return;csState.initialized=true;setTimeout(()=>csGoTo('root'),400);}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+function showToast(msg,type='success'){
+  var shelf=document.getElementById('toastShelf');
+  var icons={success:'bi-check-circle-fill',warn:'bi-exclamation-triangle-fill',err:'bi-x-circle-fill'};
+  var colors={success:'var(--accent2)',warn:'var(--warn)',err:'var(--danger)'};
+  var t=document.createElement('div');t.className='t-toast '+type;
+  t.innerHTML=`<i class="bi ${icons[type]||icons.success}" style="color:${colors[type]||colors.success};font-size:1rem;flex-shrink:0;"></i>${msg}`;
+  shelf.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(40px)';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},2800);
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadAppearanceUI(); loadRecentActivity(); loadMfaStatus();
+});
+document.addEventListener('appearanceLoaded', e => loadAppearanceUI(e.detail));
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') closeInlineEdit();
+  if (e.key==='Enter' && document.getElementById('editOverlay').style.opacity==='1') saveInlineEdit();
+});
+</script>
+</body>
+</html>

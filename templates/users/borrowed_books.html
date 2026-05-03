@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>My Borrowed Books | Iloilo City Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <script src="/static/js/appearance.js"></script>
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%); background-attachment: fixed; color: #fff; min-height: 100vh; overflow-x: hidden; }
+
+    /* ══ PAGE ══ */
+    .page { max-width:1100px;margin:0 auto;padding:84px 24px 60px; }
+    .page-hdr { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:32px; }
+    .page-hdr-left { display:flex;align-items:center;gap:16px; }
+    .page-hdr-icon { width:52px;height:52px;border-radius:15px;flex-shrink:0;background:rgba(159,193,225,.13);border:1px solid rgba(159,193,225,.22);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--accent); }
+    .page-hdr-title { font-size:1.5rem;font-weight:700;letter-spacing:-.03em;margin:0; }
+    .page-hdr-sub { font-size:.8rem;color:var(--tl);margin:4px 0 0; }
+    .btn-browse { display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0d1a24;border:none;border-radius:12px;padding:10px 20px;font-size:.88rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none;transition:.2s;white-space:nowrap; }
+    .btn-browse:hover { background:#b8d4ec;transform:translateY(-2px);color:#0d1a24; }
+    .stats-row { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px; }
+    .stat-card { background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 20px;backdrop-filter:blur(10px);display:flex;align-items:center;gap:14px;transition:.2s;position:relative;overflow:hidden; }
+    .stat-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:.2s; }
+    .stat-card:hover { background:var(--card-b);transform:translateY(-3px); }
+    .stat-card:hover::before { opacity:1; }
+    .stat-card.sc-blue::before   { background:linear-gradient(90deg,var(--accent),transparent); }
+    .stat-card.sc-green::before  { background:linear-gradient(90deg,var(--accent2),transparent); }
+    .stat-card.sc-orange::before { background:linear-gradient(90deg,var(--warn),transparent); }
+    .stat-card.sc-red::before    { background:linear-gradient(90deg,var(--danger),transparent); }
+    .stat-icon { width:42px;height:42px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem; }
+    .si-blue   { background:rgba(159,193,225,.14);color:var(--accent); }
+    .si-green  { background:rgba(72,199,142,.14);color:var(--accent2); }
+    .si-orange { background:rgba(255,152,0,.14);color:var(--warn); }
+    .si-red    { background:rgba(255,99,99,.14);color:var(--danger); }
+    .stat-val  { font-size:1.6rem;font-weight:700;color:#fff;line-height:1; }
+    .stat-lbl  { font-size:.73rem;color:var(--tl);margin-top:3px; }
+    @media(max-width:700px) { .stats-row { grid-template-columns:1fr 1fr; } }
+    .toolbar { display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px; }
+    .search-bar { display:flex;align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden;flex:1;min-width:200px;max-width:360px;transition:.2s; }
+    .search-bar:focus-within { border-color:rgba(159,193,225,.5);background:rgba(255,255,255,.10); }
+    .search-bar .sb-icon { padding:0 13px;color:rgba(255,255,255,.35);font-size:.9rem;display:flex;align-items:center;flex-shrink:0; }
+    .search-bar input { flex:1;background:transparent;border:none;color:#fff;padding:10px 12px 10px 0;font-size:.87rem;font-family:'DM Sans',sans-serif;outline:none; }
+    .search-bar input::placeholder { color:rgba(255,255,255,.3); }
+    .filter-btns { display:flex;gap:6px;flex-wrap:wrap; }
+    .fbtn { padding:8px 16px;border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;transition:.18s;border:1px solid rgba(255,255,255,.1);background:var(--card);color:rgba(255,255,255,.55); }
+    .fbtn:hover { background:rgba(255,255,255,.1);color:#fff; }
+    .fbtn.active { background:rgba(159,193,225,.15);border-color:rgba(159,193,225,.3);color:var(--accent); }
+    .fbtn.active.g { background:rgba(72,199,142,.12);border-color:rgba(72,199,142,.28);color:var(--accent2); }
+    .fbtn.active.o { background:rgba(255,152,0,.11);border-color:rgba(255,152,0,.26);color:#ffb74d; }
+    .fbtn.active.r { background:rgba(255,99,99,.11);border-color:rgba(255,99,99,.26);color:#ff9999; }
+    .cards-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px; }
+    .book-card { background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;backdrop-filter:blur(10px);transition:.25s;display:flex;flex-direction:column;position:relative;animation:cardIn .35s ease both; }
+    @keyframes cardIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .book-card:hover { background:var(--card-b);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.25); }
+    .card-stripe { height:3px;width:100%; }
+    .cs-active   { background:linear-gradient(90deg,var(--accent2),transparent); }
+    .cs-overdue  { background:linear-gradient(90deg,var(--danger),transparent); }
+    .cs-returned { background:linear-gradient(90deg,rgba(255,255,255,.2),transparent); }
+    .cs-renewed  { background:linear-gradient(90deg,var(--warn),transparent); }
+    .card-body { padding:18px 20px;flex:1;display:flex;flex-direction:column;gap:14px; }
+    .status-badge { display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.03em; }
+    .sb-active   { background:rgba(72,199,142,.14);color:var(--accent2);border:1px solid rgba(72,199,142,.28); }
+    .sb-overdue  { background:rgba(255,99,99,.14);color:#ff9999;border:1px solid rgba(255,99,99,.28); }
+    .sb-returned { background:rgba(255,255,255,.08);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12); }
+    .sb-renewed  { background:rgba(255,152,0,.13);color:#ffb74d;border:1px solid rgba(255,152,0,.25); }
+    .books-section { display:flex;flex-direction:column;gap:6px; }
+    .books-section-label { font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.3);margin-bottom:2px;display:flex;align-items:center;gap:5px; }
+    .book-item { display:flex;align-items:center;gap:10px;padding:8px 11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:9px;transition:.15s; }
+    .book-item:hover { background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1); }
+    .book-item-thumb { width:28px;height:36px;border-radius:5px;background:rgba(159,193,225,.1);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:.78rem;color:rgba(159,193,225,.5);flex-shrink:0;overflow:hidden; }
+    .book-item-info { flex:1;min-width:0; }
+    .book-item-title { font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .book-item-author { font-size:.7rem;color:var(--tl);margin-top:1px; }
+    .book-qty-badge { display:inline-flex;align-items:center;gap:3px;flex-shrink:0;padding:4px 8px;border-radius:8px;background:rgba(72,199,142,.12);border:1px solid rgba(72,199,142,.25);color:var(--accent2);font-size:.72rem;font-weight:700;font-family:'DM Mono',monospace;white-space:nowrap; }
+    .book-qty-badge.qty-multi { background:rgba(72,199,142,.18);border-color:rgba(72,199,142,.4);color:#6ddaa8; }
+    .more-books-tag { font-size:.75rem;color:rgba(255,255,255,.35);padding:4px 10px;font-style:italic; }
+    .card-dates { display:flex;flex-direction:column;gap:6px; }
+    .date-row { display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:9px; }
+    .date-label { font-size:.72rem;color:rgba(255,255,255,.4);font-weight:600;display:flex;align-items:center;gap:6px; }
+    .date-value { font-size:.78rem;font-family:'DM Mono',monospace;color:#fff;font-weight:500; }
+    .date-value.overdue { color:var(--danger); }
+    .date-value.due-soon { color:var(--warn); }
+    .days-pill { display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;margin-top:2px;align-self:flex-start; }
+    .dp-ok      { background:rgba(72,199,142,.12);color:var(--accent2);border:1px solid rgba(72,199,142,.22); }
+    .dp-soon    { background:rgba(255,152,0,.12);color:#ffb74d;border:1px solid rgba(255,152,0,.22); }
+    .dp-overdue { background:rgba(255,99,99,.12);color:#ff9999;border:1px solid rgba(255,99,99,.22); }
+    .dp-done    { background:rgba(255,255,255,.06);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.1); }
+    .renewal-row { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+    .renewal-chip { display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:8px;background:rgba(255,152,0,.09);border:1px solid rgba(255,152,0,.2);color:#ffb74d;font-size:.72rem;font-weight:600; }
+    .card-foot { padding:12px 20px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;gap:8px; }
+    .foot-meta { font-size:.72rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px; }
+    .foot-actions { display:flex;gap:6px; }
+    .foot-btn { display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:9px;font-size:.75rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:.18s;border:none;text-decoration:none; }
+    .fb-detail { background:rgba(159,193,225,.12);border:1px solid rgba(159,193,225,.22);color:var(--accent); }
+    .fb-detail:hover { background:rgba(159,193,225,.22);color:#fff; }
+    .fb-renew  { background:rgba(72,199,142,.12);border:1px solid rgba(72,199,142,.24);color:var(--accent2); }
+    .fb-renew:hover { background:rgba(72,199,142,.24);color:#fff; }
+
+    /* ── RENEWAL MODAL ── */
+    .renew-overlay { position:fixed;inset:0;z-index:2100;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px; }
+    .renew-overlay.show { display:flex; }
+    .renew-modal { background:#fff;border-radius:6px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.7);animation:modalIn .25s ease;font-family:'Times New Roman',Times,serif;color:#111; }
+    .renew-modal::-webkit-scrollbar { width:5px; }
+    .renew-modal::-webkit-scrollbar-thumb { background:#aab;border-radius:4px; }
+    .renew-modal-bar { background:#1e2d3d;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:space-between;padding:11px 16px; }
+    .renew-modal-bar-title { font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:8px; }
+    .renew-modal-bar-actions { display:flex;align-items:center;gap:8px; }
+    .renew-bar-btn { background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.65);border-radius:8px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:.18s;display:flex;align-items:center;gap:6px; }
+    .renew-bar-btn:hover { background:rgba(255,255,255,.15);color:#fff; }
+    .renew-bar-btn.primary { background:rgba(72,199,142,.2);border-color:rgba(72,199,142,.4);color:#48c78e; }
+    .renew-bar-btn.primary:hover { background:rgba(72,199,142,.35);color:#fff; }
+    .renew-bar-btn.danger { background:rgba(255,99,99,.12);border-color:rgba(255,99,99,.3);color:#ff9999; }
+    .renew-bar-btn.danger:hover { background:rgba(255,99,99,.25);color:#fff; }
+    .icpl-form { padding:22px 28px 20px;background:#eef0f8; }
+    .icpl-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px; }
+    .icpl-logo-circle { width:44px;height:44px;border-radius:50%;border:2px solid #4a5aaa;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4a5aaa;font-size:1.1rem; }
+    .icpl-center { flex:1;text-align:center; }
+    .icpl-center .icpl-org { font-size:.72rem;font-weight:700;line-height:1.3;color:#2a3080; }
+    .icpl-center .icpl-title { font-size:.82rem;font-weight:700;color:#111;margin-top:6px;text-transform:uppercase;letter-spacing:.04em; }
+    .icpl-center .icpl-sub { font-size:.65rem;font-style:italic;color:#444;margin-top:2px;line-height:1.4; }
+    .icpl-photo-box { width:54px;height:60px;border:1px solid #7a84cc;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.58rem;color:#4a5aaa;text-align:center;flex-shrink:0;background:#fff;border-radius:2px; }
+    .icpl-photo-preview { width:100%;height:100%;object-fit:cover;border-radius:2px;display:none; }
+    .icpl-fields { margin-top:8px; }
+    .icpl-field-row { display:flex;align-items:baseline;gap:4px;border-bottom:1px solid #7a84cc;margin-bottom:5px;padding-bottom:2px;font-size:.7rem;color:#111; }
+    .icpl-field-row label { white-space:nowrap;font-weight:400;flex-shrink:0; }
+    .icpl-field-row .icpl-val { flex:1;font-weight:700;padding:1px 4px;border:none;background:transparent;font-family:'Times New Roman',Times,serif;font-size:.7rem;color:#111;outline:none;border-bottom:1px solid #9aa; }
+    .icpl-field-row.two-col { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+    .icpl-field-row.two-col .icpl-part { display:flex;align-items:baseline;gap:4px;border-bottom:1px solid #7a84cc;padding-bottom:2px; }
+    .icpl-renewed-row { display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.68rem;color:#222;margin:4px 0 3px; }
+    .icpl-renewed-row .icpl-chk-grp { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+    .icpl-renewed-row input[type=checkbox] { width:11px;height:11px;accent-color:#4a5aaa; }
+    .icpl-renewed-row .ren-date-inp { border:none;border-bottom:1px solid #7a84cc;background:transparent;font-family:'Times New Roman',Times,serif;font-size:.68rem;color:#111;outline:none;width:110px;padding:0 2px; }
+    .icpl-table { width:100%;border-collapse:collapse;margin-top:8px;font-size:.65rem;color:#111; }
+    .icpl-table thead th { background:#d5d9f0;border:1px solid #7a84cc;padding:4px 5px;text-align:center;font-weight:700;font-size:.63rem;line-height:1.3; }
+    .icpl-table tbody td { border:1px solid #b0b8d8;padding:0;height:14px; }
+    .icpl-table tbody td input { width:100%;height:100%;border:none;background:transparent;font-family:'Times New Roman',Times,serif;font-size:.62rem;color:#111;padding:1px 3px;outline:none; }
+    .icpl-table .tc-date { width:15%; } .icpl-table .tc-book { width:55%; } .icpl-table .tc-qty  { width:12%; } .icpl-table .tc-ret  { width:18%; }
+    .icpl-reason-wrap { margin-top:14px; }
+    .icpl-reason-wrap label { display:block;font-size:.68rem;font-weight:700;color:#2a3080;margin-bottom:4px;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:.05em; }
+    .icpl-reason-wrap .optional-tag { font-size:.6rem;font-weight:400;color:#888;text-transform:none;letter-spacing:0;margin-left:4px; }
+    .icpl-reason-textarea { width:100%;background:#fff;border:1px solid #b0b8d8;border-radius:4px;padding:8px 10px;font-size:.78rem;font-family:'DM Sans',sans-serif;color:#222;resize:vertical;min-height:60px;outline:none;transition:.2s; }
+    .icpl-reason-textarea:focus { border-color:#4a5aaa; }
+    .icpl-footer-code { text-align:center;font-size:.58rem;color:#666;margin-top:10px;padding-top:6px;border-top:1px solid #c0c8e0; }
+    @media print { body > *:not(.renew-overlay) { display:none !important; } .renew-overlay { position:static !important;background:none !important;padding:0 !important;display:block !important; } .renew-modal { box-shadow:none !important;max-height:none !important;border-radius:0; } .renew-modal-bar,.icpl-reason-wrap { display:none !important; } .icpl-form { padding:14px 18px !important;background:#fff !important; } }
+
+    /* ── EMPTY / SKELETON ── */
+    .empty-state { grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 24px;text-align:center;background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:20px; }
+    .empty-icon { width:80px;height:80px;border-radius:22px;background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.2);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:rgba(159,193,225,.5);margin-bottom:20px; }
+    .empty-title { font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:8px; }
+    .empty-sub   { font-size:.84rem;color:var(--tl);max-width:320px;line-height:1.65;margin-bottom:24px; }
+    .skeleton-card { background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;padding:20px; }
+    .skel { background:linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.06) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px; }
+    @keyframes shimmer { to { background-position:-200% 0; } }
+
+    /* ── DETAIL MODAL ── */
+    .modal-overlay { position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px; }
+    .modal-overlay.show { display:flex; }
+    .modal-box { background:linear-gradient(150deg,#1e2d3d,#273848);border:1px solid rgba(159,193,225,.18);border-radius:22px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 28px 70px rgba(0,0,0,.6);animation:modalIn .25s ease; }
+    @keyframes modalIn { from{opacity:0;transform:translateY(14px) scale(.97)} to{opacity:1;transform:none} }
+    .modal-box::-webkit-scrollbar { width:4px; }
+    .modal-box::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12);border-radius:10px; }
+    .modal-hdr { display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.07); }
+    .modal-title { font-size:.92rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:9px; }
+    .modal-close { background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.95rem;transition:.15s; }
+    .modal-close:hover { background:rgba(255,99,99,.15);color:#ff9999;border-color:rgba(255,99,99,.3); }
+    .modal-body-inner { padding:22px 24px; }
+    .modal-section-lbl { font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06); }
+    .modal-info-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+    .modal-info-cell { background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:11px 13px; }
+    .mic-label { font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.3);margin-bottom:4px;display:flex;align-items:center;gap:5px; }
+    .mic-val   { font-size:.85rem;color:#fff;font-weight:600; }
+    .mic-val.mono { font-family:'DM Mono',monospace;font-size:.8rem; }
+    .mic-val.overdue { color:var(--danger); }
+    .mic-val.due-soon { color:var(--warn); }
+    .modal-book-item { display:flex;align-items:center;gap:12px;padding:10px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:11px;margin-bottom:8px; }
+    .modal-book-thumb { width:32px;height:42px;border-radius:6px;background:rgba(159,193,225,.1);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:rgba(159,193,225,.5);flex-shrink:0; }
+    .modal-book-info { flex:1;min-width:0; }
+    .modal-book-title  { font-size:.86rem;font-weight:700;color:#fff; }
+    .modal-book-author { font-size:.74rem;color:var(--tl); }
+    .modal-book-isbn   { font-size:.68rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);margin-top:2px; }
+    .modal-book-qty { display:inline-flex;align-items:center;gap:4px;flex-shrink:0;padding:5px 10px;border-radius:9px;background:rgba(72,199,142,.12);border:1px solid rgba(72,199,142,.25);color:var(--accent2);font-size:.78rem;font-weight:700;font-family:'DM Mono',monospace; }
+    .modal-book-qty.qty-hi { background:rgba(72,199,142,.2);border-color:rgba(72,199,142,.4);color:#6ddaa8; }
+    .modal-book-num { font-size:.68rem;font-weight:700;background:rgba(159,193,225,.12);color:var(--accent);border:1px solid rgba(159,193,225,.2);border-radius:20px;padding:3px 9px;flex-shrink:0; }
+  </style>
+</head>
+<body>
+{% include 'user_template/topbar_template.html' %}
+{% include 'user_template/profile_sidebar_template.html' %}
+<!-- ══ PAGE ══ -->
+<div class="page">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-hdr-icon"><i class="bi bi-clock-history"></i></div>
+      <div>
+        <h1 class="page-hdr-title">My Borrowed Books</h1>
+        <p class="page-hdr-sub">Track your borrowed titles, quantities, due dates, and return history</p>
+      </div>
+    </div>
+    <a href="/user/browse" class="btn-browse"><i class="bi bi-search"></i> Browse More Books</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card sc-blue"><div class="stat-icon si-blue"><i class="bi bi-book-half"></i></div><div><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">Total Borrowed</div></div></div>
+    <div class="stat-card sc-green"><div class="stat-icon si-green"><i class="bi bi-bookmark-check-fill"></i></div><div><div class="stat-val" id="stat-active">—</div><div class="stat-lbl">Currently Active</div></div></div>
+    <div class="stat-card sc-orange"><div class="stat-icon si-orange"><i class="bi bi-arrow-repeat"></i></div><div><div class="stat-val" id="stat-renewed">—</div><div class="stat-lbl">Renewed</div></div></div>
+    <div class="stat-card sc-red"><div class="stat-icon si-red"><i class="bi bi-exclamation-triangle-fill"></i></div><div><div class="stat-val" id="stat-overdue">—</div><div class="stat-lbl">Overdue</div></div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-bar">
+      <span class="sb-icon"><i class="bi bi-search"></i></span>
+      <input type="text" id="searchInput" placeholder="Search by title, author, or ISBN…" oninput="applyFilters()">
+    </div>
+    <div class="filter-btns">
+      <button class="fbtn active" id="fb-all"      onclick="setFilter('all',this)">All</button>
+      <button class="fbtn g"      id="fb-active"   onclick="setFilter('active',this)">Active</button>
+      <button class="fbtn o"      id="fb-renewed"  onclick="setFilter('renewed',this)">Renewed</button>
+      <button class="fbtn r"      id="fb-overdue"  onclick="setFilter('overdue',this)">Overdue</button>
+      <button class="fbtn"        id="fb-returned" onclick="setFilter('returned',this)">Returned</button>
+    </div>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid">
+    <div class="skeleton-card"><div class="skel" style="height:16px;width:60%;margin-bottom:12px;"></div><div class="skel" style="height:12px;width:80%;margin-bottom:8px;"></div><div class="skel" style="height:12px;width:45%;margin-bottom:20px;"></div><div class="skel" style="height:48px;border-radius:10px;margin-bottom:8px;"></div><div class="skel" style="height:48px;border-radius:10px;"></div></div>
+    <div class="skeleton-card"><div class="skel" style="height:16px;width:70%;margin-bottom:12px;"></div><div class="skel" style="height:12px;width:55%;margin-bottom:8px;"></div><div class="skel" style="height:12px;width:40%;margin-bottom:20px;"></div><div class="skel" style="height:48px;border-radius:10px;margin-bottom:8px;"></div><div class="skel" style="height:48px;border-radius:10px;"></div></div>
+    <div class="skeleton-card"><div class="skel" style="height:16px;width:65%;margin-bottom:12px;"></div><div class="skel" style="height:12px;width:75%;margin-bottom:8px;"></div><div class="skel" style="height:12px;width:50%;margin-bottom:20px;"></div><div class="skel" style="height:48px;border-radius:10px;margin-bottom:8px;"></div><div class="skel" style="height:48px;border-radius:10px;"></div></div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><div class="modal-title"><i class="bi bi-book-half"></i> Borrow Details</div><button class="modal-close" onclick="closeDetail()"><i class="bi bi-x"></i></button></div>
+    <div class="modal-body-inner" id="modalContent"></div>
+  </div>
+</div>
+
+<!-- RENEWAL MODAL -->
+<div class="renew-overlay" id="renewModal">
+  <div class="renew-modal">
+    <div class="renew-modal-bar">
+      <div class="renew-modal-bar-title"><i class="bi bi-arrow-repeat"></i> Library Card Renewal</div>
+      <div class="renew-modal-bar-actions">
+        <button class="renew-bar-btn primary" id="renewSubmitBtn" onclick="submitRenewal()"><i class="bi bi-check2-circle"></i> Confirm Renewal</button>
+        <button class="renew-bar-btn" onclick="printCard()"><i class="bi bi-printer-fill"></i> Print Card</button>
+        <button class="renew-bar-btn danger" onclick="closeRenew()"><i class="bi bi-x"></i> Cancel</button>
+      </div>
+    </div>
+    <div class="icpl-form" id="icplFormBody">
+      <div class="icpl-header">
+        <div class="icpl-logo-circle"><img src="/static/images/logo.png" alt="Logo" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'"></div>
+        <div class="icpl-center">
+          <div class="icpl-org">ILOILO CITY<br>PUBLIC<br>LIBRARY<br><span style="font-weight:400;font-size:.62rem;">Office of City Mayor<br>Tel. (033) 337-6567</span></div>
+          <div class="icpl-title">Library Borrower's Card</div>
+          <div class="icpl-sub"><em>This entitles herein named person to borrow<br>materials at The Library subject to the policies.</em></div>
+        </div>
+        <div class="icpl-photo-box" id="icplPhotoBox"><img class="icpl-photo-preview" id="icplPhotoPreview" alt="Photo"><span id="icplPhotoLabel" style="font-size:.55rem;color:#4a5aaa;text-align:center;line-height:1.3;">1x1<br>photo</span></div>
+      </div>
+      <div class="icpl-fields">
+        <div class="icpl-field-row"><label>Name:</label><input class="icpl-val" id="icpl_name" type="text"></div>
+        <div class="icpl-field-row two-col">
+          <div class="icpl-part"><label>Borrower's No.:</label><input class="icpl-val" id="icpl_bno" type="text" style="width:90px"></div>
+          <div class="icpl-part"><label>Tel. No.:</label><input class="icpl-val" id="icpl_tel" type="text" style="width:100px"></div>
+        </div>
+        <div class="icpl-field-row"><label>Address:</label><input class="icpl-val" id="icpl_address" type="text"></div>
+        <div style="display:flex;align-items:baseline;gap:6px;border-bottom:1px solid #7a84cc;margin-bottom:4px;padding-bottom:2px;font-size:.68rem;flex-wrap:wrap;">
+          <span>Valid Until:</span><input class="icpl-val" id="icpl_valid" type="text" style="flex:1;min-width:80px;"><span style="white-space:nowrap;">unless officially</span>
+        </div>
+        <div class="icpl-renewed-row"><span>renewed:</span><div class="icpl-chk-grp"><input type="checkbox" id="icpl_ren1_chk" onchange="toggleIcplRen(1)"><label for="icpl_ren1_chk">1st renewal on:</label><input class="ren-date-inp" id="icpl_ren1_date" type="text" disabled></div></div>
+        <div class="icpl-renewed-row" style="padding-left:56px;"><div class="icpl-chk-grp"><input type="checkbox" id="icpl_ren2_chk" onchange="toggleIcplRen(2)"><label for="icpl_ren2_chk">2nd renewal on:</label><input class="ren-date-inp" id="icpl_ren2_date" type="text" disabled></div></div>
+      </div>
+      <table class="icpl-table">
+        <thead><tr><th class="tc-date">Date Due &amp; Intl.</th><th class="tc-book">Book Author/Title/Ed. Borrowed</th><th class="tc-qty">Qty</th><th class="tc-ret">Date Rtrd. &amp; Intl.</th></tr></thead>
+        <tbody id="icplTableBody"></tbody>
+      </table>
+      <div class="icpl-reason-wrap"><label>Reason for Renewal <span class="optional-tag">(optional)</span></label><textarea class="icpl-reason-textarea" id="icpl_reason" placeholder="e.g. Haven't finished reading, need more time for research…"></textarea></div>
+      <div class="icpl-footer-code">ICPL Form 2 – 11/04</div>
+    </div>
+  </div>
+</div>
+{% include 'user_template/footer_template.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.head.insertAdjacentHTML('beforeend','<style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}</style>');
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  /* ══ BORROWED BOOKS DATA ══ */
+  let _allRecords = [];
+  let _filter = 'all';
+
+  function computeStatus(card) { const today=new Date();today.setHours(0,0,0,0); if(!card.date_return)return'active'; const ret=new Date(card.date_return); if(card.returned)return'returned'; if(ret<today)return'overdue'; if(card.renewal1_checked||card.renewal2_checked)return'renewed'; return'active'; }
+  function daysLabel(card) { if(!card.date_return)return null; const today=new Date();today.setHours(0,0,0,0); const ret=new Date(card.date_return); const diff=Math.ceil((ret-today)/86400000); if(card.returned)return{cls:'dp-done',txt:'Returned'}; if(diff<0)return{cls:'dp-overdue',txt:`${Math.abs(diff)}d overdue`}; if(diff===0)return{cls:'dp-soon',txt:'Due today!'}; if(diff<=3)return{cls:'dp-soon',txt:`${diff}d left`}; return{cls:'dp-ok',txt:`${diff} days left`}; }
+  function dateClass(card) { if(!card.date_return||card.returned)return''; const today=new Date();today.setHours(0,0,0,0); const ret=new Date(card.date_return); const diff=Math.ceil((ret-today)/86400000); if(diff<0)return'overdue'; if(diff<=3)return'due-soon'; return''; }
+  function fmtDate(d) { if(!d)return'—'; return new Date(d).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}); }
+  function statusBadge(status) { const map={active:['sb-active','bi-bookmark-check-fill','Active'],overdue:['sb-overdue','bi-exclamation-triangle-fill','Overdue'],returned:['sb-returned','bi-check2-circle','Returned'],renewed:['sb-renewed','bi-arrow-repeat','Renewed']}; const[cls,icon,label]=map[status]||map.active; return`<span class="status-badge ${cls}"><i class="bi ${icon}"></i>${label}</span>`; }
+  function stripeClass(status) { return{active:'cs-active',overdue:'cs-overdue',returned:'cs-returned',renewed:'cs-renewed'}[status]||'cs-active'; }
+  function totalQty(card) { return(card.books||[]).reduce((sum,b)=>sum+(b.quantity||1),0); }
+
+  function buildCard(card, idx) {
+    const status=card._status,dl=daysLabel(card),dc=dateClass(card),hasRen=card.renewal1_checked||card.renewal2_checked,books=card.books||[],delay=Math.min(idx*0.05,0.4),maxShow=3;
+    const booksHtml=books.length===0?`<div style="font-size:.78rem;color:rgba(255,255,255,.3);font-style:italic;padding:8px 0;">No books recorded</div>`:books.slice(0,maxShow).map(b=>{const qty=b.quantity||1;const qtyClass=qty>1?'book-qty-badge qty-multi':'book-qty-badge';return`<div class="book-item"><div class="book-item-thumb"><i class="bi bi-book-fill"></i></div><div class="book-item-info"><div class="book-item-title">${esc(b.title)}</div><div class="book-item-author">by ${esc(b.author)}</div></div><span class="${qtyClass}" title="${qty} cop${qty===1?'y':'ies'}"><i class="bi bi-stack"></i>×${qty}</span></div>`;}).join('');
+    const moreCount=books.length-maxShow;
+    return`<div class="book-card" data-status="${status}" data-card-id="${card.id}" style="animation-delay:${delay}s"><div class="card-stripe ${stripeClass(status)}"></div><div class="card-body"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">${statusBadge(status)}<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:.7rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);">Card #${card.id}</span>${totalQty(card)>0?`<span style="font-size:.68rem;font-weight:700;background:rgba(159,193,225,.1);color:var(--accent);border:1px solid rgba(159,193,225,.18);border-radius:20px;padding:2px 8px;">${totalQty(card)} vol${totalQty(card)===1?'':'s'} total</span>`:''}</div></div><div class="books-section"><div class="books-section-label"><i class="bi bi-books" style="font-size:.65rem;"></i>Books (${books.length})</div>${booksHtml}${moreCount>0?`<div class="more-books-tag">+${moreCount} more book${moreCount>1?'s':''}…</div>`:''}</div><div class="card-dates"><div class="date-row"><span class="date-label"><i class="bi bi-calendar-date"></i> Date Issued</span><span class="date-value">${fmtDate(card.date_issued)}</span></div><div class="date-row"><span class="date-label"><i class="bi bi-calendar-check"></i> Return Date</span><span class="date-value ${dc}">${fmtDate(card.date_return)}</span></div>${dl?`<span class="days-pill ${dl.cls}"><i class="bi bi-hourglass-split"></i>${dl.txt}</span>`:''}</div>${hasRen?`<div class="renewal-row">${card.renewal1_checked&&card.renewal1_date?`<span class="renewal-chip"><i class="bi bi-arrow-repeat"></i>1st: ${fmtDate(card.renewal1_date)}</span>`:''} ${card.renewal2_checked&&card.renewal2_date?`<span class="renewal-chip"><i class="bi bi-arrow-repeat"></i>2nd: ${fmtDate(card.renewal2_date)}</span>`:''}</div>`:''}</div><div class="card-foot"><span class="foot-meta"><i class="bi bi-${card.type==='member'?'person-badge-fill':'journal-bookmark-fill'}"></i>${card.type==='member'?'Member':'Borrower'}${card.card_type?` · ${card.card_type==='city_govt'?'LGU Card':'Regular Card'}`:''}</span><div class="foot-actions">${(status==='active'||status==='overdue'||status==='renewed')&&!card.renewal2_checked?`<button class="foot-btn fb-renew" onclick="openRenew(${card.id})"><i class="bi bi-arrow-repeat"></i> Renew</button>`:''}<button class="foot-btn fb-detail" onclick="openDetail(${card.id})"><i class="bi bi-eye-fill"></i> Details</button></div></div></div>`;
+  }
+
+  function renderCards(records) {
+    const grid=document.getElementById('cardsGrid');
+    if(!records.length){ grid.innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="bi bi-book-x"></i></div><div class="empty-title">No records found</div><div class="empty-sub">${_filter==='all'?"You haven't borrowed any books yet. Visit the catalog to get started!":`No <strong>${_filter}</strong> records found.`}</div><a href="/user/browse" class="btn-browse"><i class="bi bi-search"></i> Browse Catalog</a></div>`; return; }
+    grid.innerHTML=records.map((c,i)=>buildCard(c,i)).join('');
+  }
+
+  function updateStats(all) { document.getElementById('stat-total').textContent=all.length; document.getElementById('stat-active').textContent=all.filter(c=>c._status==='active').length; document.getElementById('stat-renewed').textContent=all.filter(c=>c._status==='renewed').length; document.getElementById('stat-overdue').textContent=all.filter(c=>c._status==='overdue').length; }
+
+  function setFilter(f,btn) { _filter=f; document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); applyFilters(); }
+
+  function applyFilters() {
+    const q=document.getElementById('searchInput').value.toLowerCase().trim();
+    let records=_allRecords;
+    if(_filter!=='all')records=records.filter(c=>c._status===_filter);
+    if(q)records=records.filter(c=>(c.books||[]).some(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||(b.isbn||'').toLowerCase().includes(q))||(c.firstname+' '+c.lastname).toLowerCase().includes(q));
+    renderCards(records);
+  }
+
+  async function loadBorrowedBooks() {
+    try {
+      const res=await fetch('/api/user/borrowed-books');
+      const data=await res.json();
+      const cards=data.cards||[];
+      cards.forEach(c=>{c._status=computeStatus(c);});
+      _allRecords=cards;
+      updateStats(cards);
+      renderCards(cards);
+    } catch(err) {
+      document.getElementById('cardsGrid').innerHTML=`<div class="empty-state"><div class="empty-icon"><i class="bi bi-wifi-off"></i></div><div class="empty-title">Could not load records</div><div class="empty-sub">Please check your connection and try again.</div><button class="btn-browse" onclick="location.reload()"><i class="bi bi-arrow-clockwise"></i> Retry</button></div>`;
+    }
+  }
+
+  /* ── DETAIL MODAL ── */
+  function openDetail(cardId) {
+    const card=_allRecords.find(c=>c.id===cardId); if(!card)return;
+    const status=card._status,dl=daysLabel(card),dc=dateClass(card),books=card.books||[];
+    const booksListHtml=books.length?books.map((b,i)=>{const qty=b.quantity||1;const qtyClass=`modal-book-qty${qty>1?' qty-hi':''}`;return`<div class="modal-book-item"><div class="modal-book-thumb"><i class="bi bi-book-fill"></i></div><div class="modal-book-info"><div class="modal-book-title">${esc(b.title)}</div><div class="modal-book-author">by ${esc(b.author)}</div>${b.isbn?`<div class="modal-book-isbn">ISBN: ${esc(b.isbn)}</div>`:''}</div><div class="${qtyClass}"><i class="bi bi-stack"></i>×${qty}</div><div class="modal-book-num">Book ${i+1}</div></div>`;}).join(''):`<div style="font-size:.82rem;color:rgba(255,255,255,.3);font-style:italic;padding:12px 0;">No books recorded for this card.</div>`;
+    const tot=totalQty(card);
+    const renewalHtml=(card.renewal1_checked||card.renewal2_checked)?`<div class="modal-section-lbl"><i class="bi bi-arrow-repeat me-1"></i>Renewal History</div><div class="modal-info-grid">${card.renewal1_checked?`<div class="modal-info-cell"><div class="mic-label"><i class="bi bi-1-circle"></i>1st Renewal</div><div class="mic-val mono">${fmtDate(card.renewal1_date)}</div></div>`:''}${card.renewal2_checked?`<div class="modal-info-cell"><div class="mic-label"><i class="bi bi-2-circle"></i>2nd Renewal</div><div class="mic-val mono">${fmtDate(card.renewal2_date)}</div></div>`:''}</div>`:'';
+    const daysHtml=dl?`<div class="modal-info-cell"><div class="mic-label"><i class="bi bi-hourglass-split"></i>Status</div><div class="mic-val ${dl.cls.replace('dp-','')}">${dl.txt}</div></div>`:'';
+    document.getElementById('modalContent').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px;">${statusBadge(status)}<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-size:.74rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.35);">Card #${card.id} · ${card.type==='member'?'Member':'Borrower'}</span>${tot>0?`<span style="font-size:.7rem;font-weight:700;background:rgba(159,193,225,.12);color:var(--accent);border:1px solid rgba(159,193,225,.2);border-radius:20px;padding:3px 10px;">${tot} volume${tot===1?'':'s'} total</span>`:''}</div></div><div class="modal-section-lbl"><i class="bi bi-books me-1"></i>Books Borrowed (${books.length})</div>${booksListHtml}<div class="modal-section-lbl"><i class="bi bi-calendar3 me-1"></i>Dates</div><div class="modal-info-grid"><div class="modal-info-cell"><div class="mic-label"><i class="bi bi-calendar-date"></i>Date Issued</div><div class="mic-val mono">${fmtDate(card.date_issued)}</div></div><div class="modal-info-cell"><div class="mic-label"><i class="bi bi-calendar-check"></i>Return Date</div><div class="mic-val mono ${dc}">${fmtDate(card.date_return)}</div></div>${daysHtml}<div class="modal-info-cell"><div class="mic-label"><i class="bi bi-credit-card"></i>Card Type</div><div class="mic-val">${card.card_type==='city_govt'?'LGU / City Government':card.card_type==='regular'?'Regular / Student':'—'}</div></div></div>${card.valid_until?`<div class="modal-section-lbl"><i class="bi bi-shield-check me-1"></i>Validity</div><div style="background:rgba(159,193,225,.06);border:1px solid rgba(159,193,225,.14);border-radius:10px;padding:12px 14px;font-size:.83rem;color:var(--tl);">${esc(card.valid_until)}</div>`:''} ${renewalHtml}<div class="modal-section-lbl"><i class="bi bi-person me-1"></i>Member Info</div><div class="modal-info-grid"><div class="modal-info-cell"><div class="mic-label"><i class="bi bi-person-fill"></i>Name</div><div class="mic-val">${esc(card.firstname)} ${esc(card.lastname)}</div></div><div class="modal-info-cell"><div class="mic-label"><i class="bi bi-telephone-fill"></i>Phone</div><div class="mic-val">${esc(card.phone_number)||'—'}</div></div>${card.address?`<div class="modal-info-cell" style="grid-column:1/-1;"><div class="mic-label"><i class="bi bi-geo-alt-fill"></i>Address</div><div class="mic-val">${esc(card.address)}</div></div>`:''}</div>`;
+    document.getElementById('detailModal').classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+  function closeDetail() { document.getElementById('detailModal').classList.remove('show'); document.body.style.overflow=''; }
+  document.getElementById('detailModal').addEventListener('click', e => { if(e.target===document.getElementById('detailModal'))closeDetail(); });
+
+  /* ── RENEWAL MODAL ── */
+  let _renewCardId=null;
+  function openRenew(cardId) {
+    const card=_allRecords.find(c=>c.id===cardId); if(!card)return;
+    _renewCardId=cardId;
+    const today=new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+    const books=card.books||[];
+    document.getElementById('icpl_name').value=`${card.firstname} ${card.lastname}`;
+    document.getElementById('icpl_bno').value=`#${card.id}`;
+    document.getElementById('icpl_tel').value=card.phone_number||'';
+    document.getElementById('icpl_address').value=card.address||'';
+    document.getElementById('icpl_valid').value=card.valid_until||'';
+    document.getElementById('icpl_reason').value='';
+    const isRen1=!card.renewal1_checked,isRen2=card.renewal1_checked&&!card.renewal2_checked;
+    const chk1=document.getElementById('icpl_ren1_chk'),chk2=document.getElementById('icpl_ren2_chk');
+    const d1=document.getElementById('icpl_ren1_date'),d2=document.getElementById('icpl_ren2_date');
+    chk1.checked=card.renewal1_checked; d1.value=card.renewal1_checked?fmtDate(card.renewal1_date):''; d1.disabled=!card.renewal1_checked;
+    chk2.checked=card.renewal2_checked; d2.value=card.renewal2_checked?fmtDate(card.renewal2_date):''; d2.disabled=!card.renewal2_checked;
+    if(isRen1){chk1.checked=true;d1.value=today;d1.disabled=false;}
+    else if(isRen2){chk2.checked=true;d2.value=today;d2.disabled=false;}
+    const preview=document.getElementById('icplPhotoPreview'),label=document.getElementById('icplPhotoLabel');
+    if(card.photo_url){preview.src=card.photo_url;preview.style.display='block';label.style.display='none';}
+    else{preview.style.display='none';label.style.display='block';}
+    const tbody=document.getElementById('icplTableBody');
+    const rows=Math.max(books.length+5,20);
+    tbody.innerHTML=Array.from({length:rows},(_,i)=>{const b=books[i];const qty=b?(b.quantity||1):'';return`<tr><td class="tc-date"><input type="text" value="${b?fmtDate(card.date_return):''}"></td><td class="tc-book"><input type="text" value="${b?esc(b.title)+(b.author?' / '+esc(b.author):''):''}"></td><td class="tc-qty"><input type="text" value="${qty}" style="text-align:center;"></td><td class="tc-ret"><input type="text" value=""></td></tr>`;}).join('');
+    document.getElementById('renewModal').classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+  function closeRenew() { document.getElementById('renewModal').classList.remove('show'); document.body.style.overflow=''; _renewCardId=null; }
+  document.getElementById('renewModal').addEventListener('click', e => { if(e.target===document.getElementById('renewModal'))closeRenew(); });
+  function toggleIcplRen(n) { const chk=document.getElementById(`icpl_ren${n}_chk`),dinp=document.getElementById(`icpl_ren${n}_date`); dinp.disabled=!chk.checked; if(chk.checked&&!dinp.value)dinp.value=new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'}); if(!chk.checked)dinp.value=''; }
+
+  async function submitRenewal() {
+    if(!_renewCardId)return;
+    const reason=document.getElementById('icpl_reason').value.trim();
+    const chk1=document.getElementById('icpl_ren1_chk').checked,date1=document.getElementById('icpl_ren1_date').value.trim();
+    const chk2=document.getElementById('icpl_ren2_chk').checked,date2=document.getElementById('icpl_ren2_date').value.trim();
+    const btn=document.getElementById('renewSubmitBtn');
+    btn.disabled=true; btn.innerHTML='<i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Saving…';
+    try {
+      const res=await fetch(`/api/user/renew/${_renewCardId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({renewal1_checked:chk1,renewal1_date:date1,renewal2_checked:chk2,renewal2_date:date2,reason})});
+      const data=await res.json();
+      if(data.success){showToast('Renewal request submitted! Awaiting admin approval.','success');closeRenew();await loadBorrowedBooks();}
+      else showToast(data.error||'Renewal failed. Please try again.','danger');
+    }catch{showToast('Network error. Please try again.','danger');}
+    finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-check2-circle"></i> Confirm Renewal';}
+  }
+
+  function printCard() { window.print(); }
+
+  /* ── TOAST ── */
+  function showToast(msg,type='info') {
+    let wrap=document.getElementById('toastWrap');
+    if(!wrap){wrap=document.createElement('div');wrap.id='toastWrap';wrap.style.cssText='position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:9px;';document.body.appendChild(wrap);}
+    const colors={success:'rgba(72,199,142,.4)',danger:'rgba(255,99,99,.4)',info:'rgba(159,193,225,.3)'};
+    const icons={success:'✅',danger:'❌',info:'ℹ️'};
+    const el=document.createElement('div');
+    el.style.cssText=`background:#1e2d3d;border:1px solid ${colors[type]||colors.info};border-radius:11px;padding:12px 16px;font-size:.84rem;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;gap:9px;animation:toastIn .3s ease;font-family:'DM Sans',sans-serif;`;
+    el.innerHTML=`${icons[type]||'ℹ️'} ${msg}`;
+    wrap.appendChild(el);
+    setTimeout(()=>el.remove(),3800);
+  }
+
+  document.addEventListener('DOMContentLoaded', loadBorrowedBooks);
+</script>
+</body>
+</html>

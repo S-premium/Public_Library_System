@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<style>
+  /* ── TOPBAR ── */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+    background: rgba(30,45,61,0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(159,193,225,0.12);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 60px;
+  }
+  .brand-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; flex-shrink:0; }
+  .brand-img  { width:34px; height:34px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+  .brand-text { font-weight:700; font-size:1.1rem; letter-spacing:-.02em; white-space:nowrap; }
+
+  /* ── DESKTOP NAV ── */
+  .nav-links       { display:flex; gap:4px; align-items:center; }
+  .nav-links a {
+    color:rgba(255,255,255,.65); text-decoration:none; font-weight:500;
+    font-size:.88rem; padding:6px 12px; border-radius:8px; transition:.18s; white-space:nowrap;
+  }
+  .nav-links a:hover  { background:rgba(255,255,255,.08); color:#fff; }
+  .nav-links a.active { background:rgba(159,193,225,.15); color:#9fc1e1; }
+  .dropdown-menu {
+    background:#253545; border:1px solid rgba(255,255,255,.1);
+    border-radius:12px; padding:6px; min-width:210px;
+    box-shadow:0 16px 40px rgba(0,0,0,.4);
+  }
+  .dropdown-menu .dropdown-item {
+    color:rgba(255,255,255,.8); font-size:.88rem; font-weight:500;
+    border-radius:8px; padding:8px 14px; transition:.15s;
+  }
+  .dropdown-menu .dropdown-item:hover { background:rgba(159,193,225,.12); color:#fff; }
+  .dropdown-submenu { position:relative; }
+  .dropdown-submenu .dropdown-menu { top:0; left:100%; margin-left:4px; display:none; }
+  .dropdown-submenu:hover .dropdown-menu { display:block; }
+
+  .topbar-right { display:flex; align-items:center; gap:8px; }
+  .menu-toggle  { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; padding:4px; flex-shrink:0; }
+
+  /* ── MOBILE NAV OVERLAY ── */
+  @media (max-width:992px) {
+    .topbar { padding:0 16px; }
+    .menu-toggle { display:block; }
+
+    .nav-links {
+      position:fixed;
+      top:60px; left:0; right:0; bottom:68px;
+      background:rgba(20,32,44,0.98);
+      backdrop-filter:blur(24px);
+      flex-direction:column; align-items:stretch;
+      padding:12px 12px 12px; gap:2px;
+      overflow-y:auto;
+      transform:translateX(-100%);
+      transition:transform .3s cubic-bezier(.4,0,.2,1);
+      z-index:1099;
+      border-right:1px solid rgba(159,193,225,.1);
+      width:min(300px,82vw);
+    }
+    .nav-links.open { transform:translateX(0); }
+
+    .nav-section-label {
+      font-size:.65rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:rgba(159,193,225,.5);
+      padding:14px 12px 6px; display:block;
+    }
+    .nav-links a {
+      padding:10px 14px; font-size:.92rem;
+      border-radius:10px; display:flex; align-items:center; gap:10px;
+      color:rgba(255,255,255,.75);
+    }
+    .nav-links a:hover  { background:rgba(255,255,255,.07); color:#fff; }
+    .nav-links a.active { background:rgba(159,193,225,.13); color:#9fc1e1; }
+
+    .mobile-submenu-toggle {
+      width:100%; background:none; border:none;
+      color:rgba(255,255,255,.75); font-family:'DM Sans',sans-serif;
+      font-size:.92rem; font-weight:500;
+      padding:10px 14px; border-radius:10px;
+      display:flex; align-items:center; gap:10px;
+      cursor:pointer; transition:.18s; text-align:left;
+    }
+    .mobile-submenu-toggle:hover { background:rgba(255,255,255,.07); color:#fff; }
+    .mobile-submenu-toggle .chevron { margin-left:auto; font-size:.75rem; transition:transform .25s; color:rgba(255,255,255,.35); }
+    .mobile-submenu-toggle.expanded .chevron { transform:rotate(180deg); }
+
+    .mobile-submenu-body { display:none; padding-left:16px; border-left:2px solid rgba(159,193,225,.15); margin-left:22px; margin-bottom:2px; }
+    .mobile-submenu-body.open { display:block; }
+    .mobile-submenu-body a { font-size:.85rem; padding:8px 12px; color:rgba(255,255,255,.6); }
+    .mobile-submenu-body a:hover { color:#fff; background:rgba(255,255,255,.06); }
+
+    .nav-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1098; }
+    .nav-overlay.show { display:block; }
+  }
+  @media (max-width:480px) { .brand-text { display:none; } }
+  @media (max-width:360px) {
+    .topbar { padding:0 10px; height:54px; }
+    .nav-links { top:54px; bottom:68px; }
+    .menu-toggle { font-size:1.4rem; }
+  }
+</style>
+
+
+<!-- ══════════════════════════════
+     TOPBAR HTML
+══════════════════════════════ -->
+<header class="topbar">
+  <a href="/admin/home" class="brand-logo">
+    <img src="/static/images/logo.png" alt="Logo" class="brand-img">
+    <span class="brand-text">Iloilo City Public Library</span>
+  </a>
+
+  <!-- DESKTOP NAV -->
+  <nav class="nav-links d-none d-lg-flex" id="navLinksDesktop">
+      <a href="/admin/home"<i class="bi bi-house-door-fill me-1"></i> Home</a>
+      <a href="/dashboard"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+      <a href="/admin/announcements"><i class="bi bi-megaphone me-1"></i> Announcement</a>
+      <div class="dropdown">
+        <a class="dropdown-toggle text-decoration-none d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown">
+          <i class="bi bi-kanban-fill"></i> Management
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li class="dropdown-submenu">
+            <a class="dropdown-item" href="#"><i class="bi bi-person-fill me-2"></i>User Management</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/admin_management"><i class="bi bi-person-badge-fill me-2"></i>Admins</a></li>
+              <li><a class="dropdown-item" href="/librarian_management"><i class="bi bi-person-badge-fill me-2"></i>Librarians</a></li>
+              <li><a class="dropdown-item" href="/user_management"><i class="bi bi-people-fill me-2"></i>Users / Members</a></li>
+            </ul>
+          </li>
+          <li class="dropdown-submenu">
+            <a class="dropdown-item" href="#"><i class="bi bi-person-plus-fill me-2"></i>Add User</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addLibrarianModal"><i class="bi bi-person-badge-fill me-2"></i>Add Librarian</a></li>
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addAdminModal"><i class="bi bi-shield-fill-check me-2"></i>Add Admin</a></li>
+            </ul>
+          </li>
+          <a class="dropdown-item" href="/library-cards"><i class="bi bi-journal-plus me-2"></i>Borrowing Form</a>
+          <li><a class="dropdown-item" href="/book_management"><i class="bi bi-book-fill me-2"></i>Book Management</a></li>
+        </ul>
+      </div>
+    </nav>
+
+  <div class="topbar-right"></div>
+  <button class="menu-toggle d-lg-none" id="menuToggle">
+    <i class="bi bi-list"></i>
+  </button>
+</header>
+
+
+<!-- ══════════════════════════════
+     MOBILE NAV DRAWER
+══════════════════════════════ -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<nav class="nav-links d-lg-none" id="navLinksMobile">
+  <span class="nav-section-label">Main</span>
+  <a href="/admin/home"<i class="bi bi-house-door-fill me-1"></i> Home</a>
+  <a href="/dashboard"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+  <a href="/admin/announcements"><i class="bi bi-megaphone me-1"></i> Announcement</a>
+  <a href="/admin/inventory"><i class="bi bi-boxes me-1"></i> Inventory</a>
+
+  <span class="nav-section-label" style="margin-top:6px;">Management</span>
+
+  <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
+    <i class="bi bi-person-fill"></i> User Management
+    <i class="bi bi-chevron-down chevron"></i>
+  </button>
+  <div class="mobile-submenu-body">
+    <a href="/admin_management"><i class="bi bi-person-badge-fill me-2"></i>Admins</a>
+    <a href="/librarian_management"><i class="bi bi-person-badge-fill me-2"></i>Librarians</a>
+    <a href="/user_management"><i class="bi bi-people-fill me-2"></i>Users / Students</a>
+  </div>
+
+  <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
+    <i class="bi bi-person-plus-fill"></i> Add User
+    <i class="bi bi-chevron-down chevron"></i>
+  </button>
+  <div class="mobile-submenu-body">
+    <a href="#" data-bs-toggle="modal" data-bs-target="#addLibrarianModal" onclick="closeMobileNav()">
+      <i class="bi bi-person-badge-fill me-2"></i>Add Librarian
+    </a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#addAdminModal" onclick="closeMobileNav()">
+      <i class="bi bi-shield-fill-check me-2"></i>Add Admin
+    </a>
+  </div>
+
+  <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
+    <i class="bi bi-journal-check"></i> Borrow Management
+    <i class="bi bi-chevron-down chevron"></i>
+  </button>
+  <div class="mobile-submenu-body">
+    <a href="#"><i class="bi bi-journal-plus me-2"></i>User Borrow</a>
+    <a href="#"><i class="bi bi-clock-history me-2"></i>Borrow History</a>
+  </div>
+
+  <a href="/book_management" class="{{ 'active' if active_page == 'book_mgmt' else '' }}">
+    <i class="bi bi-book-fill"></i> Book Management
+  </a>
+</nav>
+
+
+<!-- ══════════════════════════════
+     TOPBAR JS  (move to your main JS file or a topbar.js file)
+══════════════════════════════ -->
+<script>
+  (function () {
+    const menuToggle = document.getElementById('menuToggle');
+    const navMobile  = document.getElementById('navLinksMobile');
+    const navOverlay = document.getElementById('navOverlay');
+
+    function openMobileNav()  {
+      navMobile.classList.add('open');
+      navOverlay.classList.add('show');
+      menuToggle.querySelector('i').className = 'bi bi-x';
+    }
+    function closeMobileNav() {
+      navMobile.classList.remove('open');
+      navOverlay.classList.remove('show');
+      menuToggle.querySelector('i').className = 'bi bi-list';
+    }
+    window.closeMobileNav = closeMobileNav;   // expose for inline onclick handlers
+
+    menuToggle.addEventListener('click', () =>
+      navMobile.classList.contains('open') ? closeMobileNav() : openMobileNav()
+    );
+    navOverlay.addEventListener('click', closeMobileNav);
+
+    window.toggleMobileSub = function (btn) {
+      const body   = btn.nextElementSibling;
+      const isOpen = body.classList.contains('open');
+      document.querySelectorAll('.mobile-submenu-body.open').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.mobile-submenu-toggle.expanded').forEach(b => b.classList.remove('expanded'));
+      if (!isOpen) { body.classList.add('open'); btn.classList.add('expanded'); }
+    };
+  })();
+</script>

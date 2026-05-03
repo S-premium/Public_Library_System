@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>PAGE TITLE | Iloilo Public Library</title>
+
+  <!-- ═══════════════════════════════════════
+       REQUIRED DEPENDENCIES — keep on every page
+  ═══════════════════════════════════════ -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       DESIGN TOKENS — paste :root into every page
+    ═══════════════════════════════════════════════════════════ */
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+      --mono:    'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: 100vw;
+      padding-bottom: 0;
+    }
+    /* On mobile, body needs bottom padding to clear the bottom dock */
+    @media (max-width: 992px) { body { padding-bottom: 76px; } }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       TOPBAR
+    ═══════════════════════════════════════════════════════════ */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+      background: rgba(30,45,61,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(159,193,225,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
+    }
+    .brand-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; flex-shrink: 0; }
+    .brand-img  { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .brand-text { font-weight: 700; font-size: 1.1rem; letter-spacing: -.02em; white-space: nowrap; }
+
+    /* Desktop nav */
+    .nav-links { display: flex; gap: 4px; align-items: center; }
+    .nav-links a {
+      color: rgba(255,255,255,.65); text-decoration: none; font-weight: 500;
+      font-size: .88rem; padding: 6px 12px; border-radius: 8px; transition: .18s; white-space: nowrap;
+    }
+    .nav-links a:hover  { background: rgba(255,255,255,.08); color: #fff; }
+    .nav-links a.active { background: rgba(159,193,225,.15); color: var(--accent); }
+
+    /* Dropdowns */
+    .dropdown-menu {
+      background: #253545; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px; padding: 6px; min-width: 210px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.4);
+    }
+    .dropdown-menu .dropdown-item { color: rgba(255,255,255,.8); font-size: .88rem; font-weight: 500; border-radius: 8px; padding: 8px 14px; transition: .15s; }
+    .dropdown-menu .dropdown-item:hover { background: rgba(159,193,225,.12); color: #fff; }
+    .dropdown-submenu { position: relative; }
+    .dropdown-submenu .dropdown-menu { top: 0; left: 100%; margin-left: 4px; display: none; }
+    .dropdown-submenu:hover .dropdown-menu { display: block; }
+
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       MOBILE NAV DRAWER
+    ═══════════════════════════════════════════════════════════ */
+    @media (max-width: 992px) {
+      .topbar { padding: 0 16px; }
+      .menu-toggle { display: block; }
+
+      .nav-links {
+        position: fixed;
+        top: 60px; left: 0; right: 0; bottom: 68px;
+        background: rgba(20,32,44,0.98); backdrop-filter: blur(24px);
+        flex-direction: column; align-items: stretch;
+        padding: 12px; gap: 2px; overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform .3s cubic-bezier(.4,0,.2,1);
+        z-index: 1099;
+        border-right: 1px solid rgba(159,193,225,.1);
+        width: min(300px, 82vw);
+      }
+      .nav-links.open { transform: translateX(0); }
+
+      .nav-section-label {
+        font-size: .65rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .1em; color: rgba(159,193,225,.5);
+        padding: 14px 12px 6px; display: block;
+      }
+      .nav-links a { padding: 10px 14px; font-size: .92rem; border-radius: 10px; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.75); }
+      .nav-links a:hover  { background: rgba(255,255,255,.07); color: #fff; }
+      .nav-links a.active { background: rgba(159,193,225,.13); color: var(--accent); }
+
+      .mobile-submenu-toggle {
+        width: 100%; background: none; border: none;
+        color: rgba(255,255,255,.75); font-family: 'DM Sans', sans-serif;
+        font-size: .92rem; font-weight: 500;
+        padding: 10px 14px; border-radius: 10px;
+        display: flex; align-items: center; gap: 10px;
+        cursor: pointer; transition: .18s; text-align: left;
+      }
+      .mobile-submenu-toggle:hover { background: rgba(255,255,255,.07); color: #fff; }
+      .mobile-submenu-toggle .chevron { margin-left: auto; font-size: .75rem; transition: transform .25s; color: rgba(255,255,255,.35); }
+      .mobile-submenu-toggle.expanded .chevron { transform: rotate(180deg); }
+
+      .mobile-submenu-body { display: none; padding-left: 16px; border-left: 2px solid rgba(159,193,225,.15); margin-left: 22px; margin-bottom: 2px; }
+      .mobile-submenu-body.open { display: block; }
+      .mobile-submenu-body a { font-size: .85rem; padding: 8px 12px; color: rgba(255,255,255,.6); }
+      .mobile-submenu-body a:hover { color: #fff; background: rgba(255,255,255,.06); }
+
+      .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1098; }
+      .nav-overlay.show { display: block; }
+    }
+
+    @media (max-width: 480px) { .brand-text { display: none; } }
+    @media (max-width: 360px) {
+      .topbar { padding: 0 10px; height: 54px; }
+      .nav-links { top: 54px; bottom: 68px; }
+      .menu-toggle { font-size: 1.4rem; }
+    }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       FLOATING RIGHT SIDEBAR — desktop
+    ═══════════════════════════════════════════════════════════ */
+    .side-dock {
+      position: fixed; right: 0; top: 50%;
+      transform: translateY(-50%) translateX(calc(100% - 14px));
+      z-index: 1050; display: flex; flex-direction: row; align-items: center;
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+    }
+    .side-tab {
+      width: 14px; height: 72px;
+      background: rgba(159,193,225,.18); border: 1px solid rgba(159,193,225,.25);
+      border-right: none; border-radius: 10px 0 0 10px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background .2s;
+    }
+    .side-tab::after { content: ''; display: block; width: 3px; height: 28px; background: rgba(159,193,225,.6); border-radius: 3px; }
+    .side-dock:hover .side-tab, .side-dock.open .side-tab { background: rgba(159,193,225,.3); }
+    .side-dock:hover, .side-dock.open { transform: translateY(-50%) translateX(0); }
+
+    .side-panel {
+      background: rgba(25,38,52,0.97); backdrop-filter: blur(18px);
+      border: 1px solid rgba(159,193,225,.18); border-right: none;
+      border-radius: 18px 0 0 18px;
+      padding: 20px 14px; display: flex; flex-direction: column;
+      gap: 10px; align-items: center; min-width: 64px;
+    }
+    .side-btn {
+      position: relative; width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 1.15rem; transition: .2s;
+      flex-shrink: 0; cursor: pointer; border: none; background: transparent;
+    }
+    .side-btn:hover { transform: scale(1.08); }
+    .side-btn-cal    { background: rgba(72,199,142,.15);  border: 1px solid rgba(72,199,142,.3);  color: #48c78e; }
+    .side-btn-cal:hover    { background: rgba(72,199,142,.28); border-color: rgba(72,199,142,.55); color: #6ddaa8; }
+    .side-btn-req    { background: rgba(255,152,0,.15);   border: 1px solid rgba(255,152,0,.3);   color: #ffb74d; }
+    .side-btn-req:hover    { background: rgba(255,152,0,.28); border-color: rgba(255,152,0,.55);  color: #ffc96e; }
+    .side-btn-logout { background: rgba(255,99,99,.15);   border: 1px solid rgba(255,99,99,.25);  color: #ff9999; }
+    .side-btn-logout:hover { background: rgba(255,99,99,.28); border-color: rgba(255,99,99,.5);   color: #fff; }
+
+    .side-dot {
+      position: absolute; top: -3px; right: -3px;
+      width: 17px; height: 17px; border-radius: 50%;
+      background: var(--danger); border: 2px solid #1e2d3d;
+      display: none; align-items: center; justify-content: center;
+      font-size: .55rem; font-weight: 700; color: #fff; line-height: 1;
+    }
+    .side-dot.show { display: flex; }
+    .bottom-btn .side-dot { border-color: #141e2a; top: -4px; right: 10px; }
+
+    .side-divider { width: 32px; height: 1px; background: rgba(255,255,255,.1); margin: 2px 0; flex-shrink: 0; }
+
+    .side-btn-wrap { position: relative; display: flex; align-items: center; }
+    .side-tip {
+      position: absolute; right: calc(100% + 10px);
+      background: rgba(15,25,35,.92); color: #fff;
+      font-size: .75rem; font-weight: 600; padding: 4px 10px;
+      border-radius: 8px; white-space: nowrap; pointer-events: none;
+      opacity: 0; transform: translateX(6px); transition: opacity .18s, transform .18s;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .side-btn-wrap:hover .side-tip { opacity: 1; transform: translateX(0); }
+
+    @media (max-width: 992px) { .side-dock { display: none !important; } }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       BOTTOM DOCK — mobile only
+    ═══════════════════════════════════════════════════════════ */
+    .bottom-dock {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 1050;
+      background: rgba(20,30,42,0.97); backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(159,193,225,.15);
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      flex-direction: row; align-items: center; justify-content: space-around;
+    }
+    @media (max-width: 992px) { .bottom-dock { display: flex; } }
+
+    .bottom-btn {
+      position: relative; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; text-decoration: none;
+      padding: 6px 10px; border-radius: 12px; transition: .18s;
+      flex: 1; max-width: 90px; border: none; background: transparent; cursor: pointer;
+    }
+    .bottom-btn:hover { background: rgba(255,255,255,.06); }
+    .bottom-btn-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; transition: .18s; }
+    .bottom-btn:hover .bottom-btn-icon { transform: translateY(-2px); }
+    .bottom-btn-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+
+    .bottom-btn-cal .bottom-btn-icon  { background: rgba(72,199,142,.15);  color: #48c78e; border: 1px solid rgba(72,199,142,.25); }
+    .bottom-btn-cal .bottom-btn-label { color: rgba(72,199,142,.8); }
+    .bottom-btn-cal:hover .bottom-btn-icon { background: rgba(72,199,142,.25); }
+    .bottom-btn-req .bottom-btn-icon  { background: rgba(255,152,0,.15);   color: #ffb74d; border: 1px solid rgba(255,152,0,.25); }
+    .bottom-btn-req .bottom-btn-label { color: rgba(255,180,80,.8); }
+    .bottom-btn-req:hover .bottom-btn-icon { background: rgba(255,152,0,.25); }
+    .bottom-btn-logout .bottom-btn-icon  { background: rgba(255,99,99,.15);  color: #ff9999; border: 1px solid rgba(255,99,99,.22); }
+    .bottom-btn-logout .bottom-btn-label { color: rgba(255,130,130,.8); }
+    .bottom-btn-logout:hover .bottom-btn-icon { background: rgba(255,99,99,.28); }
+
+    .bottom-divider { width: 1px; height: 36px; background: rgba(255,255,255,.1); flex-shrink: 0; }
+
+    @media (max-width: 360px) {
+      .bottom-btn { padding: 5px 6px; max-width: 70px; }
+      .bottom-btn-icon { width: 30px; height: 30px; font-size: .9rem; }
+      .bottom-btn-label { font-size: .6rem; }
+    }
+    @media (max-width: 320px) {
+      .bottom-btn-label { display: none; }
+      .bottom-btn-icon { width: 34px; height: 34px; }
+    }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       ADD LIBRARIAN / ADD ADMIN MODALS — shared across all pages
+    ═══════════════════════════════════════════════════════════ */
+    .modal-content { background: linear-gradient(150deg,#1e2d3d,#273848); border: 1px solid rgba(159,193,225,.18); border-radius: 20px; color: #fff; box-shadow: 0 28px 70px rgba(0,0,0,.55); }
+    .modal-header  { border-bottom: 1px solid rgba(255,255,255,.08); padding: 20px 24px 16px; }
+    .modal-title   { font-weight: 700; font-size: 1.05rem; color: var(--accent); display: flex; align-items: center; gap: 9px; }
+    .btn-close { filter: invert(1) brightness(2); opacity: .6; }
+    .btn-close:hover { opacity: 1; }
+    .modal-body { padding: 22px 24px; }
+
+    .role-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.25); color: var(--accent); border-radius: 20px; padding: 4px 13px; font-size: .73rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 18px; }
+    .modal-divider { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 0 0 18px; }
+    .fg { margin-bottom: 13px; }
+    .fg label { display: block; font-size: .78rem; color: var(--tl); margin-bottom: 5px; font-weight: 600; }
+    .fg input { width: 100%; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); border-radius: 9px; color: #fff; padding: 9px 12px; font-size: .88rem; font-family: 'DM Sans', sans-serif; outline: none; transition: .2s; }
+    .fg input::placeholder { color: rgba(255,255,255,.35); }
+    .fg input:focus { border-color: var(--accent); background: rgba(255,255,255,.10); }
+    .input-icon-wrap { position: relative; }
+    .input-icon-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,.35); font-size: .88rem; pointer-events: none; }
+    .input-icon-wrap input { padding-left: 36px; }
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 44px; }
+    .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: rgba(255,255,255,.4); cursor: pointer; font-size: .9rem; transition: .18s; padding: 0; }
+    .password-toggle:hover { color: var(--accent); }
+    .password-hint { display: block; color: rgba(255,255,255,.4); font-size: .75rem; margin-bottom: 7px; line-height: 1.5; }
+    .pw-row { display: flex; align-items: center; gap: 12px; }
+    .pw-row .password-wrapper { flex: 1; min-width: 0; }
+    .pw-strength { font-size: .75rem; color: rgba(255,255,255,.45); white-space: nowrap; min-width: 90px; }
+    .pw-strength span { font-weight: 700; }
+    .s-weak   { color: #ff6363 !important; }
+    .s-fair   { color: var(--warn) !important; }
+    .s-good   { color: #ffe066 !important; }
+    .s-strong { color: var(--accent2) !important; }
+    .btn-modal-submit { width: 100%; background: var(--accent); color: #0d1a24; border: none; border-radius: 11px; padding: 11px; font-size: .92rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: .2s; margin-top: 6px; }
+    .btn-modal-submit:hover { background: #b8d4ec; }
+
+    @media (max-width: 575px) { .modal-dialog { margin: 10px; } .modal-content { border-radius: 16px; } .modal-body { padding: 16px; } .modal-header { padding: 14px 16px 12px; } }
+    @media (max-width: 480px) { .modal-dialog { margin: 8px; } .pw-row { flex-direction: column; align-items: stretch; gap: 6px; } .pw-strength { min-width: unset; } }
+    @media (max-width: 390px) { .modal-body { padding: 14px; } .fg input { font-size: .84rem; padding: 8px 10px; padding-left: 34px; } .fg label { font-size: .74rem; } .role-badge { font-size: .68rem; } .btn-modal-submit { font-size: .88rem; padding: 10px; } }
+    @media (max-width: 360px) { .modal-dialog { margin: 6px; } .modal-content { border-radius: 14px; } .modal-body { padding: 12px; } .modal-header { padding: 12px 12px 10px; } }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST — shared across all pages
+    ═══════════════════════════════════════════════════════════ */
+    .toast-wrap { position: fixed; bottom: 22px; right: 22px; z-index: 9999; display: flex; flex-direction: column; gap: 9px; }
+    .toast-msg  { background: #1e2d3d; border: 1px solid rgba(159,193,225,.22); border-radius: 11px; padding: 12px 16px; font-size: .84rem; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.35); display: flex; align-items: center; gap: 9px; animation: toastIn .3s ease; }
+    .toast-msg.success { border-color: rgba(72,199,142,.4); }
+    .toast-msg.err, .toast-msg.error { border-color: rgba(255,99,99,.4); }
+    .toast-msg.warn { border-color: rgba(255,152,0,.4); }
+    @keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @media (max-width: 480px) { .toast-wrap { left: 10px; right: 10px; bottom: 84px; } .toast-msg { font-size: .8rem; } }
+    @media (max-width: 360px) { .toast-wrap { left: 8px; right: 8px; bottom: 80px; } .toast-msg { font-size: .76rem; padding: 10px 12px; } }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       FOOTER — only needed on home.html / pages with a footer.
+       If a page has no footer, delete everything below this line
+       down to "END FOOTER CSS".
+    ═══════════════════════════════════════════════════════════ */
+    .footer-cta { background: linear-gradient(100deg,rgba(159,193,225,.1) 0%,rgba(72,199,142,.06) 100%); border-top: 1px solid rgba(159,193,225,.13); padding: 52px 60px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+    .footer-cta-text h3 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.025em; color: #fff; margin-bottom: 6px; }
+    .footer-cta-text p  { font-size: .875rem; color: var(--tl); line-height: 1.65; max-width: 480px; margin: 0; }
+    .footer-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+    .footer-cta-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #0d1a24; border: none; border-radius: 11px; padding: 11px 22px; font-family: 'DM Sans',sans-serif; font-size: .875rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: .2s; white-space: nowrap; }
+    .footer-cta-btn-primary:hover { background: #b8d4ec; transform: translateY(-2px); color: #0d1a24; }
+    .footer-cta-btn-ghost { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.16); border-radius: 11px; padding: 10px 20px; font-family: 'DM Sans',sans-serif; font-size: .875rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: .2s; white-space: nowrap; }
+    .footer-cta-btn-ghost:hover { border-color: rgba(255,255,255,.42); color: #fff; background: rgba(255,255,255,.06); }
+
+    .footer-main { background: rgba(0,0,0,.3); border-top: 1px solid rgba(255,255,255,.06); padding: 60px 60px 0; }
+    .footer-grid { display: grid; grid-template-columns: 1.9fr 1fr 1fr 1.35fr; gap: 48px; padding-bottom: 52px; border-bottom: 1px solid rgba(255,255,255,.07); }
+
+    .footer-brand-col .footer-logo-row { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
+    .footer-logo-row .brand-label { font-size: .92rem; font-weight: 700; color: #fff; letter-spacing: -.015em; line-height: 1.25; }
+    .footer-logo-row .brand-sub   { font-size: .64rem; color: var(--accent); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-top: 2px; display: block; }
+    .footer-tagline { font-size: .8rem; color: rgba(255,255,255,.42); line-height: 1.75; margin-bottom: 20px; max-width: 255px; }
+    .footer-socials { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-social-btn { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); color: rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: .9rem; text-decoration: none; transition: .2s; }
+    .footer-social-btn:hover { background: rgba(159,193,225,.14); border-color: rgba(159,193,225,.28); color: var(--accent); transform: translateY(-3px); }
+
+    .footer-col-title { font-size: .65rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.28); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1px; }
+    .footer-links a { font-size: .825rem; color: rgba(255,255,255,.48); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 6px 0; border-radius: 6px; transition: .18s; font-weight: 500; }
+    .footer-links a i { font-size: .72rem; color: rgba(159,193,225,.4); flex-shrink: 0; transition: .18s; width: 14px; text-align: center; }
+    .footer-links a:hover { color: rgba(255,255,255,.88); padding-left: 5px; }
+    .footer-links a:hover i { color: var(--accent); }
+
+    .footer-contact-row { display: flex; align-items: flex-start; gap: 11px; padding: 10px 12px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.05); border-radius: 11px; margin-bottom: 8px; transition: .2s; }
+    .footer-contact-row:hover { background: rgba(159,193,225,.06); border-color: rgba(159,193,225,.12); }
+    .footer-contact-row i { font-size: .82rem; color: var(--accent); margin-top: 3px; flex-shrink: 0; opacity: .75; }
+    .footer-contact-row .fc-label { font-size: .6rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.28); display: block; margin-bottom: 2px; }
+    .footer-contact-row .fc-val   { font-size: .78rem; color: rgba(255,255,255,.68); font-weight: 500; line-height: 1.5; display: block; }
+    .footer-contact-row a.fc-val  { text-decoration: none; transition: color .18s; }
+    .footer-contact-row a.fc-val:hover { color: var(--accent); }
+
+    .footer-partners-belt { padding: 26px 0; border-bottom: 1px solid rgba(255,255,255,.06); display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .partners-label-txt   { font-size: .62rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.22); white-space: nowrap; flex-shrink: 0; }
+    .partners-divider     { width: 1px; height: 26px; background: rgba(255,255,255,.08); flex-shrink: 0; }
+    .partners-logos-row   { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .partners-logos-row img { height: 30px; width: auto; object-fit: contain; opacity: .3; filter: grayscale(1) brightness(2.5); transition: .25s; cursor: default; }
+    .partners-logos-row img:hover { opacity: .8; filter: grayscale(0) brightness(1); transform: scale(1.07); }
+
+    .footer-bottom { padding: 20px 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .footer-bottom-left { font-size: .76rem; color: rgba(255,255,255,.25); line-height: 1.6; }
+    .footer-bottom-left strong { color: rgba(255,255,255,.4); font-weight: 600; }
+    .footer-bottom-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .footer-bottom-right a { font-size: .74rem; color: rgba(255,255,255,.27); text-decoration: none; transition: .18s; }
+    .footer-bottom-right a:hover { color: rgba(255,255,255,.65); }
+    .footer-bottom-sep { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.15); }
+    .footer-ph-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; font-weight: 600; color: rgba(255,255,255,.22); background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 20px; padding: 3px 10px; }
+    .footer-ph-badge i { font-size: .65rem; color: var(--accent); opacity: .6; }
+
+    /* Legal modals */
+    .legal-modal-overlay { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 16px; }
+    .legal-modal { background: #1b2a35; border: 1px solid rgba(159,193,225,.18); border-radius: 20px; width: 100%; max-width: 640px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 24px 72px rgba(0,0,0,.6); animation: modalIn .25s cubic-bezier(.16,.84,.44,1); }
+    @keyframes modalIn { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
+    .legal-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
+    .legal-modal-header h4 { font-size: .92rem; font-weight: 700; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin: 0; }
+    .legal-modal-close { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.55); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: .95rem; cursor: pointer; transition: .18s; flex-shrink: 0; }
+    .legal-modal-close:hover { background: rgba(255,100,100,.1); border-color: rgba(255,100,100,.25); color: #ff7070; }
+    .legal-modal-body { padding: 22px 24px 26px; overflow-y: auto; flex: 1; font-size: .84rem; color: rgba(255,255,255,.58); line-height: 1.8; }
+    .legal-modal-body::-webkit-scrollbar { width: 4px; }
+    .legal-modal-body::-webkit-scrollbar-thumb { background: rgba(159,193,225,.2); border-radius: 4px; }
+    .legal-modal-body h5 { font-size: .82rem; font-weight: 700; color: rgba(255,255,255,.85); margin: 18px 0 6px; }
+    .legal-modal-body h5:first-child { margin-top: 0; }
+    .legal-modal-body p { margin-bottom: 10px; }
+    .legal-modal-body ul { padding-left: 18px; margin-bottom: 10px; }
+    .legal-modal-body ul li { margin-bottom: 5px; }
+    .legal-modal-footer { padding: 14px 24px; border-top: 1px solid rgba(255,255,255,.07); display: flex; justify-content: flex-end; flex-shrink: 0; }
+    .legal-modal-btn { background: rgba(159,193,225,.15); border: 1px solid rgba(159,193,225,.25); color: var(--accent); border-radius: 10px; padding: 9px 20px; font-family: 'DM Sans',sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; transition: .2s; }
+    .legal-modal-btn:hover { background: rgba(159,193,225,.25); color: #fff; }
+
+    /* Footer responsive */
+    @media (max-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; } .footer-contact-col { grid-column: 1/-1; } .footer-contact-col .footer-contact-row { max-width: 380px; display: inline-flex; width: calc(50% - 4px); vertical-align: top; } .footer-contact-col > div { display: flex; flex-wrap: wrap; gap: 8px; } }
+    @media (max-width: 860px) { .footer-cta { padding: 36px 24px; } .footer-main { padding: 48px 24px 0; } .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } .footer-brand-col, .footer-contact-col { grid-column: 1/-1; } .footer-contact-col .footer-contact-row { width: 100%; display: flex; } .footer-contact-col > div { display: block; } }
+    @media (max-width: 600px) { .footer-cta { padding: 28px 18px; gap: 20px; } .footer-cta-text h3 { font-size: 1.1rem; } .footer-cta-text p { font-size: .82rem; } .footer-cta-actions { width: 100%; } .footer-cta-btn-primary, .footer-cta-btn-ghost { flex: 1; justify-content: center; font-size: .82rem; padding: 10px 14px; } .footer-main { padding: 36px 16px 0; } .footer-grid { grid-template-columns: 1fr; gap: 28px; } .footer-bottom { flex-direction: column; align-items: flex-start; gap: 10px; } .partners-logos-row img { height: 24px; } }
+    @media (max-width: 390px) { .footer-cta { padding: 22px 12px; flex-direction: column; align-items: flex-start; } .footer-cta-actions { flex-direction: column; gap: 8px; } .footer-cta-btn-primary, .footer-cta-btn-ghost { width: 100%; justify-content: center; } .footer-tagline { max-width: 100%; } .footer-main { padding: 28px 12px 0; } }
+    @media (max-width: 360px) { .footer-cta { padding: 20px 10px; } .footer-main { padding: 24px 10px 0; } .footer-bottom-left { font-size: .72rem; } .footer-bottom-right a { font-size: .7rem; } .legal-modal-header { padding: 14px 16px 12px; } .legal-modal-body { padding: 16px 16px 20px; font-size: .8rem; } .legal-modal-footer { padding: 12px 16px; } }
+    @media (max-width: 320px) { .footer-cta-btn-primary, .footer-cta-btn-ghost { font-size: .78rem; padding: 9px 12px; } .footer-bottom-right { flex-direction: column; align-items: flex-start; gap: 6px; } .legal-modal { border-radius: 14px; } }
+    /* END FOOTER CSS */
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       TOPBAR
+       Set class="active" on whichever link matches the current page.
+  ═══════════════════════════════════════════════════════════ -->
+  <header class="topbar">
+    <a href="/admin/home" class="brand-logo">
+      <img src="/static/images/logo.png" alt="Logo" class="brand-img">
+      <span class="brand-text">Iloilo City Public Library</span>
+    </a>
+
+    <!-- DESKTOP NAV (hidden on mobile via d-none d-lg-flex) -->
+    <nav class="nav-links d-none d-lg-flex" id="navLinksDesktop">
+      <a href="/admin/home"><i class="bi bi-house-door-fill me-1"></i> Home</a>
+      <a href="/dashboard"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+      <a href="/admin/announcements"><i class="bi bi-megaphone me-1"></i> Announcement</a>
+      <a href="/admin/inventory"><i class="bi bi-boxes me-1"></i> Inventory</a>
+
+      <div class="dropdown">
+        <a class="dropdown-toggle text-decoration-none d-flex align-items-center gap-1"
+           href="#" role="button" data-bs-toggle="dropdown">
+          <i class="bi bi-kanban-fill"></i> Management
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li class="dropdown-submenu">
+            <a class="dropdown-item" href="#"><i class="bi bi-person-fill me-2"></i>User Management</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/admin_management"><i class="bi bi-person-badge-fill me-2"></i>Admins</a></li>
+              <li><a class="dropdown-item" href="/librarian_management"><i class="bi bi-person-badge-fill me-2"></i>Librarians</a></li>
+              <li><a class="dropdown-item" href="/user_management"><i class="bi bi-people-fill me-2"></i>Users / Members</a></li>
+            </ul>
+          </li>
+          <li class="dropdown-submenu">
+            <a class="dropdown-item" href="#"><i class="bi bi-person-plus-fill me-2"></i>Add User</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addLibrarianModal"><i class="bi bi-person-badge-fill me-2"></i>Add Librarian</a></li>
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addAdminModal"><i class="bi bi-shield-fill-check me-2"></i>Add Admin</a></li>
+            </ul>
+          </li>
+          <li><a class="dropdown-item" href="/library-cards"><i class="bi bi-journal-plus me-2"></i>Borrowing Form</a></li>
+          <li><a class="dropdown-item" href="/book_management"><i class="bi bi-book-fill me-2"></i>Book Management</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="topbar-right"></div>
+    <button class="menu-toggle d-lg-none" id="menuToggle"><i class="bi bi-list"></i></button>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MOBILE NAV DRAWER + DIM OVERLAY
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <nav class="nav-links d-lg-none" id="navLinksMobile">
+    <span class="nav-section-label">Main</span>
+    <a href="/admin/home"><i class="bi bi-house-door-fill"></i> Home</a>
+    <a href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/admin/announcements"><i class="bi bi-megaphone"></i> Announcement</a>
+    <a href="/admin/inventory"><i class="bi bi-boxes"></i> Inventory</a>
+    <a href="/admin/account-requests">
+      <i class="bi bi-exclamation-octagon-fill" style="color:var(--danger)"></i> Account Requests
+      <span id="mobileReqBadge" style="display:none;background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:.65rem;font-weight:700;margin-left:auto;"></span>
+    </a>
+    <a href="#"><i class="bi bi-gear"></i> Settings</a>
+
+    <span class="nav-section-label" style="margin-top:6px;">Management</span>
+
+    <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
+      <i class="bi bi-person-fill"></i> User Management
+      <i class="bi bi-chevron-down chevron"></i>
+    </button>
+    <div class="mobile-submenu-body">
+      <a href="/admin_management"><i class="bi bi-person-badge-fill me-2"></i>Admins</a>
+      <a href="/librarian_management"><i class="bi bi-person-badge-fill me-2"></i>Librarians</a>
+      <a href="/user_management"><i class="bi bi-people-fill me-2"></i>Users / Members</a>
+    </div>
+
+    <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
+      <i class="bi bi-person-plus-fill"></i> Add User
+      <i class="bi bi-chevron-down chevron"></i>
+    </button>
+    <div class="mobile-submenu-body">
+      <a href="#" data-bs-toggle="modal" data-bs-target="#addLibrarianModal" onclick="closeMobileNav()"><i class="bi bi-person-badge-fill me-2"></i>Add Librarian</a>
+      <a href="#" data-bs-toggle="modal" data-bs-target="#addAdminModal"    onclick="closeMobileNav()"><i class="bi bi-shield-fill-check me-2"></i>Add Admin</a>
+    </div>
+
+    <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
+      <i class="bi bi-journal-check"></i> Borrow Management
+      <i class="bi bi-chevron-down chevron"></i>
+    </button>
+    <div class="mobile-submenu-body">
+      <a href="/library-cards"><i class="bi bi-journal-plus me-2"></i>Borrowing Form</a>
+      <a href="#"><i class="bi bi-clock-history me-2"></i>Borrow History</a>
+    </div>
+
+    <a href="/book_management"><i class="bi bi-book-fill"></i> Book Management</a>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FLOATING RIGHT SIDEBAR — desktop only
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="side-dock" id="sideDock">
+    <div class="side-tab" id="sideTab" title="Quick Actions"></div>
+    <div class="side-panel">
+      <div class="side-btn-wrap">
+        <span class="side-tip">Event Calendar</span>
+        <a href="/admin/event" class="side-btn side-btn-cal" title="Event Calendar">
+          <i class="bi bi-calendar-week"></i>
+        </a>
+      </div>
+      <div class="side-divider"></div>
+      <div class="side-btn-wrap">
+        <span class="side-tip">Account Requests</span>
+        <a href="/admin/account-requests" class="side-btn side-btn-req" title="Account Requests">
+          <i class="bi bi-app-indicator"></i>
+          <span class="side-dot" id="acctReqDot"></span>
+        </a>
+      </div>
+      <div class="side-divider"></div>
+      <div class="side-btn-wrap">
+        <span class="side-tip">Logout</span>
+        <a href="/logout" class="side-btn side-btn-logout" title="Logout">
+          <i class="bi bi-box-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BOTTOM DOCK — mobile only
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="bottom-dock" id="bottomDock">
+    <a href="/admin/event" class="bottom-btn bottom-btn-cal">
+      <div class="bottom-btn-icon"><i class="bi bi-calendar-week"></i></div>
+      <span class="bottom-btn-label">Calendar</span>
+    </a>
+    <div class="bottom-divider"></div>
+    <a href="/admin/account-requests" class="bottom-btn bottom-btn-req">
+      <div class="bottom-btn-icon" style="position:relative;">
+        <i class="bi bi-app-indicator"></i>
+        <span class="side-dot" id="acctReqDotMobile" style="border-color:#141e2a;"></span>
+      </div>
+      <span class="bottom-btn-label">Requests</span>
+    </a>
+    <div class="bottom-divider"></div>
+    <a href="/logout" class="bottom-btn bottom-btn-logout">
+      <div class="bottom-btn-icon"><i class="bi bi-box-arrow-right"></i></div>
+      <span class="bottom-btn-label">Logout</span>
+    </a>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       YOUR PAGE CONTENT GOES HERE
+       Typical wrapper: padding: 80px 40px 60px; max-width: 1280px; margin: 0 auto;
+       Mobile:          padding: 76px 14px 50px;
+  ═══════════════════════════════════════════════════════════ -->
+  <div style="padding:80px 40px 60px;max-width:1280px;margin:0 auto;">
+    <h1>Page Content Goes Here</h1>
+    <p style="color:var(--tl);margin-top:8px;">Replace this section with your page-specific HTML.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FOOTER — delete this entire block on pages that don't need it
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="footer-cta">
+    <div class="footer-cta-text">
+      <h3>Manage the Library System</h3>
+      <p>Access the full admin dashboard — manage books, members, borrowing records, inventory, and system settings all from one place.</p>
+    </div>
+    <div class="footer-cta-actions">
+      <a href="/dashboard" class="footer-cta-btn-primary"><i class="bi bi-speedometer2"></i> Go to Dashboard</a>
+      <a href="/book_management" class="footer-cta-btn-ghost"><i class="bi bi-book-fill"></i> Book Management</a>
+    </div>
+  </div>
+
+  <footer class="footer-main">
+    <div class="footer-grid">
+      <!-- Brand -->
+      <div class="footer-brand-col">
+        <div class="footer-logo-row">
+          <img src="/static/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+          <div>
+            <div class="brand-label">Iloilo City Public Library</div>
+            <span class="brand-sub">Dr. Graciano Lopez Jaena LRC &amp; Museum</span>
+          </div>
+        </div>
+        <p class="footer-tagline">Empowering the Iloilo community through access to knowledge, cultural heritage, and lifelong learning.</p>
+        <div class="footer-socials">
+          <a href="https://www.facebook.com/iloilocitypubliclibrary" class="footer-social-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="mailto:iloilocitypubliclibrary@gmail.com" class="footer-social-btn" title="Email"><i class="bi bi-envelope-fill"></i></a>
+        </div>
+      </div>
+      <!-- Quick Links -->
+      <div>
+        <div class="footer-col-title">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="/admin/home"><i class="bi bi-house-door-fill"></i> Home</a></li>
+          <li><a href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+          <li><a href="/admin/announcements"><i class="bi bi-megaphone"></i> Announcements</a></li>
+          <li><a href="/admin/event"><i class="bi bi-calendar3"></i> Event Calendar</a></li>
+          <li><a href="/admin/account-requests"><i class="bi bi-app-indicator"></i> Account Requests</a></li>
+          <li><a href="/admin/inventory"><i class="bi bi-boxes"></i> Inventory</a></li>
+        </ul>
+      </div>
+      <!-- Management -->
+      <div>
+        <div class="footer-col-title">Management</div>
+        <ul class="footer-links">
+          <li><a href="/book_management"><i class="bi bi-book-fill"></i> Book Management</a></li>
+          <li><a href="/user_management"><i class="bi bi-people-fill"></i> User / Members</a></li>
+          <li><a href="/librarian_management"><i class="bi bi-person-badge-fill"></i> Librarians</a></li>
+          <li><a href="/admin_management"><i class="bi bi-shield-fill-check"></i> Admins</a></li>
+          <li><a href="/library-cards"><i class="bi bi-journal-plus"></i> Borrowing Form</a></li>
+        </ul>
+      </div>
+      <!-- Contact -->
+      <div class="footer-contact-col">
+        <div class="footer-col-title">Get in Touch</div>
+        <div>
+          <div class="footer-contact-row">
+            <i class="bi bi-geo-alt-fill"></i>
+            <div><span class="fc-label">Address</span><span class="fc-val">Arguelles-Fajardo Street, Jaro,<br>Iloilo City, Philippines, 5000</span></div>
+          </div>
+          <div class="footer-contact-row">
+            <i class="bi bi-telephone-fill"></i>
+            <div><span class="fc-label">Telephone</span><a href="tel:+6333354078" class="fc-val">(033) 335-4078</a></div>
+          </div>
+          <div class="footer-contact-row">
+            <i class="bi bi-envelope-fill"></i>
+            <div><span class="fc-label">Email</span><a href="mailto:iloilocitypubliclibrary@gmail.com" class="fc-val">iloilocitypubliclibrary@gmail.com</a></div>
+          </div>
+          <div class="footer-contact-row">
+            <i class="bi bi-clock-fill"></i>
+            <div>
+              <span class="fc-label">Library Hours</span>
+              <span class="fc-val">Mon – Sat &nbsp;·&nbsp; 8:00 AM – 8:00 PM<br>
+                <span style="font-size:.72rem;color:rgba(255,255,255,.32);">Closed on Sundays &amp; public holidays</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Partners belt -->
+    <div class="footer-partners-belt">
+      <span class="partners-label-txt">In partnership with</span>
+      <div class="partners-divider"></div>
+      <div class="partners-logos-row">
+        <img src="/static/images/partner_logo.png" alt="Partner 1" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+1'">
+        <img src="/static/images/partner_logo.png" alt="Partner 2" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+2'">
+        <img src="/static/images/partner_logo.png" alt="Partner 3" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+3'">
+        <img src="/static/images/partner_logo.png" alt="Partner 4" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+4'">
+        <img src="/static/images/partner_logo.png" alt="Partner 5" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+5'">
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        &copy; <strong id="footerYear"></strong>
+        <strong>Iloilo City Public Library</strong> — Dr. Graciano Lopez Jaena Learning Resource Center &amp; Museum. All rights reserved.
+      </div>
+      <div class="footer-bottom-right">
+        <a href="#" onclick="document.getElementById('privacyModal').style.display='flex';return false;">Privacy Policy</a>
+        <div class="footer-bottom-sep"></div>
+        <a href="#" onclick="document.getElementById('termsModal').style.display='flex';return false;">Terms of Use</a>
+        <div class="footer-bottom-sep"></div>
+        <span class="footer-ph-badge"><i class="bi bi-geo-fill"></i> Iloilo, Philippines</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Privacy Policy Modal -->
+  <div class="legal-modal-overlay" id="privacyModal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="legal-modal">
+      <div class="legal-modal-header">
+        <h4><i class="bi bi-shield-check-fill"></i> Privacy Policy</h4>
+        <button class="legal-modal-close" onclick="document.getElementById('privacyModal').style.display='none'"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="legal-modal-body">
+        <h5>1. Introduction</h5>
+        <p>The Iloilo City Public Library is committed to protecting the privacy and personal information of all library members and visitors.</p>
+        <h5>2. Information We Collect</h5>
+        <ul>
+          <li>Full name, address, and contact details</li>
+          <li>Membership and borrowing records</li>
+          <li>Transaction history for borrowed and returned materials</li>
+          <li>Event registrations and program participation records</li>
+        </ul>
+        <h5>3. How We Use Your Information</h5>
+        <ul>
+          <li>Managing your library membership account</li>
+          <li>Processing book loans, renewals, and returns</li>
+          <li>Sending notifications about due dates, events, and announcements</li>
+          <li>Improving library services and programs for the community</li>
+        </ul>
+        <h5>4. Data Sharing</h5>
+        <p>The library does not sell, trade, or share your personal information with third parties, except as required by law in compliance with the Data Privacy Act of 2012 (Republic Act No. 10173).</p>
+        <h5>5. Data Security</h5>
+        <p>We implement appropriate measures to protect your personal data. Access is restricted to authorized library staff only.</p>
+        <h5>6. Your Rights</h5>
+        <p>You have the right to access, correct, and request the deletion of your personal data held by the library.</p>
+        <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
+      </div>
+      <div class="legal-modal-footer">
+        <button class="legal-modal-btn" onclick="document.getElementById('privacyModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms of Use Modal -->
+  <div class="legal-modal-overlay" id="termsModal" onclick="if(event.target===this)this.style.display='none'">
+    <div class="legal-modal">
+      <div class="legal-modal-header">
+        <h4><i class="bi bi-file-earmark-text-fill"></i> Terms of Use</h4>
+        <button class="legal-modal-close" onclick="document.getElementById('termsModal').style.display='none'"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="legal-modal-body">
+        <h5>1. Acceptance of Terms</h5>
+        <p>By accessing and using the Iloilo City Public Library's facilities, services, and online systems, you agree to comply with these Terms of Use.</p>
+        <h5>2. Library Membership</h5>
+        <ul>
+          <li>Membership is open to all residents and stakeholders of Iloilo City and Province.</li>
+          <li>Members are responsible for keeping their account information accurate and up to date.</li>
+          <li>Membership cards are non-transferable.</li>
+        </ul>
+        <h5>3. Borrowing Policies</h5>
+        <ul>
+          <li>Members may borrow materials for designated loan periods.</li>
+          <li>Borrowed materials must be returned on or before their due dates.</li>
+          <li>Lost or damaged materials must be replaced or paid for at assessed value.</li>
+        </ul>
+        <h5>4. Online System Use</h5>
+        <ul>
+          <li>The library's online systems are for authorized members only.</li>
+          <li>Unauthorized access or misuse is strictly prohibited.</li>
+        </ul>
+        <h5>5. Free WiFi and Computers</h5>
+        <p>Free WiFi is provided for educational purposes only. Use for illegal activities is strictly prohibited.</p>
+        <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
+      </div>
+      <div class="legal-modal-footer">
+        <button class="legal-modal-btn" onclick="document.getElementById('termsModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button>
+      </div>
+    </div>
+  </div>
+  <!-- END FOOTER -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ADD LIBRARIAN MODAL — keep on all pages
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="modal fade" id="addLibrarianModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-person-badge-fill"></i> Add Librarian</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="role-badge"><i class="bi bi-person-badge-fill"></i> Role: Librarian</div>
+          <hr class="modal-divider">
+          <form action="/signup" method="POST">
+            <input type="hidden" name="role" value="librarian">
+            <div class="fg"><label>First Name</label><div class="input-icon-wrap"><i class="bi bi-person"></i><input name="firstname" type="text" placeholder="First Name" required></div></div>
+            <div class="fg"><label>Last Name</label><div class="input-icon-wrap"><i class="bi bi-person"></i><input name="lastname" type="text" placeholder="Last Name" required></div></div>
+            <div class="fg"><label>Email Address</label><div class="input-icon-wrap"><i class="bi bi-envelope"></i><input name="email" type="email" placeholder="Email Address" required></div></div>
+            <div class="fg">
+              <label>Password</label>
+              <small class="password-hint">Min. 12 characters with uppercase, lowercase, number &amp; special character.</small>
+              <div class="pw-row">
+                <div class="password-wrapper">
+                  <input name="password" id="librarianPassword" type="password" placeholder="Password (min. 12 chars)" required minlength="12" oninput="checkStrength(this.value,'lib')">
+                  <button type="button" class="password-toggle" onclick="togglePw('librarianPassword',this)"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="pw-strength">Strength: <span id="str-lib">—</span></div>
+              </div>
+            </div>
+            <button type="submit" class="btn-modal-submit"><i class="bi bi-person-plus-fill me-2"></i> Create Librarian Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ADD ADMIN MODAL — keep on all pages
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="modal fade" id="addAdminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" style="color:#ffa94d"><i class="bi bi-shield-fill-check"></i> Add Admin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="role-badge" style="background:rgba(255,152,0,.1);border-color:rgba(255,152,0,.3);color:var(--warn)">
+            <i class="bi bi-shield-fill-check"></i> Role: Administrator
+          </div>
+          <hr class="modal-divider">
+          <form action="/signup" method="POST">
+            <input type="hidden" name="role" value="admin">
+            <div class="fg"><label>First Name</label><div class="input-icon-wrap"><i class="bi bi-person"></i><input name="firstname" type="text" placeholder="First Name" required></div></div>
+            <div class="fg"><label>Last Name</label><div class="input-icon-wrap"><i class="bi bi-person"></i><input name="lastname" type="text" placeholder="Last Name" required></div></div>
+            <div class="fg"><label>Email Address</label><div class="input-icon-wrap"><i class="bi bi-envelope"></i><input name="email" type="email" placeholder="Email Address" required></div></div>
+            <div class="fg">
+              <label>Password</label>
+              <small class="password-hint">Min. 12 characters with uppercase, lowercase, number &amp; special character.</small>
+              <div class="pw-row">
+                <div class="password-wrapper">
+                  <input name="password" id="adminPassword" type="password" placeholder="Password (min. 12 chars)" required minlength="12" oninput="checkStrength(this.value,'adm')">
+                  <button type="button" class="password-toggle" onclick="togglePw('adminPassword',this)"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="pw-strength">Strength: <span id="str-adm">—</span></div>
+              </div>
+            </div>
+            <button type="submit" class="btn-modal-submit" style="background:var(--warn);color:#0d1a24"><i class="bi bi-shield-plus me-2"></i> Create Admin Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SHARED SCRIPTS — keep at bottom of every page,
+       BEFORE any page-specific scripts.
+  ═══════════════════════════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ── Mobile nav open / close ── */
+    const menuToggle = document.getElementById('menuToggle');
+    const navMobile  = document.getElementById('navLinksMobile');
+    const navOverlay = document.getElementById('navOverlay');
+
+    function openMobileNav() {
+      navMobile.classList.add('open');
+      navOverlay.classList.add('show');
+      menuToggle.querySelector('i').className = 'bi bi-x';
+    }
+    function closeMobileNav() {
+      navMobile.classList.remove('open');
+      navOverlay.classList.remove('show');
+      menuToggle.querySelector('i').className = 'bi bi-list';
+    }
+    menuToggle.addEventListener('click', () =>
+      navMobile.classList.contains('open') ? closeMobileNav() : openMobileNav()
+    );
+    navOverlay.addEventListener('click', closeMobileNav);
+
+    /* ── Mobile accordion sub-menu ── */
+    function toggleMobileSub(btn) {
+      const body   = btn.nextElementSibling;
+      const isOpen = body.classList.contains('open');
+      document.querySelectorAll('.mobile-submenu-body.open').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.mobile-submenu-toggle.expanded').forEach(b => b.classList.remove('expanded'));
+      if (!isOpen) { body.classList.add('open'); btn.classList.add('expanded'); }
+    }
+
+    /* ── Desktop sidebar — click tab to pin ── */
+    const sideDock = document.getElementById('sideDock');
+    const sideTab  = document.getElementById('sideTab');
+    let pinned = false;
+    if (sideTab) {
+      sideTab.addEventListener('click', e => {
+        e.stopPropagation(); pinned = !pinned;
+        sideDock.classList.toggle('open', pinned);
+      });
+      document.addEventListener('click', e => {
+        if (pinned && !sideDock.contains(e.target)) { pinned = false; sideDock.classList.remove('open'); }
+      });
+    }
+
+    /* ── Pending request count — updates all dots & badges ── */
+    async function loadPendingRequestCount() {
+      try {
+        const res  = await fetch('/api/admin/account-requests');
+        const data = await res.json();
+        const n    = (data.requests || []).filter(r => r.status === 'pending').length;
+        const set  = (id, show) => {
+          const el = document.getElementById(id); if (!el) return;
+          if (show) { el.textContent = n > 9 ? '9+' : n; el.classList.add('show'); el.style.display = ''; }
+          else      { el.classList.remove('show'); el.style.display = 'none'; }
+        };
+        set('acctReqDot',      n > 0);
+        set('acctReqDotMobile', n > 0);
+        set('navReqBadge',     n > 0);
+        set('mobileReqBadge',  n > 0);
+      } catch (_) { /* silent */ }
+    }
+
+    /* ── Password show/hide ── */
+    function togglePw(inputId, btn) {
+      const inp = document.getElementById(inputId), icon = btn.querySelector('i');
+      if (inp.type === 'password') { inp.type = 'text';    icon.classList.replace('fa-eye',      'fa-eye-slash'); }
+      else                        { inp.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye');      }
+    }
+
+    /* ── Password strength ── */
+    function checkStrength(val, key) {
+      const span = document.getElementById(`str-${key}`); if (!span) return;
+      span.className = '';
+      if (!val)          { span.textContent = '—';         return; }
+      if (val.length<12) { span.textContent = 'Too Short'; span.classList.add('s-weak'); return; }
+      let s = 0;
+      if (val.length>=12) s++; if (val.length>=16) s++;
+      if (/[A-Z]/.test(val)) s++; if (/[a-z]/.test(val)) s++;
+      if (/[0-9]/.test(val)) s++; if (/[^A-Za-z0-9]/.test(val)) s++;
+      if      (s<=3) { span.textContent='Weak';   span.classList.add('s-weak');   }
+      else if (s===4) { span.textContent='Fair';   span.classList.add('s-fair');   }
+      else if (s===5) { span.textContent='Good';   span.classList.add('s-good');   }
+      else            { span.textContent='Strong'; span.classList.add('s-strong'); }
+    }
+
+    /* ── Reset add-user modals on close ── */
+    ['addLibrarianModal','addAdminModal'].forEach(id => {
+      const el = document.getElementById(id); if (!el) return;
+      el.addEventListener('hidden.bs.modal', function () {
+        this.querySelectorAll('input:not([type=hidden])').forEach(i => { i.value=''; i.style.borderColor=''; i.style.boxShadow=''; });
+        this.querySelectorAll('[id^="str-"]').forEach(s => { s.textContent='—'; s.className=''; });
+        this.querySelectorAll('input[type=text][name=password]').forEach(i => i.type='password');
+        this.querySelectorAll('.password-toggle i').forEach(i => i.className='fas fa-eye');
+      });
+    });
+
+    /* ── Footer year + ESC closes legal modals ── */
+    const fy = document.getElementById('footerYear');
+    if (fy) fy.textContent = new Date().getFullYear();
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      ['privacyModal','termsModal'].forEach(id => {
+        const m = document.getElementById(id); if (m) m.style.display = 'none';
+      });
+    });
+
+    /* ── Toast helper — call showToast(msg, type) from any page script ──
+       type: 'success' | 'err' | 'error' | 'warn'
+    ── */
+    function showToast(msg, type='success') {
+      const icons = { success:'bi-check-circle-fill', err:'bi-x-circle-fill', error:'bi-x-circle-fill', warn:'bi-exclamation-triangle-fill' };
+      const cols  = { success:'var(--accent2)', err:'var(--danger)', error:'var(--danger)', warn:'var(--warn)' };
+      const t = document.createElement('div');
+      t.className = `toast-msg ${type}`;
+      t.innerHTML = `<i class="bi ${icons[type]||icons.success}" style="color:${cols[type]||cols.success};font-size:1rem;flex-shrink:0;"></i>${msg}`;
+      document.getElementById('toastWrap').appendChild(t);
+      setTimeout(() => {
+        t.style.cssText += 'opacity:0;transform:translateX(60px);transition:.3s;';
+        setTimeout(() => t.remove(), 320);
+      }, 3200);
+    }
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPendingRequestCount();
+    });
+  </script>
+
+  <!-- Page-specific scripts go here -->
+
+</body>
+</html>

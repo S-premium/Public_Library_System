@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Library Cards | Iloilo City Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+      --mono:    'DM Mono', monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);background-attachment:fixed;color:#fff;min-height:100vh;overflow-x:hidden}
+
+    /* ── PAGE ── */
+    .page{max-width:1160px;margin:0 auto;padding:80px 22px 70px}
+
+    /* ── PAGE HEADER ── */
+    .phdr{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+    .phdr-icon{width:50px;height:50px;border-radius:14px;background:rgba(159,193,225,.14);border:1px solid rgba(159,193,225,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--accent);flex-shrink:0}
+    .phdr h1{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;margin:0}
+    .phdr p{font-size:.78rem;color:var(--tl);margin:3px 0 0}
+
+    /* ── FLASH ── */
+    .flash-wrap{margin-bottom:18px}
+    .flash-msg{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:11px;font-size:.86rem;font-weight:500;margin-bottom:8px}
+    .flash-msg.success{background:rgba(72,199,142,.11);border:1px solid rgba(72,199,142,.28);color:#6ddaa8}
+    .flash-msg.danger{background:rgba(255,99,99,.11);border:1px solid rgba(255,99,99,.28);color:#ff9999}
+    .flash-msg.warning{background:rgba(255,152,0,.11);border:1px solid rgba(255,152,0,.28);color:#ffb74d}
+    .flash-msg.info{background:rgba(159,193,225,.11);border:1px solid rgba(159,193,225,.28);color:var(--accent)}
+    .flash-close{margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1rem;opacity:.65}
+    .flash-close:hover{opacity:1}
+
+    /* ── TABS ── */
+    .tabs{display:flex;gap:8px;margin-bottom:22px}
+    .tab-btn{display:flex;align-items:center;gap:8px;padding:9px 20px;border-radius:12px;font-size:.87rem;font-weight:600;cursor:pointer;transition:.2s;border:1px solid rgba(255,255,255,.1);background:var(--card);color:rgba(255,255,255,.5)}
+    .tab-btn.active{background:rgba(159,193,225,.14);border-color:rgba(159,193,225,.3);color:var(--accent)}
+    .tab-btn.active.g{background:rgba(72,199,142,.12);border-color:rgba(72,199,142,.28);color:var(--accent2)}
+    .tab-btn:hover:not(.active){background:rgba(255,255,255,.08);color:#fff}
+
+    /* ── PANE ── */
+    .pane{display:none}
+    .pane.active{display:block}
+
+    /* ── SECTION CARD ── */
+    .sc{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px 26px;backdrop-filter:blur(12px);margin-bottom:14px;position:relative}
+    .sc::before{content:'';position:absolute;top:-1px;left:20px;right:20px;height:2px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--accent),transparent);opacity:.6;pointer-events:none}
+    .sc.g::before{background:linear-gradient(90deg,var(--accent2),transparent)}
+    .sc.o::before{background:linear-gradient(90deg,var(--warn),transparent)}
+
+    /* ── SECTION HEAD ── */
+    .sh{display:flex;align-items:center;gap:11px;margin-bottom:18px;padding-bottom:13px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .shi{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .si-b{background:rgba(159,193,225,.13);color:var(--accent)}
+    .si-g{background:rgba(72,199,142,.13);color:var(--accent2)}
+    .si-o{background:rgba(255,152,0,.13);color:var(--warn)}
+    .sh h4{font-size:.94rem;font-weight:700;color:#fff;margin:0}
+    .sh p{font-size:.73rem;color:var(--tl);margin:2px 0 0}
+
+    /* ── 2-COLUMN FORM LAYOUT ── */
+    .form-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    .form-col-left{display:flex;flex-direction:column;gap:14px}
+    .form-col-right{display:flex;flex-direction:column;gap:14px}
+    @media(max-width:840px){.form-cols{grid-template-columns:1fr}}
+
+    /* ── FORM GROUP ── */
+    .fg label{display:block;font-size:.71rem;font-weight:700;color:var(--tl);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
+    .fg label .req{color:var(--danger);margin-left:2px}
+    .fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;padding:10px 13px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:.2s}
+    .fg input::placeholder,.fg textarea::placeholder{color:rgba(255,255,255,.28)}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);background:rgba(255,255,255,.10);box-shadow:0 0 0 3px rgba(159,193,225,.1)}
+    .fg input[readonly]{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.07);color:rgba(255,255,255,.45);cursor:not-allowed}
+    .fg select option{background:#253545;color:#fff}
+    .iw{position:relative}
+    .iw .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.3);font-size:.85rem;pointer-events:none}
+    .iw input,.iw select{padding-left:36px}
+
+    /* ── SEARCH DROPDOWN ── */
+    .sdrop-wrap{position:relative;z-index:500}
+    .book-search-bar{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(72,199,142,.3);border-radius:14px;overflow:visible;transition:.2s;position:relative;z-index:2}
+    .book-search-bar:focus-within{border-color:rgba(72,199,142,.6);background:rgba(72,199,142,.06);box-shadow:0 0 0 3px rgba(72,199,142,.1)}
+    .book-search-bar .bsb-inner{display:flex;align-items:center;width:100%;border-radius:14px;overflow:hidden}
+    .book-search-bar .bsb-icon{padding:0 14px;font-size:1rem;color:var(--accent2);display:flex;align-items:center;flex-shrink:0}
+    .book-search-bar input{flex:1;background:transparent;border:none;color:#fff;padding:11px 0 11px 4px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none}
+    .book-search-bar input::placeholder{color:rgba(255,255,255,.3)}
+    .book-search-bar .bsb-badge{margin-right:10px;padding:4px 10px;border-radius:20px;background:rgba(72,199,142,.18);border:1px solid rgba(72,199,142,.3);color:var(--accent2);font-size:.7rem;font-weight:700;white-space:nowrap;flex-shrink:0;transition:.2s}
+    .user-search-bar{display:flex;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(159,193,225,.3);border-radius:14px;overflow:visible;transition:.2s;position:relative;z-index:2}
+    .user-search-bar:focus-within{border-color:rgba(159,193,225,.65);background:rgba(159,193,225,.07);box-shadow:0 0 0 3px rgba(159,193,225,.12)}
+    .user-search-bar .usb-inner{display:flex;align-items:center;width:100%;border-radius:14px;overflow:hidden}
+    .user-search-bar .usb-icon{padding:0 14px;font-size:1rem;color:var(--accent);display:flex;align-items:center;flex-shrink:0}
+    .user-search-bar input{flex:1;background:transparent;border:none;color:#fff;padding:11px 0 11px 4px;font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none}
+    .user-search-bar input::placeholder{color:rgba(255,255,255,.3)}
+    .user-search-bar .usb-tag{margin-right:10px;padding:4px 10px;border-radius:20px;background:rgba(159,193,225,.15);border:1px solid rgba(159,193,225,.28);color:var(--accent);font-size:.7rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+    .sdrop{position:absolute;top:calc(100% + 2px);left:0;right:0;background:#1a2d3f;border:1px solid rgba(159,193,225,.30);border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.65),0 4px 12px rgba(0,0,0,.3);z-index:9999;display:none;max-height:260px;overflow-y:auto;overflow-x:hidden}
+    .sdrop.green-drop{border-color:rgba(72,199,142,.30)}
+    .sdrop.show{display:block}
+    .sdrop::-webkit-scrollbar{width:4px}
+    .sdrop::-webkit-scrollbar-track{background:rgba(255,255,255,.03);border-radius:10px}
+    .sdrop::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:10px}
+    .sitem{display:flex;align-items:center;gap:10px;padding:11px 14px;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.05)}
+    .sitem:first-child{border-radius:14px 14px 0 0}
+    .sitem:last-child{border-bottom:none;border-radius:0 0 14px 14px}
+    .sitem:first-child:last-child{border-radius:14px}
+    .sitem-pick{cursor:pointer}
+    .sitem-pick:hover{background:rgba(159,193,225,.12)}
+    .sitem-pick.green-item:hover{background:rgba(72,199,142,.10)}
+    .sitem-ico{width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+    .si-user{background:rgba(159,193,225,.18);color:var(--accent);border:1px solid rgba(159,193,225,.2)}
+    .si-book{background:rgba(72,199,142,.18);color:var(--accent2);border:1px solid rgba(72,199,142,.2)}
+    .sitem-name{font-size:.84rem;font-weight:600;color:#fff;line-height:1.3}
+    .sitem-sub{font-size:.72rem;color:var(--accent);margin-top:2px;opacity:.85}
+    .sno{padding:18px;text-align:center;font-size:.82rem;color:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;gap:7px}
+    .sload{padding:14px;text-align:center;font-size:.82rem;color:var(--accent);display:flex;align-items:center;justify-content:center;gap:8px}
+
+    /* ── SELECTED USER PILL ── */
+    .sel-pill{display:none;margin-top:10px;align-items:center;gap:8px;background:rgba(72,199,142,.09);border:1px solid rgba(72,199,142,.2);border-radius:10px;padding:9px 14px;font-size:.82rem;color:#6ddaa8}
+    .sel-pill.show{display:flex}
+    .sel-pill button{margin-left:auto;background:none;border:none;color:rgba(72,199,142,.6);cursor:pointer;font-size:.9rem;padding:0;transition:.15s}
+    .sel-pill button:hover{color:var(--danger)}
+
+    /* ── BOOKS LIST ── */
+    .books-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:calc(4 * 88px + 3 * 8px);overflow-y:auto;overflow-x:hidden;padding-right:4px}
+    .books-list::-webkit-scrollbar{width:5px}
+    .books-list::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:10px}
+    .books-list::-webkit-scrollbar-thumb{background:rgba(72,199,142,.3);border-radius:10px}
+    .books-list::-webkit-scrollbar-thumb:hover{background:rgba(72,199,142,.55)}
+    .book-chip{display:flex;align-items:center;gap:10px;background:rgba(72,199,142,.07);border:1px solid rgba(72,199,142,.18);border-radius:12px;padding:10px 13px;animation:chipIn .2s ease}
+    @keyframes chipIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    .bc-num{width:24px;height:24px;border-radius:50%;background:rgba(72,199,142,.2);border:1px solid rgba(72,199,142,.3);color:var(--accent2);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .bc-thumb{width:36px;height:46px;border-radius:6px;flex-shrink:0;overflow:hidden;background:rgba(72,199,142,.1);border:1px solid rgba(72,199,142,.15);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--accent2)}
+    .bc-thumb img{width:100%;height:100%;object-fit:cover}
+    .bc-info{flex:1;min-width:0}
+    .bc-title{font-size:.85rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bc-author{font-size:.73rem;color:var(--tl);margin-top:1px}
+    .bc-isbn{font-size:.68rem;font-family:var(--mono);color:rgba(255,255,255,.35);margin-top:3px}
+    .bc-qty-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;background:rgba(72,199,142,.08);border:1px solid rgba(72,199,142,.2);border-radius:8px;padding:4px 8px}
+    .bc-qty-label{font-size:.65rem;font-weight:700;color:rgba(72,199,142,.8);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+    .bc-qty-input{width:46px;background:rgba(255,255,255,.08);border:1px solid rgba(72,199,142,.35);border-radius:6px;color:#fff;padding:4px 6px;font-size:.84rem;font-weight:700;font-family:var(--mono);outline:none;text-align:center;transition:.2s}
+    .bc-qty-input:focus{border-color:var(--accent2);background:rgba(72,199,142,.12);box-shadow:0 0 0 2px rgba(72,199,142,.15)}
+    .bc-qty-input::-webkit-inner-spin-button,.bc-qty-input::-webkit-outer-spin-button{opacity:1}
+    .bc-rm{background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.2);color:#ff9999;border-radius:8px;padding:5px 9px;font-size:.78rem;cursor:pointer;transition:.15s;flex-shrink:0}
+    .bc-rm:hover{background:rgba(255,99,99,.22);color:#fff}
+    .books-empty{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;border:2px dashed rgba(72,199,142,.15);font-size:.8rem;color:rgba(255,255,255,.3);background:rgba(72,199,142,.03)}
+    .books-limit-warn{display:none;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.25);font-size:.76rem;color:#ffb74d;margin-top:8px}
+    .books-limit-warn.show{display:flex}
+
+    /* ── RENEWAL ROWS ── */
+    .ren-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 13px;margin-bottom:8px}
+    .ren-chk{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+    .ren-chk input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent2);cursor:pointer}
+    .ren-chk span{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.65);white-space:nowrap}
+    .ren-date{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.25);padding:8px 11px;font-size:.82rem;font-family:var(--mono);opacity:.45;pointer-events:none;transition:.2s;outline:none}
+    .ren-date.on{opacity:1;pointer-events:auto;border-color:rgba(72,199,142,.38);color:#fff}
+
+    /* ── VALID UNTIL ── */
+    .valid-block{background:rgba(159,193,225,.05);border:1px solid rgba(159,193,225,.13);border-radius:13px;padding:15px 17px}
+    .valid-head{font-size:.76rem;font-weight:700;color:var(--accent);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+    .valid-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .valid-lbl{font-size:.82rem;color:var(--tl);font-weight:500;white-space:nowrap}
+    .valid-inp{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;padding:8px 12px;font-size:.86rem;font-family:var(--mono);width:240px;outline:none;transition:.2s}
+    .valid-inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(159,193,225,.1)}
+    .valid-note{background:rgba(255,255,255,.04);border-radius:8px;padding:10px 13px;font-size:.74rem;color:rgba(255,255,255,.42);line-height:1.65}
+    .valid-note strong{color:rgba(255,255,255,.7)}
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-box{display:flex;flex-direction:column;align-items:center;gap:10px;border:2px dashed rgba(255,255,255,.1);border-radius:14px;padding:24px 20px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;background:rgba(255,255,255,.03)}
+    .photo-box:hover{border-color:rgba(159,193,225,.3);background:rgba(159,193,225,.04)}
+    .photo-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .photo-frame{width:88px;height:110px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:rgba(255,255,255,.18)}
+    .photo-frame img{width:100%;height:100%;object-fit:cover}
+    .photo-lbl{font-size:.82rem;font-weight:600;color:var(--tl)}
+    .photo-sub{font-size:.72rem;color:rgba(255,255,255,.28)}
+
+    /* ── ACTION ROW ── */
+    .act-row{display:flex;align-items:center;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+    .btn-sub{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:12px;padding:11px 24px;font-size:.9rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:.2s}
+    .btn-sub.blue{background:var(--accent);color:#0d1a24}
+    .btn-sub.blue:hover{background:#b8d4ec;transform:translateY(-2px)}
+    .btn-sub.green{background:var(--accent2);color:#0d1a24}
+    .btn-sub.green:hover{background:#68d9a8;transform:translateY(-2px)}
+    .btn-rst{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);border-radius:12px;padding:11px 18px;font-size:.88rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:.2s}
+    .btn-rst:hover{background:rgba(255,255,255,.12);color:#fff}
+
+    /* ── RECORDS TABLE ── */
+    .tbl-wrap{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;backdrop-filter:blur(12px);margin-top:40px}
+    .tbl-hdr{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .tbl-title{font-size:.98rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:9px}
+    .tbl-title span{font-size:.72rem;font-weight:700;background:rgba(159,193,225,.12);color:var(--accent);border:1px solid rgba(159,193,225,.2);border-radius:20px;padding:2px 9px}
+    .tbl-filters{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+    .tsw{position:relative}
+    .tsw .ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.28);font-size:.8rem}
+    .tsearch{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);border-radius:9px;color:#fff;padding:8px 13px 8px 30px;font-size:.82rem;font-family:'DM Sans',sans-serif;outline:none;transition:.2s;width:190px}
+    .tsearch:focus{border-color:var(--accent);background:rgba(255,255,255,.1);width:220px}
+    .tfbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);border-radius:9px;padding:7px 14px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s}
+    .tfbtn.on{background:rgba(159,193,225,.13);border-color:rgba(159,193,225,.28);color:var(--accent)}
+    .tfbtn.on.g{background:rgba(72,199,142,.11);border-color:rgba(72,199,142,.25);color:var(--accent2)}
+    .tfbtn:hover{background:rgba(255,255,255,.12);color:#fff}
+    table{width:100%;border-collapse:collapse}
+    thead th{padding:10px 14px;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.38);border-bottom:1px solid rgba(255,255,255,.05);white-space:nowrap}
+    tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:.15s}
+    tbody tr:last-child{border-bottom:none}
+    tbody tr:hover{background:rgba(255,255,255,.04)}
+    tbody td{padding:11px 14px;font-size:.83rem;color:rgba(255,255,255,.78);vertical-align:middle}
+    .type-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:700}
+    .type-member{background:rgba(159,193,225,.12);color:var(--accent);border:1px solid rgba(159,193,225,.2)}
+    .type-borrower{background:rgba(255,152,0,.11);color:#ffb74d;border:1px solid rgba(255,152,0,.2)}
+    .tbl-photo{width:32px;height:40px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,.1)}
+    .tbl-photo-ph{width:32px;height:40px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;font-size:.95rem;color:rgba(255,255,255,.2)}
+    .tbl-name{font-weight:700;color:#fff}
+    .tbl-sub{font-size:.72rem;color:var(--tl);margin-top:2px}
+    .tbl-books-mini{display:flex;flex-direction:column;gap:3px;max-width:220px}
+    .tbl-book-row{font-size:.76rem;color:rgba(255,255,255,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+    .tbl-book-row::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent2);flex-shrink:0}
+    .tbl-book-qty{font-size:.65rem;font-weight:700;background:rgba(72,199,142,.15);color:var(--accent2);border:1px solid rgba(72,199,142,.22);border-radius:4px;padding:1px 5px;flex-shrink:0}
+    .tbl-empty{text-align:center;padding:44px 20px;font-size:.86rem;color:rgba(255,255,255,.28)}
+    .tbl-empty i{font-size:2.5rem;display:block;margin-bottom:12px;opacity:.25}
+    .tbl-load{text-align:center;padding:32px;font-size:.84rem;color:var(--accent);display:flex;align-items:center;justify-content:center;gap:9px}
+
+    /* ── TABLE ACTION BUTTONS ── */
+    .tbl-actions{display:flex;gap:6px;align-items:center}
+    .btn-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.88rem;cursor:pointer;transition:.18s;border:none}
+    .btn-view{background:rgba(72,199,142,.12);border:1px solid rgba(72,199,142,.22);color:var(--accent2)}
+    .btn-view:hover{background:rgba(72,199,142,.25);transform:scale(1.08)}
+    .btn-ret{background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.22);color:#ffb74d}
+    .btn-ret:hover{background:rgba(255,152,0,.22);transform:scale(1.08)}
+    .btn-edit{background:rgba(159,193,225,.12);border:1px solid rgba(159,193,225,.22);color:var(--accent)}
+    .btn-edit:hover{background:rgba(159,193,225,.25);transform:scale(1.08)}
+    .btn-del{background:rgba(255,99,99,.1);border:1px solid rgba(255,99,99,.2);color:#ff9999}
+    .btn-del:hover{background:rgba(255,99,99,.24);color:#fff;transform:scale(1.08)}
+
+    /* ── MODALS (shared base) ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.show{display:flex}
+    .modal-box{background:linear-gradient(150deg,#1e2d3d,#273848);border:1px solid rgba(159,193,225,.18);border-radius:22px;width:100%;max-width:840px;max-height:90vh;overflow-y:auto;box-shadow:0 28px 70px rgba(0,0,0,.6);animation:modalIn .25s ease}
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .modal-box::-webkit-scrollbar{width:5px}
+    .modal-box::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:10px}
+    .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .modal-title{font-size:1rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:9px}
+    .modal-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:.15s}
+    .modal-close:hover{background:rgba(255,99,99,.18);color:#ff9999;border-color:rgba(255,99,99,.3)}
+    .modal-body{padding:22px 24px}
+    .modal-footer{padding:16px 24px 20px;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:flex-end;gap:10px}
+    .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:600px){.modal-grid{grid-template-columns:1fr}}
+    .modal-section-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .modal-body .sdrop-wrap{z-index:2100}
+    .modal-body .sdrop{z-index:2200}
+
+    /* ── VIEW MODAL info cells ── */
+    .view-info-cell{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px}
+    .vic-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+    .vic-val{font-size:.85rem;font-weight:600;color:#fff}
+    .vic-val.mono{font-family:'DM Mono',monospace;font-size:.8rem}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:840px){.form-cols{grid-template-columns:1fr;gap:0}.form-col-left,.form-col-right{gap:14px}}
+    @media(max-width:640px){.page{padding:72px 14px 60px}.phdr{gap:10px}.phdr-icon{width:42px;height:42px;font-size:1.2rem}.phdr h1{font-size:1.2rem}.phdr p{font-size:.72rem}.tabs{gap:6px}.tab-btn{padding:8px 14px;font-size:.82rem}.sc{padding:18px 16px}.sh{margin-bottom:14px;padding-bottom:10px}.sh h4{font-size:.88rem}.valid-inp{width:100%}.valid-row{flex-direction:column;align-items:flex-start;gap:6px}.ren-row{flex-wrap:wrap;gap:8px}.ren-date{min-width:0;width:100%}.act-row{flex-direction:column}.btn-sub,.btn-rst{width:100%;justify-content:center}.photo-box{padding:18px 14px}.photo-frame{width:72px;height:90px}}
+    @media(max-width:420px){.page{padding:68px 10px 56px}.sc{padding:15px 13px;border-radius:16px}.sh .shi{width:30px;height:30px;font-size:.88rem}.topbar{padding:0 12px}.brand-text{font-size:.95rem}.nav-links{display:none}.tab-btn{padding:7px 11px;font-size:.78rem;gap:5px}.tab-btn i{font-size:.82rem}.fg input,.fg select{padding:9px 11px;font-size:.84rem}.fg label{font-size:.67rem}.tbl-wrap{border-radius:14px}.tbl-hdr{padding:14px 14px;flex-direction:column;align-items:flex-start}.tbl-filters{width:100%}.tsearch{width:100%}.modal-box{border-radius:16px}.modal-hdr{padding:16px 16px 12px}.modal-body{padding:14px 16px}.modal-footer{padding:12px 16px 16px}.modal-grid{grid-template-columns:1fr!important}}
+    @media(max-width:360px){.page{padding:64px 8px 52px}.phdr h1{font-size:1.05rem}.tabs{flex-direction:column}.tab-btn{width:100%;justify-content:center}}
+
+    /* ── RETURN MODAL ── */
+    .ret-borrower-card{display:flex;align-items:center;gap:14px;background:rgba(255,152,0,.06);border:1px solid rgba(255,152,0,.18);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+    .ret-photo{width:50px;height:64px;border-radius:9px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:rgba(255,255,255,.2)}
+    .ret-photo img{width:100%;height:100%;object-fit:cover}
+    .ret-name{font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px}
+    .ret-meta{font-size:.76rem;color:var(--tl)}
+    .ret-meta span{margin-right:10px;display:inline-flex;align-items:center;gap:4px}
+    .ret-badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+    .ret-badge{font-size:.67rem;font-weight:700;border-radius:20px;padding:2px 9px;border:1px solid}
+    .ret-badge.type-m{background:rgba(159,193,225,.12);color:var(--accent);border-color:rgba(159,193,225,.22)}
+    .ret-badge.type-b{background:rgba(255,152,0,.1);color:#ffb74d;border-color:rgba(255,152,0,.22)}
+    .ret-badge.date{background:rgba(72,199,142,.1);color:var(--accent2);border-color:rgba(72,199,142,.2)}
+    .ret-book-table{width:100%;border-collapse:collapse;margin-top:4px}
+    .ret-book-table thead th{padding:8px 10px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.38);border-bottom:1px solid rgba(255,255,255,.07);text-align:left}
+    .ret-book-table tbody tr{border-bottom:1px solid rgba(255,255,255,.04)}
+    .ret-book-table tbody tr:last-child{border-bottom:none}
+    .ret-book-table tbody td{padding:9px 10px;font-size:.82rem;color:rgba(255,255,255,.78);vertical-align:middle}
+    .ret-qty-inp{width:56px;background:rgba(255,255,255,.08);border:1px solid rgba(72,199,142,.3);border-radius:7px;color:#fff;padding:5px 7px;font-size:.83rem;font-weight:700;font-family:'DM Mono',monospace;outline:none;text-align:center;transition:.2s}
+    .ret-qty-inp:focus{border-color:var(--accent2);background:rgba(72,199,142,.1);box-shadow:0 0 0 2px rgba(72,199,142,.12)}
+    .ret-return-date{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#fff;padding:8px 12px;font-size:.85rem;font-family:'DM Mono',monospace;outline:none;transition:.2s;width:100%}
+    .ret-return-date:focus{border-color:var(--accent);background:rgba(255,255,255,.1)}
+
+    /* ── RETURNED BOOKS TABLE ── */
+    .ret-tbl-wrap{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;backdrop-filter:blur(12px);margin-top:28px}
+    .ret-tbl-wrap .tbl-hdr{border-bottom:1px solid rgba(255,152,0,.12)}
+    .ret-tbl-title{font-size:.98rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:9px}
+    .ret-tbl-title span{font-size:.72rem;font-weight:700;background:rgba(255,152,0,.12);color:#ffb74d;border:1px solid rgba(255,152,0,.2);border-radius:20px;padding:2px 9px}
+    .ret-status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:700;background:rgba(72,199,142,.12);color:var(--accent2);border:1px solid rgba(72,199,142,.2)}
+    .ret-books-mini{display:flex;flex-direction:column;gap:2px;max-width:200px}
+    .ret-book-mini-row{font-size:.74rem;color:rgba(255,255,255,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
+    .ret-book-mini-row::before{content:'';width:4px;height:4px;border-radius:50%;background:#ffb74d;flex-shrink:0}
+    .ret-qty-pill{font-size:.65rem;font-weight:700;background:rgba(255,152,0,.15);color:#ffb74d;border:1px solid rgba(255,152,0,.22);border-radius:4px;padding:1px 5px;flex-shrink:0}
+
+    .toast-wrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:9px}
+    .toast-msg{background:#1e2d3d;border:1px solid rgba(159,193,225,.22);border-radius:11px;padding:12px 16px;font-size:.83rem;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;gap:9px;animation:toastIn .3s ease}
+    .toast-msg.success{border-color:rgba(72,199,142,.4)}
+    .toast-msg.danger{border-color:rgba(255,99,99,.4)}
+    @keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+{% include 'admin_template/topbar_template.html' %}
+{% include 'admin_template/sidebar_template.html' %}
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="phdr">
+    <div class="phdr-icon"><i class="bi bi-card-list"></i></div>
+    <div>
+      <h1>Library Card Registration</h1>
+      <p>Dr. Graciano Lopez Jaena Learning Resource Center · Admin &amp; Librarian access</p>
+    </div>
+  </div>
+
+  <!-- Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-wrap">
+    {% for cat, msg in messages %}
+    <div class="flash-msg {{ cat }}">
+      <i class="bi {% if cat=='success' %}bi-check-circle-fill{% elif cat=='danger' %}bi-x-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+      {{ msg }}
+      <button class="flash-close" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-m" onclick="switchTab('m')"><i class="bi bi-person-badge-fill"></i>Member Form</button>
+    <button class="tab-btn g"      id="tab-b" onclick="switchTab('b')"><i class="bi bi-journal-bookmark-fill"></i>Borrower Form</button>
+  </div>
+
+
+  <!-- ═══════════════ MEMBER FORM ═══════════════ -->
+  <div class="pane active" id="pane-m">
+    <form method="POST" action="/register/member" enctype="multipart/form-data" id="form-m">
+
+      <div class="sc" style="padding:14px 22px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="background:rgba(159,193,225,.1);border:1px solid rgba(159,193,225,.22);color:var(--accent);border-radius:20px;padding:3px 11px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;"><i class="bi bi-person-badge-fill me-1"></i>Library Member</span>
+            <span style="font-size:.77rem;color:var(--tl);">Search a registered user to auto-fill their details.</span>
+          </div>
+          <span id="m_ddisp" style="font-size:.76rem;color:var(--tl);font-family:'DM Mono',monospace;"></span>
+        </div>
+      </div>
+
+      <div class="form-cols">
+        <div class="form-col-left">
+          <div class="sc">
+            <div class="sh"><div class="shi si-b"><i class="bi bi-person-search"></i></div><div><h4>Find Member</h4><p>Search by name to auto-fill</p></div></div>
+            <div class="sdrop-wrap">
+              <div class="user-search-bar">
+                <div class="usb-inner">
+                  <span class="usb-icon"><i class="bi bi-person-search"></i></span>
+                  <input type="text" id="m_search" placeholder="Type first or last name…" autocomplete="off" oninput="doUserSearch(this.value)">
+                  <span class="usb-tag">Member Search</span>
+                </div>
+              </div>
+              <div class="" id="m_sdrop"></div>
+            </div>
+            <div class="sel-pill" id="m_pill"><i class="bi bi-check-circle-fill"></i><span id="m_pill_name">—</span><button type="button" onclick="clearMember()"><i class="bi bi-x"></i></button></div>
+            <input type="hidden" name="user_id" id="m_user_id">
+          </div>
+
+          <div class="sc g">
+            <div class="sh"><div class="shi si-g"><i class="bi bi-person-lines-fill"></i></div><div><h4>Personal Info</h4><p>Auto-filled — read only</p></div></div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="fg"><label>First Name <span class="req">*</span></label><div class="iw"><i class="bi bi-person ico"></i><input type="text" name="firstname" id="m_firstname" placeholder="First name" readonly required></div></div>
+                <div class="fg"><label>Last Name <span class="req">*</span></label><div class="iw"><i class="bi bi-person ico"></i><input type="text" name="lastname" id="m_lastname" placeholder="Last name" readonly required></div></div>
+              </div>
+              <div class="fg"><label>Phone Number</label><div class="iw"><i class="bi bi-telephone ico"></i><input type="text" name="phone" id="m_phone" placeholder="—" readonly></div></div>
+              <div class="fg"><label>Address</label><div class="iw"><i class="bi bi-geo-alt ico"></i><input type="text" name="address" id="m_address" placeholder="—" readonly></div></div>
+            </div>
+          </div>
+
+          <div class="sc">
+            <div class="sh"><div class="shi si-b"><i class="bi bi-image"></i></div><div><h4>1×1 Photo</h4><p>ID photo of the member</p></div></div>
+            <label class="photo-box" for="m_photo">
+              <div class="photo-frame" id="m_pframe"><i class="bi bi-person-bounding-box"></i></div>
+              <div class="photo-lbl">Click to upload 1×1 Photo</div>
+              <div class="photo-sub">PNG, JPG, WEBP · Max 2 MB</div>
+              <input type="file" id="m_photo" name="photo" accept="image/png,image/jpeg,image/webp" onchange="previewPhoto(this,'m_pframe')">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-col-right">
+          <div class="sc">
+            <div class="sh"><div class="shi si-g"><i class="bi bi-books"></i></div><div><h4>Books Borrowed</h4><p>Set quantity per book — add as many as needed</p></div></div>
+            <div class="sdrop-wrap">
+              <div class="book-search-bar">
+                <div class="bsb-inner">
+                  <span class="bsb-icon"><i class="bi bi-search"></i></span>
+                  <input type="text" id="m_bsearch" placeholder="Search title, author, or ISBN…" autocomplete="off" oninput="doBookSearch(this.value,'m')">
+                  <span class="bsb-badge" id="m_bcount">0 books</span>
+                </div>
+              </div>
+              <div class="sdrop green-drop" id="m_bsdrop"></div>
+            </div>
+            <div class="books-list" id="m_blist">
+              <div class="books-empty" id="m_bempty"><i class="bi bi-book" style="font-size:1.1rem;opacity:.5;"></i>No books selected yet — search above to add</div>
+            </div>
+            <div class="books-limit-warn" id="m_blimit" style="display:none;"></div>
+            <input type="hidden" name="book_ids" id="m_book_ids" value="[]">
+          </div>
+
+          <div class="sc o">
+            <div class="sh"><div class="shi si-o"><i class="bi bi-calendar3"></i></div><div><h4>Card &amp; Dates</h4><p>Issuance, return, renewals, validity</p></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+              <div class="fg"><label>Date Issued <span class="req">*</span></label><div class="iw"><i class="bi bi-calendar-date ico"></i><input type="date" name="date" id="m_date" readonly required></div></div>
+              <div class="fg"><label>Date of Return</label><div class="iw"><i class="bi bi-calendar-check ico"></i><input type="date" name="date_return" id="m_dret"></div></div>
+            </div>
+            <div class="fg" style="margin-bottom:14px;">
+              <label>Card Type <span class="req">*</span></label>
+              <div class="iw"><i class="bi bi-credit-card ico"></i>
+                <select name="card_type" id="m_ctype" onchange="autoValid('m')">
+                  <option value="">— Select —</option>
+                  <option value="city_govt">Iloilo City Government (LGU)</option>
+                  <option value="regular">Regular / Student / Others</option>
+                </select>
+              </div>
+            </div>
+            <label style="font-size:.7rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:8px;">Renewed</label>
+            <div class="ren-row">
+              <label class="ren-chk"><input type="checkbox" id="m_r1c" onchange="toggleRen('m',1)"><span>1st On:</span></label>
+              <input type="date" class="ren-date" id="m_r1d" name="renewal1_date">
+              <input type="hidden" name="renewal1_checked" id="m_r1h" value="0">
+            </div>
+            <div class="ren-row">
+              <label class="ren-chk"><input type="checkbox" id="m_r2c" onchange="toggleRen('m',2)"><span>2nd On:</span></label>
+              <input type="date" class="ren-date" id="m_r2d" name="renewal2_date">
+              <input type="hidden" name="renewal2_checked" id="m_r2h" value="0">
+            </div>
+            <div class="valid-block" style="margin-top:14px;">
+              <div class="valid-head"><i class="bi bi-shield-check"></i>Validity Period</div>
+              <div class="valid-row">
+                <span class="valid-lbl">Valid Until:</span>
+                <input type="text" class="valid-inp" name="valid_until" id="m_valid" placeholder="(auto-fills on card type)">
+              </div>
+              <div class="valid-note">
+                <strong>LGU Card:</strong> Valid until retirement or separation from service.<br>
+                <strong>Other users:</strong> Valid for One (1) Year from issuance.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="act-row">
+        <button type="button" class="btn-rst" onclick="resetForm('m')"><i class="bi bi-arrow-counterclockwise"></i>Clear</button>
+        <button type="submit" class="btn-sub blue"><i class="bi bi-person-check-fill"></i>Register Member</button>
+      </div>
+    </form>
+  </div>
+
+
+  <!-- ═══════════════ BORROWER FORM ═══════════════ -->
+  <div class="pane" id="pane-b">
+    <form method="POST" action="/register/borrower" enctype="multipart/form-data" id="form-b">
+
+      <div class="sc" style="padding:14px 22px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="background:rgba(72,199,142,.1);border:1px solid rgba(72,199,142,.22);color:var(--accent2);border-radius:20px;padding:3px 11px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;"><i class="bi bi-journal-bookmark-fill me-1"></i>Walk-In Borrower</span>
+            <span style="font-size:.77rem;color:var(--tl);">Manual entry — fill in all details by hand.</span>
+          </div>
+          <span id="b_ddisp" style="font-size:.76rem;color:var(--tl);font-family:'DM Mono',monospace;"></span>
+        </div>
+      </div>
+
+      <div class="form-cols">
+        <div class="form-col-left">
+          <div class="sc g">
+            <div class="sh"><div class="shi si-g"><i class="bi bi-person-lines-fill"></i></div><div><h4>Personal Info</h4><p>Enter borrower details manually</p></div></div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="fg"><label>First Name <span class="req">*</span></label><div class="iw"><i class="bi bi-person ico"></i><input type="text" name="firstname" id="b_firstname" placeholder="First name" required></div></div>
+                <div class="fg"><label>Last Name <span class="req">*</span></label><div class="iw"><i class="bi bi-person ico"></i><input type="text" name="lastname" id="b_lastname" placeholder="Last name" required></div></div>
+              </div>
+              <div class="fg"><label>Phone Number</label><div class="iw"><i class="bi bi-telephone ico"></i><input type="text" name="phone" id="b_phone" placeholder="e.g. 0912-345-6789"></div></div>
+              <div class="fg"><label>Address</label><div class="iw"><i class="bi bi-geo-alt ico"></i><input type="text" name="address" id="b_address" placeholder="Home or office address"></div></div>
+            </div>
+          </div>
+
+          <div class="sc">
+            <div class="sh"><div class="shi si-b"><i class="bi bi-image"></i></div><div><h4>1×1 Photo</h4><p>ID photo of the borrower</p></div></div>
+            <label class="photo-box" for="b_photo">
+              <div class="photo-frame" id="b_pframe"><i class="bi bi-person-bounding-box"></i></div>
+              <div class="photo-lbl">Click to upload 1×1 Photo</div>
+              <div class="photo-sub">PNG, JPG, WEBP · Max 2 MB</div>
+              <input type="file" id="b_photo" name="photo" accept="image/png,image/jpeg,image/webp" onchange="previewPhoto(this,'b_pframe')">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-col-right">
+          <div class="sc">
+            <div class="sh"><div class="shi si-g"><i class="bi bi-books"></i></div><div><h4>Books Borrowed</h4><p>Set quantity per book — add as many as needed</p></div></div>
+            <div class="sdrop-wrap">
+              <div class="book-search-bar">
+                <div class="bsb-inner">
+                  <span class="bsb-icon"><i class="bi bi-search"></i></span>
+                  <input type="text" id="b_bsearch" placeholder="Search title, author, or ISBN…" autocomplete="off" oninput="doBookSearch(this.value,'b')">
+                  <span class="bsb-badge" id="b_bcount">0 books</span>
+                </div>
+              </div>
+              <div class="sdrop green-drop" id="b_bsdrop"></div>
+            </div>
+            <div class="books-list" id="b_blist">
+              <div class="books-empty" id="b_bempty"><i class="bi bi-book" style="font-size:1.1rem;opacity:.5;"></i>No books selected yet — search above to add</div>
+            </div>
+            <div class="books-limit-warn" id="b_blimit" style="display:none;"></div>
+            <input type="hidden" name="book_ids" id="b_book_ids" value="[]">
+          </div>
+
+          <div class="sc o">
+            <div class="sh"><div class="shi si-o"><i class="bi bi-calendar3"></i></div><div><h4>Card &amp; Dates</h4><p>Issuance, return, renewals, validity</p></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+              <div class="fg"><label>Date Issued <span class="req">*</span></label><div class="iw"><i class="bi bi-calendar-date ico"></i><input type="date" name="date" id="b_date" readonly required></div></div>
+              <div class="fg"><label>Date of Return <span class="req">*</span></label><div class="iw"><i class="bi bi-calendar-check ico"></i><input type="date" name="date_return" id="b_dret" required></div></div>
+            </div>
+            <div class="fg" style="margin-bottom:14px;">
+              <label>Card Type <span class="req">*</span></label>
+              <div class="iw"><i class="bi bi-credit-card ico"></i>
+                <select name="card_type" id="b_ctype" onchange="autoValid('b')">
+                  <option value="">— Select —</option>
+                  <option value="city_govt">Iloilo City Government (LGU)</option>
+                  <option value="regular">Regular / Student / Others</option>
+                </select>
+              </div>
+            </div>
+            <label style="font-size:.7rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:8px;">Renewed</label>
+            <div class="ren-row">
+              <label class="ren-chk"><input type="checkbox" id="b_r1c" onchange="toggleRen('b',1)"><span>1st On:</span></label>
+              <input type="date" class="ren-date" id="b_r1d" name="renewal1_date">
+              <input type="hidden" name="renewal1_checked" id="b_r1h" value="0">
+            </div>
+            <div class="ren-row">
+              <label class="ren-chk"><input type="checkbox" id="b_r2c" onchange="toggleRen('b',2)"><span>2nd On:</span></label>
+              <input type="date" class="ren-date" id="b_r2d" name="renewal2_date">
+              <input type="hidden" name="renewal2_checked" id="b_r2h" value="0">
+            </div>
+            <div class="valid-block" style="margin-top:14px;">
+              <div class="valid-head"><i class="bi bi-shield-check"></i>Validity Period</div>
+              <div class="valid-row">
+                <span class="valid-lbl">Valid Until:</span>
+                <input type="text" class="valid-inp" name="valid_until" id="b_valid" placeholder="(auto-fills on card type)">
+              </div>
+              <div class="valid-note">
+                <strong>LGU Card:</strong> Valid until retirement or separation from service.<br>
+                <strong>Other users:</strong> Valid for One (1) Year from issuance.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="act-row">
+        <button type="button" class="btn-rst" onclick="resetForm('b')"><i class="bi bi-arrow-counterclockwise"></i>Clear</button>
+        <button type="submit" class="btn-sub green"><i class="bi bi-journal-check"></i>Register Borrower</button>
+      </div>
+    </form>
+  </div>
+
+
+  <!-- ═══════════════ RECORDS TABLE ═══════════════ -->
+  <div class="tbl-wrap">
+    <div class="tbl-hdr">
+      <div class="tbl-title"><i class="bi bi-table"></i>All Records <span id="tbl-cnt">0</span></div>
+      <div class="tbl-filters">
+        <div class="tsw"><i class="bi bi-search ico"></i><input type="text" class="tsearch" id="tbl-q" placeholder="Search…" oninput="filterTbl(this.value)"></div>
+        <button class="tfbtn on" id="fbtn-all" onclick="setFilter('')">All</button>
+        <button class="tfbtn" id="fbtn-mem" onclick="setFilter('member')">Members</button>
+        <button class="tfbtn g" id="fbtn-bor" onclick="setFilter('borrower')">Borrowers</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <div class="tbl-load" id="tbl-load"><i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Loading…</div>
+      <table id="tbl" style="display:none;">
+        <thead>
+          <tr>
+            <th>Photo</th><th>Name</th><th>Type</th><th>Books Borrowed</th>
+            <th>Issued</th><th>Return</th><th>Card</th><th>Valid Until</th><th>By</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+      <div class="tbl-empty" id="tbl-empty" style="display:none;"><i class="bi bi-card-list"></i>No records found.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ RETURNED BOOKS TABLE ═══════════════ -->
+  <div class="ret-tbl-wrap">
+    <div class="tbl-hdr">
+      <div class="ret-tbl-title"><i class="bi bi-box-arrow-in-down-left"></i>Return History <span id="ret-tbl-cnt">0</span></div>
+      <div class="tbl-filters">
+        <div class="tsw"><i class="bi bi-search ico"></i><input type="text" class="tsearch" id="ret-tbl-q" placeholder="Search…" oninput="filterRetTbl(this.value)"></div>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <div class="tbl-load" id="ret-tbl-load"><i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Loading…</div>
+      <table id="ret-tbl" style="display:none;">
+        <thead>
+          <tr>
+            <th>Borrower</th><th>Type</th><th>Books Returned</th>
+            <th>Date Issued</th><th>Date Returned</th><th>Processed By</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="ret-tbl-body"></tbody>
+      </table>
+      <div class="tbl-empty" id="ret-tbl-empty" style="display:none;"><i class="bi bi-box-arrow-in-down-left"></i>No return records yet.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+
+<!-- ═══════════════ RETURN MODAL ═══════════════ -->
+<div class="modal-overlay" id="returnModal">
+  <div class="modal-box" style="max-width:660px;">
+    <div class="modal-hdr" style="border-bottom-color:rgba(255,152,0,.2);">
+      <div class="modal-title" style="color:#ffb74d;"><i class="bi bi-box-arrow-in-down-left"></i>Process Book Return</div>
+      <button class="modal-close" onclick="closeReturn()"><i class="bi bi-x"></i></button>
+    </div>
+    <div class="modal-body" id="returnModalBody"><!-- filled by JS --></div>
+    <div class="modal-footer">
+      <button class="btn-rst" onclick="closeReturn()"><i class="bi bi-x"></i>Cancel</button>
+      <button class="btn-sub" id="ret_confirm_btn"
+              style="background:#ffb74d;color:#1a1000;"
+              onclick="confirmReturn()">
+        <i class="bi bi-check2-circle"></i>Confirm Return
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ VIEW DETAILS MODAL ═══════════════ -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-hdr">
+      <div class="modal-title"><i class="bi bi-eye-fill"></i>Card Details</div>
+      <button class="modal-close" onclick="closeView()"><i class="bi bi-x"></i></button>
+    </div>
+    <div class="modal-body" id="viewModalBody">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ UPDATE MODAL ═══════════════ -->
+<div class="modal-overlay" id="updateModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title"><i class="bi bi-pencil-square"></i>Edit Library Card</div>
+      <button class="modal-close" onclick="closeModal()"><i class="bi bi-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit_card_id">
+
+      <div class="modal-section-lbl">Personal Information</div>
+      <div class="modal-grid">
+        <div class="fg"><label>First Name <span class="req">*</span></label><div class="iw"><i class="bi bi-person ico"></i><input type="text" id="edit_firstname" placeholder="First name"></div></div>
+        <div class="fg"><label>Last Name <span class="req">*</span></label><div class="iw"><i class="bi bi-person ico"></i><input type="text" id="edit_lastname" placeholder="Last name"></div></div>
+        <div class="fg"><label>Phone</label><div class="iw"><i class="bi bi-telephone ico"></i><input type="text" id="edit_phone" placeholder="Phone number"></div></div>
+        <div class="fg"><label>Address</label><div class="iw"><i class="bi bi-geo-alt ico"></i><input type="text" id="edit_address" placeholder="Address"></div></div>
+      </div>
+
+      <div class="modal-section-lbl">Books Borrowed</div>
+      <div class="sdrop-wrap" style="margin-bottom:10px;">
+        <div class="book-search-bar">
+          <div class="bsb-inner">
+            <span class="bsb-icon"><i class="bi bi-search"></i></span>
+            <input type="text" id="edit_bsearch" placeholder="Search to add more books…" autocomplete="off" oninput="doBookSearch(this.value,'edit')">
+            <span class="bsb-badge" id="edit_bcount">0 books</span>
+          </div>
+        </div>
+        <div class="sdrop green-drop" id="edit_bsdrop"></div>
+      </div>
+      <div class="books-list" id="edit_blist">
+        <div class="books-empty" id="edit_bempty"><i class="bi bi-book" style="font-size:1.1rem;opacity:.5;"></i>No books — search above</div>
+      </div>
+      <div class="books-limit-warn" id="edit_blimit" style="display:none;"></div>
+      <input type="hidden" id="edit_book_ids" value="[]">
+
+      <div class="modal-section-lbl">Dates &amp; Card</div>
+      <div class="modal-grid">
+        <div class="fg"><label>Date of Return</label><div class="iw"><i class="bi bi-calendar-check ico"></i><input type="date" id="edit_dret"></div></div>
+        <div class="fg"><label>Card Type</label><div class="iw"><i class="bi bi-credit-card ico"></i>
+          <select id="edit_ctype" onchange="autoValid('edit')">
+            <option value="">— Select —</option>
+            <option value="city_govt">Iloilo City Government (LGU)</option>
+            <option value="regular">Regular / Student / Others</option>
+          </select>
+        </div></div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="font-size:.7rem;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:8px;">Renewed</label>
+        <div class="ren-row">
+          <label class="ren-chk"><input type="checkbox" id="edit_r1c" onchange="toggleRen('edit',1)"><span>1st On:</span></label>
+          <input type="date" class="ren-date" id="edit_r1d">
+          <input type="hidden" id="edit_r1h" value="0">
+        </div>
+        <div class="ren-row">
+          <label class="ren-chk"><input type="checkbox" id="edit_r2c" onchange="toggleRen('edit',2)"><span>2nd On:</span></label>
+          <input type="date" class="ren-date" id="edit_r2d">
+          <input type="hidden" id="edit_r2h" value="0">
+        </div>
+      </div>
+
+      <div class="valid-block" style="margin-top:14px;">
+        <div class="valid-head"><i class="bi bi-shield-check"></i>Validity Period</div>
+        <div class="valid-row">
+          <span class="valid-lbl">Valid Until:</span>
+          <input type="text" class="valid-inp" id="edit_valid" placeholder="(auto-fills on card type)">
+        </div>
+        <div class="valid-note">
+          <strong>LGU Card:</strong> Valid until retirement or separation from service.<br>
+          <strong>Other users:</strong> Valid for One (1) Year from issuance.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-rst" onclick="closeModal()"><i class="bi bi-x"></i>Cancel</button>
+      <button class="btn-sub blue" id="edit_save_btn" onclick="saveEdit()"><i class="bi bi-check2-circle"></i>Save Changes</button>
+    </div>
+  </div>
+</div>
+{% include 'admin_template/footer_template.html' %}
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── HELPERS ────────────────────────────────────────────────
+const todayISO = () => new Date().toISOString().split('T')[0];
+const todayFmt = () => new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const t = todayISO(), d = todayFmt();
+  ['m_date','b_date'].forEach(id => document.getElementById(id).value = t);
+  document.getElementById('m_ddisp').textContent = d;
+  document.getElementById('b_ddisp').textContent = d;
+  loadTable();
+  loadReturnHistory();
+});
+
+// ── TABS ───────────────────────────────────────────────────
+function switchTab(p) {
+  document.querySelectorAll('.pane').forEach(x => x.classList.remove('active'));
+  document.getElementById('pane-'+p).classList.add('active');
+  document.getElementById('tab-m').classList.toggle('active', p==='m');
+  document.getElementById('tab-b').classList.toggle('active', p==='b');
+  document.querySelectorAll('.sdrop.show').forEach(d => d.classList.remove('show'));
+}
+
+// ── USER SEARCH ────────────────────────────────────────────
+let _uTimer;
+function doUserSearch(q) {
+  clearTimeout(_uTimer);
+  const drop = document.getElementById('m_sdrop');
+  if (!q.trim()) { drop.classList.remove('show'); return; }
+  drop.innerHTML = `<div class="sload"><i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i>Searching…</div>`;
+  drop.classList.add('show');
+  _uTimer = setTimeout(() => {
+    fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
+      .then(r => r.json()).then(d => renderUsers(d.users || [], drop))
+      .catch(() => renderUsers([], drop));
+  }, 260);
+}
+
+function renderUsers(users, drop) {
+  if (!users.length) { drop.innerHTML = `<div class="sno"><i class="bi bi-person-x"></i> No users found</div>`; return; }
+  drop.innerHTML = users.map(u => `
+    <div class="sitem sitem-pick" data-type="user"
+         data-id="${u.id}"
+         data-firstname="${(u.firstname||'').replace(/"/g,'&quot;')}"
+         data-lastname="${(u.lastname||'').replace(/"/g,'&quot;')}"
+         data-phone="${(u.phone_number||'').replace(/"/g,'&quot;')}"
+         data-address="${(u.address||'').replace(/"/g,'&quot;')}"
+         data-username="${(u.username||'').replace(/"/g,'&quot;')}">
+      <div class="sitem-ico si-user"><i class="bi bi-person-fill"></i></div>
+      <div>
+        <div class="sitem-name">${u.firstname} ${u.lastname}</div>
+        <div class="sitem-sub">${u.phone_number || u.username || '—'}</div>
+      </div>
+    </div>`).join('');
+}
+
+function pickUser(u) {
+  document.getElementById('m_user_id').value   = u.id;
+  document.getElementById('m_firstname').value = u.firstname;
+  document.getElementById('m_lastname').value  = u.lastname;
+  document.getElementById('m_phone').value     = u.phone_number || '';
+  document.getElementById('m_address').value   = u.address || '';
+  document.getElementById('m_search').value    = u.firstname + ' ' + u.lastname;
+  document.getElementById('m_sdrop').classList.remove('show');
+  document.getElementById('m_pill').classList.add('show');
+  document.getElementById('m_pill_name').textContent = u.firstname + ' ' + u.lastname;
+}
+
+function clearMember() {
+  ['m_user_id','m_firstname','m_lastname','m_phone','m_address'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m_search').value = '';
+  document.getElementById('m_sdrop').classList.remove('show');
+  document.getElementById('m_pill').classList.remove('show');
+}
+
+// ── MULTI-BOOK SYSTEM ──────────────────────────────────────
+const _bookState = { m: [], b: [], edit: [] };
+const _bookLimit = { m: 0,  b: 0,  edit: 0 };
+
+function _hasLimit(pfx) { return _bookLimit[pfx] > 0; }
+function _atLimit(pfx)  { return _hasLimit(pfx) && _bookState[pfx].length >= _bookLimit[pfx]; }
+
+let _bTimer;
+function doBookSearch(q, pfx) {
+  clearTimeout(_bTimer);
+  const drop = document.getElementById(`${pfx}_bsdrop`);
+  if (!q.trim()) { drop.classList.remove('show'); return; }
+  drop.innerHTML = `<div class="sload"><i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i>Searching…</div>`;
+  drop.classList.add('show');
+  _bTimer = setTimeout(() => {
+    fetch('/api/books')
+      .then(r => r.json())
+      .then(d => {
+        const ql  = q.toLowerCase();
+        const res = (d.books || []).filter(b =>
+          b.title.toLowerCase().includes(ql) ||
+          b.author.toLowerCase().includes(ql) ||
+          (b.isbn || '').toLowerCase().includes(ql)
+        ).slice(0, 20);
+        renderBooks(res, drop, pfx);
+      })
+      .catch(() => renderBooks([], drop, pfx));
+  }, 260);
+}
+
+function renderBooks(books, drop, pfx) {
+  const selected = _bookState[pfx].map(b => b.id);
+  const blocked  = _atLimit(pfx);
+  if (!books.length) { drop.innerHTML = `<div class="sno"><i class="bi bi-book-x"></i> No books found</div>`; return; }
+  drop.innerHTML = books.map(b => {
+    const already  = selected.includes(b.id);
+    const disabled = already || blocked;
+    return `<div class="sitem ${disabled ? '' : 'sitem-pick green-item'}"
+         data-pfx="${pfx}" data-id="${b.id}"
+         data-title="${(b.title||'').replace(/"/g,'&quot;')}"
+         data-author="${(b.author||'').replace(/"/g,'&quot;')}"
+         data-isbn="${(b.isbn||'').replace(/"/g,'&quot;')}"
+         data-thumb="${(b.thumbnail_url||'').replace(/"/g,'&quot;')}"
+         style="${disabled ? 'opacity:.4;cursor:default;' : ''}">
+      <div class="sitem-ico si-book"><i class="bi bi-book-fill"></i></div>
+      <div style="min-width:0;flex:1;">
+        <div class="sitem-name">${b.title}${already ? ' <span style="font-size:.66rem;opacity:.55;color:var(--accent2);">(added)</span>' : ''}</div>
+        <div class="sitem-sub" style="color:var(--accent2);opacity:.8;">${b.author}${b.isbn ? ' · '+b.isbn : ''}${b.category ? ' · '+b.category : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Delegated click handler
+document.addEventListener('click', e => {
+  const item = e.target.closest('.sitem-pick');
+  if (!item) return;
+  if (item.dataset.type === 'user') {
+    pickUser({ id: parseInt(item.dataset.id), firstname: item.dataset.firstname, lastname: item.dataset.lastname, phone_number: item.dataset.phone, address: item.dataset.address, username: item.dataset.username });
+    return;
+  }
+  const pfx = item.dataset.pfx;
+  if (!pfx) return;
+  addBook({ id: parseInt(item.dataset.id), title: item.dataset.title, author: item.dataset.author, isbn: item.dataset.isbn, thumbnail_url: item.dataset.thumb }, pfx);
+});
+
+function addBook(book, pfx) {
+  if (_atLimit(pfx)) return;
+  if (_bookState[pfx].find(b => b.id === book.id)) return;
+  _bookState[pfx].push({ ...book, qty: 1 });
+  const si = document.getElementById(`${pfx}_bsearch`);
+  if (si) si.value = '';
+  const drop = document.getElementById(`${pfx}_bsdrop`);
+  if (drop) drop.classList.remove('show');
+  renderBookChips(pfx);
+}
+
+function removeBook(idx, pfx) {
+  _bookState[pfx].splice(idx, 1);
+  renderBookChips(pfx);
+}
+
+function updateQty(idx, pfx, val) {
+  const n = Math.max(1, Math.min(99, parseInt(val) || 1));
+  _bookState[pfx][idx].qty = n;
+  syncHiddenField(pfx);
+}
+
+function syncHiddenField(pfx) {
+  const hid = document.getElementById(`${pfx}_book_ids`);
+  if (hid) hid.value = JSON.stringify(_bookState[pfx].map(b => ({ id: b.id, qty: b.qty || 1 })));
+}
+
+function renderBookChips(pfx) {
+  const list    = document.getElementById(`${pfx}_blist`);
+  const empty   = document.getElementById(`${pfx}_bempty`);
+  const limitEl = document.getElementById(`${pfx}_blimit`);
+  const badge   = document.getElementById(`${pfx}_bcount`);
+  const books   = _bookState[pfx];
+  const limited = _hasLimit(pfx);
+  const cap     = _bookLimit[pfx];
+
+  badge.textContent = limited ? `${books.length} / ${cap} books` : `${books.length} book${books.length !== 1 ? 's' : ''}`;
+  if (limitEl) limitEl.classList.toggle('show', limited && books.length >= cap);
+  syncHiddenField(pfx);
+
+  if (!books.length) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = books.map((b, i) => `
+    <div class="book-chip">
+      <div class="bc-num">${i + 1}</div>
+      <div class="bc-thumb">
+        ${b.thumbnail_url ? `<img src="${b.thumbnail_url}" alt="">` : `<i class="bi bi-book"></i>`}
+      </div>
+      <div class="bc-info">
+        <div class="bc-title">${b.title}</div>
+        <div class="bc-author">by ${b.author}</div>
+        ${b.isbn ? `<div class="bc-isbn">ISBN: ${b.isbn}</div>` : ''}
+      </div>
+      <div class="bc-qty-wrap">
+        <span class="bc-qty-label">Qty</span>
+        <input class="bc-qty-input" type="number" min="1" max="99" value="${b.qty || 1}"
+          onchange="updateQty(${i},'${pfx}',this.value)"
+          oninput="updateQty(${i},'${pfx}',this.value)"
+          onclick="this.select()">
+      </div>
+      <button type="button" class="bc-rm" onclick="removeBook(${i},'${pfx}')"><i class="bi bi-x-lg"></i></button>
+    </div>`).join('');
+  list.appendChild(empty);
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', e => {
+  document.querySelectorAll('.sdrop.show').forEach(drop => {
+    const wrap = drop.closest('.sdrop-wrap');
+    if (wrap && !wrap.contains(e.target)) drop.classList.remove('show');
+  });
+});
+
+// ── RENEWAL ────────────────────────────────────────────────
+function toggleRen(pfx, n) {
+  const chk  = document.getElementById(`${pfx}_r${n}c`);
+  const date = document.getElementById(`${pfx}_r${n}d`);
+  const hid  = document.getElementById(`${pfx}_r${n}h`);
+  if (chk.checked) { date.classList.add('on'); date.value = todayISO(); hid.value = '1'; }
+  else             { date.classList.remove('on'); date.value = ''; hid.value = '0'; }
+}
+
+// ── VALID UNTIL ────────────────────────────────────────────
+function autoValid(pfx) {
+  const v   = document.getElementById(`${pfx}_ctype`).value;
+  const inp = document.getElementById(`${pfx}_valid`);
+  if (v === 'city_govt') inp.value = 'Until retirement or separation from service';
+  else if (v === 'regular') {
+    const d = new Date(); d.setFullYear(d.getFullYear() + 1);
+    inp.value = d.toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+  } else inp.value = '';
+}
+
+// ── PHOTO PREVIEW ──────────────────────────────────────────
+function previewPhoto(input, frameId) {
+  const frame = document.getElementById(frameId);
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { frame.innerHTML = `<img src="${e.target.result}" alt="">`; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// ── RESET FORM ─────────────────────────────────────────────
+function resetForm(pfx) {
+  document.getElementById(`form-${pfx}`).reset();
+  if (pfx === 'm') clearMember();
+  _bookState[pfx] = [];
+  renderBookChips(pfx);
+  document.getElementById(`${pfx}_date`).value = todayISO();
+  [1, 2].forEach(n => {
+    document.getElementById(`${pfx}_r${n}d`).classList.remove('on');
+    document.getElementById(`${pfx}_r${n}d`).value = '';
+    document.getElementById(`${pfx}_r${n}h`).value = '0';
+  });
+  document.getElementById(`${pfx}_pframe`).innerHTML = '<i class="bi bi-person-bounding-box"></i>';
+}
+
+// ── TABLE ──────────────────────────────────────────────────
+let _allCards = [], _activeFilter = '';
+
+function loadTable() {
+  fetch('/api/library-cards')
+    .then(r => r.json()).then(d => {
+      _allCards = d.cards || [];
+      renderTable(_allCards);
+      document.getElementById('tbl-load').style.display = 'none';
+    }).catch(() => { document.getElementById('tbl-load').style.display = 'none'; });
+}
+
+function setFilter(f) {
+  _activeFilter = f;
+  document.getElementById('fbtn-all').classList.toggle('on', f === '');
+  document.getElementById('fbtn-mem').classList.toggle('on', f === 'member');
+  document.getElementById('fbtn-bor').classList.toggle('on', f === 'borrower');
+  filterTbl(document.getElementById('tbl-q').value);
+}
+
+function filterTbl(q) {
+  let rows = _activeFilter ? _allCards.filter(c => c.type === _activeFilter) : _allCards;
+  if (q.trim()) {
+    const ql = q.toLowerCase();
+    rows = rows.filter(c =>
+      (c.firstname + ' ' + c.lastname).toLowerCase().includes(ql) ||
+      (c.books || []).some(b => b.title.toLowerCase().includes(ql) || b.isbn.includes(ql))
+    );
+  }
+  renderTable(rows);
+}
+
+function renderTable(cards) {
+  const tbody = document.getElementById('tbl-body');
+  const tbl   = document.getElementById('tbl');
+  const empty = document.getElementById('tbl-empty');
+  document.getElementById('tbl-cnt').textContent = cards.length;
+  if (!cards.length) { tbl.style.display = 'none'; empty.style.display = 'block'; return; }
+  tbl.style.display = 'table'; empty.style.display = 'none';
+  tbody.innerHTML = cards.map(c => {
+    const booksHtml = (c.books || []).length
+      ? `<div class="tbl-books-mini">${c.books.slice(0,3).map(b =>
+          `<div class="tbl-book-row" title="${b.author}">
+            <span style="overflow:hidden;text-overflow:ellipsis;">${b.title}</span>
+            ${(b.quantity && b.quantity > 1) ? `<span class="tbl-book-qty">×${b.quantity}</span>` : ''}
+          </div>`).join('')}${c.books.length > 3 ? `<div class="tbl-book-row" style="color:rgba(255,255,255,.35);">+${c.books.length-3} more</div>` : ''}</div>`
+      : `<span style="font-size:.75rem;color:rgba(255,255,255,.25);">—</span>`;
+    return `<tr>
+      <td>${c.photo_url ? `<img src="${c.photo_url}" class="tbl-photo" alt="">` : `<span class="tbl-photo-ph"><i class="bi bi-person"></i></span>`}</td>
+      <td><div class="tbl-name">${c.firstname} ${c.lastname}</div><div class="tbl-sub">${c.phone_number || '—'}</div></td>
+      <td><span class="type-badge type-${c.type}"><i class="bi ${c.type==='member'?'bi-person-badge-fill':'bi-journal-bookmark-fill'}"></i>${c.type.charAt(0).toUpperCase()+c.type.slice(1)}</span></td>
+      <td>${booksHtml}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.78rem;">${c.date_issued||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.78rem;">${c.date_return||'—'}</td>
+      <td style="font-size:.76rem;color:var(--tl);">${c.card_type==='city_govt'?'LGU':c.card_type==='regular'?'Regular':'—'}</td>
+      <td style="font-size:.74rem;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.valid_until||'—'}</td>
+      <td style="font-size:.76rem;color:var(--tl);">${c.registered_by}</td>
+      <td>
+        <div class="tbl-actions">
+          <button class="btn-icon btn-view" onclick="openView(${c.id})" title="View Details"><i class="bi bi-eye-fill"></i></button>
+          <button class="btn-icon btn-ret" onclick="openReturn(${c.id})" title="Return Book"><i class="bi bi-box-arrow-in-down-left"></i></button>
+          <button class="btn-icon btn-edit" onclick="openEdit(${c.id})" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+          <button class="btn-icon btn-del"  onclick="deleteCard(${c.id})" title="Delete"><i class="bi bi-trash3-fill"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function deleteCard(id) {
+  if (!confirm('Delete this record? This cannot be undone.')) return;
+  fetch(`/api/library-cards/${id}/delete`, { method: 'POST' })
+    .then(r => r.json()).then(d => {
+      if (d.success) { _allCards = _allCards.filter(c => c.id !== id); filterTbl(document.getElementById('tbl-q').value); showToast('Record deleted.','success'); }
+      else showToast(d.error || 'Delete failed.','danger');
+    }).catch(() => showToast('Network error.','danger'));
+}
+
+// ── VIEW DETAILS MODAL ─────────────────────────────────────
+function openView(cardId) {
+  fetch(`/api/library-cards/${cardId}`)
+    .then(r => r.json()).then(card => {
+      const books     = card.books || [];
+      const totalVols = books.reduce((s, b) => s + (b.quantity || 1), 0);
+
+      /* books list */
+      const booksHtml = books.length
+        ? books.map((b, i) => {
+            const qty = b.quantity || 1;
+            return `
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;
+                        background:rgba(72,199,142,.06);border:1px solid rgba(72,199,142,.14);
+                        border-radius:10px;margin-bottom:7px;">
+              <div style="width:26px;height:26px;border-radius:7px;background:rgba(72,199,142,.15);
+                          border:1px solid rgba(72,199,142,.22);display:flex;align-items:center;
+                          justify-content:center;font-size:.72rem;font-weight:700;
+                          color:var(--accent2);flex-shrink:0;">${i + 1}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:.84rem;font-weight:700;color:#fff;white-space:nowrap;
+                            overflow:hidden;text-overflow:ellipsis;">${b.title}</div>
+                <div style="font-size:.72rem;color:var(--tl);margin-top:1px;">by ${b.author}</div>
+                ${b.isbn ? `<div style="font-size:.67rem;font-family:'DM Mono',monospace;
+                            color:rgba(255,255,255,.32);margin-top:2px;">ISBN: ${b.isbn}</div>` : ''}
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;
+                          background:${qty > 1 ? 'rgba(72,199,142,.18)' : 'rgba(72,199,142,.1)'};
+                          border:1px solid ${qty > 1 ? 'rgba(72,199,142,.35)' : 'rgba(72,199,142,.22)'};
+                          border-radius:8px;padding:5px 11px;">
+                <i class="bi bi-stack" style="font-size:.7rem;color:var(--accent2);"></i>
+                <span style="font-size:.82rem;font-weight:700;font-family:'DM Mono',monospace;
+                             color:${qty > 1 ? '#6ddaa8' : 'var(--accent2)'};">×${qty}</span>
+              </div>
+            </div>`;
+          }).join('')
+        : `<div style="font-size:.82rem;color:rgba(255,255,255,.3);font-style:italic;padding:10px 0;">No books recorded.</div>`;
+
+      /* info cell helper */
+      const ic = (icon, label, val, mono = false) => `
+        <div class="view-info-cell">
+          <div class="vic-label"><i class="bi ${icon}"></i>${label}</div>
+          <div class="vic-val${mono ? ' mono' : ''}">${val || '—'}</div>
+        </div>`;
+
+      /* renewal section */
+      const renewalHtml = (card.renewal1_checked || card.renewal2_checked) ? `
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+                    color:rgba(255,255,255,.35);margin:18px 0 10px;padding-bottom:6px;
+                    border-bottom:1px solid rgba(255,255,255,.06);">
+          <i class="bi bi-arrow-repeat me-1"></i>Renewals
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          ${card.renewal1_checked ? ic('bi-1-circle','1st Renewal', card.renewal1_date || '—', true) : ''}
+          ${card.renewal2_checked ? ic('bi-2-circle','2nd Renewal', card.renewal2_date || '—', true) : ''}
+        </div>` : '';
+
+      document.getElementById('viewModalBody').innerHTML = `
+        <!-- type badge + card # + total vols -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px;">
+          <span style="background:${card.type==='member'?'rgba(159,193,225,.12)':'rgba(255,152,0,.11)'};
+                       border:1px solid ${card.type==='member'?'rgba(159,193,225,.22)':'rgba(255,152,0,.22)'};
+                       color:${card.type==='member'?'var(--accent)':'#ffb74d'};
+                       border-radius:20px;padding:3px 12px;font-size:.7rem;font-weight:700;
+                       text-transform:uppercase;letter-spacing:.05em;">
+            <i class="bi ${card.type==='member'?'bi-person-badge-fill':'bi-journal-bookmark-fill'} me-1"></i>
+            ${card.type==='member'?'Member':'Borrower'}
+          </span>
+          <span style="font-size:.74rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.35);">
+            Card #${card.id}
+          </span>
+          ${totalVols > 0 ? `
+          <span style="font-size:.7rem;font-weight:700;background:rgba(72,199,142,.12);
+                       color:var(--accent2);border:1px solid rgba(72,199,142,.22);
+                       border-radius:20px;padding:3px 10px;">
+            <i class="bi bi-stack me-1" style="font-size:.65rem;"></i>
+            ${totalVols} vol${totalVols===1?'':'s'} total
+          </span>` : ''}
+        </div>
+
+        <!-- Photo + name row -->
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.04);
+                    border:1px solid rgba(255,255,255,.07);border-radius:14px;
+                    padding:14px 16px;margin-bottom:18px;">
+          <div style="width:54px;height:68px;border-radius:10px;overflow:hidden;flex-shrink:0;
+                      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:1.6rem;color:rgba(255,255,255,.2);">
+            ${card.photo_url
+              ? `<img src="${card.photo_url}" style="width:100%;height:100%;object-fit:cover;">`
+              : `<i class="bi bi-person-bounding-box"></i>`}
+          </div>
+          <div>
+            <div style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:5px;">
+              ${card.firstname} ${card.lastname}
+            </div>
+            <div style="font-size:.78rem;color:var(--tl);margin-bottom:3px;">
+              <i class="bi bi-telephone-fill me-1" style="opacity:.55;"></i>${card.phone_number || '—'}
+            </div>
+            <div style="font-size:.78rem;color:var(--tl);">
+              <i class="bi bi-geo-alt-fill me-1" style="opacity:.55;"></i>${card.address || '—'}
+            </div>
+          </div>
+        </div>
+
+        <!-- Card info grid -->
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+                    color:rgba(255,255,255,.35);margin-bottom:10px;padding-bottom:6px;
+                    border-bottom:1px solid rgba(255,255,255,.06);">
+          <i class="bi bi-calendar3 me-1"></i>Card Info
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
+          ${ic('bi-calendar-date',  'Date Issued',    card.date_issued, true)}
+          ${ic('bi-calendar-check', 'Date of Return', card.date_return, true)}
+          ${ic('bi-credit-card', 'Card Type',
+            card.card_type==='city_govt' ? 'LGU / City Government' :
+            card.card_type==='regular'   ? 'Regular / Student' : '—')}
+          ${ic('bi-shield-check', 'Valid Until', card.valid_until)}
+        </div>
+
+        ${renewalHtml}
+
+        <!-- Books -->
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+                    color:rgba(255,255,255,.35);margin:18px 0 10px;padding-bottom:6px;
+                    border-bottom:1px solid rgba(255,255,255,.06);">
+          <i class="bi bi-books me-1"></i>Books Borrowed (${books.length})
+        </div>
+        ${booksHtml}
+      `;
+
+      document.getElementById('viewModal').classList.add('show');
+    }).catch(() => showToast('Failed to load record.', 'danger'));
+}
+
+function closeView() {
+  document.getElementById('viewModal').classList.remove('show');
+}
+document.getElementById('viewModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('viewModal')) closeView();
+});
+
+// ── UPDATE MODAL ───────────────────────────────────────────
+function openEdit(cardId) {
+  fetch(`/api/library-cards/${cardId}`)
+    .then(r => r.json()).then(card => {
+      _bookLimit['edit'] = 0;
+      document.getElementById('edit_card_id').value   = card.id;
+      document.getElementById('edit_firstname').value = card.firstname;
+      document.getElementById('edit_lastname').value  = card.lastname;
+      document.getElementById('edit_phone').value     = card.phone_number;
+      document.getElementById('edit_address').value   = card.address;
+      document.getElementById('edit_dret').value      = card.date_return;
+      document.getElementById('edit_ctype').value     = card.card_type;
+      document.getElementById('edit_valid').value     = card.valid_until;
+
+      const r1chk = document.getElementById('edit_r1c');
+      const r2chk = document.getElementById('edit_r2c');
+      r1chk.checked = card.renewal1_checked;
+      r2chk.checked = card.renewal2_checked;
+      const r1d = document.getElementById('edit_r1d');
+      const r2d = document.getElementById('edit_r2d');
+      r1d.value = card.renewal1_date || ''; r1d.classList.toggle('on', card.renewal1_checked);
+      r2d.value = card.renewal2_date || ''; r2d.classList.toggle('on', card.renewal2_checked);
+      document.getElementById('edit_r1h').value = card.renewal1_checked ? '1' : '0';
+      document.getElementById('edit_r2h').value = card.renewal2_checked ? '1' : '0';
+
+      _bookState['edit'] = (card.books || []).map(b => ({
+        id: b.book_id, title: b.title, author: b.author,
+        isbn: b.isbn || '', thumbnail_url: '',
+        qty: b.quantity || 1
+      }));
+      renderBookChips('edit');
+      document.getElementById('updateModal').classList.add('show');
+    }).catch(() => showToast('Failed to load record.','danger'));
+}
+
+function closeModal() {
+  document.getElementById('updateModal').classList.remove('show');
+  _bookState['edit'] = [];
+  renderBookChips('edit');
+}
+
+document.getElementById('updateModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('updateModal')) closeModal();
+});
+
+function saveEdit() {
+  const btn = document.getElementById('edit_save_btn');
+  const id  = document.getElementById('edit_card_id').value;
+  if (!id) return;
+
+  const payload = {
+    firstname:        document.getElementById('edit_firstname').value.trim(),
+    lastname:         document.getElementById('edit_lastname').value.trim(),
+    phone:            document.getElementById('edit_phone').value.trim(),
+    address:          document.getElementById('edit_address').value.trim(),
+    date_return:      document.getElementById('edit_dret').value,
+    card_type:        document.getElementById('edit_ctype').value,
+    valid_until:      document.getElementById('edit_valid').value,
+    renewal1_checked: document.getElementById('edit_r1c').checked,
+    renewal1_date:    document.getElementById('edit_r1d').value,
+    renewal2_checked: document.getElementById('edit_r2c').checked,
+    renewal2_date:    document.getElementById('edit_r2d').value,
+    book_ids:         _bookState['edit'].map(b => ({ id: b.id, qty: b.qty || 1 })),
+  };
+
+  if (!payload.firstname || !payload.lastname) { showToast('Name is required.','danger'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Saving…';
+
+  fetch(`/api/library-cards/${id}/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(r => r.json()).then(d => {
+    if (d.success) { showToast('Record updated!','success'); closeModal(); loadTable(); }
+    else showToast(d.error || 'Update failed.','danger');
+  }).catch(() => showToast('Network error.','danger'))
+    .finally(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-circle"></i>Save Changes'; });
+}
+
+// ── RETURN MODAL ──────────────────────────────────────────────────────────
+let _retCardId = null;
+
+function openReturn(cardId) {
+  _retCardId = cardId;
+  fetch(`/api/library-cards/${cardId}`)
+    .then(r => r.json()).then(card => {
+      const books = card.books || [];
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      const booksTableRows = books.length
+        ? books.map((b, i) => `
+          <tr>
+            <td>
+              <div style="font-weight:700;color:#fff;font-size:.83rem;">${b.title}</div>
+              <div style="font-size:.71rem;color:var(--tl);">by ${b.author}</div>
+              ${b.isbn ? `<div style="font-size:.67rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);">ISBN: ${b.isbn}</div>` : ''}
+            </td>
+            <td style="text-align:center;">
+              <span style="font-size:.78rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--accent2);">×${b.quantity || 1}</span>
+            </td>
+            <td style="text-align:center;">
+              <input class="ret-qty-inp" type="number" min="0" max="${b.quantity || 1}"
+                value="${b.quantity || 1}"
+                id="ret_qty_${i}"
+                title="Qty to return (max ${b.quantity || 1})">
+            </td>
+          </tr>`).join('')
+        : `<tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,.3);padding:18px;font-style:italic;font-size:.82rem;">No books on this card.</td></tr>`;
+
+      document.getElementById('returnModalBody').innerHTML = `
+        <!-- Borrower Info -->
+        <div class="ret-borrower-card">
+          <div class="ret-photo">
+            ${card.photo_url
+              ? `<img src="${card.photo_url}" alt="">`
+              : `<i class="bi bi-person-bounding-box"></i>`}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div class="ret-name">${card.firstname} ${card.lastname}</div>
+            <div class="ret-meta">
+              <span><i class="bi bi-telephone-fill" style="opacity:.5;"></i>${card.phone_number || '—'}</span>
+              <span><i class="bi bi-geo-alt-fill" style="opacity:.5;"></i>${card.address || '—'}</span>
+            </div>
+            <div class="ret-badges">
+              <span class="ret-badge ${card.type === 'member' ? 'type-m' : 'type-b'}">
+                <i class="bi ${card.type === 'member' ? 'bi-person-badge-fill' : 'bi-journal-bookmark-fill'}"></i>
+                ${card.type === 'member' ? 'Member' : 'Borrower'}
+              </span>
+              <span class="ret-badge date">
+                <i class="bi bi-calendar-date"></i>Issued: ${card.date_issued || '—'}
+              </span>
+              <span class="ret-badge date" style="background:rgba(255,99,99,.1);color:#ff9999;border-color:rgba(255,99,99,.2);">
+                <i class="bi bi-calendar-x"></i>Due: ${card.date_return || '—'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Return Date -->
+        <div class="fg" style="margin-bottom:16px;">
+          <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tl);display:block;margin-bottom:5px;">
+            <i class="bi bi-calendar-check me-1"></i>Date Returned
+          </label>
+          <input type="date" class="ret-return-date" id="ret_date" value="${todayStr}">
+        </div>
+
+        <!-- Books Table -->
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+                    color:rgba(255,255,255,.35);margin-bottom:10px;padding-bottom:6px;
+                    border-bottom:1px solid rgba(255,255,255,.06);">
+          <i class="bi bi-books me-1"></i>Books to Return (${books.length})
+        </div>
+        <div style="overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.06);overflow:hidden;">
+          <table class="ret-book-table">
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th style="text-align:center;width:80px;">Borrowed</th>
+                <th style="text-align:center;width:90px;">Returning</th>
+              </tr>
+            </thead>
+            <tbody>${booksTableRows}</tbody>
+          </table>
+        </div>
+        <div style="font-size:.73rem;color:rgba(255,255,255,.35);margin-top:8px;">
+          <i class="bi bi-info-circle me-1"></i>Set quantity to 0 to skip returning a particular book.
+        </div>
+      `;
+
+      document.getElementById('returnModal').classList.add('show');
+    }).catch(() => showToast('Failed to load card.', 'danger'));
+}
+
+function closeReturn() {
+  document.getElementById('returnModal').classList.remove('show');
+  _retCardId = null;
+}
+document.getElementById('returnModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('returnModal')) closeReturn();
+});
+
+function confirmReturn() {
+  if (!_retCardId) return;
+  const btn       = document.getElementById('ret_confirm_btn');
+  const retDate   = document.getElementById('ret_date').value;
+  if (!retDate) { showToast('Please select a return date.', 'danger'); return; }
+
+  // Collect book quantities
+  const inputs = document.querySelectorAll('[id^="ret_qty_"]');
+  const items  = [];
+  inputs.forEach((inp, i) => {
+    const qty = parseInt(inp.value) || 0;
+    if (qty > 0) items.push({ book_index: i, qty_returned: qty });
+  });
+  if (!items.length) { showToast('No books selected for return.', 'danger'); return; }
+
+  // We need book_ids — re-fetch from DOM table
+  const rows = document.querySelectorAll('.ret-book-table tbody tr');
+  const books_data = [];
+  inputs.forEach((inp, i) => {
+    const qty = parseInt(inp.value) || 0;
+    if (qty > 0) books_data.push({ row_index: i, qty_returned: qty });
+  });
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Processing…';
+
+  fetch(`/api/library-cards/${_retCardId}/return`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ return_date: retDate, items: books_data })
+  }).then(r => r.json()).then(d => {
+    if (d.success) {
+      showToast('Books returned successfully!', 'success');
+      closeReturn();
+      loadTable();
+      loadReturnHistory();
+      loadReturnHistory();
+    } else showToast(d.error || 'Return failed.', 'danger');
+  }).catch(() => showToast('Network error.', 'danger'))
+    .finally(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-circle"></i>Confirm Return'; });
+}
+
+// ── RETURN HISTORY TABLE ──────────────────────────────────────────────────
+let _allReturns = [];
+
+function loadReturnHistory() {
+  fetch('/api/library-cards/returns')
+    .then(r => r.json()).then(d => {
+      _allReturns = d.returns || [];
+      renderReturnTable(_allReturns);
+      document.getElementById('ret-tbl-load').style.display = 'none';
+    }).catch(() => { document.getElementById('ret-tbl-load').style.display = 'none'; });
+}
+
+function filterRetTbl(q) {
+  if (!q.trim()) { renderReturnTable(_allReturns); return; }
+  const ql = q.toLowerCase();
+  renderReturnTable(_allReturns.filter(r =>
+    (r.firstname + ' ' + r.lastname).toLowerCase().includes(ql) ||
+    (r.books || []).some(b => b.title.toLowerCase().includes(ql))
+  ));
+}
+
+function renderReturnTable(returns) {
+  const tbody = document.getElementById('ret-tbl-body');
+  const tbl   = document.getElementById('ret-tbl');
+  const empty = document.getElementById('ret-tbl-empty');
+  document.getElementById('ret-tbl-cnt').textContent = returns.length;
+  if (!returns.length) { tbl.style.display = 'none'; empty.style.display = 'block'; return; }
+  tbl.style.display = 'table'; empty.style.display = 'none';
+  tbody.innerHTML = returns.map(r => {
+    const booksHtml = (r.books || []).length
+      ? `<div class="ret-books-mini">${r.books.slice(0,3).map(b =>
+          `<div class="ret-book-mini-row" title="${b.author}">
+            <span style="overflow:hidden;text-overflow:ellipsis;">${b.title}</span>
+            <span class="ret-qty-pill">×${b.qty_returned}</span>
+          </div>`).join('')}${r.books.length > 3 ? `<div class="ret-book-mini-row" style="color:rgba(255,255,255,.3);">+${r.books.length-3} more</div>` : ''}</div>`
+      : `<span style="font-size:.75rem;color:rgba(255,255,255,.25);">—</span>`;
+    return `<tr>
+      <td>
+        <div style="font-weight:700;color:#fff;">${r.firstname} ${r.lastname}</div>
+        <div style="font-size:.72rem;color:var(--tl);">${r.phone_number || '—'}</div>
+      </td>
+      <td>
+        <span class="type-badge ${r.card_type === 'member' ? 'type-member' : 'type-borrower'}">
+          <i class="bi ${r.card_type === 'member' ? 'bi-person-badge-fill' : 'bi-journal-bookmark-fill'}"></i>
+          ${r.card_type === 'member' ? 'Member' : 'Borrower'}
+        </span>
+      </td>
+      <td>${booksHtml}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.78rem;">${r.date_issued || '—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--accent2);">${r.return_date || '—'}</td>
+      <td style="font-size:.76rem;color:var(--tl);">${r.processed_by || '—'}</td>
+      <td><span class="ret-status-badge"><i class="bi bi-check-circle-fill me-1" style="font-size:.65rem;"></i>Returned</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const wrap = document.getElementById('toastWrap');
+  const el   = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.innerHTML = `${type==='success'?'✅':type==='danger'?'❌':'ℹ️'} ${msg}`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Browse Books | Iloilo Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+      --gold:    #f5c842;
+      --gold-glow: rgba(245,200,66,0.35);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%); background-attachment: fixed; color: #fff; min-height: 100vh; overflow-x: hidden; }
+
+    /* ── PAGE ── */
+    .page-wrap { padding: 80px 40px 60px; max-width: 1500px; margin: 0 auto; }
+    .page-header { text-align:center; padding:32px 0 28px; }
+    .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; margin-bottom:6px; }
+    .page-header h1 span { color:var(--accent); }
+    .page-header p { color:var(--tl); font-size:.88rem; }
+
+    /* ── STORAGE BANNER ── */
+    .storage-alert-banner { border-radius:12px; padding:11px 16px; display:none; align-items:center; gap:10px; font-size:.82rem; margin-bottom:14px; animation:fadeInDown .3s ease; }
+    .storage-alert-banner.show { display:flex; }
+    .storage-alert-banner.warn-type { background:rgba(255,152,0,.1); border:1px solid rgba(255,152,0,.35); }
+    .storage-alert-banner.full-type { background:rgba(255,99,99,.1); border:1px solid rgba(255,99,99,.35); }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── FAVORITES STRIP ── */
+    .favorites-strip { background:rgba(245,200,66,.05); border:1px solid rgba(245,200,66,.2); border-radius:16px; padding:16px 20px 18px; margin-bottom:24px; backdrop-filter:blur(8px); }
+    .fav-header { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+    .fav-header i { color:var(--gold); font-size:1rem; }
+    .fav-header .fav-label { font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); }
+    .fav-header .fav-count { background:rgba(245,200,66,.15); border:1px solid rgba(245,200,66,.3); color:var(--gold); font-size:.68rem; font-weight:700; padding:2px 10px; border-radius:20px; margin-left:auto; }
+    .fav-slots { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+    .fav-slot { border-radius:12px; border:1.5px dashed rgba(245,200,66,.2); background:rgba(255,255,255,.03); min-height:72px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; transition:.25s; overflow:hidden; }
+    .fav-slot.empty .slot-placeholder { display:flex; flex-direction:column; align-items:center; gap:5px; }
+    .fav-slot.empty .slot-placeholder i { font-size:1.3rem; color:rgba(245,200,66,.2); }
+    .fav-slot.empty .slot-placeholder span { font-size:.6rem; color:rgba(255,255,255,.2); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .fav-slot.filled { border-style:solid; border-color:rgba(245,200,66,.35); background:rgba(245,200,66,.07); cursor:pointer; padding:8px 10px; }
+    .fav-slot.filled:hover { background:rgba(245,200,66,.14); border-color:var(--gold); transform:translateY(-2px); box-shadow:0 6px 16px rgba(245,200,66,.15); }
+    .slot-bookmark-icon { color:var(--gold); font-size:.9rem; margin-bottom:4px; }
+    .slot-title { font-size:.68rem; font-weight:700; color:#fff; text-align:center; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; width:100%; }
+    .slot-author { font-size:.58rem; color:rgba(255,255,255,.4); text-align:center; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; }
+    .slot-remove { position:absolute; top:5px; right:5px; background:rgba(0,0,0,.35); border:none; color:rgba(255,255,255,.5); width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.6rem; cursor:pointer; transition:.15s; opacity:0; }
+    .fav-slot.filled:hover .slot-remove { opacity:1; }
+    .slot-remove:hover { background:rgba(255,80,80,.5); color:#fff; }
+    @keyframes slotFill { 0%{transform:scale(.7);opacity:0} 60%{transform:scale(1.06);opacity:1} 100%{transform:scale(1);opacity:1} }
+    .fav-slot.fill-anim { animation:slotFill .3s ease forwards; }
+    @media (max-width:480px) { .fav-slots { gap:4px; } .fav-slot { min-height:54px; padding:6px 4px; } }
+
+    /* ── TOOLBAR ── */
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:8px; }
+    .search-box { position:relative; flex:1; min-width:240px; max-width:480px; }
+    .search-box i.si { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; z-index:1; }
+    .search-input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 14px 9px 38px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .search-input::placeholder { color:rgba(255,255,255,.4); }
+    .search-input:focus { border-color:var(--accent); background:rgba(255,255,255,.11); }
+    .search-input.dropdown-open { border-radius:10px 10px 0 0; }
+    .search-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:#1c2c3a; border:1px solid rgba(159,193,225,.25); border-top:none; border-radius:0 0 14px 14px; z-index:600; box-shadow:0 14px 40px rgba(0,0,0,.4); overflow:hidden; max-height:320px; overflow-y:auto; }
+    .search-dropdown.show { display:block; }
+    .search-dropdown::-webkit-scrollbar { width:3px; }
+    .search-dropdown::-webkit-scrollbar-thumb { background:rgba(159,193,225,.2); border-radius:3px; }
+    .dd-section-header { display:flex; align-items:center; justify-content:space-between; padding:8px 14px 5px; font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); border-bottom:1px solid rgba(255,255,255,.05); }
+    .dd-clear-all { background:none; border:none; color:rgba(255,100,100,.5); font-size:.65rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; padding:2px 6px; border-radius:5px; transition:.15s; }
+    .dd-clear-all:hover { color:#ff8080; background:rgba(255,100,100,.08); }
+    .history-item { display:flex; align-items:center; gap:10px; padding:9px 14px; cursor:pointer; transition:.15s; border-bottom:1px solid rgba(255,255,255,.04); }
+    .history-item:hover { background:rgba(159,193,225,.08); }
+    .history-item:last-child { border-bottom:none; }
+    .hist-icon { width:28px; height:28px; background:rgba(255,255,255,.06); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:.75rem; color:rgba(255,255,255,.35); flex-shrink:0; }
+    .hist-text { flex:1; font-size:.84rem; color:rgba(255,255,255,.7); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hist-remove { background:none; border:none; color:rgba(255,255,255,.2); font-size:.75rem; cursor:pointer; padding:3px 5px; border-radius:5px; transition:.15s; flex-shrink:0; }
+    .hist-remove:hover { color:var(--danger); background:rgba(255,99,99,.1); }
+    .suggestion-item { display:flex; align-items:center; gap:12px; padding:9px 14px; cursor:pointer; transition:.15s; border-bottom:1px solid rgba(255,255,255,.04); }
+    .suggestion-item:hover { background:rgba(159,193,225,.1); }
+    .suggestion-item:last-child { border-bottom:none; }
+    .sug-icon { width:30px; height:30px; background:rgba(159,193,225,.12); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.85rem; color:var(--accent); flex-shrink:0; }
+    .sug-title { font-size:.85rem; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sug-author { font-size:.72rem; color:rgba(255,255,255,.45); }
+    .dd-empty { padding:14px 16px; text-align:center; color:rgba(255,255,255,.35); font-size:.82rem; }
+    .dd-storage-full { padding:20px 16px; text-align:center; }
+    .dd-storage-full .sf-icon { width:46px; height:46px; border-radius:12px; background:rgba(255,99,99,.12); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:1.4rem; color:var(--danger); }
+    .dd-storage-full h4 { font-size:.88rem; font-weight:700; color:#fff; margin-bottom:6px; }
+    .dd-storage-full p { font-size:.76rem; color:rgba(255,255,255,.45); line-height:1.5; margin-bottom:14px; }
+    .dd-storage-full a { display:inline-flex; align-items:center; gap:6px; background:rgba(255,99,99,.15); border:1px solid rgba(255,99,99,.3); color:var(--danger); border-radius:9px; padding:7px 16px; font-size:.78rem; font-weight:700; text-decoration:none; transition:.18s; }
+    .dd-storage-full a:hover { background:rgba(255,99,99,.25); color:#fff; }
+    .results-lbl { font-size:.82rem; color:var(--tl); margin-left:auto; white-space:nowrap; }
+
+    /* ── FILTER BUTTON ── */
+    .filter-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(159,193,225,.25); background:rgba(159,193,225,.08); color:var(--accent); white-space:nowrap; position:relative; }
+    .filter-btn:hover { background:rgba(159,193,225,.16); border-color:rgba(159,193,225,.4); }
+    .filter-active-dot { position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; background:var(--accent2); border:2px solid #1e2d3d; display:none; }
+    .filter-active-dot.show { display:block; }
+    .filter-clear-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 13px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:rgba(255,255,255,.65); }
+    .filter-clear-btn:hover { background:rgba(255,255,255,.12); color:#fff; }
+
+    /* Active filter chip strip */
+    #activeFilterChips { display:none; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+    #activeFilterChips .fac { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:.74rem; font-weight:600; background:rgba(159,193,225,.1); color:var(--accent); border:1px solid rgba(159,193,225,.22); cursor:pointer; transition:.15s; }
+    #activeFilterChips .fac:hover { background:rgba(159,193,225,.2); }
+    #activeFilterChips .fac i { font-size:.65rem; opacity:.6; }
+
+    /* ── BOOK CARDS ── */
+    .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:20px; margin-bottom:32px; }
+    .book-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:0; display:flex; flex-direction:column; position:relative; overflow:hidden; transition:.25s; backdrop-filter:blur(8px); }
+    .book-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),transparent); opacity:0; transition:.25s; z-index:2; }
+    .book-card:hover { background:var(--card-b); transform:translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,.3); }
+    .book-card:hover::before { opacity:1; }
+    .ribbon-new { position:absolute; top:14px; right:-22px; background:var(--accent); color:#000; font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3px 28px; transform:rotate(45deg); z-index:3; }
+    .book-cover { width:100%; aspect-ratio:3/4; position:relative; overflow:hidden; border-radius:0; flex-shrink:0; }
+    .book-cover-img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
+    .book-card:hover .book-cover-img { transform:scale(1.05); }
+    .book-cover-fallback { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .book-cover-icon { font-size:2.8rem; color:rgba(159,193,225,.4); }
+    .book-card:nth-child(6n+1) .book-cover-fallback { background:linear-gradient(135deg,rgba(159,193,225,.25),rgba(47,63,77,.6)); }
+    .book-card:nth-child(6n+2) .book-cover-fallback { background:linear-gradient(135deg,rgba(105,219,124,.2),rgba(47,77,58,.5)); }
+    .book-card:nth-child(6n+3) .book-cover-fallback { background:linear-gradient(135deg,rgba(255,169,77,.2),rgba(77,58,30,.5)); }
+    .book-card:nth-child(6n+4) .book-cover-fallback { background:linear-gradient(135deg,rgba(197,139,227,.2),rgba(63,47,77,.5)); }
+    .book-card:nth-child(6n+5) .book-cover-fallback { background:linear-gradient(135deg,rgba(255,107,107,.2),rgba(77,47,47,.5)); }
+    .book-card:nth-child(6n+6) .book-cover-fallback { background:linear-gradient(135deg,rgba(77,192,192,.2),rgba(30,63,63,.5)); }
+    .book-cover-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(20,30,40,.85) 0%,transparent 55%); pointer-events:none; }
+    .book-category-tag { position:absolute; bottom:8px; left:8px; background:rgba(0,0,0,.55); color:rgba(255,255,255,.75); font-size:.6rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:20px; backdrop-filter:blur(4px); }
+    .btn-bookmark { position:absolute; top:10px; left:10px; z-index:10; background:rgba(0,0,0,.45); border:none; border-radius:8px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.25s; backdrop-filter:blur(4px); }
+    .btn-bookmark i { font-size:.95rem; color:rgba(255,255,255,.65); transition:.25s; pointer-events:none; }
+    .btn-bookmark:hover { background:rgba(245,200,66,.25); transform:scale(1.1); }
+    .btn-bookmark:hover i { color:var(--gold); }
+    .btn-bookmark.bookmarked { background:rgba(245,200,66,.25); box-shadow:0 0 10px var(--gold-glow); }
+    .btn-bookmark.bookmarked i { color:var(--gold); text-shadow:0 0 8px var(--gold-glow); }
+    @keyframes bookmarkPop { 0%{transform:scale(1)} 40%{transform:scale(1.35)} 70%{transform:scale(.9)} 100%{transform:scale(1)} }
+    .btn-bookmark.pop { animation:bookmarkPop .35s ease forwards; }
+    .book-card-body { padding:14px 16px 16px; display:flex; flex-direction:column; flex:1; }
+    .book-title { font-size:.88rem; font-weight:700; color:#fff; margin-bottom:4px; line-height:1.35; display:-webkit-box; line-clamp:2; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .book-author { font-size:.75rem; color:var(--tl); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .book-meta { font-size:.7rem; color:rgba(255,255,255,.35); margin-bottom:14px; }
+    .book-actions { display:flex; gap:7px; margin-top:auto; }
+    .btn-details { flex:1; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .btn-details:hover { background:rgba(159,193,225,.22); border-color:var(--accent); }
+    .btn-borrow { flex:1; background:var(--accent); border:none; color:#0d1a24; border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .btn-borrow:hover { background:#b8d4ec; transform:translateY(-1px); }
+    .btn-borrow-disabled { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.25); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:600; cursor:not-allowed; display:flex; align-items:center; justify-content:center; gap:5px; }
+
+    /* ── SKELETON ── */
+    .skeleton-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:20px; margin-bottom:32px; }
+    .skeleton-card { background:var(--card); border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.06); }
+    .skel { background:rgba(255,255,255,.08); border-radius:8px; animation:shimmer 1.5s ease-in-out infinite; }
+    .skel-cover { width:100%; aspect-ratio:3/4; border-radius:0; }
+    .skel-body { padding:14px 16px; }
+    @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+    /* ── EMPTY ── */
+    .empty-state { text-align:center; padding:80px 20px; display:none; }
+    .empty-state.show { display:block; }
+    .empty-state i { font-size:3.5rem; color:rgba(255,255,255,.2); display:block; margin-bottom:20px; }
+    .empty-state p { color:rgba(255,255,255,.4); font-size:.92rem; }
+
+    /* ── PAGINATION ── */
+    .pag-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:14px 0 40px; }
+    .pag-info { font-size:.8rem; color:var(--tl); }
+    .pag-btns { display:flex; gap:5px; }
+    .pag-btn { width:32px; height:32px; border-radius:7px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#fff; font-size:.8rem; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.18s; font-family:'DM Sans',sans-serif; }
+    .pag-btn:hover:not(:disabled):not(.active) { background:rgba(255,255,255,.12); border-color:var(--accent); }
+    .pag-btn.active { background:var(--accent); color:#0d1a24; font-weight:700; border-color:var(--accent); }
+    .pag-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+    /* ── TOAST ── */
+    .fav-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:#1e2d3d; border:1px solid rgba(255,100,100,.35); border-radius:14px; padding:14px 20px; display:flex; align-items:center; gap:12px; z-index:9999; box-shadow:0 8px 32px rgba(0,0,0,.4); opacity:0; pointer-events:none; transition:opacity .3s,transform .3s; max-width:340px; width:90%; }
+    .fav-toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+    .toast-icon { width:34px; height:34px; background:rgba(255,100,100,.12); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; color:#ff8080; }
+    .toast-body { flex:1; }
+    .toast-title { font-size:.82rem; font-weight:700; color:#fff; margin-bottom:2px; }
+    .toast-msg { font-size:.72rem; color:rgba(255,255,255,.5); }
+    .toast-close { background:none; border:none; color:rgba(255,255,255,.35); font-size:1rem; cursor:pointer; padding:0; transition:.15s; }
+    .toast-close:hover { color:#fff; }
+
+    /* ── FILTER MODAL ── */
+    #filterModal { position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(8px); z-index:2500; display:flex; align-items:center; justify-content:center; padding:16px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    #filterModal.open { opacity:1; pointer-events:all; }
+    .filter-modal-box { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.2); border-radius:20px; width:100%; max-width:640px; height:calc(100dvh - 32px); max-height:580px; display:flex; flex-direction:column; box-shadow:0 28px 70px rgba(0,0,0,.6); transform:translateY(18px) scale(.98); transition:transform .28s cubic-bezier(.22,1,.36,1); overflow:hidden; }
+    #filterModal.open .filter-modal-box { transform:translateY(0) scale(1); }
+    @media (max-width:480px) { #filterModal { padding:0; align-items:flex-end; } .filter-modal-box { border-radius:20px 20px 0 0; max-height:90dvh; height:auto; } }
+    .filter-modal-head { padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .fm-head-left { display:flex; align-items:center; gap:11px; }
+    .fm-head-icon { width:36px; height:36px; border-radius:11px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.22); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:.95rem; flex-shrink:0; }
+    .fm-title { font-size:.95rem; font-weight:700; color:#fff; }
+    .fm-sub   { font-size:.72rem; color:rgba(255,255,255,.38); margin-top:1px; }
+    .fm-close { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:rgba(255,255,255,.5); font-size:1rem; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.18s; flex-shrink:0; }
+    .fm-close:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .fm-rail-wrap { display:grid; grid-template-columns:130px 1fr; flex:1; min-height:0; overflow:hidden; }
+    @media (max-width:400px) { .fm-rail-wrap { grid-template-columns:96px 1fr; } }
+    .fm-rail-nav { background:rgba(0,0,0,.22); border-right:1px solid rgba(255,255,255,.06); padding:6px 0; overflow-y:auto; }
+    .fm-rail-nav::-webkit-scrollbar { width:3px; }
+    .fm-rail-nav::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:3px; }
+    .fm-rail-item { padding:9px 12px; font-size:.78rem; color:rgba(255,255,255,.42); cursor:pointer; display:flex; align-items:center; gap:7px; border-left:2px solid transparent; transition:.15s; user-select:none; }
+    .fm-rail-item i { font-size:.75rem; flex-shrink:0; opacity:.7; }
+    .fm-rail-item:hover { color:rgba(255,255,255,.75); background:rgba(255,255,255,.03); }
+    .fm-rail-item.active { color:var(--accent); background:rgba(159,193,225,.07); border-left-color:var(--accent); }
+    .fm-rail-item.active i { opacity:1; }
+    .fm-rail-badge { margin-left:auto; font-size:.62rem; font-weight:700; padding:1px 5px; border-radius:20px; background:rgba(72,199,142,.18); color:var(--accent2); border:1px solid rgba(72,199,142,.28); flex-shrink:0; }
+    @media (max-width:400px) { .fm-rail-item { padding:9px 8px; gap:0; } .fm-rail-item span { display:none; } .fm-rail-item i { opacity:1; } }
+    .fm-rail-content { padding:16px; overflow-y:auto; }
+    .fm-rail-content::-webkit-scrollbar { width:4px; }
+    .fm-rail-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:4px; }
+    .fm-pane { display:none; animation:fmPaneIn .2s ease; }
+    .fm-pane.active { display:block; }
+    @keyframes fmPaneIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:none} }
+    .fm-pane-label { font-size:.68rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .fm-pane-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+    .fm-pane-hint { font-size:.62rem; font-weight:600; letter-spacing:.05em; color:rgba(255,255,255,.22); text-transform:lowercase; font-style:italic; }
+    .fm-search-wrap { position:relative; margin-bottom:10px; }
+    .fm-search-wrap i { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.3); font-size:.8rem; pointer-events:none; }
+    .fm-search-inp { width:100%; padding:7px 10px 7px 28px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:9px; color:#fff; font-size:.82rem; font-family:'DM Sans',sans-serif; outline:none; transition:.15s; }
+    .fm-search-inp:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.09); }
+    .fm-search-inp::placeholder { color:rgba(255,255,255,.26); }
+    .fm-tag-cloud { display:flex; flex-wrap:wrap; gap:6px; }
+    .fm-tc { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; font-size:.78rem; cursor:pointer; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05); color:rgba(255,255,255,.48); transition:.15s; user-select:none; }
+    .fm-tc:hover { border-color:rgba(255,255,255,.2); color:#fff; background:rgba(255,255,255,.08); }
+    .fm-tc.on { background:rgba(159,193,225,.14); color:var(--accent); border-color:rgba(159,193,225,.38); }
+    .fm-tc.sz-lg { font-size:.83rem; padding:6px 12px; }
+    .fm-tc.sz-sm { font-size:.72rem; padding:4px 8px; }
+    .fm-tc-count { font-size:.66rem; font-weight:700; opacity:.55; background:rgba(255,255,255,.08); border-radius:20px; padding:1px 5px; min-width:20px; text-align:center; }
+    .fm-tc.on .fm-tc-count { opacity:.85; background:rgba(255,255,255,.12); }
+    .fm-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; cursor:pointer; transition:.15s; gap:8px; }
+    .fm-toggle-row:hover { background:rgba(255,255,255,.07); }
+    .fm-toggle-row.on { background:rgba(159,193,225,.07); border-color:rgba(159,193,225,.3); }
+    .fm-toggle-label { font-size:.82rem; color:rgba(255,255,255,.6); font-weight:500; }
+    .fm-toggle-sub   { font-size:.7rem; color:rgba(255,255,255,.3); margin-top:1px; }
+    .fm-borrow-count { font-size:.7rem; font-weight:700; color:rgba(255,255,255,.3); background:rgba(255,255,255,.07); border-radius:20px; padding:1px 7px; white-space:nowrap; }
+    .fm-date-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .fm-date-lbl  { font-size:.72rem; color:rgba(255,255,255,.35); margin-bottom:4px; }
+    .fm-date-inp  { width:100%; padding:8px 10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08); border-radius:9px; color:#fff; font-size:.82rem; font-family:'DM Sans',sans-serif; outline:none; transition:.15s; }
+    .fm-date-inp:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.10); }
+    .fm-shortcut-row { display:flex; flex-wrap:wrap; gap:5px; }
+    .fm-shortcut { display:inline-flex; align-items:center; padding:5px 10px; border-radius:8px; font-size:.76rem; cursor:pointer; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05); color:rgba(255,255,255,.45); transition:.15s; user-select:none; }
+    .fm-shortcut:hover { border-color:rgba(255,255,255,.2); color:#fff; }
+    .fm-shortcut.on { background:rgba(159,193,225,.13); color:var(--accent); border-color:rgba(159,193,225,.35); }
+    .fm-chip-bar { display:flex; flex-wrap:wrap; gap:5px; padding:8px 20px; border-top:1px solid rgba(255,255,255,.06); min-height:40px; align-items:center; background:rgba(0,0,0,.15); flex-shrink:0; }
+    .fm-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:.72rem; background:rgba(159,193,225,.1); color:var(--accent); border:1px solid rgba(159,193,225,.22); }
+    .fm-chip-x { opacity:.55; cursor:pointer; margin-left:2px; font-size:.7rem; }
+    .fm-chip-x:hover { opacity:1; }
+    .fm-no-active { font-size:.76rem; color:rgba(255,255,255,.22); font-style:italic; }
+    .filter-modal-foot { padding:12px 20px; border-top:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; flex-wrap:wrap; }
+    .fm-match-count { font-size:.78rem; color:rgba(255,255,255,.4); }
+    .fm-match-count strong { color:var(--accent2); font-weight:700; }
+    .fm-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#fff; }
+    .fm-btn:hover { background:rgba(255,255,255,.12); }
+    .fm-btn.primary { background:var(--accent); color:#0d1a24; border-color:transparent; }
+    .fm-btn.primary:hover { background:#b8d4ec; }
+
+    /* toggle switch (reused inside filter modal) */
+    .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; inset:0; background:rgba(255,255,255,.12); border-radius:24px; transition:.3s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+    .toggle-switch input:checked + .toggle-slider { background:var(--accent2); }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
+
+    /* ══════════════════════════════════
+       BOOK DETAIL MODAL — TABBED
+    ══════════════════════════════════ */
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(8px); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .3s; }
+    .overlay.open { opacity:1; pointer-events:all; }
+    .m-box { background:#18273a; border:1px solid rgba(159,193,225,.15); border-radius:22px; width:100%; max-width:700px; height:90vh; max-height:700px; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04); transform:translateY(22px) scale(.97); transition:transform .3s cubic-bezier(.16,.84,.44,1),opacity .3s; display:flex; flex-direction:column; }
+    .overlay.open .m-box { transform:translateY(0) scale(1); }
+    .modal-hero { position:relative; height:175px; flex-shrink:0; overflow:hidden; }
+    .modal-hero-bg { position:absolute; inset:-20px; background-size:cover; background-position:center; filter:blur(28px) brightness(.45) saturate(1.4); transform:scale(1.1); }
+    .modal-hero-gradient { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(24,39,58,.2) 0%,rgba(24,39,58,.97) 100%); }
+    .modal-hero-content { position:relative; z-index:2; display:flex; align-items:flex-end; padding:14px 20px 16px; height:100%; gap:16px; }
+    .modal-cover-wrap { width:80px; height:112px; flex-shrink:0; border-radius:10px; overflow:hidden; border:2px solid rgba(255,255,255,.18); box-shadow:0 8px 24px rgba(0,0,0,.5); background:linear-gradient(135deg,rgba(159,193,225,.2),rgba(47,63,77,.5)); display:flex; align-items:center; justify-content:center; }
+    .modal-cover-img { width:100%; height:100%; object-fit:cover; display:block; }
+    .modal-cover-icon { font-size:2rem; color:rgba(159,193,225,.45); }
+    .modal-hero-text { flex:1; min-width:0; }
+    .modal-hero-text h2 { font-size:1.05rem; font-weight:700; color:#fff; line-height:1.35; margin-bottom:2px; display:-webkit-box; line-clamp:2; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .modal-hero-subtitle { font-size:.73rem; color:rgba(255,255,255,.45); margin-bottom:4px; font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .modal-hero-author { font-size:.8rem; color:var(--accent); font-weight:600; margin-bottom:7px; }
+    .modal-hero-pills { display:flex; flex-wrap:wrap; gap:4px; }
+    .modal-pill { font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:20px; }
+    .modal-pill.cat   { background:rgba(159,193,225,.18); color:var(--accent); border:1px solid rgba(159,193,225,.3); }
+    .modal-pill.cls   { background:rgba(72,199,142,.14);  color:var(--accent2); border:1px solid rgba(72,199,142,.3); }
+    .modal-pill.borrow-yes { background:rgba(72,199,142,.15); color:#48c78e; border:1px solid rgba(72,199,142,.3); }
+    .modal-pill.borrow-no  { background:rgba(255,99,99,.1);   color:#ff8080; border:1px solid rgba(255,99,99,.25); }
+    .m-close-btn { position:absolute; top:14px; right:14px; z-index:10; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.65); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.9rem; cursor:pointer; transition:.18s; backdrop-filter:blur(4px); }
+    .m-close-btn:hover { background:rgba(255,255,255,.15); color:#fff; }
+    .modal-tabs { display:flex; border-bottom:1px solid rgba(255,255,255,.07); background:rgba(0,0,0,.15); flex-shrink:0; }
+    .modal-tab-btn { flex:1; padding:11px 8px; background:none; border:none; border-bottom:2px solid transparent; color:rgba(255,255,255,.4); font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:600; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; gap:6px; letter-spacing:.02em; margin-bottom:-1px; }
+    .modal-tab-btn i { font-size:.82rem; }
+    .modal-tab-btn:hover { color:rgba(255,255,255,.75); background:rgba(255,255,255,.04); }
+    .modal-tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); background:rgba(159,193,225,.05); }
+    .modal-tab-panels { flex:1; overflow:hidden; position:relative; min-height:0; }
+    .modal-tab-panel { display:none; height:100%; overflow-y:auto; padding:18px 22px 20px; }
+    .modal-tab-panel.active { display:block; }
+    .modal-tab-panel::-webkit-scrollbar { width:4px; }
+    .modal-tab-panel::-webkit-scrollbar-thumb { background:rgba(159,193,225,.2); border-radius:4px; }
+    .overview-status-row { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:12px 16px; margin-bottom:14px; }
+    .status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .status-dot.available   { background:var(--accent2); box-shadow:0 0 6px rgba(72,199,142,.5); }
+    .status-dot.unavailable { background:var(--danger);  box-shadow:0 0 6px rgba(255,99,99,.4); }
+    .status-label { font-size:.85rem; font-weight:600; color:#fff; }
+    .status-sub   { font-size:.72rem; color:rgba(255,255,255,.4); margin-left:auto; }
+    .modal-description { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px 16px; }
+    .modal-description-label { font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+    .modal-description-label i { color:var(--accent); font-size:.72rem; }
+    .modal-description-text { font-size:.84rem; color:rgba(255,255,255,.65); line-height:1.7; }
+    .no-desc { font-size:.84rem; color:rgba(255,255,255,.25); font-style:italic; }
+    .detail-section-title { font-size:.62rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.28); margin:0 0 10px; display:flex; align-items:center; gap:7px; }
+    .detail-section-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.06); }
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(255,255,255,.05); border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,.06); margin-bottom:18px; }
+    .detail-cell { background:rgba(255,255,255,.03); padding:11px 14px; transition:.15s; }
+    .detail-cell:hover { background:rgba(255,255,255,.06); }
+    .detail-cell.full { grid-column:1/-1; }
+    .detail-label { font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:4px; display:flex; align-items:center; gap:5px; }
+    .detail-label i { font-size:.7rem; color:var(--accent); opacity:.8; }
+    .detail-value { font-size:.85rem; font-weight:600; color:#fff; word-break:break-word; }
+    .detail-value.empty { color:rgba(255,255,255,.22); font-style:italic; font-weight:400; font-size:.8rem; }
+    .shelf-highlight { display:flex; align-items:center; gap:14px; background:rgba(159,193,225,.07); border:1px solid rgba(159,193,225,.2); border-radius:12px; padding:14px 18px; margin-bottom:18px; }
+    .shelf-highlight-icon { width:40px; height:40px; background:rgba(159,193,225,.15); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--accent); flex-shrink:0; }
+    .shelf-highlight-label { font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:3px; }
+    .shelf-highlight-value { font-size:.95rem; font-weight:700; color:#fff; }
+    .shelf-highlight-value.empty { font-size:.82rem; color:rgba(255,255,255,.28); font-style:italic; font-weight:400; }
+    .modal-footer-bar { padding:12px 22px; border-top:1px solid rgba(255,255,255,.07); display:flex; gap:10px; align-items:center; flex-shrink:0; background:rgba(0,0,0,.12); }
+    .btn-modal-close { background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:9px 16px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; }
+    .btn-modal-close:hover { background:rgba(255,255,255,.14); }
+    .btn-modal-borrow { flex:1; background:var(--accent); color:#0d1a24; border:none; border-radius:10px; padding:10px 24px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:.88rem; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; gap:7px; }
+    .btn-modal-borrow:hover { background:#b8d4ec; transform:translateY(-1px); }
+    .btn-modal-borrow-disabled { flex:1; background:rgba(255,255,255,.04); color:rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:10px 24px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:.88rem; cursor:not-allowed; display:flex; align-items:center; justify-content:center; gap:7px; }
+    .btn-modal-fav { width:40px; height:40px; flex-shrink:0; background:rgba(245,200,66,.1); border:1px solid rgba(245,200,66,.25); border-radius:10px; color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:1rem; cursor:pointer; transition:.2s; }
+    .btn-modal-fav:hover { background:rgba(245,200,66,.2); }
+    .btn-modal-fav.bookmarked { background:rgba(245,200,66,.2); box-shadow:0 0 10px var(--gold-glow); }
+
+    /* ── BORROW STEPS MODAL ── */
+    .bs-step-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:18px 20px; }
+    .bs-step-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.2); color:#9fc1e1; font-size:.65rem; font-weight:700; letter-spacing:.05em; padding:4px 11px 4px 8px; border-radius:20px; margin-bottom:14px; }
+    .bs-step-num { width:20px; height:20px; border-radius:50%; background:#9fc1e1; color:#0d1a24; font-size:.65rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .bs-step-title { font-size:1rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.35; }
+    .bs-step-desc { font-size:.83rem; color:rgba(255,255,255,.55); line-height:1.65; }
+    .bs-step-list { list-style:none; margin-top:8px; }
+    .bs-step-list li { padding:5px 0 5px 18px; position:relative; font-size:.82rem; color:rgba(255,255,255,.55); }
+    .bs-step-list li::before { content:''; position:absolute; left:0; top:13px; width:6px; height:6px; border-radius:50%; background:rgba(159,193,225,.5); display:inline-block; }
+    .bs-step-tip { margin-top:14px; background:rgba(159,193,225,.05); border:1px dashed rgba(159,193,225,.15); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:12px; }
+    .bs-tip-icon { width:36px; height:36px; border-radius:10px; background:rgba(159,193,225,.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.95rem; color:#9fc1e1; }
+    .bs-tip-text { font-size:.75rem; color:rgba(255,255,255,.35); line-height:1.5; }
+    .bs-footer { padding:14px 22px 18px; border-top:1px solid rgba(255,255,255,.07); display:flex; gap:10px; align-items:center; background:rgba(0,0,0,.1); }
+    .bs-btn-prev { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.65); border-radius:10px; padding:9px 18px; font-family:'DM Sans',sans-serif; font-size:.84rem; font-weight:600; cursor:pointer; transition:.18s; }
+    .bs-btn-prev:hover:not(:disabled) { background:rgba(255,255,255,.1); color:#fff; }
+    .bs-btn-prev:disabled { opacity:.25; cursor:not-allowed; }
+    .bs-btn-next { flex:1; background:#9fc1e1; border:none; color:#0d1a24; border-radius:10px; padding:10px 22px; font-family:'DM Sans',sans-serif; font-size:.84rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .bs-btn-next:hover { background:#b8d4ec; }
+    .bs-btn-done { background:rgba(72,199,142,.9); color:#0a2018; }
+    .bs-btn-done:hover { background:#48c78e; }
+    .bs-counter { font-size:.73rem; color:rgba(255,255,255,.25); min-width:40px; text-align:center; }
+
+    /* ── INCOMPLETE PROFILE MODAL ── */
+    .inc-box { background:#18273a; border:1px solid rgba(255,100,100,.2); border-radius:22px; width:100%; max-width:420px; overflow:hidden; }
+    .inc-header { padding:26px 26px 0; text-align:center; }
+    .inc-icon-wrap { width:54px; height:54px; border-radius:50%; background:rgba(255,100,100,.1); border:1px solid rgba(255,100,100,.2); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:1.35rem; color:#ff8080; }
+    .inc-title { font-size:1rem; font-weight:700; color:#fff; margin-bottom:7px; }
+    .inc-sub { font-size:.82rem; color:rgba(255,255,255,.45); line-height:1.6; margin-bottom:18px; }
+    .inc-fields { padding:0 22px 10px; }
+    .inc-field-item { display:flex; align-items:center; gap:10px; padding:9px 14px; background:rgba(255,100,100,.06); border:1px solid rgba(255,100,100,.12); border-radius:10px; margin-bottom:6px; }
+    .inc-field-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,100,100,.7); flex-shrink:0; }
+    .inc-field-name { font-size:.8rem; color:rgba(255,255,255,.65); }
+    .inc-footer { padding:14px 22px 22px; display:flex; gap:8px; }
+    .btn-go-profile { flex:1; background:rgba(255,100,100,.15); border:1px solid rgba(255,100,100,.3); color:#ff8080; border-radius:10px; padding:10px 0; font-family:'DM Sans',sans-serif; font-size:.84rem; font-weight:700; cursor:pointer; transition:.18s; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-go-profile:hover { background:rgba(255,100,100,.25); color:#fff; }
+
+    /* FOOTER */
+    .footer-cta { background: linear-gradient(100deg, rgba(159,193,225,.1) 0%, rgba(72,199,142,.06) 100%); border-top: 1px solid rgba(159,193,225,.13); padding: 52px 60px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+    .footer-cta-text h3 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.025em; color: #fff; margin-bottom: 6px; }
+    .footer-cta-text p { font-size: .875rem; color: var(--tl); line-height: 1.65; max-width: 480px; margin: 0; }
+    .footer-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+    .footer-cta-btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #0d1a24; border: none; border-radius: 11px; padding: 11px 22px; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: .2s; white-space: nowrap; }
+    .footer-cta-btn-primary:hover { background: #b8d4ec; transform: translateY(-2px); color: #0d1a24; }
+    .footer-cta-btn-ghost { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.16); border-radius: 11px; padding: 10px 20px; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: .2s; white-space: nowrap; }
+    .footer-cta-btn-ghost:hover { border-color: rgba(255,255,255,.42); color: #fff; background: rgba(255,255,255,.06); }
+    .footer-main { background: rgba(0,0,0,.3); border-top: 1px solid rgba(255,255,255,.06); padding: 60px 60px 0; }
+    .footer-grid { display: grid; grid-template-columns: 1.9fr 1fr 1fr 1.35fr; gap: 48px; padding-bottom: 52px; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .footer-brand-col .footer-logo-row { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
+    .footer-logo-row .brand-label { font-size: .92rem; font-weight: 700; color: #fff; letter-spacing: -.015em; line-height: 1.25; }
+    .footer-logo-row .brand-sub { font-size: .64rem; color: var(--accent); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-top: 2px; display: block; }
+    .footer-tagline { font-size: .8rem; color: rgba(255,255,255,.42); line-height: 1.75; margin-bottom: 20px; max-width: 255px; }
+    .footer-socials { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-social-btn { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); color: rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: .9rem; text-decoration: none; transition: .2s; }
+    .footer-social-btn:hover { background: rgba(159,193,225,.14); border-color: rgba(159,193,225,.28); color: var(--accent); transform: translateY(-3px); }
+    .footer-col-title { font-size: .65rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.28); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1px; }
+    .footer-links a { font-size: .825rem; color: rgba(255,255,255,.48); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 6px 0; border-radius: 6px; transition: .18s; font-weight: 500; }
+    .footer-links a i { font-size: .72rem; color: rgba(159,193,225,.4); flex-shrink: 0; transition: .18s; width: 14px; text-align: center; }
+    .footer-links a:hover { color: rgba(255,255,255,.88); padding-left: 5px; }
+    .footer-links a:hover i { color: var(--accent); }
+    .footer-bottom { padding: 20px 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .footer-bottom-left { font-size: .76rem; color: rgba(255,255,255,.25); line-height: 1.6; }
+    .footer-bottom-left strong { color: rgba(255,255,255,.4); font-weight: 600; }
+    .footer-bottom-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .footer-bottom-right a { font-size: .74rem; color: rgba(255,255,255,.27); text-decoration: none; transition: .18s; }
+    .footer-bottom-right a:hover { color: rgba(255,255,255,.65); }
+    .footer-bottom-sep { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.15); }
+    .footer-ph-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; font-weight: 600; color: rgba(255,255,255,.22); background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 20px; padding: 3px 10px; }
+    .footer-ph-badge i { font-size: .65rem; color: var(--accent); opacity: .6; }
+    .legal-modal-overlay { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px; }
+    .legal-modal { background: #1b2a35; border: 1px solid rgba(159,193,225,.18); border-radius: 20px; width: 100%; max-width: 640px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 24px 72px rgba(0,0,0,.6); animation: legalIn .25s cubic-bezier(.16,.84,.44,1); }
+    @keyframes legalIn { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
+    .legal-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
+    .legal-modal-header h4 { font-size: .92rem; font-weight: 700; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin: 0; }
+    .legal-modal-close { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.55); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: .95rem; cursor: pointer; transition: .18s; flex-shrink: 0; }
+    .legal-modal-close:hover { background: rgba(255,100,100,.1); border-color: rgba(255,100,100,.25); color: #ff7070; }
+    .legal-modal-body { padding: 22px 24px 26px; overflow-y: auto; flex: 1; font-size: .84rem; color: rgba(255,255,255,.58); line-height: 1.8; }
+    .legal-modal-footer { padding: 14px 24px; border-top: 1px solid rgba(255,255,255,.07); display: flex; justify-content: flex-end; flex-shrink: 0; }
+    .legal-modal-btn { background: rgba(159,193,225,.15); border: 1px solid rgba(159,193,225,.25); color: var(--accent); border-radius: 10px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; transition: .2s; }
+    .legal-modal-btn:hover { background: rgba(159,193,225,.25); color: #fff; }
+
+    @media (max-width:768px) {
+      .page-wrap { padding: 80px 20px 60px; }
+      .books-grid, .skeleton-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
+      .m-box { height:95vh; max-height:none; }
+      .modal-hero { height:150px; }
+      .modal-cover-wrap { width:68px; height:96px; }
+      .modal-hero-text h2 { font-size:.95rem; }
+      .detail-grid { grid-template-columns:1fr; }
+      .detail-cell.full { grid-column:1; }
+      .footer-cta { padding: 40px 24px; }
+      .footer-main { padding: 48px 24px 0; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+    }
+    @media (max-width:560px) {
+      .modal-tabs { overflow-x:auto; }
+      .modal-tab-btn { font-size:.72rem; padding:10px 6px; gap:4px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .no-animations *, .no-animations *::before, .no-animations *::after { animation-duration:0ms !important; transition-duration:0ms !important; }
+  </style>
+  <script src="/static/js/appearance.js"></script>
+</head>
+<body>
+{% include 'user_template/topbar_template.html' %}
+{% include 'user_template/profile_sidebar_template.html' %}
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1><i class="bi bi-book-half me-2" style="color:var(--accent)"></i>Browse <span>Books</span></h1>
+      <p>Discover your next great read from our collection</p>
+    </div>
+
+    <!-- FAVORITES STRIP -->
+    <div class="favorites-strip" id="favoritesStrip">
+      <div class="fav-header">
+        <i class="bi bi-bookmark-star-fill"></i>
+        <span class="fav-label">My Favorites</span>
+        <span class="fav-count" id="favCount">0 / 5</span>
+      </div>
+      <div class="fav-slots" id="favSlots"></div>
+    </div>
+
+    <!-- FAVORITES FULL TOAST -->
+    <div class="fav-toast" id="favToast">
+      <div class="toast-icon"><i class="bi bi-bookmark-x-fill"></i></div>
+      <div class="toast-body"><div class="toast-title">Favorites Full!</div><div class="toast-msg">Remove a favorite first before adding a new one.</div></div>
+      <button class="toast-close" onclick="hideToast()"><i class="bi bi-x"></i></button>
+    </div>
+
+    <!-- STORAGE ALERT BANNER -->
+    <div class="storage-alert-banner" id="storageAlertBanner"></div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-box" id="searchBox">
+        <i class="bi bi-search si"></i>
+        <input type="text" id="searchInput" class="search-input"
+              placeholder="Search by title, author, or ISBN…"
+              autocomplete="off"
+              onfocus="onSearchFocus()"
+              oninput="onSearchInput(this.value)"
+              onkeydown="onSearchKeydown(event)">
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+
+      <button class="filter-btn" onclick="openFilterModal()">
+        <i class="bi bi-sliders2"></i> Filters
+        <span class="filter-active-dot" id="filterDot"></span>
+      </button>
+      <button class="filter-clear-btn" id="filterClearBtn" onclick="clearAllFilters()" style="display:none">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+
+      <span class="results-lbl" id="resultsLbl">Loading…</span>
+    </div>
+
+    <!-- ACTIVE FILTER CHIPS -->
+    <div id="activeFilterChips"></div>
+
+    <!-- SKELETONS -->
+    <div class="skeleton-grid" id="skeletonGrid">
+      {% for _ in range(8) %}
+      <div class="skeleton-card">
+        <div class="skel skel-cover"></div>
+        <div class="skel-body">
+          <div class="skel" style="width:80%;height:13px;margin-bottom:7px;"></div>
+          <div class="skel" style="width:55%;height:10px;margin-bottom:5px;"></div>
+          <div class="skel" style="width:40%;height:9px;margin-bottom:18px;"></div>
+          <div style="display:flex;gap:7px;"><div class="skel" style="flex:1;height:30px;border-radius:8px;"></div><div class="skel" style="flex:1;height:30px;border-radius:8px;"></div></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- BOOKS GRID -->
+    <div class="books-grid" id="booksGrid" style="display:none;"></div>
+
+    <!-- EMPTY -->
+    <div class="empty-state" id="emptyState">
+      <i class="bi bi-search"></i>
+      <p id="emptyMsg">No books found matching your search.</p>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pag-bar" id="pagBar" style="display:none;">
+      <span class="pag-info" id="pagInfo"></span>
+      <div class="pag-btns" id="pagBtns"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       BOOK DETAIL MODAL — TABBED
+  ══════════════════════════════ -->
+  <div class="overlay" id="detailModal">
+    <div class="m-box">
+      <button class="m-close-btn" onclick="closeOverlay()"><i class="bi bi-x-lg"></i></button>
+      <div class="modal-hero">
+        <div class="modal-hero-bg" id="modalHeroBg"></div>
+        <div class="modal-hero-gradient"></div>
+        <div class="modal-hero-content">
+          <div class="modal-cover-wrap" id="modalCoverWrap"></div>
+          <div class="modal-hero-text">
+            <h2 id="modalTitle">—</h2>
+            <div class="modal-hero-subtitle" id="modalSubtitle" style="display:none"></div>
+            <p class="modal-hero-author" id="modalAuthor">—</p>
+            <div class="modal-hero-pills" id="modalPills"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="tabBtnOverview" onclick="switchTab('overview')">
+          <i class="bi bi-grid-1x2-fill"></i> Overview
+        </button>
+        <button class="modal-tab-btn" id="tabBtnDetails" onclick="switchTab('details')">
+          <i class="bi bi-info-circle-fill"></i> Details
+        </button>
+      </div>
+      <div class="modal-tab-panels">
+        <div class="modal-tab-panel active" id="panelOverview">
+          <div class="overview-status-row" id="overviewStatusRow"></div>
+          <div class="modal-description" id="modalDescBlock">
+            <div class="modal-description-label"><i class="bi bi-text-paragraph"></i> Description</div>
+            <div class="modal-description-text" id="modalDescText"></div>
+          </div>
+        </div>
+        <div class="modal-tab-panel" id="panelDetails">
+          <div class="shelf-highlight" id="shelfHighlight">
+            <div class="shelf-highlight-icon"><i class="bi bi-geo-alt-fill"></i></div>
+            <div>
+              <div class="shelf-highlight-label">Shelf Location</div>
+              <div class="shelf-highlight-value" id="shelfHighlightValue">—</div>
+            </div>
+          </div>
+          <div class="detail-section-title"><i class="bi bi-book" style="color:var(--accent)"></i> Bibliographic</div>
+          <div class="detail-grid" id="detailGridBiblio"></div>
+          <div class="detail-section-title"><i class="bi bi-buildings" style="color:var(--accent)"></i> Publication</div>
+          <div class="detail-grid" id="detailGridPub"></div>
+          <div class="detail-section-title"><i class="bi bi-tags" style="color:var(--accent)"></i> Classification</div>
+          <div class="detail-grid" id="detailGridClass"></div>
+        </div>
+      </div>
+      <div class="modal-footer-bar">
+        <button class="btn-modal-fav" id="modalFavBtn" onclick="modalToggleFav()" title="Add to favorites">
+          <i class="bi bi-bookmark-star" id="modalFavIcon"></i>
+        </button>
+        <button class="btn-modal-close" onclick="closeOverlay()">Close</button>
+        <div id="modalBorrowContainer" style="flex:1;display:flex;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOMPLETE PROFILE MODAL -->
+  <div class="overlay" id="incompleteModal" style="z-index:2100;">
+    <div class="inc-box">
+      <div class="inc-header">
+        <div class="inc-icon-wrap"><i class="bi bi-exclamation-circle-fill"></i></div>
+        <div class="inc-title">Complete your profile first</div>
+        <div class="inc-sub">Please fill in the missing personal details before you can request to borrow a book.</div>
+      </div>
+      <div class="inc-fields" id="incompleteFieldsList"></div>
+      <div class="inc-footer">
+        <a href="/user/edit_profile" class="btn-go-profile"><i class="bi bi-pencil-square"></i> Go to Edit Profile</a>
+        <button class="btn-modal-close" onclick="closeIncomplete()">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BORROW STEPS MODAL -->
+  <div class="overlay" id="borrowStepsModal" style="z-index:2100;">
+    <div class="m-box" style="max-width:520px;">
+      <div style="background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.07);padding:18px 22px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+        <div style="width:38px;height:38px;border-radius:10px;background:rgba(159,193,225,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="bi bi-book-fill" style="color:#9fc1e1;font-size:1rem;"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:.95rem;font-weight:700;color:#fff;">How to borrow a book</div>
+          <div style="font-size:.74rem;color:rgba(255,255,255,.35);" id="bsSubtitle">Step 1 of 7 — Follow these steps at the library</div>
+        </div>
+        <button class="m-close-btn" style="position:static;width:30px;height:30px;flex-shrink:0;" onclick="closeBorrowSteps()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div style="padding:16px 22px 0;flex-shrink:0;">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:8px;" id="bsLabels"></div>
+        <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;">
+          <div id="bsProgress" style="height:100%;background:#9fc1e1;border-radius:2px;transition:width .4s;width:14.28%;"></div>
+        </div>
+      </div>
+      <div style="padding:20px 22px 16px;flex:1;overflow-y:auto;" id="bsContent"></div>
+      <div class="bs-footer">
+        <button class="bs-btn-prev" id="bsBtnPrev" onclick="bsChange(-1)" disabled>← Back</button>
+        <span class="bs-counter" id="bsCounter">1 / 7</span>
+        <button class="bs-btn-next" id="bsBtnNext" onclick="bsChange(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM IMAGE LIGHTBOX -->
+  <div id="formLightbox" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center;" onclick="closeLightboxOnBg(event)">
+    <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(0,0,0,.4);z-index:2;">
+      <span id="lbLabel" style="color:rgba(255,255,255,.75);font-size:.85rem;font-weight:600;letter-spacing:.03em;"></span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button onclick="lbZoom(-0.25)" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:34px;height:34px;border-radius:8px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-zoom-out"></i></button>
+        <button onclick="lbZoom(0.25)"  style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:34px;height:34px;border-radius:8px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-zoom-in"></i></button>
+        <button onclick="lbResetZoom()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);width:34px;height:34px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">1:1</button>
+        <button onclick="closeFormLightbox()" style="background:rgba(255,100,100,.15);border:1px solid rgba(255,100,100,.25);color:#ff8080;width:34px;height:34px;border-radius:8px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-x-lg"></i></button>
+      </div>
+    </div>
+    <button id="lbPrev" onclick="lbNav(-1)" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-left"></i></button>
+    <button id="lbNext" onclick="lbNav(1)"  style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></button>
+    <div id="lbImgWrap" style="overflow:auto;max-width:92vw;max-height:82vh;margin-top:56px;border-radius:12px;cursor:grab;" onmousedown="lbDragStart(event)" onmousemove="lbDragMove(event)" onmouseup="lbDragEnd()" onmouseleave="lbDragEnd()">
+      <img id="lbImg" style="display:block;transform-origin:top left;transition:transform .2s;user-select:none;max-width:none;" draggable="false">
+    </div>
+    <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.25);pointer-events:none;white-space:nowrap;">Scroll to zoom · Drag to pan · Use buttons to navigate</div>
+  </div>
+
+  <!-- ══ ADVANCED FILTER MODAL ══ -->
+  <div id="filterModal">
+    <div class="filter-modal-box">
+      <div class="filter-modal-head">
+        <div class="fm-head-left">
+          <div class="fm-head-icon"><i class="bi bi-sliders2"></i></div>
+          <div>
+            <div class="fm-title">Advanced Filters</div>
+            <div class="fm-sub">Refine your book collection</div>
+          </div>
+        </div>
+        <button class="fm-close" onclick="closeFilterModal()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="fm-rail-wrap">
+        <div class="fm-rail-nav">
+          <div class="fm-rail-item active" data-pane="cat" onclick="fmSwitchPane('cat', this)">
+            <i class="bi bi-tag-fill"></i><span>Category</span>
+            <span class="fm-rail-badge" id="frb-cat" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="genre" onclick="fmSwitchPane('genre', this)">
+            <i class="bi bi-grid-fill"></i><span>Genre</span>
+            <span class="fm-rail-badge" id="frb-genre" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="borrow" onclick="fmSwitchPane('borrow', this)">
+            <i class="bi bi-bookmark-fill"></i><span>Borrowing</span>
+            <span class="fm-rail-badge" id="frb-borrow" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="lang" onclick="fmSwitchPane('lang', this)">
+            <i class="bi bi-globe2"></i><span>Language</span>
+            <span class="fm-rail-badge" id="frb-lang" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="date" onclick="fmSwitchPane('date', this)">
+            <i class="bi bi-calendar3"></i><span>Date Added</span>
+            <span class="fm-rail-badge" id="frb-date" style="display:none">0</span>
+          </div>
+        </div>
+
+        <div class="fm-rail-content">
+          <!-- CATEGORY -->
+          <div class="fm-pane active" id="fm-pane-cat">
+            <div class="fm-pane-label">Category <span class="fm-pane-hint">multi-select</span></div>
+            <div class="fm-search-wrap">
+              <i class="bi bi-search"></i>
+              <input class="fm-search-inp" placeholder="Search category…" oninput="fmFilterCloud('fm-cat-cloud', this.value)">
+            </div>
+            <div class="fm-tag-cloud" id="fm-cat-cloud"></div>
+          </div>
+          <!-- GENRE -->
+          <div class="fm-pane" id="fm-pane-genre">
+            <div class="fm-pane-label">Genre / Class <span class="fm-pane-hint">multi-select</span></div>
+            <div class="fm-tag-cloud" id="fm-genre-cloud"></div>
+          </div>
+          <!-- BORROWING -->
+          <div class="fm-pane" id="fm-pane-borrow">
+            <div class="fm-pane-label">Borrowing Policy</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="fm-toggle-row on" id="fm-brow-all" onclick="fmSelectBorrow('all')">
+                <div style="flex:1;min-width:0">
+                  <div class="fm-toggle-label">All books</div>
+                  <div class="fm-toggle-sub">Show regardless of borrow setting</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span class="fm-borrow-count" id="fm-bc-all">—</span>
+                  <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="radio" name="fmBorrow" id="fmBorrowAll" checked onchange="fmSelectBorrow('all')">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="fm-toggle-row" id="fm-brow-yes" onclick="fmSelectBorrow('yes')">
+                <div style="flex:1;min-width:0">
+                  <div class="fm-toggle-label"><i class="bi bi-bookmark-check-fill" style="color:var(--accent2);margin-right:5px"></i>Borrowable only</div>
+                  <div class="fm-toggle-sub">Books available to take home</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span class="fm-borrow-count" id="fm-bc-yes">—</span>
+                  <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="radio" name="fmBorrow" id="fmBorrowYes" onchange="fmSelectBorrow('yes')">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="fm-toggle-row" id="fm-brow-no" onclick="fmSelectBorrow('no')">
+                <div style="flex:1;min-width:0">
+                  <div class="fm-toggle-label"><i class="bi bi-bookmark-x" style="color:var(--danger);margin-right:5px"></i>Reference only</div>
+                  <div class="fm-toggle-sub">Not available for borrowing</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span class="fm-borrow-count" id="fm-bc-no">—</span>
+                  <label class="toggle-switch" onclick="event.stopPropagation()">
+                    <input type="radio" name="fmBorrow" id="fmBorrowNo" onchange="fmSelectBorrow('no')">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- LANGUAGE -->
+          <div class="fm-pane" id="fm-pane-lang">
+            <div class="fm-pane-label">Language <span class="fm-pane-hint">multi-select</span></div>
+            <div class="fm-tag-cloud" id="fm-lang-cloud"></div>
+          </div>
+          <!-- DATE -->
+          <div class="fm-pane" id="fm-pane-date">
+            <div class="fm-pane-label">Date Added</div>
+            <div class="fm-date-grid">
+              <div><div class="fm-date-lbl">From</div><input type="date" class="fm-date-inp" id="fmDateFrom" oninput="fmUpdateDate()"></div>
+              <div><div class="fm-date-lbl">To</div><input type="date" class="fm-date-inp" id="fmDateTo" oninput="fmUpdateDate()"></div>
+            </div>
+            <div class="fm-date-lbl" style="margin-bottom:7px">Quick select</div>
+            <div class="fm-shortcut-row">
+              <div class="fm-shortcut" onclick="fmDateShortcut('today',this)">Today</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('week',this)">This week</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('month',this)">This month</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('quarter',this)">This quarter</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('year',this)">This year</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fm-chip-bar" id="fmChipBar">
+        <span class="fm-no-active" id="fmNoActive">No filters active</span>
+      </div>
+      <div class="filter-modal-foot">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="fm-match-count" id="fmMatchCount"><strong>—</strong> books match</span>
+          <button class="fm-btn" onclick="fmResetAll()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        </div>
+        <button class="fm-btn primary" onclick="fmApply()"><i class="bi bi-check-lg"></i> Apply Filters</button>
+      </div>
+    </div>
+  </div>
+
+{% include 'user_template/footer_template.html' %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.head.insertAdjacentHTML('beforeend','<style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>');
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeOverlay(); closeDropdown(); closeBorrowSteps(); closeIncomplete();
+        closeFilterModal();
+      }
+    });
+
+    /* ── USER PROFILE ── */
+    const USER_PROFILE = {
+      firstname: "{{ user.firstname | default('') | e }}",
+      lastname:  "{{ user.lastname  | default('') | e }}",
+      age:       "{{ user.age       | default('') | e }}",
+      sex:       "{{ user.sex       | default('') | e }}",
+      phone:     "{{ user.phone     | default('') | e }}",
+      address:   "{{ user.address   | default('') | e }}"
+    };
+    const REQUIRED_FIELDS = [
+      { key: 'firstname', label: 'First name' },
+      { key: 'lastname',  label: 'Last name' },
+      { key: 'age',       label: 'Age' },
+      { key: 'sex',       label: 'Sex' },
+      { key: 'phone',     label: 'Phone number' },
+      { key: 'address',   label: 'Address' },
+    ];
+    function checkProfileComplete() { return REQUIRED_FIELDS.filter(f => { const v=USER_PROFILE[f.key]; return !v||v.trim()===''||v.trim()==='—'; }); }
+
+    /* ── INCOMPLETE PROFILE MODAL ── */
+    function openIncomplete(missing) { document.getElementById('incompleteFieldsList').innerHTML=missing.map(f=>`<div class="inc-field-item"><div class="inc-field-dot"></div><span class="inc-field-name">${f.label}</span></div>`).join(''); document.getElementById('incompleteModal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeIncomplete() { document.getElementById('incompleteModal').classList.remove('open'); document.body.style.overflow=''; }
+    document.getElementById('incompleteModal').addEventListener('click', e => { if(e.target===document.getElementById('incompleteModal'))closeIncomplete(); });
+
+    /* ── BORROW STEPS ── */
+    const BS_STEPS = [
+      { title:'Request an application form', desc:"Approach the library staff at the front desk and ask for a borrower's application form.", tip:'Ask the librarian at the front desk.', icon:'bi-person-lines-fill' },
+      { title:'Fill out the application form', desc:'Provide all required personal information accurately. Double-check the spelling of your name and address.', tip:'Write clearly and check for errors before proceeding.', icon:'bi-pencil-square' },
+      { title:'Prepare your requirements', desc:'Secure and bring the following documents:', list:['2 pieces of latest 1×1 ID picture','Photocopy of any valid government ID'], tip:'Have all documents ready before approaching the counter.', icon:'bi-card-checklist' },
+      { title:'Submit application and requirements', desc:'Hand over the accomplished application form together with your ID picture and photocopy of your valid ID to the library staff.', tip:'Make sure all documents are complete before submitting.', icon:'bi-send-fill' },
+      { title:'Proceed to the waiting area', desc:'After submission, go to the designated waiting area indicated by the staff. Keep your belongings with you.', tip:'Stay nearby so you can hear when your name is called.', icon:'bi-house-door-fill' },
+      { title:'Wait for your name to be called', desc:'Listen carefully for your name. When called, approach the staff for further processing or to receive your library card.', tip:'Your library card will be issued once everything is verified.', icon:'bi-megaphone-fill' },
+      { title:'Form Examples', desc:'Here are examples of the forms you will fill out at the library. Click any image to view it in full screen.', tip:'Tap or click an image to zoom in and inspect it closely.', icon:'bi-file-earmark-image-fill', forms:[{src:'/static/images/form1.jpg',label:"Library Borrower's Card"},{src:'/static/images/form2.jpg',label:'Book Record Card (4-up)'}] }
+    ];
+    let bsCur = 0;
+    function bsRender() {
+      const s=BS_STEPS[bsCur]; const pct=((bsCur+1)/BS_STEPS.length*100).toFixed(2);
+      document.getElementById('bsProgress').style.width=pct+'%';
+      document.getElementById('bsSubtitle').textContent=`Step ${bsCur+1} of ${BS_STEPS.length} — Follow these steps at the library`;
+      document.getElementById('bsCounter').textContent=`${bsCur+1} / ${BS_STEPS.length}`;
+      document.getElementById('bsBtnPrev').disabled=(bsCur===0);
+      const nextBtn=document.getElementById('bsBtnNext');
+      if(bsCur===BS_STEPS.length-1){nextBtn.textContent='Done ✓';nextBtn.className='bs-btn-next bs-btn-done';}else{nextBtn.textContent='Next →';nextBtn.className='bs-btn-next';}
+      document.getElementById('bsLabels').innerHTML=BS_STEPS.map((_,i)=>{let c='rgba(255,255,255,.2)';if(i<bsCur)c='rgba(159,193,225,.5)';if(i===bsCur)c='#9fc1e1';return`<div style="font-size:.55rem;text-align:center;font-weight:500;line-height:1.3;color:${c};">Step ${i+1}</div>`;}).join('');
+      const listHTML=s.list?`<ul class="bs-step-list">${s.list.map(l=>`<li>${l}</li>`).join('')}</ul>`:'';
+      const formsHTML=s.forms?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">${s.forms.map((f,i)=>`<div style="cursor:pointer;" onclick="openFormLightbox(${i})"><img src="${f.src}" alt="${f.label}" style="width:100%;border-radius:10px;border:1.5px solid rgba(159,193,225,.25);object-fit:cover;aspect-ratio:3/4;display:block;transition:.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(159,193,225,.25)'"><div style="text-align:center;font-size:.68rem;color:rgba(255,255,255,.4);margin-top:6px;font-weight:600;"><i class="bi bi-zoom-in me-1"></i>${f.label}</div></div>`).join('')}</div>`:'';
+      document.getElementById('bsContent').innerHTML=`<div class="bs-step-card"><div class="bs-step-badge"><div class="bs-step-num">${bsCur+1}</div>Step ${bsCur+1} of ${BS_STEPS.length}</div><div class="bs-step-title">${s.title}</div><div class="bs-step-desc">${s.desc}${listHTML}</div>${formsHTML}<div class="bs-step-tip"><div class="bs-tip-icon"><i class="bi ${s.icon}"></i></div><div class="bs-tip-text">${s.tip}</div></div></div>`;
+    }
+    function bsChange(d) { if(bsCur===BS_STEPS.length-1&&d===1){closeBorrowSteps();return;} bsCur=Math.max(0,Math.min(BS_STEPS.length-1,bsCur+d)); bsRender(); }
+    function openBorrowSteps() { bsCur=0; bsRender(); document.getElementById('borrowStepsModal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeBorrowSteps() { document.getElementById('borrowStepsModal').classList.remove('open'); document.body.style.overflow=''; }
+    document.getElementById('borrowStepsModal').addEventListener('click', e => { if(e.target===document.getElementById('borrowStepsModal'))closeBorrowSteps(); });
+
+    /* ── BORROW HANDLER ── */
+    function handleBorrow(event) { event.stopPropagation(); const missing=checkProfileComplete(); if(missing.length>0){openIncomplete(missing);}else{openBorrowSteps();} }
+
+    /* ── CONSTANTS & STATE ── */
+    const BOOKS_PER_PAGE=10, MAX_FAV=5;
+    let allBooks=[], filteredBooks=[], favorites=[], currentPage=1, favPending=false;
+    let searchHistory=[];
+    let saveHistoryTimer=null;
+    let storageState={is_full:false,is_warning:false,used_percent:0};
+    let _storageWarnBannerShown=false;
+    let _modalBookId=null;
+    let _activeTab='overview';
+
+    /* ── FILTER STATE ── */
+    let advFilters = { cat: [], genre: [], borrow: 'all', lang: [], dateFrom: '', dateTo: '' };
+
+    function esc(s) { if(!s)return'—'; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function escJs(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+    function escAttr(s) { return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function isBorrowable(book) { return book.is_borrowable===true||book.is_borrowable===1; }
+
+    /* ── BOOT ── */
+    async function boot() { await Promise.all([loadFavorites(),loadSearchHistory(),loadStorageState()]); await loadBooks(); }
+
+    /* ── STORAGE STATE ── */
+    async function loadStorageState() { try{const r=await fetch('/api/user/storage/check');if(!r.ok)return;storageState=await r.json();if(storageState.is_full)showStorageAlertBanner('full');else if(storageState.is_warning)showStorageAlertBanner('warn');}catch{} }
+    function showStorageAlertBanner(type) { const el=document.getElementById('storageAlertBanner'); el.className=`storage-alert-banner ${type==='full'?'full-type':'warn-type'} show`; if(type==='full'){el.innerHTML=`<i class="bi bi-x-circle-fill" style="color:var(--danger);flex-shrink:0;font-size:1rem;"></i><span style="color:rgba(255,255,255,.9);flex:1;"><strong>Storage is full!</strong> New searches won't be saved. <a href="/user/settings" style="color:var(--danger);font-weight:700;text-decoration:none;margin-left:4px;">Manage storage →</a></span><button onclick="this.parentElement.classList.remove('show')" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:1rem;cursor:pointer;flex-shrink:0;"><i class="bi bi-x"></i></button>`;}else{el.innerHTML=`<i class="bi bi-exclamation-triangle-fill" style="color:var(--warn);flex-shrink:0;font-size:1rem;"></i><span style="color:rgba(255,255,255,.9);flex:1;">Storage is <strong style="color:var(--warn);">${parseFloat(storageState.used_percent).toFixed(0)}% full</strong>. <a href="/user/settings" style="color:var(--warn);font-weight:700;text-decoration:none;margin-left:4px;">Manage storage →</a></span><button onclick="this.parentElement.classList.remove('show')" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:1rem;cursor:pointer;flex-shrink:0;"><i class="bi bi-x"></i></button>`;} }
+
+    /* ── SEARCH HISTORY ── */
+    async function loadSearchHistory() { try{const r=await fetch('/api/user/search-history');if(!r.ok)return;searchHistory=(await r.json()).history||[];}catch{searchHistory=[];} }
+    async function saveQueryToDB(query) { query=query.trim(); if(!query||query.length<2)return; try{const r=await fetch('/api/user/storage/check');if(r.ok){storageState=await r.json();if(storageState.is_full){showStorageAlertBanner('full');return;}if(storageState.is_warning&&!_storageWarnBannerShown){_storageWarnBannerShown=true;showStorageAlertBanner('warn');}}}catch{} searchHistory=[query,...searchHistory.filter(h=>h.toLowerCase()!==query.toLowerCase())].slice(0,20); try{await fetch('/api/user/search-history',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query})});const sr=await fetch('/api/user/storage/check');if(sr.ok){storageState=await sr.json();if(storageState.is_full)showStorageAlertBanner('full');else if(storageState.is_warning&&!_storageWarnBannerShown){_storageWarnBannerShown=true;showStorageAlertBanner('warn');}}}catch{} }
+    async function removeHistoryItem(query) { searchHistory=searchHistory.filter(h=>h!==query); renderDropdown(); }
+    async function clearAllHistory() { searchHistory=[]; try{await fetch('/user/clear_search_history',{method:'POST'});const r=await fetch('/api/user/storage/check');if(r.ok){storageState=await r.json();if(!storageState.is_full&&!storageState.is_warning){document.getElementById('storageAlertBanner').classList.remove('show');_storageWarnBannerShown=false;}}}catch{} renderDropdown(); }
+
+    /* ── BOOKS ── */
+    async function loadFavorites() { try{const r=await fetch('/api/user/favorites');if(!r.ok)return;favorites=(await r.json()).favorites||[];}catch{} }
+    async function loadBooks() {
+      const hideSkeleton=()=>{document.getElementById('skeletonGrid').style.display='none';};
+      const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),8000);
+      try {
+        const r=await fetch('/api/books',{signal:controller.signal}); clearTimeout(timer);
+        if(!r.ok)throw new Error(`HTTP ${r.status}`);
+        const json=await r.json(); allBooks=json.books||[];
+        if(!allBooks.length){hideSkeleton();showEmpty('No books are available yet.');return;}
+        applyFilter(); renderFavoritesStrip();
+      } catch(err) {
+        clearTimeout(timer); hideSkeleton();
+        showEmpty(err.name==='AbortError'?'Request timed out. Please check your connection and refresh.':'Failed to load books. Please refresh the page.');
+      }
+    }
+
+    /* ── FILTER MODAL ── */
+    function openFilterModal() {
+      fmBuildClouds();
+      fmSyncFromState();
+      document.getElementById('filterModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeFilterModal() {
+      document.getElementById('filterModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('filterModal').addEventListener('click', function(e) {
+      if (e.target === this) closeFilterModal();
+    });
+
+    function fmSwitchPane(id, el) {
+      document.querySelectorAll('.fm-rail-item').forEach(r => r.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('.fm-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('fm-pane-' + id).classList.add('active');
+    }
+
+    function fmBuildClouds() {
+      if (!allBooks.length) return;
+
+      const catCounts = {};
+      allBooks.forEach(b => { if (b.category) catCounts[b.category] = (catCounts[b.category] || 0) + 1; });
+      const catEntries = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+      const maxCat = catEntries[0]?.[1] || 1;
+      document.getElementById('fm-cat-cloud').innerHTML = catEntries.length
+        ? catEntries.map(([name, count]) => {
+            const sz = count/maxCat > .6 ? 'sz-lg' : count/maxCat < .25 ? 'sz-sm' : '';
+            const on = advFilters.cat.includes(name) ? ' on' : '';
+            return `<div class="fm-tc${on} ${sz}" data-val="${escAttr(name)}" onclick="fmToggleTag(this,'cat')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;
+          }).join('')
+        : '<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No categories found</span>';
+
+      const genreCounts = {};
+      allBooks.forEach(b => { const g = b.class || b.genre; if (g) genreCounts[g] = (genreCounts[g] || 0) + 1; });
+      const genreEntries = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]);
+      const maxGenre = genreEntries[0]?.[1] || 1;
+      document.getElementById('fm-genre-cloud').innerHTML = genreEntries.length
+        ? genreEntries.map(([name, count]) => {
+            const sz = count/maxGenre > .6 ? 'sz-lg' : count/maxGenre < .25 ? 'sz-sm' : '';
+            const on = advFilters.genre.includes(name) ? ' on' : '';
+            return `<div class="fm-tc${on} ${sz}" data-val="${escAttr(name)}" onclick="fmToggleTag(this,'genre')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;
+          }).join('')
+        : '<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No genre data</span>';
+
+      const langCounts = {};
+      allBooks.forEach(b => { if (b.language) langCounts[b.language] = (langCounts[b.language] || 0) + 1; });
+      const langEntries = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
+      const maxLang = langEntries[0]?.[1] || 1;
+      document.getElementById('fm-lang-cloud').innerHTML = langEntries.length
+        ? langEntries.map(([name, count]) => {
+            const sz = count/maxLang > .6 ? 'sz-lg' : count/maxLang < .25 ? 'sz-sm' : '';
+            const on = advFilters.lang.includes(name) ? ' on' : '';
+            return `<div class="fm-tc${on} ${sz}" data-val="${escAttr(name)}" onclick="fmToggleTag(this,'lang')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;
+          }).join('')
+        : '<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No language data</span>';
+
+      document.getElementById('fm-bc-all').textContent = allBooks.length;
+      document.getElementById('fm-bc-yes').textContent = allBooks.filter(b => isBorrowable(b)).length;
+      document.getElementById('fm-bc-no').textContent  = allBooks.filter(b => !isBorrowable(b)).length;
+      fmUpdateMatchCount();
+    }
+
+    function fmToggleTag(el, group) {
+      const val = el.dataset.val;
+      el.classList.toggle('on');
+      if (el.classList.contains('on')) { if (!advFilters[group].includes(val)) advFilters[group].push(val); }
+      else { advFilters[group] = advFilters[group].filter(v => v !== val); }
+      fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+    }
+
+    function fmSelectBorrow(val) {
+      advFilters.borrow = val;
+      ['all','yes','no'].forEach(k => {
+        document.getElementById('fm-brow-'+k).classList.toggle('on', k === val);
+        const radio = document.getElementById('fmBorrow'+k.charAt(0).toUpperCase()+k.slice(1));
+        if (radio) radio.checked = (k === val);
+      });
+      fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+    }
+
+    function fmFilterCloud(cloudId, q) {
+      document.querySelectorAll('#'+cloudId+' .fm-tc').forEach(tc => {
+        const label = tc.childNodes[0].textContent.toLowerCase();
+        tc.style.display = (!q || label.includes(q.toLowerCase())) ? '' : 'none';
+      });
+    }
+
+    function fmDateShortcut(type, el) {
+      document.querySelectorAll('.fm-shortcut').forEach(d => d.classList.remove('on'));
+      el.classList.add('on');
+      const now = new Date(), pad = n => String(n).padStart(2,'0');
+      const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      let from = new Date(), to = new Date();
+      if      (type==='today')   { from = to = new Date(); }
+      else if (type==='week')    { from = new Date(); from.setDate(now.getDate()-now.getDay()); }
+      else if (type==='month')   { from = new Date(now.getFullYear(),now.getMonth(),1); }
+      else if (type==='quarter') { const q=Math.floor(now.getMonth()/3); from=new Date(now.getFullYear(),q*3,1); }
+      else if (type==='year')    { from = new Date(now.getFullYear(),0,1); }
+      document.getElementById('fmDateFrom').value = fmt(from);
+      document.getElementById('fmDateTo').value   = fmt(to);
+      advFilters.dateFrom = fmt(from);
+      advFilters.dateTo   = fmt(to);
+      fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+    }
+
+    function fmUpdateDate() {
+      advFilters.dateFrom = document.getElementById('fmDateFrom').value;
+      advFilters.dateTo   = document.getElementById('fmDateTo').value;
+      document.querySelectorAll('.fm-shortcut').forEach(d => d.classList.remove('on'));
+      fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges();
+    }
+
+    function fmSyncFromState() {
+      fmSelectBorrow(advFilters.borrow);
+      const df = document.getElementById('fmDateFrom'), dt = document.getElementById('fmDateTo');
+      if (df) df.value = advFilters.dateFrom || '';
+      if (dt) dt.value = advFilters.dateTo   || '';
+      fmUpdateChips(); fmUpdateRailBadges(); fmUpdateMatchCount();
+    }
+
+    function fmCountMatches() {
+      return allBooks.filter(b => {
+        if (advFilters.cat.length   && !advFilters.cat.includes(b.category))         return false;
+        if (advFilters.genre.length && !advFilters.genre.includes(b.class||b.genre)) return false;
+        if (advFilters.lang.length  && !advFilters.lang.includes(b.language))        return false;
+        if (advFilters.borrow==='yes' && !isBorrowable(b)) return false;
+        if (advFilters.borrow==='no'  &&  isBorrowable(b)) return false;
+        if (advFilters.dateFrom && b.date_added && b.date_added < advFilters.dateFrom) return false;
+        if (advFilters.dateTo   && b.date_added && b.date_added > advFilters.dateTo)   return false;
+        return true;
+      }).length;
+    }
+
+    function fmUpdateMatchCount() {
+      const n = fmCountMatches();
+      document.getElementById('fmMatchCount').innerHTML = `<strong>${n}</strong> book${n!==1?'s':''} match`;
+    }
+
+    function fmUpdateRailBadges() {
+      const rb = (id, n) => { const el=document.getElementById('frb-'+id); if(!el)return; el.textContent=n; el.style.display=n?'':'none'; };
+      rb('cat',   advFilters.cat.length);
+      rb('genre', advFilters.genre.length);
+      rb('borrow', advFilters.borrow !== 'all' ? 1 : 0);
+      rb('lang',  advFilters.lang.length);
+      rb('date',  (advFilters.dateFrom || advFilters.dateTo) ? 1 : 0);
+    }
+
+    function fmUpdateChips() {
+      const bar = document.getElementById('fmChipBar');
+      bar.innerHTML = '';
+      let any = false;
+      const addChip = (label, clearFn) => {
+        any = true;
+        const chip = document.createElement('div');
+        chip.className = 'fm-chip';
+        chip.innerHTML = `${esc(label)}<span class="fm-chip-x">✕</span>`;
+        chip.querySelector('.fm-chip-x').onclick = clearFn;
+        bar.appendChild(chip);
+      };
+      advFilters.cat.forEach(v => addChip('Cat: '+v, () => {
+        advFilters.cat = advFilters.cat.filter(x=>x!==v);
+        document.querySelectorAll('#fm-cat-cloud .fm-tc').forEach(el => { if(el.dataset.val===v) el.classList.remove('on'); });
+        fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges(); renderActiveChips();
+      }));
+      advFilters.genre.forEach(v => addChip('Genre: '+v, () => {
+        advFilters.genre = advFilters.genre.filter(x=>x!==v);
+        document.querySelectorAll('#fm-genre-cloud .fm-tc').forEach(el => { if(el.dataset.val===v) el.classList.remove('on'); });
+        fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges(); renderActiveChips();
+      }));
+      if (advFilters.borrow !== 'all') addChip(advFilters.borrow==='yes' ? 'Borrowable' : 'Reference only', () => {
+        fmSelectBorrow('all'); fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges(); renderActiveChips();
+      });
+      advFilters.lang.forEach(v => addChip('Lang: '+v, () => {
+        advFilters.lang = advFilters.lang.filter(x=>x!==v);
+        document.querySelectorAll('#fm-lang-cloud .fm-tc').forEach(el => { if(el.dataset.val===v) el.classList.remove('on'); });
+        fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges(); renderActiveChips();
+      }));
+      if (advFilters.dateFrom || advFilters.dateTo) addChip('Date: '+(advFilters.dateFrom||'…')+' → '+(advFilters.dateTo||'…'), () => {
+        advFilters.dateFrom = ''; advFilters.dateTo = '';
+        const df=document.getElementById('fmDateFrom'), dt=document.getElementById('fmDateTo');
+        if(df) df.value=''; if(dt) dt.value='';
+        document.querySelectorAll('.fm-shortcut').forEach(d => d.classList.remove('on'));
+        fmUpdateMatchCount(); fmUpdateChips(); fmUpdateRailBadges(); renderActiveChips();
+      });
+      if (!any) bar.innerHTML = '<span class="fm-no-active">No filters active</span>';
+    }
+
+    function fmApply() { closeFilterModal(); applyFilter(); renderActiveChips(); }
+
+    function fmResetAll() {
+      advFilters = { cat: [], genre: [], borrow: 'all', lang: [], dateFrom: '', dateTo: '' };
+      document.querySelectorAll('#filterModal .fm-tc.on').forEach(el => el.classList.remove('on'));
+      fmSyncFromState(); fmUpdateChips(); fmUpdateRailBadges(); fmUpdateMatchCount();
+    }
+
+    function clearAllFilters() {
+      advFilters = { cat: [], genre: [], borrow: 'all', lang: [], dateFrom: '', dateTo: '' };
+      document.getElementById('searchInput').value = '';
+      applyFilter(); renderActiveChips();
+    }
+
+    function renderActiveChips() {
+      const strip = document.getElementById('activeFilterChips');
+      strip.innerHTML = '';
+      let count = 0;
+      const addChip = (label, clearFn) => {
+        count++;
+        const c = document.createElement('div');
+        c.className = 'fac';
+        c.innerHTML = `${label} <i class="bi bi-x"></i>`;
+        c.onclick = () => { clearFn(); applyFilter(); renderActiveChips(); };
+        strip.appendChild(c);
+      };
+      advFilters.cat.forEach(v => addChip('Category: '+v, () => { advFilters.cat = advFilters.cat.filter(x=>x!==v); }));
+      advFilters.genre.forEach(v => addChip('Genre: '+v, () => { advFilters.genre = advFilters.genre.filter(x=>x!==v); }));
+      advFilters.lang.forEach(v => addChip('Language: '+v, () => { advFilters.lang = advFilters.lang.filter(x=>x!==v); }));
+      if (advFilters.borrow !== 'all') addChip(advFilters.borrow==='yes' ? 'Borrowable' : 'Reference only', () => { advFilters.borrow='all'; });
+      if (advFilters.dateFrom || advFilters.dateTo) addChip('Date: '+(advFilters.dateFrom||'…')+' → '+(advFilters.dateTo||'…'), () => { advFilters.dateFrom=''; advFilters.dateTo=''; });
+      strip.style.display = count ? 'flex' : 'none';
+      const dot = document.getElementById('filterDot');
+      const clearBtn = document.getElementById('filterClearBtn');
+      if (dot) dot.classList.toggle('show', count > 0);
+      if (clearBtn) clearBtn.style.display = count ? '' : 'none';
+    }
+
+    /* ── APPLY FILTER (updated — uses advFilters) ── */
+    function applyFilter() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      let r = allBooks;
+      if (advFilters.cat.length)   r = r.filter(b => advFilters.cat.includes(b.category));
+      if (advFilters.genre.length) r = r.filter(b => advFilters.genre.includes(b.class || b.genre));
+      if (advFilters.lang.length)  r = r.filter(b => advFilters.lang.includes(b.language));
+      if (advFilters.borrow === 'yes') r = r.filter(b =>  isBorrowable(b));
+      if (advFilters.borrow === 'no')  r = r.filter(b => !isBorrowable(b));
+      if (advFilters.dateFrom) r = r.filter(b => b.date_added && b.date_added >= advFilters.dateFrom);
+      if (advFilters.dateTo)   r = r.filter(b => b.date_added && b.date_added <= advFilters.dateTo);
+      if (q) r = r.filter(b =>
+        (b.title ||'').toLowerCase().includes(q) ||
+        (b.author||'').toLowerCase().includes(q) ||
+        (b.isbn  ||'').toLowerCase().includes(q)
+      );
+      filteredBooks = [...r].sort((a, b) => new Date(b.date_added) - new Date(a.date_added));
+      currentPage = 1;
+      renderPage();
+    }
+
+    function renderPage() {
+      document.getElementById('skeletonGrid').style.display='none';
+      document.getElementById('resultsLbl').textContent=`${filteredBooks.length} book${filteredBooks.length!==1?'s':''}`;
+      const grid=document.getElementById('booksGrid'); const empty=document.getElementById('emptyState'); const pagBar=document.getElementById('pagBar');
+      if(!filteredBooks.length){grid.style.display='none';pagBar.style.display='none';showEmpty('No books found matching your search.');return;}
+      empty.classList.remove('show'); grid.style.display='grid';
+      const newest3=filteredBooks.slice(0,3).map(b=>b.id);
+      const start=(currentPage-1)*BOOKS_PER_PAGE;
+      grid.innerHTML=filteredBooks.slice(start,start+BOOKS_PER_PAGE).map(b=>buildBookCard(b,newest3.includes(b.id))).join('');
+      renderPagination();
+    }
+
+    function buildBookCard(book,isNew) {
+      const dateStr=book.date_added?new Date(book.date_added).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}):'—';
+      const isFav=favorites.includes(book.id); const thumb=book.thumbnail_url||'';
+      const coverHTML=thumb?`<img class="book-cover-img" src="${esc(thumb)}" alt="${esc(book.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-fallback" style="display:none;position:absolute;inset:0;"><i class="bi bi-book book-cover-icon"></i></div>`:`<div class="book-cover-fallback"><i class="bi bi-book book-cover-icon"></i></div>`;
+      const borrowBtn=isBorrowable(book)?`<button class="btn-borrow" onclick="handleBorrow(event)"><i class="bi bi-bookmark-plus-fill"></i> Borrow</button>`:``;
+      return `<div class="book-card" data-id="${book.id}">${isNew?'<div class="ribbon-new">New</div>':''}<div class="book-cover">${coverHTML}<div class="book-cover-overlay"></div><button class="btn-bookmark ${isFav?'bookmarked':''}" onclick="toggleFavorite(event,${book.id})" title="${isFav?'Remove from favorites':'Add to favorites'}"><i class="bi ${isFav?'bi-bookmark-star-fill':'bi-bookmark-star'}"></i></button>${book.category?`<span class="book-category-tag">${esc(book.category)}</span>`:''}</div><div class="book-card-body"><p class="book-title">${esc(book.title)}</p><p class="book-author"><i class="bi bi-person-fill me-1" style="opacity:.5;font-size:.68rem;"></i>${esc(book.author)}</p><p class="book-meta">Added ${dateStr}</p><div class="book-actions"><button class="btn-details" onclick="openDetail(${book.id})"><i class="bi bi-eye-fill"></i> Details</button>${borrowBtn}</div></div></div>`;
+    }
+
+    function renderPagination() { const total=filteredBooks.length,pages=Math.ceil(total/BOOKS_PER_PAGE);const bar=document.getElementById('pagBar');if(pages<=1){bar.style.display='none';return;}bar.style.display='flex';const s=(currentPage-1)*BOOKS_PER_PAGE+1;const e=Math.min(currentPage*BOOKS_PER_PAGE,total);document.getElementById('pagInfo').textContent=`Showing ${s}–${e} of ${total}`;let lo=Math.max(1,currentPage-2),hi=Math.min(pages,currentPage+2);let html=`<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;if(lo>1)html+=`<button class="pag-btn" onclick="goPage(1)">1</button>${lo>2?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}`;for(let p=lo;p<=hi;p++)html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;if(hi<pages)html+=`${hi<pages-1?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}<button class="pag-btn" onclick="goPage(${pages})">${pages}</button>`;html+=`<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;document.getElementById('pagBtns').innerHTML=html; }
+    function goPage(p) { const pages=Math.ceil(filteredBooks.length/BOOKS_PER_PAGE);if(p<1||p>pages)return;currentPage=p;renderPage();window.scrollTo({top:0,behavior:'smooth'}); }
+
+    /* ── FAVORITES ── */
+    async function toggleFavorite(e,id) { e.stopPropagation();if(favPending)return;const btn=e.currentTarget;if(favorites.includes(id)){favPending=true;try{const r=await fetch(`/api/user/favorites/${id}/delete`,{method:'POST'});if(r.ok){favorites=favorites.filter(f=>f!==id);btn.classList.remove('bookmarked');btn.querySelector('i').className='bi bi-bookmark-star';btn.title='Add to favorites';renderFavoritesStrip();if(_modalBookId===id)updateModalFavBtn();}}catch{}favPending=false;}else{if(favorites.length>=MAX_FAV){showToast();return;}favPending=true;try{const r=await fetch(`/api/user/favorites/${id}`,{method:'POST'});if(r.ok){favorites.push(id);btn.classList.add('bookmarked');btn.querySelector('i').className='bi bi-bookmark-star-fill';btn.title='Remove from favorites';btn.classList.remove('pop');void btn.offsetWidth;btn.classList.add('pop');btn.addEventListener('animationend',()=>btn.classList.remove('pop'),{once:true});renderFavoritesStrip();if(_modalBookId===id)updateModalFavBtn();}else if(r.status===400){showToast();}}catch{}favPending=false;} }
+    function renderFavoritesStrip() { document.getElementById('favCount').textContent=`${favorites.length} / ${MAX_FAV}`;let html='';for(let i=0;i<MAX_FAV;i++){const id=favorites[i];const book=id!=null?allBooks.find(b=>b.id===id):null;if(book){html+=`<div class="fav-slot filled" onclick="scrollToBook(${book.id})" title="Jump to: ${esc(book.title)}"><button class="slot-remove" onclick="removeFavSlot(event,${book.id})" title="Remove"><i class="bi bi-x"></i></button><div class="slot-bookmark-icon"><i class="bi bi-bookmark-star-fill"></i></div><div class="slot-title">${esc(book.title)}</div><div class="slot-author">${esc(book.author)}</div></div>`;}else{html+=`<div class="fav-slot empty"><div class="slot-placeholder"><i class="bi bi-bookmark-plus"></i><span>Empty</span></div></div>`;}}document.getElementById('favSlots').innerHTML=html; }
+    async function removeFavSlot(e,id) { e.stopPropagation();if(favPending)return;favPending=true;try{const r=await fetch(`/api/user/favorites/${id}/delete`,{method:'POST'});if(r.ok){favorites=favorites.filter(f=>f!==id);renderFavoritesStrip();const card=document.querySelector(`.book-card[data-id="${id}"]`);if(card){const btn=card.querySelector('.btn-bookmark');btn.classList.remove('bookmarked');btn.querySelector('i').className='bi bi-bookmark-star';btn.title='Add to favorites';}if(_modalBookId===id)updateModalFavBtn();}}catch{}favPending=false; }
+    function scrollToBook(id) { const idx=filteredBooks.findIndex(b=>b.id===id);if(idx===-1){advFilters={cat:[],genre:[],borrow:'all',lang:[],dateFrom:'',dateTo:''};document.getElementById('searchInput').value='';applyFilter();renderActiveChips();setTimeout(()=>scrollToBook(id),150);return;}const tp=Math.floor(idx/BOOKS_PER_PAGE)+1;if(tp!==currentPage){currentPage=tp;renderPage();}setTimeout(()=>{const card=document.querySelector(`.book-card[data-id="${id}"]`);if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.boxShadow=`0 0 0 2px var(--gold)`;setTimeout(()=>card.style.boxShadow='',2000);}},100); }
+
+    /* ── SEARCH DROPDOWN ── */
+    const searchInput=document.getElementById('searchInput'); const searchDropdown=document.getElementById('searchDropdown');
+    function openDropdown()  { searchDropdown.classList.add('show');searchInput.classList.add('dropdown-open'); }
+    function closeDropdown() { searchDropdown.classList.remove('show');searchInput.classList.remove('dropdown-open'); }
+    function renderDropdown() { const q=searchInput.value.trim();if(!q)renderHistoryDropdown();else renderSuggestionDropdown(q); }
+    function renderStorageFullDropdown() { searchDropdown.innerHTML=`<div class="dd-storage-full"><div class="sf-icon"><i class="bi bi-hdd-fill"></i></div><h4>Storage Full</h4><p>Clear your search history or remove some favorites to save new searches.</p><a href="/user/settings"><i class="bi bi-trash3-fill"></i> Manage Storage</a></div>`;openDropdown(); }
+    function renderHistoryDropdown() { if(!searchHistory.length){searchDropdown.innerHTML=`<div class="dd-empty"><i class="bi bi-clock me-2" style="opacity:.4;"></i>No recent searches</div>`;openDropdown();return;}const items=searchHistory.slice(0,8).map(query=>`<div class="history-item" onclick="selectHistory('${escJs(query)}')"><div class="hist-icon"><i class="bi bi-clock-history"></i></div><span class="hist-text">${esc(query)}</span><button class="hist-remove" onclick="deleteHistoryItem(event,'${escJs(query)}')" title="Remove"><i class="bi bi-x"></i></button></div>`).join('');searchDropdown.innerHTML=`<div class="dd-section-header"><span><i class="bi bi-clock me-1"></i> Recent Searches</span><button class="dd-clear-all" onclick="clearAllHistory()">Clear all</button></div>${items}`;openDropdown(); }
+    function renderSuggestionDropdown(q) { const ql=q.toLowerCase();function hi(text,q){const idx=text.toLowerCase().indexOf(q);if(idx===-1)return esc(text);return esc(text.slice(0,idx))+`<strong style="color:var(--accent)">${esc(text.slice(idx,idx+q.length))}</strong>`+esc(text.slice(idx+q.length));}const histMatches=searchHistory.filter(h=>h.toLowerCase().includes(ql)).slice(0,3);const bookMatches=allBooks.filter(b=>(b.title||'').toLowerCase().includes(ql)||(b.author||'').toLowerCase().includes(ql)||(b.isbn||'').toLowerCase().includes(ql)).slice(0,6);if(!histMatches.length&&!bookMatches.length){searchDropdown.innerHTML=`<div class="dd-empty"><i class="bi bi-search me-2" style="opacity:.4;"></i>No results found</div>`;openDropdown();return;}let html='';if(histMatches.length){html+=`<div class="dd-section-header"><span><i class="bi bi-clock me-1"></i> Recent</span></div>`;html+=histMatches.map(query=>`<div class="history-item" onclick="selectHistory('${escJs(query)}')"><div class="hist-icon"><i class="bi bi-clock-history"></i></div><span class="hist-text">${hi(query,ql)}</span><button class="hist-remove" onclick="deleteHistoryItem(event,'${escJs(query)}')" title="Remove"><i class="bi bi-x"></i></button></div>`).join('');}if(bookMatches.length){html+=`<div class="dd-section-header"><span><i class="bi bi-book me-1"></i> Books</span></div>`;html+=bookMatches.map(b=>{const thumbHtml=b.thumbnail_url?`<img src="${esc(b.thumbnail_url)}" style="width:30px;height:42px;object-fit:cover;border-radius:5px;flex-shrink:0;" onerror="this.style.display='none'">`:`<div class="sug-icon"><i class="bi bi-book-half"></i></div>`;return`<div class="suggestion-item" onclick="selectSuggestion('${escJs(b.title)}',${b.id})">${thumbHtml}<div><div class="sug-title">${hi(b.title||'',ql)}</div><div class="sug-author">${esc(b.author)}</div></div></div>`;}).join('');}searchDropdown.innerHTML=html;openDropdown(); }
+    function onSearchFocus() { if(storageState.is_full){renderStorageFullDropdown();return;}renderDropdown(); }
+    function onSearchInput(val) { applyFilter();if(storageState.is_full){renderStorageFullDropdown();return;}renderDropdown();clearTimeout(saveHistoryTimer);if(val.trim().length>=3)saveHistoryTimer=setTimeout(()=>saveQueryToDB(val.trim()),600); }
+    function onSearchKeydown(e) { if(e.key==='Enter'){const q=searchInput.value.trim();closeDropdown();applyFilter();if(q.length>=2&&!storageState.is_full)saveQueryToDB(q);}else if(e.key==='Escape')closeDropdown(); }
+    function selectHistory(query) { searchInput.value=query;closeDropdown();applyFilter();if(!storageState.is_full)saveQueryToDB(query); }
+    function selectSuggestion(title,id) { searchInput.value=title;closeDropdown();applyFilter();if(!storageState.is_full)saveQueryToDB(title);setTimeout(()=>scrollToBook(id),150); }
+    function deleteHistoryItem(e,query) { e.stopPropagation();removeHistoryItem(query); }
+    document.addEventListener('click', e => { if(!document.getElementById('searchBox').contains(e.target))closeDropdown(); });
+
+    function showEmpty(msg) { document.getElementById('skeletonGrid').style.display='none'; document.getElementById('emptyMsg').textContent=msg; document.getElementById('emptyState').classList.add('show'); document.getElementById('booksGrid').style.display='none'; }
+
+    /* ── BOOK DETAIL MODAL ── */
+    function switchTab(tab) {
+      _activeTab = tab;
+      ['overview','details'].forEach(t => {
+        document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+        document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+      });
+    }
+
+    function detailCell(icon, label, value, full=false) {
+      const hasVal = value && value !== '—' && value !== '';
+      return `<div class="detail-cell${full?' full':''}">
+        <div class="detail-label"><i class="bi ${icon}"></i> ${label}</div>
+        <div class="detail-value${hasVal?'':' empty'}">${hasVal ? esc(value) : 'Not specified'}</div>
+      </div>`;
+    }
+
+    function openDetail(id) {
+      const book = allBooks.find(b=>b.id===id);
+      if(!book) return;
+      _modalBookId = id;
+      const thumb = book.thumbnail_url || '';
+      document.getElementById('modalHeroBg').style.backgroundImage = thumb ? `url('${esc(thumb)}')` : 'linear-gradient(135deg,#1e3d56,#0d1a24)';
+      const coverWrap = document.getElementById('modalCoverWrap');
+      coverWrap.innerHTML = thumb
+        ? `<img class="modal-cover-img" src="${esc(thumb)}" alt="${esc(book.title)}" onerror="this.outerHTML='<i class=\\'bi bi-book modal-cover-icon\\'></i>'">`
+        : `<i class="bi bi-book modal-cover-icon"></i>`;
+      document.getElementById('modalTitle').textContent = book.title || '—';
+      const subtitleEl = document.getElementById('modalSubtitle');
+      if(book.subtitle){subtitleEl.textContent=book.subtitle;subtitleEl.style.display='';}else{subtitleEl.style.display='none';}
+      document.getElementById('modalAuthor').textContent = book.author || '—';
+      let pillsHtml = '';
+      if(book.category) pillsHtml += `<span class="modal-pill cat">${esc(book.category)}</span>`;
+      if(book.class)    pillsHtml += `<span class="modal-pill cls">${esc(book.class)}</span>`;
+      pillsHtml += isBorrowable(book)
+        ? `<span class="modal-pill borrow-yes"><i class="bi bi-bookmark-check-fill"></i> Borrowable</span>`
+        : `<span class="modal-pill borrow-no"><i class="bi bi-bookmark-x-fill"></i> Not Borrowable</span>`;
+      document.getElementById('modalPills').innerHTML = pillsHtml;
+      let dotClass='available', statusText='Available for Borrowing', statusSub='You can request to borrow this book';
+      if(!isBorrowable(book)){dotClass='unavailable';statusText='Not for Borrowing';statusSub='This item is for reference use only';}
+      document.getElementById('overviewStatusRow').innerHTML = `
+        <div class="status-dot ${dotClass}"></div>
+        <span class="status-label">${statusText}</span>
+        <span class="status-sub">${statusSub}</span>`;
+      const descText = document.getElementById('modalDescText');
+      if(book.description && book.description.trim()){
+        descText.textContent = book.description;
+      } else {
+        descText.innerHTML = '<span class="no-desc">No description available for this book.</span>';
+      }
+      const shelf = book.shelf_location || '';
+      const shelfVal = document.getElementById('shelfHighlightValue');
+      if(shelf){shelfVal.textContent=shelf;shelfVal.className='shelf-highlight-value';}
+      else{shelfVal.textContent='Not assigned';shelfVal.className='shelf-highlight-value empty';}
+      document.getElementById('detailGridBiblio').innerHTML =
+        detailCell('bi-upc-scan',    'ISBN',        book.isbn) +
+        detailCell('bi-person-fill', 'Author',      book.author) +
+        detailCell('bi-subtract',    'Edition',     book.edition) +
+        detailCell('bi-file-text',   'Page Count',  book.page_count ? book.page_count+' pages' : '') +
+        detailCell('bi-card-text',   'Subtitle',    book.subtitle, true);
+      document.getElementById('detailGridPub').innerHTML =
+        detailCell('bi-building',       'Publisher',       book.publisher) +
+        detailCell('bi-calendar3',      'Published Date',  book.published_date) +
+        detailCell('bi-translate',      'Language',        book.language ? book.language.toUpperCase() : '') +
+        detailCell('bi-c-circle',       'Copyright',       book.copy_right) +
+        detailCell('bi-calendar-check', 'Date Received',   book.date_received
+          ? new Date(book.date_received).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})
+          : '') +
+        detailCell('bi-clock-history',  'Date Added',      book.date_added
+          ? new Date(book.date_added).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'})
+          : '');
+      document.getElementById('detailGridClass').innerHTML =
+        detailCell('bi-hash',       'Call Number',     book.call_number) +
+        detailCell('bi-tag',        'Category',        book.category) +
+        detailCell('bi-layers',     'Class / DDC',     book.class) +
+        detailCell('bi-coin',       'Cost Price',      book.cost_price ? '₱'+Number(book.cost_price).toFixed(2) : '') +
+        detailCell('bi-bank',       'Source of Fund',  book.source_of_fund) +
+        detailCell('bi-globe',      'API Source',      book.api_source);
+      const borrowContainer = document.getElementById('modalBorrowContainer');
+      borrowContainer.innerHTML = isBorrowable(book)
+        ? `<button class="btn-modal-borrow" style="width:100%;" onclick="handleBorrow(event)"><i class="bi bi-bookmark-plus-fill"></i> Borrow This Book</button>`
+        : `<button class="btn-modal-borrow-disabled" style="width:100%;"><i class="bi bi-bookmark-x-fill"></i> Not Available for Borrowing</button>`;
+      updateModalFavBtn();
+      switchTab('overview');
+      document.getElementById('detailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function updateModalFavBtn() { const btn=document.getElementById('modalFavBtn');const icon=document.getElementById('modalFavIcon');if(!btn||!icon)return;const isFav=favorites.includes(_modalBookId);btn.className='btn-modal-fav'+(isFav?' bookmarked':'');icon.className=isFav?'bi bi-bookmark-star-fill':'bi bi-bookmark-star';btn.title=isFav?'Remove from favorites':'Add to favorites'; }
+    async function modalToggleFav() { if(_modalBookId==null||favPending)return;const cardBtn=document.querySelector(`.book-card[data-id="${_modalBookId}"] .btn-bookmark`);if(cardBtn){cardBtn.dispatchEvent(new Event('click',{bubbles:true}));}else{const id=_modalBookId;if(favorites.includes(id)){favPending=true;try{const r=await fetch(`/api/user/favorites/${id}/delete`,{method:'POST'});if(r.ok){favorites=favorites.filter(f=>f!==id);renderFavoritesStrip();updateModalFavBtn();}}catch{}favPending=false;}else{if(favorites.length>=MAX_FAV){showToast();return;}favPending=true;try{const r=await fetch(`/api/user/favorites/${id}`,{method:'POST'});if(r.ok){favorites.push(id);renderFavoritesStrip();updateModalFavBtn();}else if(r.status===400)showToast();}catch{}favPending=false;}} }
+
+    function closeOverlay() { document.getElementById('detailModal').classList.remove('open');document.body.style.overflow='';_modalBookId=null; }
+    document.getElementById('detailModal').addEventListener('click', e => { if(e.target===document.getElementById('detailModal'))closeOverlay(); });
+
+    let toastTimer=null;
+    function showToast() { const t=document.getElementById('favToast');t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,3500); }
+    function hideToast() { document.getElementById('favToast').classList.remove('show'); }
+
+    /* ── LIGHTBOX ── */
+    let _lbForms=[],_lbIdx=0,_lbScale=1,_lbDragging=false,_lbDragStartX=0,_lbDragStartY=0,_lbScrollLeft=0,_lbScrollTop=0;
+    function openFormLightbox(idx) { const step=BS_STEPS[BS_STEPS.length-1];_lbForms=step.forms||[];_lbIdx=idx;_lbScale=1;const lb=document.getElementById('formLightbox');lb.style.display='flex';document.body.style.overflow='hidden';lbRender();document.getElementById('lbImgWrap').onwheel=(e)=>{e.preventDefault();lbZoom(e.deltaY<0?0.15:-0.15);}; }
+    function lbRender() { const f=_lbForms[_lbIdx];document.getElementById('lbImg').src=f.src;document.getElementById('lbImg').style.transform=`scale(${_lbScale})`;document.getElementById('lbLabel').textContent=f.label;document.getElementById('lbPrev').style.opacity=_lbIdx>0?'1':'0.2';document.getElementById('lbNext').style.opacity=_lbIdx<_lbForms.length-1?'1':'0.2';const wrap=document.getElementById('lbImgWrap');wrap.scrollLeft=0;wrap.scrollTop=0; }
+    function lbNav(d) { const next=_lbIdx+d;if(next<0||next>=_lbForms.length)return;_lbIdx=next;_lbScale=1;lbRender(); }
+    function lbZoom(delta) { _lbScale=Math.min(5,Math.max(0.5,_lbScale+delta));document.getElementById('lbImg').style.transform=`scale(${_lbScale})`; }
+    function lbResetZoom() { _lbScale=1;document.getElementById('lbImg').style.transform='scale(1)';const wrap=document.getElementById('lbImgWrap');wrap.scrollLeft=0;wrap.scrollTop=0; }
+    function closeFormLightbox() { document.getElementById('formLightbox').style.display='none';document.body.style.overflow=''; }
+    function closeLightboxOnBg(e) { if(e.target===document.getElementById('formLightbox'))closeFormLightbox(); }
+    function lbDragStart(e) { if(e.button!==0)return;_lbDragging=true;const wrap=document.getElementById('lbImgWrap');_lbDragStartX=e.pageX-wrap.offsetLeft;_lbDragStartY=e.pageY-wrap.offsetTop;_lbScrollLeft=wrap.scrollLeft;_lbScrollTop=wrap.scrollTop;wrap.style.cursor='grabbing'; }
+    function lbDragMove(e) { if(!_lbDragging)return;e.preventDefault();const wrap=document.getElementById('lbImgWrap');wrap.scrollLeft=_lbScrollLeft-(e.pageX-wrap.offsetLeft-_lbDragStartX);wrap.scrollTop=_lbScrollTop-(e.pageY-wrap.offsetTop-_lbDragStartY); }
+    function lbDragEnd() { _lbDragging=false;document.getElementById('lbImgWrap').style.cursor='grab'; }
+    document.addEventListener('keydown', e => { if(e.key==='Escape'&&document.getElementById('formLightbox').style.display==='flex')closeFormLightbox(); });
+
+    /* ── FOOTER YEAR + LEGAL ESC ── */
+    const footerYearEl = document.getElementById('footerYear');
+    if(footerYearEl) footerYearEl.textContent = new Date().getFullYear();
+    document.addEventListener('keydown', e => {
+      if(e.key==='Escape'){
+        const pm=document.getElementById('privacyModal'); if(pm) pm.style.display='none';
+        const tm=document.getElementById('termsModal');   if(tm) tm.style.display='none';
+      }
+    });
+
+    boot();
+  </script>
+  <script>
+  (function () {
+    if (typeof window.Android === "undefined") return;
+    const isOffline = window.Android.isOffline() === "true";
+    if (!isOffline) return;
+    let allBooks = [];
+    try { const data = JSON.parse(window.Android.getCachedBooks()); allBooks = data.books || []; } catch(e) { console.error("Offline: failed to parse cached books", e); }
+    function buildCard(book) { return `<div class="book-card" data-title="${(book.title||'').toLowerCase()}" data-author="${(book.author||'').toLowerCase()}" data-genre="${(book.genre||'').toLowerCase()}"><h3 class="book-title">${book.title||'Unknown Title'}</h3><p class="book-author">by ${book.author||'Unknown Author'}</p>${book.genre?`<span class="book-genre">${book.genre}</span>`:''} ${book.category?`<span class="book-category">${book.category}</span>`:''} ${book.isbn?`<p class="book-isbn">ISBN: ${book.isbn}</p>`:''} ${book.publisher?`<p class="book-publisher">${book.publisher}</p>`:''}<p class="book-date">Added: ${book.date_added||''}</p><span class="book-status ${book.is_borrowable?'borrowable':'not-borrowable'}">${book.is_borrowable?'Available to Borrow':'Not Borrowable'}</span></div>`; }
+    function renderBooks(books) { const container=document.getElementById('books-container'); if(!container)return; container.innerHTML=books.length?books.map(buildCard).join(''):"<p class='no-results'>No books found.</p>"; }
+    function filterBooks(query) { const q=query.trim().toLowerCase(); if(!q)return allBooks; return allBooks.filter(b=>(b.title||'').toLowerCase().includes(q)||(b.author||'').toLowerCase().includes(q)||(b.genre||'').toLowerCase().includes(q)||(b.isbn||'').toLowerCase().includes(q)); }
+    function attachSearch() { const input=document.getElementById('search-input'); if(!input)return; input.addEventListener('input',function(){renderBooks(filterBooks(this.value));}); }
+    const banner=document.createElement('div'); banner.style.cssText='background:#f59e0b;color:#000;text-align:center;padding:8px;font-size:14px;font-weight:600;position:sticky;top:0;z-index:999;'; banner.textContent='📶 You are offline — showing cached books'; document.body.prepend(banner);
+    const _origFetch=window.fetch; window.fetch=function(resource){ if(typeof resource==='string'&&resource.includes('/api/books')){ return Promise.resolve(new Response('{"books":[]}',{status:200,headers:{'Content-Type':'application/json'}})); } return _origFetch.apply(this,arguments); };
+    if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){renderBooks(allBooks);attachSearch();});}else{renderBooks(allBooks);attachSearch();}
+  })();
+  </script>
+</body>
+</html>

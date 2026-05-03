@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Book Management | Iloilo Public Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --accent:     #9fc1e1;
+      --accent2:    #48c78e;
+      --bg1:        #1e2d3d;
+      --bg2:        #2f3f4d;
+      --bg3:        #42586b;
+      --card:       rgba(255,255,255,0.06);
+      --card-b:     rgba(255,255,255,0.10);
+      --tl:         #dae8f5;
+      --danger:     #ff6363;
+      --warn:       #ff9800;
+      --gold:       #f5c842;
+      --mono:       'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── PAGE ── */
+    .page-wrap { padding: 80px 40px 60px; max-width: 1500px; margin: 0 auto; }
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:28px; }
+    .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; }
+    .page-header h1 span { color:var(--accent); }
+    .page-header p { color:var(--tl); font-size:.88rem; margin-top:4px; }
+
+    .btn-add { display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#0d1a24; border:none; border-radius:12px; padding:10px 20px; font-size:.9rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; white-space:nowrap; }
+    .btn-add:hover { background:#b8d4ec; transform:translateY(-1px); }
+
+    .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+    .stat-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(8px); transition:.2s; }
+    .stat-card:hover { background:var(--card-b); transform:translateY(-2px); }
+    .stat-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+    .stat-icon.blue   { background:rgba(159,193,225,.18); color:var(--accent); }
+    .stat-icon.green  { background:rgba(72,199,142,.18);  color:var(--accent2); }
+    .stat-icon.orange { background:rgba(255,152,0,.18);   color:var(--warn); }
+    .stat-icon.red    { background:rgba(255,99,99,.18);   color:var(--danger); }
+    .stat-label { font-size:.73rem; color:var(--tl); margin-bottom:2px; }
+    .stat-val   { font-size:1.4rem; font-weight:700; line-height:1; }
+
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+    .search-box { position:relative; flex:1; min-width:240px; max-width:380px; }
+    .search-box i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; }
+    .search-box input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 14px 9px 38px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .search-box input::placeholder { color:rgba(255,255,255,.4); }
+    .search-box input:focus { border-color:var(--accent); background:rgba(255,255,255,.11); }
+    .filter-sel { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 13px; font-size:.88rem; font-family:'DM Sans',sans-serif; cursor:pointer; outline:none; transition:.2s; }
+    .filter-sel option { background:#253545; }
+    .filter-sel:focus { border-color:var(--accent); }
+    .results-lbl { font-size:.82rem; color:var(--tl); margin-left:auto; white-space:nowrap; }
+    .btn-del-sel { display:none; align-items:center; gap:7px; background:rgba(255,99,99,.15); border:1px solid rgba(255,99,99,.3); color:#ff9999; border-radius:10px; padding:9px 16px; font-size:.85rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; }
+    .btn-del-sel.show { display:inline-flex; }
+    .btn-del-sel:hover { background:rgba(255,99,99,.25); color:#fff; }
+
+    .tbl-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; backdrop-filter:blur(10px); }
+    .tbl-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:900px; }
+    thead tr { background:rgba(159,193,225,.09); }
+    thead th { padding:13px 16px; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--accent); white-space:nowrap; }
+    tbody tr { border-bottom:1px solid rgba(255,255,255,.05); transition:.15s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:rgba(255,255,255,.05); }
+    td { padding:12px 16px; font-size:.85rem; color:var(--tl); vertical-align:middle; }
+    td .book-title { font-weight:600; color:#fff; font-size:.88rem; }
+    td .book-sub   { font-size:.73rem; color:var(--tl); margin-top:1px; }
+    .isbn-cell { font-family:var(--mono); font-size:.77rem; color:rgba(255,255,255,.55); }
+    .cat-pill { display:inline-block; background:rgba(159,193,225,.12); color:var(--accent); border-radius:6px; padding:2px 8px; font-size:.72rem; font-weight:600; }
+    .inv-mini { display:inline-flex; align-items:center; gap:5px; font-size:.78rem; font-weight:600; }
+    .inv-dot  { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .inv-dot.green  { background:var(--accent2); }
+    .inv-dot.orange { background:var(--warn); }
+    .inv-dot.red    { background:var(--danger); }
+    .act-btn { display:inline-flex; align-items:center; gap:5px; background:transparent; border:1px solid rgba(255,255,255,.15); border-radius:8px; color:#fff; padding:5px 11px; font-size:.78rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; white-space:nowrap; }
+    .act-btn:hover { background:rgba(255,255,255,.1); border-color:var(--accent); color:var(--accent); }
+    .act-btn.del { border-color:rgba(255,99,99,.3); color:var(--danger); }
+    .act-btn.del:hover { background:rgba(255,99,99,.1); border-color:var(--danger); }
+    .cb { width:17px; height:17px; border-radius:4px; cursor:pointer; appearance:none; border:1.5px solid rgba(255,255,255,.25); background:rgba(255,255,255,.06); transition:.18s; outline:none; }
+    .cb:hover { border-color:var(--accent); }
+    .cb:checked { background:var(--accent); border-color:var(--accent); }
+    .cb:checked::after { content:'✓'; display:block; text-align:center; color:#0d1a24; font-size:11px; font-weight:800; line-height:14px; }
+    .empty-row td { text-align:center; padding:56px 20px; color:var(--tl); }
+    .empty-row td i { font-size:3rem; opacity:.35; display:block; margin-bottom:10px; }
+    .pag-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:14px 18px; border-top:1px solid rgba(255,255,255,.07); }
+    .pag-info { font-size:.8rem; color:var(--tl); }
+    .pag-btns { display:flex; gap:5px; }
+    .pag-btn { width:32px; height:32px; border-radius:7px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#fff; font-size:.8rem; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.18s; }
+    .pag-btn:hover:not(:disabled) { background:rgba(255,255,255,.12); border-color:var(--accent); }
+    .pag-btn.active { background:var(--accent); color:#0d1a24; font-weight:700; border-color:var(--accent); }
+    .pag-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+    /* ── BASE MODAL ── */
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(5px); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .overlay.open { opacity:1; pointer-events:all; }
+    .m-box { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.18); border-radius:20px; padding:30px; width:100%; max-width:560px; max-height:92vh; overflow-y:auto; box-shadow:0 28px 70px rgba(0,0,0,.55); transform:translateY(18px); transition:transform .25s; }
+    .overlay.open .m-box { transform:translateY(0); }
+    .m-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+    .m-title { font-size:1.1rem; font-weight:700; letter-spacing:-.02em; }
+    .m-close { background:none; border:none; color:rgba(255,255,255,.45); font-size:1.3rem; cursor:pointer; transition:.18s; line-height:1; }
+    .m-close:hover { color:#fff; }
+    .f-section { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--accent); margin-bottom:10px; margin-top:18px; }
+    .f-section:first-of-type { margin-top:0; }
+    .f-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .f-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .fg { margin-bottom:13px; }
+    .fg label { display:block; font-size:.78rem; color:var(--tl); margin-bottom:5px; font-weight:600; }
+    .fg input, .fg select, .fg textarea { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:9px; color:#fff; padding:9px 12px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .fg input::placeholder, .fg textarea::placeholder { color:rgba(255,255,255,.35); }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent); background:rgba(255,255,255,.10); }
+    .fg select option { background:#253545; }
+    .fg textarea { resize:vertical; min-height:70px; }
+    .f-divider { border:none; border-top:1px solid rgba(255,255,255,.08); margin:16px 0; }
+    .err-msg { color:var(--danger); font-size:.78rem; margin-top:5px; display:none; }
+    .btn-submit { width:100%; background:var(--accent); color:#0d1a24; border:none; border-radius:11px; padding:11px; font-size:.92rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; margin-top:6px; }
+    .btn-submit:hover { background:#b8d4ec; }
+    .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
+    .btn-submit.danger { background:rgba(255,99,99,.8); color:#fff; }
+    .btn-submit.danger:hover { background:var(--danger); }
+    .inv-section { background:rgba(72,199,142,.07); border:1px solid rgba(72,199,142,.18); border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+    .inv-section-title { font-size:.75rem; font-weight:700; color:var(--accent2); text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px; }
+    .confirm-text { color:var(--tl); font-size:.9rem; line-height:1.6; margin-bottom:20px; }
+    .confirm-text strong { color:#fff; }
+    .btn-row { display:flex; gap:10px; }
+    .btn-cancel { flex:1; background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.15); border-radius:11px; padding:11px; font-size:.88rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; }
+    .btn-cancel:hover { background:rgba(255,255,255,.14); }
+
+    /* ══ ADD MODAL — wide 2-column ══ */
+    #addModal .m-box { max-width: 920px; }
+
+    .add-isbn-bar {
+      background: rgba(159,193,225,.055);
+      border: 1px solid rgba(159,193,225,.13);
+      border-radius: 13px;
+      padding: 15px 18px 12px;
+      margin-bottom: 18px;
+    }
+    .add-isbn-bar .f-section { margin-top:0; margin-bottom:10px; }
+
+    .add-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .add-col-left  { padding-right: 22px; border-right: 1px solid rgba(255,255,255,.08); }
+    .add-col-right { padding-left:  22px; }
+
+    .add-col-head { display: flex; align-items: center; gap: 8px; font-size: .71rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .add-col-head.book { color: var(--accent); }
+    .add-col-head.inv  { color: var(--accent2); }
+
+    .add-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 12px; }
+    .add-footer .err-msg    { margin:0; flex:1; }
+    .add-footer .btn-submit { margin:0; flex:1; }
+
+    .inv-add-section { background: rgba(72,199,142,.07); border: 1px solid rgba(72,199,142,.18); border-radius: 12px; padding: 14px 16px; margin-bottom: 13px; }
+    .inv-add-title { font-size: .72rem; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+
+    .tips-panel { background: rgba(159,193,225,.04); border: 1px solid rgba(159,193,225,.10); border-radius: 12px; padding: 14px 16px; margin-top: 8px; }
+    .tips-panel-title { font-size:.71rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px; }
+    .tips-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+    .tips-list li { display:flex; gap:8px; align-items:flex-start; font-size:.78rem; color:var(--tl); }
+    .tips-list li i { flex-shrink:0; margin-top:1px; }
+
+    /* ── EDIT MODAL 2-col ── */
+    #editModal .m-box { max-width:860px; }
+    .edit-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+    .edit-col-left { padding-right:24px; border-right:1px solid rgba(255,255,255,.08); }
+    .edit-col-right { padding-left:24px; }
+    .edit-col-head { display:flex; align-items:center; gap:8px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; padding-bottom:10px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,.07); }
+    .edit-col-head.book { color:var(--accent); }
+    .edit-col-head.inv  { color:var(--accent2); }
+    .edit-footer { margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,.08); display:flex; align-items:center; gap:12px; }
+    .edit-footer .err-msg    { margin:0; flex:1; }
+    .edit-footer .btn-submit { margin:0; flex:1; }
+
+    /* ── TOASTS ── */
+    .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
+    .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:12px 16px; font-size:.84rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; }
+    .toast-msg.success { border-color:rgba(72,199,142,.4); }
+    .toast-msg.error   { border-color:rgba(255,99,99,.4); }
+    .toast-msg.warn    { border-color:rgba(255,152,0,.4); }
+    @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+    /* ════ ISBN AUTOCATALOG ════ */
+    .isbn-row { display:flex; gap:8px; align-items:stretch; }
+    .isbn-row input { flex:1; font-family:var(--mono); letter-spacing:.04em; }
+    .isbn-row input.isbn-valid   { border-color:var(--accent2) !important; }
+    .isbn-row input.isbn-invalid { border-color:var(--danger)  !important; }
+
+    .btn-fetch { display:inline-flex; align-items:center; gap:6px; padding:0 16px; background:linear-gradient(135deg,#2a5070 0%,#1e3d56 100%); border:1px solid rgba(159,193,225,.35); border-radius:9px; color:var(--accent); font-size:.82rem; font-weight:700; font-family:'DM Sans',sans-serif; white-space:nowrap; cursor:pointer; transition:.2s; flex-shrink:0; }
+    .btn-fetch:hover:not(:disabled) { background:linear-gradient(135deg,#345f84 0%,#26496a 100%); border-color:var(--accent); transform:translateY(-1px); box-shadow:0 4px 14px rgba(159,193,225,.2); }
+    .btn-fetch:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .btn-fetch .spinner-border { width:13px; height:13px; border-width:2px; }
+
+    .isbn-source-badge { display:none; align-items:center; gap:5px; font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:20px; margin-top:6px; }
+    .isbn-source-badge.show { display:inline-flex; }
+    .isbn-source-badge.google      { background:rgba(72,199,142,.12);  color:var(--accent2); border:1px solid rgba(72,199,142,.25); }
+    .isbn-source-badge.openlibrary { background:rgba(159,193,225,.12); color:var(--accent);  border:1px solid rgba(159,193,225,.25); }
+    .isbn-source-badge.cache       { background:rgba(245,200,66,.1);   color:var(--gold);    border:1px solid rgba(245,200,66,.25); }
+
+    .cover-strip { display:none; gap:12px; align-items:flex-start; padding:10px 12px; background:rgba(159,193,225,.05); border:1px solid rgba(159,193,225,.12); border-radius:10px; margin-top:10px; animation:stripIn .35s ease; }
+    .cover-strip.show { display:flex; }
+    @keyframes stripIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .cover-img { width:48px; height:68px; object-fit:cover; border-radius:6px; flex-shrink:0; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); }
+    .cover-meta .cm-title  { font-weight:700; font-size:.85rem; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cover-meta .cm-author { font-size:.75rem; color:var(--tl); margin-top:2px; }
+    .cover-meta .cm-tags   { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+    .cover-meta .cm-tag    { font-size:.67rem; font-weight:700; padding:2px 7px; border-radius:5px; }
+    .cm-tag.lang  { background:rgba(159,193,225,.14); color:var(--accent); }
+    .cm-tag.pages { background:rgba(72,199,142,.14);  color:var(--accent2); }
+    .cm-tag.year  { background:rgba(245,200,66,.12);  color:var(--gold); }
+
+    @keyframes fieldPop { 0%{background:rgba(159,193,225,.18)} 60%{background:rgba(159,193,225,.10)} 100%{background:rgba(255,255,255,.07)} }
+    .autofilled { animation:fieldPop .6s ease forwards; }
+
+    .isbn-hint { font-size:.72rem; margin-top:4px; min-height:16px; transition:color .2s; }
+    .isbn-hint.ok  { color:var(--accent2); }
+    .isbn-hint.bad { color:var(--danger); }
+
+    .fetch-alert { padding:9px 12px; border-radius:9px; font-size:.81rem; font-weight:600; margin-top:10px; display:none; align-items:center; gap:8px; }
+    .fetch-alert.show    { display:flex; }
+    .fetch-alert.success { background:rgba(72,199,142,.1);  border:1px solid rgba(72,199,142,.3);  color:var(--accent2); }
+    .fetch-alert.error   { background:rgba(255,99,99,.1);   border:1px solid rgba(255,99,99,.3);   color:var(--danger); }
+    .fetch-alert.warn    { background:rgba(255,152,0,.1);   border:1px solid rgba(255,152,0,.3);   color:var(--warn); }
+
+    .fg textarea.desc-ta { min-height:82px; max-height:150px; }
+    .form-fetching { pointer-events:none; opacity:.7; }
+    .form-fetching .btn-fetch { pointer-events:all !important; opacity:1 !important; }
+
+    /* ── TOGGLE SWITCH ── */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 10px;
+      padding: 11px 14px;
+      margin-bottom: 13px;
+      cursor: pointer;
+      transition: .2s;
+      user-select: none;
+    }
+    .toggle-row:hover { background: rgba(255,255,255,.07); border-color: rgba(159,193,225,.25); }
+    .toggle-row.active { background: rgba(72,199,142,.07); border-color: rgba(72,199,142,.3); }
+    .toggle-label-text { display: flex; flex-direction: column; gap: 2px; }
+    .toggle-label-main { font-size: .82rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 7px; }
+    .toggle-label-sub  { font-size: .71rem; color: rgba(255,255,255,.4); }
+    .toggle-track {
+      width: 42px; height: 23px; border-radius: 12px; flex-shrink: 0;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+      position: relative; transition: .25s;
+    }
+    .toggle-track.on { background: rgba(72,199,142,.4); border-color: var(--accent2); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 15px; height: 15px; border-radius: 50%;
+      background: rgba(255,255,255,.5); transition: .25s;
+    }
+    .toggle-track.on .toggle-thumb {
+      left: 22px; background: var(--accent2);
+      box-shadow: 0 0 8px rgba(72,199,142,.6);
+    }
+    /* borrowable badge in table */
+    .borrow-badge { display:inline-flex; align-items:center; gap:4px; font-size:.7rem; font-weight:700; padding:2px 8px; border-radius:6px; }
+    .borrow-badge.yes { background:rgba(72,199,142,.12); color:var(--accent2); border:1px solid rgba(72,199,142,.25); }
+    .borrow-badge.no  { background:rgba(255,255,255,.06); color:rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.1); }
+
+    @media (max-width:880px) {
+      #addModal .m-box { max-width:540px; }
+      .add-cols { grid-template-columns:1fr; }
+      .add-col-left  { padding-right:0; border-right:none; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:18px; margin-bottom:18px; }
+      .add-col-right { padding-left:0; }
+    }
+    @media (max-width:768px) {
+      .page-wrap { padding:76px 14px 50px; }
+      .f-grid2, .f-grid3 { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+      .edit-cols { grid-template-columns:1fr; }
+      .edit-col-left { padding-right:0; border-right:none; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:18px; margin-bottom:18px; }
+      .edit-col-right { padding-left:0; }
+      #editModal .m-box { max-width:500px; }
+    }
+  </style>
+</head>
+<body>
+{% include 'librarian_template/topbar_template.html' %} 
+{% include 'librarian_template/sidebar_template.html' %}
+
+  <div class="page-wrap">
+    <div class="page-header">
+      <div>
+        <h1><i class="bi bi-book-half me-2" style="color:var(--accent)"></i>Book <span>Management</span></h1>
+        <p>Manage the library's book catalog and inventory records</p>
+      </div>
+      <button class="btn-add" onclick="openModal('addModal')">
+        <i class="bi bi-plus-lg"></i> Add New Book
+      </button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-icon blue"><i class="bi bi-book-fill"></i></div><div><div class="stat-label">Total Books</div><div class="stat-val" id="sTotalBooks">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div><div><div class="stat-label">Available</div><div class="stat-val" id="sAvailable">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon orange"><i class="bi bi-tools"></i></div><div><div class="stat-label">Damaged</div><div class="stat-val" id="sDamaged">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div><div><div class="stat-label">Lost</div><div class="stat-val" id="sLost">—</div></div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="Search title, author, ISBN, category…" oninput="applyFilters()"></div>
+      <select class="filter-sel" id="filterCat"   onchange="applyFilters()"><option value="">All Categories</option></select>
+      <select class="filter-sel" id="filterGenre" onchange="applyFilters()"><option value="">All Genres</option></select>
+      <button class="btn-del-sel" id="btnDelSel" onclick="confirmDeleteSelected()"><i class="bi bi-trash3-fill"></i> Delete Selected (<span id="selCount">0</span>)</button>
+      <span class="results-lbl" id="resultsLbl">Loading…</span>
+    </div>
+
+    <div class="tbl-card">
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px"><input type="checkbox" class="cb" id="checkAll" onchange="toggleAllCheck(this)"></th>
+              <th>#</th><th>Title / Author</th><th>ISBN</th><th>Category</th>
+              <th>Genre</th><th>Publisher</th><th>Inventory</th><th>Borrowable</th><th>Shelf</th>
+              <th>Date Added</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr class="empty-row"><td colspan="12"><i class="bi bi-hourglass-split"></i>Loading books…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pag-bar" id="pagBar" style="display:none">
+        <span class="pag-info" id="pagInfo"></span>
+        <div class="pag-btns" id="pagBtns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ADD BOOK MODAL — 2-column with ISBN auto-cataloging
+  ═══════════════════════════════════════════════════════ -->
+  <div class="overlay" id="addModal">
+    <div class="m-box">
+      <div class="m-head">
+        <span class="m-title">
+          <i class="bi bi-plus-circle-fill me-2" style="color:var(--accent)"></i>Add New Book
+        </span>
+        <button class="m-close" onclick="closeModal('addModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <form id="addBookForm" method="POST" action="/librarian_add_book" onsubmit="handleAddSubmit(event)">
+
+        <input type="hidden" name="isbn_meta_json" id="addMetaJson">
+        <input type="hidden" name="page_count"     id="addPageCount">
+
+        <!-- ISBN BAR — full width -->
+        <div class="add-isbn-bar">
+          <p class="f-section"><i class="bi bi-upc-scan me-1"></i>ISBN Auto-Cataloging</p>
+          <div class="fg" style="margin-bottom:0">
+            <label>
+              ISBN <span style="color:var(--danger)">*</span>
+              <span style="color:var(--tl);font-weight:400;font-size:.72rem;margin-left:6px">(ISBN-10 or ISBN-13 — hyphens OK)</span>
+            </label>
+            <div class="isbn-row">
+              <input type="text" name="isbn" id="addIsbn"
+                placeholder="e.g. 978-0-06-112008-4"
+                autocomplete="off" spellcheck="false"
+                oninput="onIsbnInput()" required>
+              <button type="button" class="btn-fetch" id="btnFetch" onclick="fetchBookByIsbn()" disabled>
+                <i class="bi bi-cloud-download-fill"></i>
+                <span id="fetchBtnLabel">Fetch Data</span>
+              </button>
+            </div>
+            <div class="isbn-hint" id="isbnHint"></div>
+            <span class="isbn-source-badge" id="sourceBadge"></span>
+          </div>
+          <div class="fetch-alert" id="fetchAlert"></div>
+          <div class="cover-strip" id="coverStrip">
+            <img id="coverImg" class="cover-img" src="" alt="Cover">
+            <div class="cover-meta">
+              <div class="cm-title"  id="cmTitle"></div>
+              <div class="cm-author" id="cmAuthor"></div>
+              <div class="cm-tags"   id="cmTags"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-COLUMN BODY -->
+        <div class="add-cols">
+
+          <!-- LEFT: Book Information -->
+          <div class="add-col-left">
+            <div class="add-col-head book"><i class="bi bi-book-fill"></i> Book Information</div>
+            <div class="fg">
+              <label>Title <span style="color:var(--danger)">*</span></label>
+              <input type="text" name="title" id="addTitle" placeholder="Enter book title" required>
+            </div>
+            <div class="fg">
+              <label>Subtitle</label>
+              <input type="text" name="subtitle" id="addSubtitle" placeholder="Subtitle (if any)">
+            </div>
+            <div class="fg">
+              <label>Author(s) <span style="color:var(--danger)">*</span></label>
+              <input type="text" name="author" id="addAuthor" placeholder="Author name(s)" required>
+            </div>
+            <div class="fg">
+              <label>Publisher</label>
+              <input type="text" name="publisher" id="addPublisher" placeholder="Publisher name">
+            </div>
+            <div class="f-grid2">
+              <div class="fg"><label>Category</label><input type="text" name="category" id="addCategory" placeholder="e.g. Fiction"></div>
+              <div class="fg"><label>Genre</label><input type="text" name="genre" id="addGenre" placeholder="e.g. Novel"></div>
+            </div>
+            <div class="f-grid2">
+              <div class="fg"><label>Published Date</label><input type="text" name="published_date" id="addPubDate" placeholder="e.g. 2001"></div>
+              <div class="fg"><label>Language</label><input type="text" name="language" id="addLanguage" placeholder="e.g. en"></div>
+            </div>
+            <div class="fg">
+              <label>Description</label>
+              <textarea name="description" id="addDescription" class="desc-ta" placeholder="Book description or synopsis…"></textarea>
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label>Cover Image URL <span style="font-weight:400;color:var(--tl);font-size:.72rem">(auto-filled)</span></label>
+              <input type="url" name="thumbnail_url" id="addThumbnail" placeholder="https://…">
+            </div>
+          </div>
+
+          <!-- RIGHT: Inventory + Borrowing + Tips -->
+          <div class="add-col-right">
+            <div class="add-col-head inv"><i class="bi bi-boxes"></i> Initial Inventory</div>
+            <div class="inv-add-section">
+              <div class="inv-add-title"><i class="bi bi-stack me-1"></i>Copy Counts</div>
+              <div class="fg">
+                <label>Total Copies</label>
+                <input type="number" name="total_copies" placeholder="1" min="0" value="1">
+              </div>
+              <div class="fg" style="margin-bottom:0">
+                <label>Available Copies</label>
+                <input type="number" name="available_copies" placeholder="1" min="0" value="1">
+              </div>
+            </div>
+            <div class="fg">
+              <label>Shelf Location</label>
+              <input type="text" name="shelf_location" placeholder="e.g. A-Row 2">
+            </div>
+
+            <!-- ── BORROWING TOGGLE ── -->
+            <div class="toggle-row" id="addBorrowToggleRow" onclick="toggleSwitch('addBorrowToggle', 'addIsBorrowable', 'addBorrowToggleRow')">
+              <div class="toggle-label-text">
+                <span class="toggle-label-main">
+                  <i class="bi bi-bookmark-check-fill" style="color:var(--accent2);font-size:.9rem;"></i>
+                  Allow Borrowing
+                </span>
+                <span class="toggle-label-sub">Show borrow button on the user browse page</span>
+              </div>
+              <div>
+                <input type="hidden" name="is_borrowable" id="addIsBorrowable" value="0">
+                <div class="toggle-track" id="addBorrowToggle">
+                  <div class="toggle-thumb"></div>
+                </div>
+              </div>
+            </div>
+            <!-- ── END BORROWING TOGGLE ── -->
+
+            <div class="tips-panel">
+              <div class="tips-panel-title"><i class="bi bi-lightbulb-fill me-1"></i>Tips</div>
+              <ul class="tips-list">
+                <li><i class="bi bi-upc-scan" style="color:var(--accent)"></i><span>Enter an ISBN and click <strong style="color:#fff">Fetch Data</strong> to auto-fill book details from Google Books or Open Library.</span></li>
+                <li><i class="bi bi-pencil-square" style="color:var(--accent)"></i><span>You can manually edit any auto-filled field before saving.</span></li>
+                <li><i class="bi bi-boxes" style="color:var(--accent2)"></i><span>Set the initial copy count here. Update inventory later from the Inventory page.</span></li>
+                <li><i class="bi bi-bookmark-check-fill" style="color:var(--accent2)"></i><span>Enable <strong style="color:#fff">Allow Borrowing</strong> to display a borrow button to users on the browse page.</span></li>
+              </ul>
+            </div>
+          </div>
+
+        </div><!-- /.add-cols -->
+
+        <div class="add-footer">
+          <p class="err-msg" id="addErr"></p>
+          <button type="submit" class="btn-submit" id="addSubmitBtn">
+            <i class="bi bi-save me-1"></i> Save Book
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ EDIT BOOK MODAL ═══════════ -->
+  <div class="overlay" id="editModal">
+    <div class="m-box">
+      <div class="m-head">
+        <span class="m-title"><i class="bi bi-pencil-square me-2" style="color:var(--accent)"></i>Edit Book</span>
+        <button class="m-close" onclick="closeModal('editModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <form id="editBookForm" onsubmit="handleEditSubmit(event)">
+        <input type="hidden" id="edit_book_id">
+        <div class="edit-cols">
+          <div class="edit-col-left">
+            <div class="edit-col-head book"><i class="bi bi-book-fill"></i> Book Information</div>
+            <div class="fg"><label>Title <span style="color:var(--danger)">*</span></label><input type="text" id="edit_title" placeholder="Title" required></div>
+            <div class="fg"><label>Author <span style="color:var(--danger)">*</span></label><input type="text" id="edit_author" placeholder="Author" required></div>
+            <div class="fg"><label>ISBN <span style="color:var(--danger)">*</span></label><input type="text" id="edit_isbn" placeholder="ISBN" required></div>
+            <div class="f-grid2">
+              <div class="fg"><label>Category</label><input type="text" id="edit_category" placeholder="Category"></div>
+              <div class="fg"><label>Genre</label><input type="text" id="edit_genre" placeholder="Genre"></div>
+            </div>
+            <div class="fg"><label>Publisher</label><input type="text" id="edit_publisher" placeholder="Publisher"></div>
+          </div>
+          <div class="edit-col-right">
+            <div class="edit-col-head inv"><i class="bi bi-boxes"></i> Inventory</div>
+            <div class="inv-section">
+              <div class="inv-section-title"><i class="bi bi-stack me-1"></i>Copy Counts</div>
+              <div class="f-grid2">
+                <div class="fg"><label>Total Copies</label><input type="number" id="inv_total" min="0" placeholder="0"></div>
+                <div class="fg"><label>Available</label><input type="number" id="inv_available" min="0" placeholder="0"></div>
+              </div>
+              <div class="f-grid2">
+                <div class="fg"><label>Damaged</label><input type="number" id="inv_damaged" min="0" placeholder="0"></div>
+                <div class="fg"><label>Lost</label><input type="number" id="inv_lost" min="0" placeholder="0"></div>
+              </div>
+            </div>
+            <div class="fg"><label>Status</label><select id="inv_status"><option value="Available">Available</option><option value="Damaged">Damaged</option><option value="Lost">Lost</option></select></div>
+            <div class="fg"><label>Shelf Location</label><input type="text" id="inv_shelf" placeholder="e.g. Section A - Row 3"></div>
+
+            <!-- ── BORROWING TOGGLE (EDIT) ── -->
+            <div class="toggle-row" id="editBorrowToggleRow" onclick="toggleSwitch('editBorrowToggle', 'edit_is_borrowable', 'editBorrowToggleRow')">
+              <div class="toggle-label-text">
+                <span class="toggle-label-main">
+                  <i class="bi bi-bookmark-check-fill" style="color:var(--accent2);font-size:.9rem;"></i>
+                  Allow Borrowing
+                </span>
+                <span class="toggle-label-sub">Show borrow button on user browse page</span>
+              </div>
+              <div>
+                <input type="hidden" id="edit_is_borrowable" value="0">
+                <div class="toggle-track" id="editBorrowToggle">
+                  <div class="toggle-thumb"></div>
+                </div>
+              </div>
+            </div>
+            <!-- ── END BORROWING TOGGLE ── -->
+
+          </div>
+        </div>
+        <div class="edit-footer">
+          <p class="err-msg" id="editErr"></p>
+          <button type="submit" class="btn-submit" id="editSubmitBtn"><i class="bi bi-check-circle me-1"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONFIRM DELETE ═══════════ -->
+  <div class="overlay" id="confirmModal">
+    <div class="m-box" style="max-width:420px">
+      <div class="m-head">
+        <span class="m-title" style="color:var(--danger)"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete</span>
+        <button class="m-close" onclick="closeModal('confirmModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <p class="confirm-text" id="confirmText">Are you sure?</p>
+      <div class="btn-row">
+        <button class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+        <button class="btn-submit danger" id="confirmOkBtn" style="flex:1"><i class="bi bi-trash3-fill me-1"></i> Delete</button>
+      </div>
+    </div>
+  </div>
+{% include 'librarian_template/footer_template.html' %}
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ══ TABLE & FILTER ══ */
+    let allBooks = [], filtered = [], currentPage = 1;
+    const PER_PAGE = 12;
+
+    document.addEventListener('DOMContentLoaded', () => { loadBooks(); loadStats(); });
+
+    async function loadBooks() {
+      try {
+        const res = await fetch('/api/inventory');
+        if (!res.ok) throw new Error();
+        allBooks = (await res.json()).books || [];
+        buildDropdowns(); applyFilters();
+      } catch {
+        document.getElementById('tableBody').innerHTML =
+          `<tr class="empty-row"><td colspan="12"><i class="bi bi-exclamation-circle"></i>Failed to load books. Please refresh.</td></tr>`;
+        document.getElementById('resultsLbl').textContent = 'Error';
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const d = await (await fetch('/api/inventory/summary')).json();
+        document.getElementById('sTotalBooks').textContent = d.total_titles ?? '—';
+        document.getElementById('sAvailable').textContent  = d.available    ?? '—';
+        document.getElementById('sDamaged').textContent    = d.damaged      ?? '—';
+        document.getElementById('sLost').textContent       = d.lost         ?? '—';
+      } catch {
+        ['sTotalBooks','sAvailable','sDamaged','sLost'].forEach(id => document.getElementById(id).textContent = '—');
+      }
+    }
+
+    function buildDropdowns() {
+      fillDropdown('filterCat',   [...new Set(allBooks.map(b=>b.category).filter(Boolean))].sort(), 'All Categories');
+      fillDropdown('filterGenre', [...new Set(allBooks.map(b=>b.genre).filter(Boolean))].sort(),    'All Genres');
+    }
+    function fillDropdown(id, items, ph) {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="">${ph}</option>`;
+      items.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+    }
+
+    function applyFilters() {
+      const q=document.getElementById('searchInput').value.toLowerCase();
+      const catF=document.getElementById('filterCat').value;
+      const genF=document.getElementById('filterGenre').value;
+      filtered=allBooks.filter(b=>{
+        const mQ=!q||[b.title,b.author,b.isbn,b.category,b.genre,b.publisher,b.shelf_location].some(v=>(v||'').toLowerCase().includes(q));
+        return mQ&&(!catF||b.category===catF)&&(!genF||b.genre===genF);
+      });
+      currentPage=1; renderTable(); renderPagination();
+      document.getElementById('resultsLbl').textContent=`${filtered.length} book${filtered.length!==1?'s':''}`;
+      document.getElementById('checkAll').checked=false; updateSelCount();
+    }
+
+    function renderTable() {
+      const tbody=document.getElementById('tableBody');
+      const start=(currentPage-1)*PER_PAGE, page=filtered.slice(start,start+PER_PAGE);
+      if(!page.length){tbody.innerHTML=`<tr class="empty-row"><td colspan="12"><i class="bi bi-search"></i>No books match your search.</td></tr>`;return;}
+      tbody.innerHTML=page.map((b,i)=>{
+        const avail=b.available_copies||0,total=b.total_copies||0,damaged=b.damaged_copies||0,lost=b.lost_copies||0;
+        let dotCls='green';
+        if(b.status==='Lost')dotCls='red'; else if(b.status==='Damaged')dotCls='orange'; else if(avail===0)dotCls='orange';
+        const shelf=b.shelf_location
+          ?`<span style="font-size:.75rem;color:var(--accent)"><i class="bi bi-geo-alt-fill me-1"></i>${esc(b.shelf_location)}</span>`
+          :`<span style="color:rgba(255,255,255,.25);font-size:.75rem">—</span>`;
+        const borrowBadge = b.is_borrowable
+          ? `<span class="borrow-badge yes"><i class="bi bi-bookmark-check-fill"></i> Yes</span>`
+          : `<span class="borrow-badge no"><i class="bi bi-bookmark-x"></i> No</span>`;
+        return`<tr data-id="${b.id}">
+          <td><input type="checkbox" class="cb row-cb" onchange="updateSelCount()"></td>
+          <td style="color:rgba(255,255,255,.35);font-size:.73rem">${start+i+1}</td>
+          <td><div class="book-title">${esc(b.title)}</div><div class="book-sub">${esc(b.author)}</div></td>
+          <td class="isbn-cell">${esc(b.isbn)}</td>
+          <td>${b.category?`<span class="cat-pill">${esc(b.category)}</span>`:'<span style="color:rgba(255,255,255,.25)">—</span>'}</td>
+          <td style="font-size:.82rem">${esc(b.genre||'—')}</td>
+          <td style="font-size:.75rem;color:var(--tl)">${esc(b.publisher||'—')}</td>
+          <td>
+            <div class="inv-mini"><span class="inv-dot ${dotCls}"></span><span>${avail}/${total}</span></div>
+            ${damaged>0?`<div style="font-size:.72rem;color:var(--warn);margin-top:2px"><i class="bi bi-tools me-1"></i>${damaged} dmg</div>`:''}
+            ${lost>0?`<div style="font-size:.72rem;color:var(--danger);margin-top:2px"><i class="bi bi-x-circle me-1"></i>${lost} lost</div>`:''}
+          </td>
+          <td>${borrowBadge}</td>
+          <td>${shelf}</td>
+          <td style="font-size:.75rem;color:var(--tl)">${esc(b.date_added||'—')}</td>
+          <td><div style="display:flex;gap:5px;flex-wrap:nowrap">
+            <button class="act-btn" onclick="openEditModal(${b.id})"><i class="bi bi-pencil"></i> Edit</button>
+            <button class="act-btn del" onclick="confirmDeleteOne(${b.id},'${esc(b.title).replace(/'/g,"\\'")}')"><i class="bi bi-trash3"></i></button>
+          </div></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderPagination(){
+      const total=filtered.length,pages=Math.ceil(total/PER_PAGE),bar=document.getElementById('pagBar');
+      if(pages<=1){bar.style.display='none';return;}bar.style.display='flex';
+      const s=(currentPage-1)*PER_PAGE+1,e=Math.min(currentPage*PER_PAGE,total);
+      document.getElementById('pagInfo').textContent=`Showing ${s}–${e} of ${total}`;
+      let lo=Math.max(1,currentPage-2),hi=Math.min(pages,currentPage+2);
+      let html=`<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
+      if(lo>1)html+=`<button class="pag-btn" onclick="goPage(1)">1</button>${lo>2?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}`;
+      for(let p=lo;p<=hi;p++)html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      if(hi<pages)html+=`${hi<pages-1?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}<button class="pag-btn" onclick="goPage(${pages})">${pages}</button>`;
+      html+=`<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
+      document.getElementById('pagBtns').innerHTML=html;
+    }
+
+    function goPage(p){const pages=Math.ceil(filtered.length/PER_PAGE);if(p<1||p>pages)return;currentPage=p;renderTable();renderPagination();window.scrollTo({top:0,behavior:'smooth'});}
+    function toggleAllCheck(m){document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=m.checked);updateSelCount();}
+    function updateSelCount(){const n=document.querySelectorAll('.row-cb:checked').length;document.getElementById('selCount').textContent=n;document.getElementById('btnDelSel').classList.toggle('show',n>0);}
+    function getSelectedIds(){return[...document.querySelectorAll('.row-cb:checked')].map(cb=>parseInt(cb.closest('tr').dataset.id));}
+
+    /* ══ TOGGLE SWITCH ══ */
+    function toggleSwitch(trackId, inputId, rowId) {
+      const track = document.getElementById(trackId);
+      const input = document.getElementById(inputId);
+      const row   = document.getElementById(rowId);
+      const isOn  = track.classList.toggle('on');
+      input.value = isOn ? '1' : '0';
+      if (row) row.classList.toggle('active', isOn);
+    }
+
+    function setToggle(trackId, inputId, rowId, state) {
+      const track = document.getElementById(trackId);
+      const input = document.getElementById(inputId);
+      const row   = document.getElementById(rowId);
+      track.classList.toggle('on', state);
+      input.value = state ? '1' : '0';
+      if (row) row.classList.toggle('active', state);
+    }
+
+    /* ══ ISBN AUTO-CATALOG ══ */
+    function cleanIsbn(raw){return raw.replace(/[^0-9Xx]/g,'').toUpperCase();}
+    function validIsbn10(s){if(s.length!==10)return false;let t=0;for(let i=0;i<9;i++){if(!/\d/.test(s[i]))return false;t+=parseInt(s[i])*(10-i);}const c=s[9];t+=(c==='X'?10:parseInt(c));return t%11===0;}
+    function validIsbn13(s){if(s.length!==13||!/^\d+$/.test(s))return false;let t=0;for(let i=0;i<12;i++)t+=parseInt(s[i])*(i%2===0?1:3);return(10-t%10)%10===parseInt(s[12]);}
+    function validateIsbn(raw){const c=cleanIsbn(raw);return{valid:validIsbn10(c)||validIsbn13(c),cleaned:c};}
+
+    function onIsbnInput(){
+      const raw=document.getElementById('addIsbn').value;
+      const inp=document.getElementById('addIsbn'),hint=document.getElementById('isbnHint'),btn=document.getElementById('btnFetch');
+      if(!raw.trim()){inp.classList.remove('isbn-valid','isbn-invalid');hint.textContent='';hint.className='isbn-hint';btn.disabled=true;return;}
+      const{valid,cleaned}=validateIsbn(raw);
+      if(valid){inp.classList.add('isbn-valid');inp.classList.remove('isbn-invalid');hint.textContent=`✓ Valid ${cleaned.length===13?'ISBN-13':'ISBN-10'} — ready to fetch`;hint.className='isbn-hint ok';btn.disabled=false;}
+      else if(cleaned.length>0){inp.classList.add('isbn-invalid');inp.classList.remove('isbn-valid');hint.textContent=cleaned.length>=10?`✗ Invalid checksum — double-check the digits`:`${cleaned.length} / 10 digits entered`;hint.className='isbn-hint bad';btn.disabled=true;}
+    }
+
+    function setFetchAlert(type,html){const el=document.getElementById('fetchAlert');const icons={success:'bi-check-circle-fill',error:'bi-x-circle-fill',warn:'bi-exclamation-triangle-fill'};el.innerHTML=`<i class="bi ${icons[type]||'bi-info-circle'}"></i> ${html}`;el.className=`fetch-alert show ${type}`;}
+    function clearFetchAlert(){const el=document.getElementById('fetchAlert');el.className='fetch-alert';el.innerHTML='';}
+
+    function autofill(id,val){if(!val)return;const el=document.getElementById(id);if(!el)return;el.value=val;el.classList.remove('autofilled');void el.offsetWidth;el.classList.add('autofilled');setTimeout(()=>el.classList.remove('autofilled'),700);}
+
+    function showCoverStrip(data){
+      const strip=document.getElementById('coverStrip'),img=document.getElementById('coverImg');
+      if(data.thumbnail){img.src=data.thumbnail;img.style.display='block';}else{img.style.display='none';}
+      document.getElementById('cmTitle').textContent=data.title||'Unknown Title';
+      document.getElementById('cmAuthor').textContent=data.authors||'Unknown Author';
+      const tags=[];
+      if(data.language)tags.push(`<span class="cm-tag lang">${data.language.toUpperCase()}</span>`);
+      if(data.page_count)tags.push(`<span class="cm-tag pages">${data.page_count} pp.</span>`);
+      if(data.published_date)tags.push(`<span class="cm-tag year">${data.published_date.substring(0,4)}</span>`);
+      document.getElementById('cmTags').innerHTML=tags.join('');
+      strip.classList.add('show');
+    }
+    function hideCoverStrip(){document.getElementById('coverStrip').classList.remove('show');}
+
+    function showSourceBadge(source,fromCache){
+      const badge=document.getElementById('sourceBadge');
+      let cls='',icon='',label='';
+      if(fromCache){cls='cache';icon='bi-lightning-fill';label='Loaded from cache';}
+      else if((source||'').toLowerCase().includes('google')){cls='google';icon='bi-google';label='Google Books';}
+      else{cls='openlibrary';icon='bi-journal-bookmark-fill';label='Open Library';}
+      badge.className=`isbn-source-badge show ${cls}`;
+      badge.innerHTML=`<i class="bi ${icon}"></i>${label}`;
+    }
+
+    async function fetchBookByIsbn(){
+      const raw=document.getElementById('addIsbn').value.trim();
+      const{valid,cleaned}=validateIsbn(raw);
+      if(!valid)return;
+      clearFetchAlert();hideCoverStrip();
+      const btn=document.getElementById('btnFetch'),lbl=document.getElementById('fetchBtnLabel');
+      const form=document.getElementById('addBookForm'),badge=document.getElementById('sourceBadge');
+      badge.className='isbn-source-badge';btn.disabled=true;
+      lbl.innerHTML='<span class="spinner-border spinner-border-sm"></span> Fetching…';
+      form.classList.add('form-fetching');
+      try{
+        const res=await fetch('/api/fetch-book-by-isbn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isbn:cleaned})});
+        const data=await res.json();
+        if(!res.ok||!data.success){setFetchAlert('warn',data.message||'No book found. You may fill in the details manually.');return;}
+        const d=data.data;
+        autofill('addTitle',d.title);autofill('addSubtitle',d.subtitle);autofill('addAuthor',d.authors);
+        autofill('addPublisher',d.publisher);autofill('addCategory',d.category);autofill('addGenre',d.genre);
+        autofill('addPubDate',d.published_date);autofill('addLanguage',d.language);
+        autofill('addDescription',d.description);autofill('addThumbnail',d.thumbnail);
+        document.getElementById('addPageCount').value=d.page_count||'';
+        document.getElementById('addMetaJson').value=JSON.stringify(d);
+        showCoverStrip(d);showSourceBadge(data.source,data.from_cache);
+        setFetchAlert('success',data.from_cache?`Loaded from local cache <span style="opacity:.65">(${data.source})</span>`:`Metadata fetched from <strong>${data.source}</strong>. Review and edit as needed.`);
+      }catch{setFetchAlert('error','Network error. Check your connection and try again.');}
+      finally{btn.disabled=false;lbl.innerHTML='<i class="bi bi-cloud-download-fill me-1"></i>Re-Fetch';form.classList.remove('form-fetching');}
+    }
+
+    /* ══ ADD SUBMIT ══ */
+    async function handleAddSubmit(e){
+      e.preventDefault();
+      const btn=document.getElementById('addSubmitBtn'),err=document.getElementById('addErr');
+      btn.disabled=true;btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Saving…';err.style.display='none';
+      try{
+        const res=await fetch('/librarian_add_book',{method:'POST',body:new FormData(e.target)});
+        const data=await res.json();
+        if(data.success){
+          closeModal('addModal');e.target.reset();hideCoverStrip();clearFetchAlert();
+          document.getElementById('sourceBadge').className='isbn-source-badge';
+          document.getElementById('isbnHint').textContent='';
+          document.getElementById('addIsbn').classList.remove('isbn-valid','isbn-invalid');
+          document.getElementById('btnFetch').disabled=true;
+          // Reset toggle state
+          setToggle('addBorrowToggle','addIsBorrowable','addBorrowToggleRow',false);
+          showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> '+data.message,'success');
+          await loadBooks();await loadStats();
+        }else{err.textContent=data.message||'Failed to add book.';err.style.display='block';}
+      }catch{err.textContent='Network error. Please try again.';err.style.display='block';}
+      finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-save me-1"></i> Save Book';}
+    }
+
+    /* ══ EDIT MODAL ══ */
+    function openEditModal(id){
+      const b=allBooks.find(x=>x.id===id);if(!b)return;
+      document.getElementById('edit_book_id').value=b.id;
+      document.getElementById('edit_title').value=b.title||'';
+      document.getElementById('edit_author').value=b.author||'';
+      document.getElementById('edit_isbn').value=b.isbn||'';
+      document.getElementById('edit_category').value=b.category||'';
+      document.getElementById('edit_genre').value=b.genre||'';
+      document.getElementById('edit_publisher').value=b.publisher||'';
+      document.getElementById('inv_total').value=b.total_copies||0;
+      document.getElementById('inv_available').value=b.available_copies||0;
+      document.getElementById('inv_damaged').value=b.damaged_copies||0;
+      document.getElementById('inv_lost').value=b.lost_copies||0;
+      document.getElementById('inv_status').value=b.status||'Available';
+      document.getElementById('inv_shelf').value=b.shelf_location||'';
+      // Set borrowing toggle state
+      setToggle('editBorrowToggle','edit_is_borrowable','editBorrowToggleRow', !!b.is_borrowable);
+      document.getElementById('editErr').style.display='none';
+      document.getElementById('editSubmitBtn').disabled=false;
+      openModal('editModal');
+    }
+
+    async function handleEditSubmit(e){
+      e.preventDefault();
+      const btn=document.getElementById('editSubmitBtn'),errEl=document.getElementById('editErr');
+      const bookId=document.getElementById('edit_book_id').value;
+      const total=parseInt(document.getElementById('inv_total').value)||0;
+      const avail=parseInt(document.getElementById('inv_available').value)||0;
+      const dmg=parseInt(document.getElementById('inv_damaged').value)||0;
+      const lost=parseInt(document.getElementById('inv_lost').value)||0;
+      if(avail>total){errEl.textContent='Available cannot exceed total.';errEl.style.display='block';return;}
+      if(dmg+lost>total){errEl.textContent='Damaged + Lost cannot exceed total.';errEl.style.display='block';return;}
+      errEl.style.display='none';btn.disabled=true;btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Saving…';
+      try{
+        const fd=new FormData();
+        fd.append('book_id',bookId);fd.append('title',document.getElementById('edit_title').value);
+        fd.append('author',document.getElementById('edit_author').value);fd.append('isbn',document.getElementById('edit_isbn').value);
+        fd.append('category',document.getElementById('edit_category').value);fd.append('genre',document.getElementById('edit_genre').value);
+        fd.append('publisher',document.getElementById('edit_publisher').value);
+        fd.append('is_borrowable', document.getElementById('edit_is_borrowable').value);
+        const r1=await fetch('/librarian_update_book',{method:'POST',body:fd});
+        const d1=await r1.json();
+        if(!r1.ok||!d1.success)throw new Error(d1.message||'Book update failed');
+        const r2=await fetch(`/api/inventory/${bookId}/update`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({total_copies:total,available_copies:avail,damaged_copies:dmg,lost_copies:lost,status:document.getElementById('inv_status').value,shelf_location:document.getElementById('inv_shelf').value.trim()||null})});
+        const d2=await r2.json();
+        if(!r2.ok||!d2.success)throw new Error(d2.message||'Inventory update failed');
+        const idx=allBooks.findIndex(x=>x.id===parseInt(bookId));
+        if(idx!==-1)Object.assign(allBooks[idx],{
+          title:document.getElementById('edit_title').value,
+          author:document.getElementById('edit_author').value,
+          isbn:document.getElementById('edit_isbn').value,
+          category:document.getElementById('edit_category').value,
+          genre:document.getElementById('edit_genre').value,
+          publisher:document.getElementById('edit_publisher').value,
+          total_copies:total,available_copies:avail,damaged_copies:dmg,lost_copies:lost,
+          status:document.getElementById('inv_status').value,
+          shelf_location:document.getElementById('inv_shelf').value.trim()||null,
+          is_borrowable: document.getElementById('edit_is_borrowable').value === '1'
+        });
+        closeModal('editModal');applyFilters();await loadStats();
+        showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Book & inventory updated','success');
+      }catch(ex){errEl.textContent=ex.message||'Update failed.';errEl.style.display='block';}
+      finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-check-circle me-1"></i> Save Changes';}
+    }
+
+    /* ══ DELETE ══ */
+    function showConfirm(text,cb){document.getElementById('confirmText').innerHTML=text;openModal('confirmModal');document.getElementById('confirmOkBtn').onclick=async()=>{document.getElementById('confirmOkBtn').disabled=true;document.getElementById('confirmOkBtn').innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Deleting…';await cb();document.getElementById('confirmOkBtn').disabled=false;document.getElementById('confirmOkBtn').innerHTML='<i class="bi bi-trash3-fill me-1"></i> Delete';closeModal('confirmModal');};}
+    function confirmDeleteOne(id,title){showConfirm(`Are you sure you want to delete <strong>"${title}"</strong>?<br><small style="color:var(--tl)">This will also remove its inventory record.</small>`,()=>deleteBooks([id]));}
+    function confirmDeleteSelected(){const ids=getSelectedIds();if(!ids.length)return;showConfirm(`Delete <strong>${ids.length} selected book${ids.length>1?'s':''}</strong>?<br><small style="color:var(--tl)">This will also remove their inventory records.</small>`,()=>deleteBooks(ids));}
+    async function deleteBooks(ids){let success=0,fail=0;for(const id of ids){try{const fd=new FormData();fd.append('_method','DELETE');const res=await fetch(`/librarian_delete_book/${id}`,{method:'POST',body:fd});if(res.ok||res.redirected){success++;allBooks=allBooks.filter(x=>x.id!==id);}else fail++;}catch{fail++;}}applyFilters();await loadStats();if(success)showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> ${success} book${success>1?'s':''} deleted`,'success');if(fail)showToast(`<i class="bi bi-exclamation-triangle-fill" style="color:var(--warn)"></i> ${fail} deletion${fail>1?'s':''} failed`,'error');}
+
+    /* ══ MODAL HELPERS ══ */
+    function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+    function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+    ['addModal','editModal','confirmModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))closeModal(id);});});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')['addModal','editModal','confirmModal'].forEach(closeModal);});
+    function showToast(msg,type=''){const t=document.createElement('div');t.className=`toast-msg ${type}`;t.innerHTML=msg;document.getElementById('toastWrap').appendChild(t);setTimeout(()=>t.remove(),3800);}
+    function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+    const menuToggle=document.getElementById('menuToggle'),navLinks=document.getElementById('navLinks');
+    menuToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+    document.addEventListener('click',e=>{if(!menuToggle.contains(e.target)&&!navLinks.contains(e.target))navLinks.classList.remove('open');});
+  </script>
+</body>
+</html>

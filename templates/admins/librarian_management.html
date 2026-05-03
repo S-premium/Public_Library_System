@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/static/images/logo.png">
+  <title>Librarian Management | Iloilo Public Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+      --mono:    'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'DM Sans',sans-serif; background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%); background-attachment:fixed; color:#fff; min-height:100vh; overflow-x:hidden; }
+
+    /* ── PAGE ── */
+    .page-wrap { padding:80px 40px 60px; max-width:1500px; margin:0 auto; }
+    @media (max-width:768px) { .page-wrap { padding:76px 14px 50px; } }
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:28px; }
+    .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; }
+    .page-header h1 span { color:var(--accent); }
+    .page-header p { color:var(--tl); font-size:.88rem; margin-top:4px; }
+
+    /* ── STATS ── */
+    .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:24px; }
+    .stat-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(8px); transition:.2s; }
+    .stat-card:hover { background:var(--card-b); transform:translateY(-2px); }
+    .stat-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+    .si-blue   { background:rgba(159,193,225,.18); color:var(--accent); }
+    .si-green  { background:rgba(72,199,142,.18);  color:var(--accent2); }
+    .si-orange { background:rgba(255,152,0,.18);   color:var(--warn); }
+    .si-red    { background:rgba(255,99,99,.18);   color:var(--danger); }
+    .stat-label { font-size:.73rem; color:var(--tl); margin-bottom:2px; }
+    .stat-val   { font-size:1.4rem; font-weight:700; line-height:1; }
+
+    /* ── TOOLBAR ── */
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+    .search-box { position:relative; flex:1; min-width:240px; max-width:380px; }
+    .search-box i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; }
+    .search-box input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 14px 9px 38px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .search-box input::placeholder { color:rgba(255,255,255,.4); }
+    .search-box input:focus { border-color:var(--accent); background:rgba(255,255,255,.11); }
+    .results-lbl { font-size:.82rem; color:var(--tl); margin-left:auto; white-space:nowrap; }
+
+    /* ── TABLE CARD ── */
+    .tbl-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; backdrop-filter:blur(10px); }
+    .tbl-scroll { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:1000px; }
+    thead tr { background:rgba(159,193,225,.09); }
+    thead th { padding:13px 16px; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--accent); white-space:nowrap; }
+    tbody tr { border-bottom:1px solid rgba(255,255,255,.05); transition:.15s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:rgba(255,255,255,.05); }
+    td { padding:12px 16px; font-size:.85rem; color:var(--tl); vertical-align:middle; }
+    .user-name { font-weight:600; color:#fff; font-size:.88rem; }
+    .mono-cell { font-family:var(--mono); font-size:.77rem; color:rgba(255,255,255,.55); }
+
+    /* Badges */
+    .badge-pill { display:inline-flex; align-items:center; gap:5px; border-radius:20px; padding:3px 10px; font-size:.72rem; font-weight:700; white-space:nowrap; }
+    .bp-active   { background:rgba(72,199,142,.14); color:var(--accent2); border:1px solid rgba(72,199,142,.3); }
+    .bp-offline  { background:rgba(255,255,255,.07); color:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.14); }
+    .bp-locked   { background:rgba(255,99,99,.14); color:var(--danger); border:1px solid rgba(255,99,99,.3); }
+    .bp-unlocked { background:rgba(72,199,142,.14); color:var(--accent2); border:1px solid rgba(72,199,142,.3); }
+    .bp-role     { background:rgba(159,193,225,.12); color:var(--accent); border:1px solid rgba(159,193,225,.25); }
+    .pulse-dot { width:6px; height:6px; border-radius:50%; background:currentColor; animation:pulse 2s infinite; display:inline-block; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .attempts-ok   { font-weight:700; font-size:.82rem; color:var(--accent2); }
+    .attempts-warn { font-weight:700; font-size:.82rem; color:var(--danger); }
+
+    /* Action buttons */
+    .act-btn { display:inline-flex; align-items:center; gap:5px; background:transparent; border:1px solid rgba(255,255,255,.15); border-radius:8px; color:#fff; padding:5px 11px; font-size:.78rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; white-space:nowrap; }
+    .act-btn:hover       { background:rgba(255,255,255,.1); border-color:var(--accent); color:var(--accent); }
+    .act-btn.warn        { border-color:rgba(255,152,0,.3); color:var(--warn); }
+    .act-btn.warn:hover  { background:rgba(255,152,0,.1); border-color:var(--warn); }
+    .act-btn.del         { border-color:rgba(255,99,99,.3); color:var(--danger); }
+    .act-btn.del:hover   { background:rgba(255,99,99,.1); border-color:var(--danger); }
+    .act-btn.success     { border-color:rgba(72,199,142,.3); color:var(--accent2); }
+    .act-btn.success:hover { background:rgba(72,199,142,.1); border-color:var(--accent2); }
+    .empty-row td { text-align:center; padding:56px 20px; color:var(--tl); }
+    .empty-row td i { font-size:3rem; opacity:.35; display:block; margin-bottom:10px; }
+
+    /* Modal */
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(5px); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .overlay.open { opacity:1; pointer-events:all; }
+    .m-box { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.18); border-radius:20px; padding:30px; width:100%; max-width:460px; max-height:92vh; overflow-y:auto; box-shadow:0 28px 70px rgba(0,0,0,.55); transform:translateY(18px); transition:transform .25s; }
+    .overlay.open .m-box { transform:translateY(0); }
+    .m-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+    .m-title { font-size:1.1rem; font-weight:700; letter-spacing:-.02em; }
+    .m-close { background:none; border:none; color:rgba(255,255,255,.45); font-size:1.3rem; cursor:pointer; transition:.18s; }
+    .m-close:hover { color:#fff; }
+    .fg { margin-bottom:13px; }
+    .fg label { display:block; font-size:.78rem; color:var(--tl); margin-bottom:5px; font-weight:600; }
+    .fg input { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:9px; color:#fff; padding:9px 12px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .fg input[readonly] { opacity:.6; cursor:not-allowed; }
+    .fg input::placeholder { color:rgba(255,255,255,.35); }
+    .fg input:focus:not([readonly]) { border-color:var(--accent); background:rgba(255,255,255,.10); }
+    .btn-submit { width:100%; background:var(--accent); color:#0d1a24; border:none; border-radius:11px; padding:11px; font-size:.92rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; margin-top:6px; }
+    .btn-submit:hover { background:#b8d4ec; }
+    .err-msg { color:var(--danger); font-size:.78rem; margin-top:5px; display:none; }
+    .confirm-text { color:var(--tl); font-size:.9rem; line-height:1.6; margin-bottom:20px; }
+    .confirm-text strong { color:#fff; }
+    .btn-row { display:flex; gap:10px; }
+    .btn-cancel { flex:1; background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.15); border-radius:11px; padding:11px; font-size:.88rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; }
+    .btn-cancel:hover { background:rgba(255,255,255,.14); }
+    .btn-danger { flex:1; background:rgba(255,99,99,.8); color:#fff; border:none; border-radius:11px; padding:11px; font-size:.88rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; }
+    .btn-danger:hover { background:var(--danger); }
+
+    /* Bootstrap modal theming */
+    .modal-content { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.18); border-radius:20px; color:#fff; box-shadow:0 28px 70px rgba(0,0,0,.55); }
+    .modal-header { border-bottom:1px solid rgba(255,255,255,.08); padding:20px 24px 16px; }
+    .modal-title { font-weight:700; font-size:1.05rem; color:var(--accent); display:flex; align-items:center; gap:9px; }
+    .btn-close { filter:invert(1) brightness(2); opacity:.6; }
+    .btn-close:hover { opacity:1; }
+    .modal-body { padding:22px 24px; }
+    .role-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:20px; padding:4px 13px; font-size:.73rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin-bottom:18px; }
+    .modal-divider { border:none; border-top:1px solid rgba(255,255,255,.08); margin:0 0 18px; }
+    .fg-modal { margin-bottom:13px; }
+    .fg-modal label { display:block; font-size:.78rem; color:var(--tl); margin-bottom:5px; font-weight:600; }
+    .input-icon-wrap { position:relative; }
+    .input-icon-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.35); font-size:.88rem; pointer-events:none; }
+    .input-icon-wrap input { padding-left:36px; }
+    .fg-modal input { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:9px; color:#fff; padding:9px 12px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .fg-modal input::placeholder { color:rgba(255,255,255,.35); }
+    .fg-modal input:focus { border-color:var(--accent); background:rgba(255,255,255,.10); }
+    .password-wrapper { position:relative; }
+    .password-wrapper input { padding-right:44px; }
+    .password-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:transparent; border:none; color:rgba(255,255,255,.4); cursor:pointer; font-size:.9rem; transition:.18s; padding:0; }
+    .password-toggle:hover { color:var(--accent); }
+    .password-hint { display:block; color:rgba(255,255,255,.4); font-size:.75rem; margin-bottom:7px; line-height:1.5; }
+    .pw-row { display:flex; align-items:center; gap:12px; }
+    .pw-row .password-wrapper { flex:1; }
+    .pw-strength { font-size:.75rem; color:rgba(255,255,255,.45); white-space:nowrap; min-width:90px; }
+    .pw-strength span { font-weight:700; }
+    .s-weak   { color:#ff6363 !important; }
+    .s-fair   { color:var(--warn) !important; }
+    .s-good   { color:#ffe066 !important; }
+    .s-strong { color:var(--accent2) !important; }
+    .btn-modal-submit { width:100%; background:var(--accent); color:#0d1a24; border:none; border-radius:11px; padding:11px; font-size:.92rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; margin-top:6px; }
+    .btn-modal-submit:hover { background:#b8d4ec; }
+
+    /* Toast */
+    .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
+    .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:12px 16px; font-size:.84rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; }
+    .toast-msg.success { border-color:rgba(72,199,142,.4); }
+    .toast-msg.error   { border-color:rgba(255,99,99,.4); }
+    @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+    @media (max-width:768px) { .stats-row { grid-template-columns:repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+{% include 'admin_template/topbar_template.html' %}
+{% include 'admin_template/sidebar_template.html' %}
+
+  <!-- MAIN -->
+  <div class="page-wrap">
+    <div class="page-header">
+      <div>
+        <h1><i class="bi bi-person-badge-fill me-2" style="color:var(--accent)"></i>Librarian <span>Management</span></h1>
+        <p>View, manage and control librarian accounts</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon si-blue"><i class="bi bi-people-fill"></i></div>
+        <div><div class="stat-label">Total Librarians</div><div class="stat-val" id="sTotalLibrarians">{{ users|length }}</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-green"><i class="bi bi-circle-fill"></i></div>
+        <div><div class="stat-label">Active</div><div class="stat-val" id="sActive">—</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-orange"><i class="bi bi-moon-fill"></i></div>
+        <div><div class="stat-label">Offline</div><div class="stat-val" id="sOffline">—</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-red"><i class="bi bi-lock-fill"></i></div>
+        <div><div class="stat-label">Locked</div><div class="stat-val" id="sLocked">—</div></div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" placeholder="Search username, name…" oninput="filterTable()">
+      </div>
+      <span class="results-lbl" id="resultsLbl"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="tbl-card">
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Role</th>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Status</th>
+              <th>Lock Status</th>
+              <th>Failed Attempts</th>
+              <th>Last Seen</th>
+              <th>Registered</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            {% if users %}
+              {% for user in users %}
+              <tr data-user-id="{{ user.id|int }}" data-search="{{ (user.username ~ ' ' ~ user.firstname ~ ' ' ~ user.lastname)|lower }}">
+                <td style="color:rgba(255,255,255,.35);font-size:.73rem">{{ loop.index }}</td>
+                <td><span class="badge-pill bp-role">{{ user.role|capitalize }}</span></td>
+                <td>
+                  <div class="user-name">{{ user.firstname|e }} {{ user.lastname|e }}</div>
+                </td>
+                <td class="mono-cell">{{ user.username|e }}</td>
+                <td>
+                  {% if user.status == 'active' %}
+                    <span class="badge-pill bp-active"><span class="pulse-dot"></span> Active</span>
+                  {% else %}
+                    <span class="badge-pill bp-offline"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span> Offline</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if user.is_locked %}
+                    <div><span class="badge-pill bp-locked"><i class="bi bi-lock-fill"></i> Locked</span></div>
+                    {% if user.lock_until %}<div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:3px">Until {{ user.lock_until.strftime('%I:%M %p') }}</div>{% endif %}
+                  {% else %}
+                    <span class="badge-pill bp-unlocked"><i class="bi bi-unlock-fill"></i> Active</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="{% if user.failed_attempts >= 3 %}attempts-warn{% else %}attempts-ok{% endif %}">{{ user.failed_attempts|int }}/5</span>
+                </td>
+                <td style="font-size:.75rem;color:var(--tl)">
+                  {% if user.last_seen %}{{ user.last_seen.strftime('%Y-%m-%d %I:%M %p') }}{% else %}<span style="color:rgba(255,255,255,.25)">Never</span>{% endif %}
+                </td>
+                <td style="font-size:.75rem;color:var(--tl)">
+                  {% if user.created_at %}{{ user.created_at.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}
+                </td>
+                <td>
+                  <div style="display:flex;gap:5px;flex-wrap:nowrap">
+                    {% if user.is_locked %}
+                    <button class="act-btn success" data-user-id="{{ user.id|int }}" onclick="handleUnlock(this)"><i class="bi bi-unlock"></i> Unlock</button>
+                    {% endif %}
+                    <button class="act-btn warn" data-user-id="{{ user.id|int }}" data-username="{{ user.username|e }}" onclick="openResetModal(this)"><i class="bi bi-key"></i> Reset</button>
+                    <button class="act-btn del" data-user-id="{{ user.id|int }}" data-name="{{ (user.firstname ~ ' ' ~ user.lastname)|e }}" onclick="openDeleteConfirm(this)"><i class="bi bi-trash3"></i></button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr class="empty-row"><td colspan="10"><i class="bi bi-person-slash"></i>No librarian accounts found.</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD MODAL -->
+  <div class="overlay" id="resetModal">
+    <div class="m-box">
+      <div class="m-head">
+        <span class="m-title"><i class="bi bi-key-fill me-2" style="color:var(--warn)"></i>Reset Password</span>
+        <button class="m-close" onclick="closeModal('resetModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <form id="resetPasswordForm" onsubmit="handleReset(event)">
+        <input type="hidden" id="reset_user_id" name="user_id">
+        <div class="fg"><label>Username</label><input type="text" id="reset_username" readonly></div>
+        <div class="fg"><label>New Password</label><input type="password" id="new_password" name="new_password" required minlength="6" placeholder="Enter new password"></div>
+        <div class="fg"><label>Confirm Password</label><input type="password" id="confirm_password" required minlength="6" placeholder="Confirm new password"></div>
+        <p class="err-msg" id="resetErr"></p>
+        <button type="submit" class="btn-submit"><i class="bi bi-check-circle me-1"></i> Reset Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE MODAL -->
+  <div class="overlay" id="confirmModal">
+    <div class="m-box" style="max-width:420px">
+      <div class="m-head">
+        <span class="m-title" style="color:var(--danger)"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete</span>
+        <button class="m-close" onclick="closeModal('confirmModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <p class="confirm-text" id="confirmText">Are you sure?</p>
+      <div class="btn-row">
+        <button class="btn-cancel" onclick="closeModal('confirmModal')">Cancel</button>
+        <button class="btn-danger" id="confirmOkBtn"><i class="bi bi-trash3-fill me-1"></i> Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD LIBRARIAN MODAL -->
+  <div class="modal fade" id="addLibrarianModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-person-badge-fill"></i> Add Librarian</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="role-badge"><i class="bi bi-person-badge-fill"></i> Role: Librarian</div>
+          <hr class="modal-divider">
+          <form action="/signup" method="POST">
+            <input type="hidden" name="role" value="librarian">
+            <div class="fg-modal">
+              <label>First Name</label>
+              <div class="input-icon-wrap"><i class="bi bi-person"></i><input name="firstname" type="text" placeholder="First Name" required></div>
+            </div>
+            <div class="fg-modal">
+              <label>Last Name</label>
+              <div class="input-icon-wrap"><i class="bi bi-person"></i><input name="lastname" type="text" placeholder="Last Name" required></div>
+            </div>
+            <div class="fg-modal">
+              <label>Email Address</label>
+              <div class="input-icon-wrap"><i class="bi bi-envelope"></i><input name="email" type="email" placeholder="Email Address" required></div>
+            </div>
+            <div class="fg-modal">
+              <label>Password</label>
+              <small class="password-hint">Min. 12 characters with uppercase, lowercase, number & special character.</small>
+              <div class="pw-row">
+                <div class="password-wrapper">
+                  <input name="password" id="librarianPassword" type="password" placeholder="Password (min. 12 chars)" required minlength="12" oninput="checkStrength(this.value,'lib')">
+                  <button type="button" class="password-toggle" onclick="togglePw('librarianPassword',this)"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="pw-strength">Strength: <span id="str-lib">—</span></div>
+              </div>
+            </div>
+            <button type="submit" class="btn-modal-submit"><i class="bi bi-person-plus-fill me-2"></i> Create Librarian Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD ADMIN MODAL -->
+  <div class="modal fade" id="addAdminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" style="color:#ffa94d"><i class="bi bi-shield-fill-check"></i> Add Admin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="role-badge" style="background:rgba(255,152,0,.1);border-color:rgba(255,152,0,.3);color:var(--warn)">
+            <i class="bi bi-shield-fill-check"></i> Role: Administrator
+          </div>
+          <hr class="modal-divider">
+          <form action="/signup" method="POST">
+            <input type="hidden" name="role" value="admin">
+            <div class="fg-modal">
+              <label>First Name</label>
+              <div class="input-icon-wrap"><i class="bi bi-person"></i><input name="firstname" type="text" placeholder="First Name" required></div>
+            </div>
+            <div class="fg-modal">
+              <label>Last Name</label>
+              <div class="input-icon-wrap"><i class="bi bi-person"></i><input name="lastname" type="text" placeholder="Last Name" required></div>
+            </div>
+            <div class="fg-modal">
+              <label>Email Address</label>
+              <div class="input-icon-wrap"><i class="bi bi-envelope"></i><input name="email" type="email" placeholder="Email Address" required></div>
+            </div>
+            <div class="fg-modal">
+              <label>Password</label>
+              <small class="password-hint">Min. 12 characters with uppercase, lowercase, number & special character.</small>
+              <div class="pw-row">
+                <div class="password-wrapper">
+                  <input name="password" id="adminPassword" type="password" placeholder="Password (min. 12 chars)" required minlength="12" oninput="checkStrength(this.value,'adm')">
+                  <button type="button" class="password-toggle" onclick="togglePw('adminPassword',this)"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="pw-strength">Strength: <span id="str-adm">—</span></div>
+              </div>
+            </div>
+            <button type="submit" class="btn-modal-submit" style="background:var(--warn);color:#0d1a24"><i class="bi bi-shield-plus me-2"></i> Create Admin Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% include 'admin_template/footer_template.html' %}
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks   = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+    document.addEventListener('click', e => { if (!menuToggle.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open'); });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const rows = document.querySelectorAll('#tableBody tr:not(.empty-row)');
+      let active=0, offline=0, locked=0;
+      rows.forEach(r => {
+        if(r.querySelector('.bp-active'))  active++;
+        if(r.querySelector('.bp-offline')) offline++;
+        if(r.querySelector('.bp-locked'))  locked++;
+      });
+      document.getElementById('sActive').textContent  = active;
+      document.getElementById('sOffline').textContent = offline;
+      document.getElementById('sLocked').textContent  = locked;
+      updateResultsLabel();
+    });
+
+    function filterTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#tableBody tr:not(.empty-row)');
+      let n=0;
+      rows.forEach(r => { const m=!q||r.dataset.search.includes(q); r.style.display=m?'':'none'; if(m)n++; });
+      updateResultsLabel(n);
+    }
+    function updateResultsLabel(n) {
+      const total=document.querySelectorAll('#tableBody tr:not(.empty-row)').length;
+      const count=n!==undefined?n:total;
+      document.getElementById('resultsLbl').textContent=`${count} librarian${count!==1?'s':''}`;
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow='hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+    ['resetModal','confirmModal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', e => { if(e.target===document.getElementById(id)) closeModal(id); });
+    });
+    document.addEventListener('keydown', e => { if(e.key==='Escape') ['resetModal','confirmModal'].forEach(closeModal); });
+
+    function showToast(msg, type='') {
+      const t=document.createElement('div'); t.className=`toast-msg ${type}`; t.innerHTML=msg;
+      document.getElementById('toastWrap').appendChild(t); setTimeout(()=>t.remove(),3800);
+    }
+
+    function openResetModal(btn) {
+      document.getElementById('reset_user_id').value  = btn.dataset.userId;
+      document.getElementById('reset_username').value = btn.dataset.username;
+      document.getElementById('new_password').value=''; document.getElementById('confirm_password').value='';
+      document.getElementById('resetErr').style.display='none';
+      openModal('resetModal');
+    }
+    async function handleReset(e) {
+      e.preventDefault();
+      const np=document.getElementById('new_password').value, cp=document.getElementById('confirm_password').value;
+      const err=document.getElementById('resetErr');
+      if(np!==cp){ err.textContent='Passwords do not match.'; err.style.display='block'; return; }
+      try {
+        const fd=new FormData(); fd.append('user_id',document.getElementById('reset_user_id').value); fd.append('new_password',np);
+        const res=await fetch('/reset_user_password',{method:'POST',body:fd}); const d=await res.json();
+        if(d.success){ closeModal('resetModal'); showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Password reset','success'); }
+        else{ err.textContent=d.message||'Reset failed.'; err.style.display='block'; }
+      } catch { err.textContent='Network error.'; err.style.display='block'; }
+    }
+
+    async function handleUnlock(btn) {
+      const fd=new FormData(); fd.append('user_id',btn.dataset.userId);
+      try {
+        const res=await fetch('/unlock_user',{method:'POST',body:fd}); const d=await res.json();
+        if(d.success){ btn.remove(); showToast('<i class="bi bi-unlock-fill" style="color:var(--accent2)"></i> Account unlocked','success'); }
+      } catch {}
+    }
+
+    function openDeleteConfirm(btn) {
+      document.getElementById('confirmText').innerHTML=`Delete librarian <strong>"${btn.dataset.name}"</strong>?<br><small style="color:var(--tl)">This action cannot be undone.</small>`;
+      openModal('confirmModal');
+      document.getElementById('confirmOkBtn').onclick = async () => {
+        const okBtn=document.getElementById('confirmOkBtn');
+        okBtn.disabled=true; okBtn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Deleting…';
+        try {
+          const res=await fetch(`/delete_user/${btn.dataset.userId}`,{method:'POST'});
+          if(res.ok||res.redirected){ document.querySelector(`tr[data-user-id="${btn.dataset.userId}"]`)?.remove(); showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Librarian deleted','success'); }
+          else showToast('<i class="bi bi-exclamation-triangle-fill" style="color:var(--warn)"></i> Delete failed','error');
+        } catch { showToast('Network error','error'); }
+        finally { okBtn.disabled=false; okBtn.innerHTML='<i class="bi bi-trash3-fill me-1"></i> Delete'; closeModal('confirmModal'); updateResultsLabel(); }
+      };
+    }
+
+    function togglePw(inputId, btn) {
+      const inp=document.getElementById(inputId); const icon=btn.querySelector('i');
+      if(inp.type==='password'){ inp.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+      else { inp.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+    }
+    function checkStrength(val, key) {
+      const span=document.getElementById(`str-${key}`); if(!span) return;
+      span.className='';
+      if(!val){ span.textContent='—'; return; }
+      if(val.length<12){ span.textContent='Too Short'; span.classList.add('s-weak'); return; }
+      let score=0;
+      if(val.length>=12) score++; if(val.length>=16) score++;
+      if(/[A-Z]/.test(val)) score++; if(/[a-z]/.test(val)) score++;
+      if(/[0-9]/.test(val)) score++; if(/[^A-Za-z0-9]/.test(val)) score++;
+      if(score<=3){ span.textContent='Weak'; span.classList.add('s-weak'); }
+      else if(score===4){ span.textContent='Fair'; span.classList.add('s-fair'); }
+      else if(score===5){ span.textContent='Good'; span.classList.add('s-good'); }
+      else { span.textContent='Strong'; span.classList.add('s-strong'); }
+    }
+    ['addLibrarianModal','addAdminModal'].forEach(id => {
+      document.getElementById(id).addEventListener('hidden.bs.modal', function() {
+        this.querySelectorAll('input:not([type=hidden])').forEach(i => { i.value=''; });
+        this.querySelectorAll('[id^="str-"]').forEach(s => { s.textContent='—'; s.className=''; });
+      });
+    });
+  </script>
+  <script src="{{ url_for('static', filename='js/admin/admin_management.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<style>
+  /* ── SIDEBAR OVERLAY ── */
+  .profile-sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    z-index: 1550; opacity: 0; visibility: hidden;
+    transition: opacity .3s, visibility .3s;
+  }
+  .profile-sidebar-overlay.show { opacity: 1; visibility: visible; }
+
+  /* ── SIDEBAR PANEL ── */
+  .profile-sidebar {
+    position: fixed; top: 0; right: -340px;
+    width: 300px; height: 100vh;
+    background: #1b2a35;
+    z-index: 1600;
+    display: flex; flex-direction: column;
+    transition: right .35s cubic-bezier(.16,.84,.44,1);
+    box-shadow: -8px 0 32px rgba(0,0,0,.45);
+    overflow-y: auto;
+  }
+  .profile-sidebar.open { right: 0; }
+  .profile-sidebar::-webkit-scrollbar { width: 4px; }
+  .profile-sidebar::-webkit-scrollbar-thumb { background: rgba(159,193,225,.25); border-radius: 4px; }
+
+  /* ── SIDEBAR INNER SECTIONS ── */
+  .ps-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    flex-shrink: 0;
+  }
+  .ps-close-btn {
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.55); width: 34px; height: 34px;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; cursor: pointer; transition: .2s;
+  }
+  .ps-close-btn:hover { background: rgba(255,100,100,.1); border-color: rgba(255,100,100,.25); color: #ff7070; }
+
+  .ps-settings-btn {
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.6); width: 36px; height: 36px;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; cursor: pointer; transition: .2s; text-decoration: none;
+  }
+  .ps-settings-btn:hover { background: rgba(255,255,255,.13); color: var(--accent, #9fc1e1); transform: rotate(22deg); }
+
+  .ps-avatar-section {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    flex-shrink: 0;
+  }
+  .ps-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent, #9fc1e1), #5a8ab0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: 700; color: #fff;
+    border: 3px solid rgba(255,255,255,.15);
+    box-shadow: 0 6px 20px rgba(0,0,0,.35);
+    margin-bottom: 14px;
+    user-select: none;
+  }
+  .ps-fullname { font-size: 1rem; font-weight: 700; color: #fff; text-align: center; margin-bottom: 6px; }
+  .ps-role-badge {
+    font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase;
+    background: rgba(159,193,225,.12); color: var(--accent, #9fc1e1);
+    border: 1px solid rgba(159,193,225,.22); padding: 3px 12px; border-radius: 20px;
+  }
+
+  .ps-actions {
+    display: flex; gap: 10px; padding: 16px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    flex-shrink: 0;
+  }
+  .ps-action-btn {
+    flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09);
+    color: #fff; border-radius: 12px; padding: 11px 8px;
+    font-family: inherit; font-size: .72rem; font-weight: 600;
+    cursor: pointer; transition: .2s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-decoration: none;
+  }
+  .ps-action-btn i { font-size: 1.15rem; color: var(--accent, #9fc1e1); }
+  .ps-action-btn:hover {
+    background: rgba(159,193,225,.14); border-color: rgba(159,193,225,.3);
+    transform: translateY(-2px); color: #fff;
+  }
+
+  .ps-details { padding: 16px 18px; flex: 1; }
+  .ps-details-label {
+    font-size: .66rem; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 12px;
+  }
+  .ps-detail-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 13px;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.05);
+    border-radius: 11px; margin-bottom: 8px;
+  }
+  .ps-detail-row i { font-size: .9rem; color: var(--accent, #9fc1e1); width: 16px; flex-shrink: 0; opacity: .75; }
+  .ps-detail-content label {
+    display: block; font-size: .61rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: rgba(255,255,255,.32); margin-bottom: 1px;
+  }
+  .ps-detail-content span { font-size: .8rem; color: rgba(255,255,255,.75); font-weight: 500; }
+
+  .ps-logout {
+    padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.07);
+    flex-shrink: 0;
+  }
+  .ps-logout a {
+    display: flex; align-items: center; gap: 10px;
+    color: rgba(255,100,100,.75); text-decoration: none;
+    font-size: .84rem; font-weight: 600;
+    padding: 10px 13px; border-radius: 10px; transition: .2s;
+  }
+  .ps-logout a:hover { background: rgba(255,100,100,.08); color: #ff6b6b; }
+  .ps-logout a.ps-qr-link { color: rgba(159,193,225,.75); margin-bottom: 4px; }
+  .ps-logout a.ps-qr-link:hover { background: rgba(159,193,225,.08); color: var(--accent, #9fc1e1); }
+</style>
+
+<!-- OVERLAY -->
+<div class="profile-sidebar-overlay" id="profileSidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="profile-sidebar" id="profileSidebar">
+
+  <div class="ps-topbar">
+    <a href="/user/settings" class="ps-settings-btn" title="Settings">
+      <i class="bi bi-gear-fill"></i>
+    </a>
+    <button class="ps-close-btn" id="profileSidebarClose" title="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="ps-avatar-section">
+    <div class="ps-avatar">
+      {{ user.firstname[0] | upper }}{{ user.lastname[0] | upper if user.lastname else '—' }}
+    </div>
+    <div class="ps-fullname">{{ user.firstname }} {{ user.lastname }}</div>
+    <span class="ps-role-badge">Member</span>
+  </div>
+
+  <div class="ps-actions">
+    <a href="/user/borrow-history" class="ps-action-btn">
+      <i class="bi bi-clock-history"></i>Borrow History
+    </a>
+    <a href="/user/edit_profile" class="ps-action-btn">
+      <i class="bi bi-pencil-square"></i>Edit Profile
+    </a>
+  </div>
+
+  <div class="ps-details">
+    <p class="ps-details-label">Personal Details</p>
+
+    <div class="ps-detail-row">
+      <i class="bi bi-envelope-fill"></i>
+      <div class="ps-detail-content">
+        <label>Email</label>
+        <span>{{ user.email if user.email else '—' }}</span>
+      </div>
+    </div>
+
+    <div class="ps-detail-row">
+      <i class="bi bi-telephone-fill"></i>
+      <div class="ps-detail-content">
+        <label>Phone</label>
+        <span>{{ user.phone if user.phone else '—' }}</span>
+      </div>
+    </div>
+
+    <div class="ps-detail-row">
+      <i class="bi bi-geo-alt-fill"></i>
+      <div class="ps-detail-content">
+        <label>Address</label>
+        <span>{{ user.address if user.address else '—' }}</span>
+      </div>
+    </div>
+
+    <div class="ps-detail-row">
+      <i class="bi bi-calendar3"></i>
+      <div class="ps-detail-content">
+        <label>Member Since</label>
+        <span>{{ user.member_since }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ps-logout">
+    <!-- Show QR link only on mobile -->
+    <a href="/scan-qr" class="ps-qr-link" style="display:none" id="psScanQrLink">
+      <i class="bi bi-qr-code-scan"></i> Scan QR Login
+    </a>
+    <a href="/logout">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+  </div>
+
+</aside>
+
+<script>
+(function () {
+  const sidebar = document.getElementById('profileSidebar');
+  const overlay = document.getElementById('profileSidebarOverlay');
+  const closeBtn = document.getElementById('profileSidebarClose');
+  const qrLink   = document.getElementById('psScanQrLink');
+
+  /* Show QR link only on mobile screens */
+  function checkMobile() {
+    if (qrLink) qrLink.style.display = window.innerWidth <= 992 ? 'flex' : 'none';
+  }
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+
+  function openSidebar() {
+    /* close mobile nav drawer first if it is open */
+    const nav   = document.getElementById('topbarNav');
+    const navOv = document.getElementById('navOverlay');
+    if (nav && nav.classList.contains('open')) {
+      nav.classList.remove('open');
+      if (navOv) navOv.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  /* Expose globally so other scripts can call window.openProfileSidebar() */
+  window.openProfileSidebar  = openSidebar;
+  window.closeProfileSidebar = closeSidebar;
+
+  /* Listen for event dispatched by topbar_template.html */
+  document.addEventListener('openProfileSidebar', openSidebar);
+
+  overlay.addEventListener('click', closeSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+})();
+</script>

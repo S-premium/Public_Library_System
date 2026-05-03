@@ -1,0 +1,475 @@
+<style>
+  /* ── TOPBAR ── */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+    background: rgba(30,45,61,0.95);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(159,193,225,0.12);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 60px;
+  }
+  .brand-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: #fff; flex-shrink: 0;
+  }
+  .brand-img  { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; }
+  .brand-text { font-weight: 700; font-size: 1.1rem; letter-spacing: -.02em; }
+
+  /* ── DESKTOP NAV ── */
+  .topbar-nav { display: flex; gap: 4px; align-items: center; }
+  .topbar-nav a {
+    color: rgba(255,255,255,.65); text-decoration: none;
+    font-weight: 500; font-size: .88rem; padding: 6px 12px;
+    border-radius: 8px; transition: .18s; white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .topbar-nav a:hover  { background: rgba(255,255,255,.08); color: #fff; }
+  .topbar-nav a.active { background: rgba(159,193,225,.15); color: var(--accent, #9fc1e1); }
+  .dropdown-menu {
+    background: #253545; border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px; padding: 6px; min-width: 190px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.4);
+  }
+  .dropdown-menu .dropdown-item {
+    color: rgba(255,255,255,.8); font-size: .88rem; font-weight: 500;
+    border-radius: 8px; padding: 8px 14px; transition: .15s;
+  }
+  .dropdown-menu .dropdown-item:hover { background: rgba(159,193,225,.12); color: #fff; }
+
+  /* ── TOP ACTIONS ── */
+  .top-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  .notif-btn {
+    background: transparent; border: none; color: var(--tl, #dae8f5);
+    font-size: 1.15rem; cursor: pointer; padding: 7px 9px;
+    border-radius: 8px; position: relative; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .notif-btn:hover { color: #fff; background: rgba(255,255,255,.08); }
+  .notif-badge {
+    position: absolute; top: 3px; right: 3px; width: 8px; height: 8px;
+    background: #e06c75; border-radius: 50%;
+    border: 2px solid var(--bg1, #1e2d3d); display: none;
+  }
+  .notif-badge.visible { display: block; }
+  .notif-count {
+    position: absolute; top: -2px; right: -3px; background: #e06c75;
+    color: #fff; font-size: .5rem; font-weight: 700;
+    min-width: 15px; height: 15px; border-radius: 8px; padding: 0 3px;
+    border: 2px solid var(--bg1, #1e2d3d); display: none;
+    align-items: center; justify-content: center; line-height: 1;
+  }
+  .notif-count.visible { display: flex; }
+
+  .calendar-btn {
+    background: transparent; border: none; color: var(--tl, #dae8f5);
+    font-size: 1.15rem; cursor: pointer; padding: 7px 9px;
+    border-radius: 8px; transition: .18s;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+  }
+  .calendar-btn:hover { color: #fff; background: rgba(255,255,255,.08); }
+
+  .profile-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent, #9fc1e1), #6a9cbf);
+    border: 2px solid rgba(255,255,255,.25); color: #fff;
+    font-weight: 700; font-size: .72rem; letter-spacing: .5px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: .18s; flex-shrink: 0;
+  }
+  .profile-btn:hover { transform: scale(1.1); border-color: rgba(255,255,255,.55); }
+
+  /* ── HAMBURGER ── */
+  .menu-toggle {
+    display: none; background: none; border: none; color: #fff;
+    font-size: 1.5rem; cursor: pointer; padding: 6px 8px;
+    border-radius: 8px; line-height: 1; transition: .18s; flex-shrink: 0;
+  }
+  .menu-toggle:hover { background: rgba(255,255,255,.08); }
+
+  /* ── NAV OVERLAY — always in DOM, visibility toggled via class ── */
+  .nav-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.65);
+    z-index: 1400;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .28s, visibility .28s;
+  }
+  .nav-overlay.show { opacity: 1; visibility: visible; }
+
+  /* ── DRAWER HEADER — hidden on desktop, shown inside mobile drawer ── */
+  .nav-drawer-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 60px;
+    min-height: 60px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(159,193,225,.12);
+    background: rgba(159,193,225,.04);
+  }
+  .nav-drawer-brand {
+    font-size: .88rem; font-weight: 700;
+    color: var(--accent, #9fc1e1); letter-spacing: -.01em;
+  }
+  .nav-drawer-close {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.7);
+    width: 34px; height: 34px;
+    border-radius: 9px; font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: .18s; line-height: 1;
+  }
+  .nav-drawer-close:hover { background: rgba(255,100,100,.12); border-color: rgba(255,100,100,.3); color: #ff7070; }
+
+  /* ── MOBILE DRAWER ── */
+  @media (max-width: 992px) {
+    .topbar { padding: 0 14px; gap: 8px; z-index: 1500; }
+    .menu-toggle { display: flex; align-items: center; justify-content: center; }
+
+    .topbar-nav {
+      position: fixed;
+      top: 0; left: 0;
+      width: 280px; max-width: 85vw;
+      height: 100vh;
+      background: #162432;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0 0 24px;
+      gap: 0;
+      overflow-y: auto; overflow-x: hidden;
+      transform: translateX(-110%);
+      transition: transform .28s cubic-bezier(.4,0,.2,1);
+      z-index: 1400;
+      border-right: 1px solid rgba(159,193,225,.1);
+      box-shadow: 8px 0 32px rgba(0,0,0,.6);
+    }
+    .topbar-nav.open { transform: translateX(0); }
+
+    /* reveal drawer header only inside mobile drawer */
+    .nav-drawer-header { display: flex; }
+
+    .topbar-nav a {
+      padding: 13px 16px;
+      font-size: .95rem;
+      border-radius: 10px;
+      color: rgba(255,255,255,.75);
+      display: flex; align-items: center;
+      gap: 10px;
+      white-space: normal;
+      word-break: break-word;
+      margin: 1px 8px;
+    }
+    .topbar-nav a:hover  { background: rgba(159,193,225,.1); color: #fff; }
+    .topbar-nav a.active { background: rgba(159,193,225,.15); color: var(--accent, #9fc1e1); }
+  }
+
+  @media (max-width: 480px) { .brand-text { display: none; } }
+
+  /* ── NOTIFICATION MODAL ── */
+  #notificationModal .modal-dialog { max-width: 390px; margin-top: 68px; margin-right: 18px; margin-left: auto; }
+  #notificationModal .modal-content {
+    background: #1b2a35; border: 1px solid rgba(159,193,225,.15);
+    border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,.55);
+    color: #fff; overflow: hidden;
+  }
+  #notificationModal .modal-header {
+    background: rgba(255,255,255,.04);
+    border-bottom: 1px solid rgba(255,255,255,.07); padding: 16px 20px;
+  }
+  #notificationModal .modal-title {
+    font-size: .88rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent, #9fc1e1);
+    display: flex; align-items: center; gap: 8px;
+  }
+  #notificationModal .modal-header .header-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  #notificationModal .btn-close { filter: invert(1) brightness(.6); transition: .2s; }
+  #notificationModal .btn-close:hover { filter: invert(1) brightness(1); }
+  .notif-fullscreen-btn {
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.6); width: 30px; height: 30px;
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; cursor: pointer; transition: .2s; text-decoration: none; flex-shrink: 0;
+  }
+  .notif-fullscreen-btn:hover { background: rgba(159,193,225,.15); border-color: rgba(159,193,225,.3); color: var(--accent, #9fc1e1); }
+  #notificationModal .modal-body { padding: 12px 16px; max-height: 380px; overflow-y: auto; }
+  #notificationModal .modal-body::-webkit-scrollbar { width: 4px; }
+  #notificationModal .modal-body::-webkit-scrollbar-thumb { background: rgba(159,193,225,.2); border-radius: 4px; }
+  .notif-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px; background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.05); border-radius: 12px;
+    margin-bottom: 8px; cursor: pointer; transition: .2s;
+  }
+  .notif-item:hover { background: rgba(159,193,225,.08); border-color: rgba(159,193,225,.15); }
+  .notif-item:last-child { margin-bottom: 0; }
+  .notif-item.is-read { opacity: .45; }
+  .notif-icon-wrap {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .95rem; flex-shrink: 0;
+  }
+  .notif-icon-wrap.general  { background: rgba(159,193,225,.12); color: var(--accent, #9fc1e1); }
+  .notif-icon-wrap.urgent   { background: rgba(224,112,112,.12); color: #e07070; }
+  .notif-icon-wrap.event    { background: rgba(106,191,142,.12); color: #6abf8e; }
+  .notif-icon-wrap.reminder { background: rgba(232,196,106,.12); color: #e8c46a; }
+  .notif-text { flex: 1; min-width: 0; }
+  .notif-title-text { font-size: .8rem; font-weight: 700; color: rgba(255,255,255,.9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 3px; }
+  .notif-body-text  { font-size: .74rem; color: rgba(255,255,255,.52); line-height: 1.5; margin: 0 0 4px; }
+  .notif-time { font-size: .67rem; color: rgba(255,255,255,.28); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+  .notif-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent, #9fc1e1); margin-top: 6px; flex-shrink: 0; }
+  .notif-dot.read { background: transparent; }
+  #notificationModal .modal-footer {
+    background: rgba(255,255,255,.03); border-top: 1px solid rgba(255,255,255,.07);
+    padding: 12px 16px; display: flex; gap: 8px; justify-content: space-between; align-items: center;
+  }
+  .notif-unread-label { font-size: .74rem; color: rgba(255,255,255,.32); }
+  .notif-unread-label strong { color: var(--accent, #9fc1e1); }
+  .notif-mark-all-btn {
+    background: rgba(159,193,225,.15); border: 1px solid rgba(159,193,225,.25);
+    color: var(--accent, #9fc1e1); border-radius: 10px; padding: 7px 14px;
+    font-family: inherit; font-size: .75rem; font-weight: 700;
+    cursor: pointer; transition: .2s;
+  }
+  .notif-mark-all-btn:hover { background: rgba(159,193,225,.25); color: #fff; }
+  .notif-mark-all-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .notif-loading, .notif-empty { text-align: center; padding: 36px 16px; color: rgba(255,255,255,.3); font-size: .82rem; }
+  .notif-empty i { display: block; font-size: 2.4rem; margin-bottom: 10px; opacity: .2; }
+  .notif-author-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: .62rem; font-weight: 700; letter-spacing: .03em;
+    padding: 1px 7px; border-radius: 20px; border: 1px solid;
+    vertical-align: middle; line-height: 1.6;
+  }
+  .notif-author-badge.role-admin     { color: #ffb347; border-color: rgba(255,179,71,.4); background: rgba(255,179,71,.1); }
+  .notif-author-badge.role-librarian { color: #9fc1e1; border-color: rgba(159,193,225,.4); background: rgba(159,193,225,.1); }
+</style>
+
+<!-- NAV OVERLAY (mobile backdrop) -->
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="#" class="brand-logo">
+    <img src="/static/images/logo.png" alt="Logo" class="brand-img">
+    <span class="brand-text">Iloilo City Public Library</span>
+  </a>
+
+  <nav class="topbar-nav" id="topbarNav">
+    <!-- Drawer header — only visible on mobile -->
+    <div class="nav-drawer-header">
+      <span class="nav-drawer-brand">Iloilo City Public Library</span>
+      <button class="nav-drawer-close" id="navDrawerClose" aria-label="Close menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <a href="/user/home"                     class="{{ 'active' if active_page == 'home'     else '' }}"><i class="bi bi-house-door-fill"></i> Home</a>
+    <a href="/user/borrowed"                 class="{{ 'active' if active_page == 'borrowed' else '' }}"><i class="bi bi-clock-history"></i> Borrowed Books</a>
+    <a href="/about"                         class="{{ 'active' if active_page == 'about'    else '' }}"><i class="bi bi-info-circle-fill"></i> About Us</a>
+  </nav>
+
+  <div class="top-actions">
+    <a href="/user/event" class="calendar-btn" title="Calendar"><i class="bi bi-calendar3"></i></a>
+
+    <button type="button" class="notif-btn" id="notifToggleBtn"
+            data-bs-toggle="modal" data-bs-target="#notificationModal" title="Notifications">
+      <i class="bi bi-bell-fill"></i>
+      <span class="notif-badge" id="notifDot"></span>
+      <span class="notif-count" id="notifCount"></span>
+    </button>
+
+    <button class="profile-btn" id="profileToggleBtn" title="My Profile">
+      {{ user.firstname[0] | upper }}{{ user.lastname[0] | upper if user.lastname else '—' }}
+    </button>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><i class="bi bi-list"></i></button>
+  </div>
+</header>
+
+<!-- Spacer so page content isn't hidden under fixed topbar -->
+<div style="height: 60px;"></div>
+
+<!-- ── NOTIFICATION MODAL ── -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-bell-fill"></i> Notifications</h5>
+        <div class="header-actions">
+          <a href="/user/notifications" class="notif-fullscreen-btn" title="View all notifications"><i class="bi bi-arrows-fullscreen"></i></a>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+      </div>
+      <div class="modal-body" id="notifModalBody">
+        <div class="notif-loading"><i class="bi bi-arrow-clockwise" style="animation:_topbarSpin .8s linear infinite;display:inline-block;margin-right:6px;"></i>Loading…</div>
+      </div>
+      <div class="modal-footer">
+        <span class="notif-unread-label"><strong id="notifUnreadLabel">0</strong> unread</span>
+        <button type="button" class="notif-mark-all-btn" id="notifMarkAllBtn" disabled>
+          <i class="bi bi-check2-all me-1"></i> Mark all as read
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* ── inject spin keyframe once ── */
+  if (!document.getElementById('_topbarSpinStyle')) {
+    const s = document.createElement('style');
+    s.id = '_topbarSpinStyle';
+    s.textContent = '@keyframes _topbarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+
+  /* ── MOBILE NAV DRAWER ── */
+  const menuToggle  = document.getElementById('menuToggle');
+  const topbarNav   = document.getElementById('topbarNav');
+  const navOverlay  = document.getElementById('navOverlay');
+  const drawerClose = document.getElementById('navDrawerClose');
+
+  function openNav() {
+    /* close profile sidebar first if it is open */
+    if (window.closeProfileSidebar) window.closeProfileSidebar();
+    topbarNav.classList.add('open');
+    navOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    menuToggle.setAttribute('aria-label', 'Close menu');
+  }
+  function closeNav() {
+    topbarNav.classList.remove('open');
+    navOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+    menuToggle.setAttribute('aria-label', 'Open menu');
+  }
+
+  menuToggle.addEventListener('click',  () => topbarNav.classList.contains('open') ? closeNav() : openNav());
+  drawerClose.addEventListener('click', closeNav);
+  navOverlay.addEventListener('click',  closeNav);
+  topbarNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('keydown',  e => { if (e.key === 'Escape') closeNav(); });
+
+  /* ── NOTIFICATIONS ── */
+  const CAT_ICON = {
+    general: 'bi-megaphone-fill', urgent: 'bi-exclamation-triangle-fill',
+    event: 'bi-calendar-event-fill', reminder: 'bi-clock-fill'
+  };
+
+  function timeAgo(iso) {
+    const d = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (d < 60) return 'Just now';
+    if (d < 3600) return `${Math.floor(d / 60)}m ago`;
+    if (d < 86400) return `${Math.floor(d / 3600)}h ago`;
+    return new Date(iso).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function getAuthorBadge(author) {
+    const s = (author || '').toLowerCase();
+    if (s.includes('(admin)'))     return `<span class="notif-author-badge role-admin"><i class="bi bi-shield-fill"></i>Admin</span>`;
+    if (s.includes('(librarian)')) return `<span class="notif-author-badge role-librarian"><i class="bi bi-person-badge-fill"></i>Librarian</span>`;
+    return '';
+  }
+  function authorName(author) {
+    return esc((author || '').replace(/\s*\((Admin|Librarian|User)\)\s*$/i, '').trim());
+  }
+
+  function setBellBadge(n) {
+    const dot   = document.getElementById('notifDot');
+    const badge = document.getElementById('notifCount');
+    const label = document.getElementById('notifUnreadLabel');
+    const btn   = document.getElementById('notifMarkAllBtn');
+    if (label) label.textContent = n;
+    if (btn)   btn.disabled = (n === 0);
+    if (n > 0) {
+      dot?.classList.add('visible');
+      if (badge) { badge.textContent = n > 99 ? '99+' : n; badge.classList.add('visible'); }
+    } else {
+      dot?.classList.remove('visible');
+      badge?.classList.remove('visible');
+    }
+  }
+
+  function renderNotifications(list) {
+    const body = document.getElementById('notifModalBody');
+    if (!body) return;
+    if (!list.length) { body.innerHTML = `<div class="notif-empty"><i class="bi bi-bell-slash"></i>No announcements yet</div>`; return; }
+    body.innerHTML = list.map(n => {
+      const icon  = CAT_ICON[n.category] || CAT_ICON.general;
+      const badge = getAuthorBadge(n.author);
+      const name  = authorName(n.author);
+      return `<div class="notif-item${n.read ? ' is-read' : ''}" data-id="${n.id}" onclick="_topbarMarkOneRead(${n.id},this)">
+        <div class="notif-icon-wrap ${n.category || 'general'}"><i class="bi ${icon}"></i></div>
+        <div class="notif-text">
+          <div class="notif-title-text">${esc(n.title)}</div>
+          <p class="notif-body-text">${esc(n.body)}</p>
+          <span class="notif-time">
+            <i class="bi bi-person-circle"></i>${name}${badge ? ' ' + badge : ''}
+            <span style="opacity:.4">·</span>
+            <i class="bi bi-clock"></i>${timeAgo(n.created_at)}
+          </span>
+        </div>
+        <div class="notif-dot${n.read ? ' read' : ''}"></div>
+      </div>`;
+    }).join('');
+  }
+
+  window._topbarMarkOneRead = async function (id, el) {
+    if (el.classList.contains('is-read')) return;
+    try {
+      await fetch(`/api/user/notifications/${id}/read`, { method: 'POST' });
+      el.classList.add('is-read');
+      el.querySelector('.notif-dot')?.classList.add('read');
+      const cur = parseInt(document.getElementById('notifUnreadLabel')?.textContent || '0');
+      setBellBadge(Math.max(0, cur - 1));
+    } catch {}
+  };
+
+  async function loadNotifications() {
+    const body = document.getElementById('notifModalBody');
+    if (body) body.innerHTML = '<div class="notif-loading"><i class="bi bi-arrow-clockwise" style="animation:_topbarSpin .8s linear infinite;display:inline-block;margin-right:6px;"></i>Loading…</div>';
+    try {
+      const d = await fetch('/api/user/notifications').then(r => r.json());
+      renderNotifications(d.notifications);
+      setBellBadge(d.unread_count);
+    } catch {
+      if (body) body.innerHTML = '<div class="notif-empty"><i class="bi bi-wifi-off"></i>Could not load notifications</div>';
+    }
+  }
+
+  document.getElementById('notifMarkAllBtn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('notifMarkAllBtn');
+    btn.disabled = true;
+    try {
+      await fetch('/api/user/notifications/read-all', { method: 'POST' });
+      document.querySelectorAll('#notifModalBody .notif-item').forEach(i => {
+        i.classList.add('is-read');
+        i.querySelector('.notif-dot')?.classList.add('read');
+      });
+      setBellBadge(0);
+    } catch { btn.disabled = false; }
+  });
+
+  document.getElementById('notificationModal')?.addEventListener('show.bs.modal', loadNotifications);
+
+  /* ── Initial badge fetch + polling every 60s ── */
+  (async () => {
+    try { const d = await fetch('/api/user/notifications').then(r => r.json()); if (!d.error) setBellBadge(d.unread_count); } catch {}
+  })();
+  setInterval(async () => {
+    try { const d = await fetch('/api/user/notifications').then(r => r.json()); if (!d.error) setBellBadge(d.unread_count); } catch {}
+  }, 60000);
+
+  /* ── Open profile sidebar ── */
+  document.getElementById('profileToggleBtn')?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('openProfileSidebar'));
+  });
+})();
+</script>
