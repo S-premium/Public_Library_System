@@ -136,10 +136,7 @@
       .nav-overlay.show { display: block; }
     }
 
-    /* Topbar brand text breakpoints */
     @media (max-width: 480px) { .brand-text { display:none; } }
-
-    /* Extra-small: show a shorter brand name */
     @media (max-width: 360px) {
       .topbar { padding: 0 10px; height: 54px; }
       .nav-links { top: 54px; bottom: 68px; }
@@ -244,7 +241,6 @@
     .side-btn-wrap:hover .side-tip { opacity:1; transform:translateX(0); }
     .bottom-divider { width: 1px; height: 36px; background: rgba(255,255,255,.1); flex-shrink: 0; }
 
-    /* ── BOTTOM DOCK tiny phones ── */
     @media (max-width: 360px) {
       .bottom-btn { padding: 5px 6px; max-width: 70px; }
       .bottom-btn-icon { width: 30px; height: 30px; font-size: .9rem; }
@@ -256,12 +252,12 @@
     }
 
     /* ══════════════════════════════════
-       HERO
+       HERO — OPTION B
     ══════════════════════════════════ */
     .hero {
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
-      padding: 80px 40px 80px; position: relative; overflow: hidden;
+      padding: 90px 40px 80px; position: relative; overflow: hidden;
     }
     .hero::before {
       content: ''; position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
@@ -269,11 +265,8 @@
       background: radial-gradient(circle, rgba(159,193,225,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
-    .hero-inner {
-      max-width: 1200px; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 80px; align-items: center;
-    }
+
+    /* Badge */
     .hero-badge {
       display: inline-flex; align-items: center; gap: 7px;
       background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.25);
@@ -282,67 +275,111 @@
       letter-spacing: .05em; text-transform: uppercase; margin-bottom: 20px;
       white-space: normal; word-break: break-word; max-width: 100%;
     }
+    .hero-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #48c78e; flex-shrink: 0;
+      animation: heroPulse 2s infinite;
+    }
+
+    /* Title & subtitle */
     .hero-title { font-size: clamp(1.7rem, 5vw, 3.2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.03em; margin-bottom: 18px; }
     .hero-title span { color: var(--accent); }
-    .hero-subtitle { color: var(--tl); font-size: .98rem; line-height: 1.7; margin-bottom: 32px; max-width: 440px; }
-    .hero-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #0d1a24; border: none; border-radius: 12px; padding: 12px 24px; font-size: .92rem; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: .2s; text-decoration: none; }
+    .hero-subtitle { color: var(--tl); font-size: .98rem; line-height: 1.7; margin-bottom: 28px; max-width: 480px; }
+
+    /* CTA buttons */
+    .hero-cta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #0d1a24;
+      border: none; border-radius: 12px; padding: 12px 24px;
+      font-size: .92rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; text-decoration: none;
+    }
     .hero-cta:hover { background: #b8d4ec; transform: translateY(-2px); color: #0d1a24; }
-    .hero-stats { display: flex; gap: 24px; margin-top: 36px; flex-wrap: wrap; align-items: center; }
+    .hero-cta-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.08); color: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.15); border-radius: 12px; padding: 11px 20px;
+      font-size: .92rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; text-decoration: none;
+    }
+    .hero-cta-ghost:hover { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.28); }
+
+    /* Alert card */
+    .hero-alert-card {
+      flex-shrink: 0; min-width: 188px;
+      background: rgba(255,99,99,.1); border: 1px solid rgba(255,99,99,.28);
+      border-radius: 16px; padding: 20px 22px;
+      cursor: pointer; text-decoration: none; display: block; transition: .25s;
+    }
+    .hero-alert-card:hover { background: rgba(255,99,99,.2); transform: translateY(-3px); border-color: rgba(255,99,99,.45); }
+    .hero-alert-card.clear {
+      background: rgba(72,199,142,.08); border-color: rgba(72,199,142,.25);
+    }
+    .hero-alert-card.clear:hover { background: rgba(72,199,142,.15); border-color: rgba(72,199,142,.4); }
+    .alert-top-row { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+    .alert-blink { width: 7px; height: 7px; border-radius: 50%; background: #ff7070; flex-shrink: 0; animation: heroBlink 1.8s infinite; }
+    .alert-blink.clear { background: #48c78e; animation: none; }
+    .alert-label { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,140,140,.75); }
+    .alert-label.clear { color: rgba(72,199,142,.75); }
+    .alert-num { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; }
+    .alert-sub { font-size: .72rem; color: rgba(255,150,150,.6); margin-top: 4px; }
+    .alert-sub.clear { color: rgba(72,199,142,.55); }
+
+    /* Bottom card grid */
+    .hero-card-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+      border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px;
+    }
+    .hero-quick-card {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+      border-radius: 14px; padding: 16px; cursor: pointer; text-decoration: none;
+      display: block; transition: .2s;
+    }
+    .hero-quick-card:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
+    .qc-icon { font-size: 1.1rem; display: block; margin-bottom: 10px; }
+    .qc-name { font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.85); }
+    .qc-sub  { font-size: .67rem; color: rgba(218,232,245,.4); margin-top: 3px; }
+
+    /* Stats row */
+    .hero-stats { display: flex; gap: 24px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.07); flex-wrap: wrap; align-items: center; }
     .hero-stat-val { font-size: 1.8rem; font-weight: 700; color: #fff; line-height: 1; }
     .hero-stat-lbl { font-size: .75rem; color: var(--tl); margin-top: 3px; }
     .hero-stat-divider { width: 1px; background: rgba(255,255,255,.12); align-self: stretch; }
-    .hero-visual { display: flex; flex-direction: column; gap: 14px; }
-    .hero-card { background: var(--card); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 18px 20px; backdrop-filter: blur(10px); transition: .2s; display: flex; align-items: center; gap: 14px; }
-    .hero-card:hover { background: var(--card-b); transform: translateX(4px); }
-    .hero-card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
-    .hci-blue   { background:rgba(159,193,225,.18); color:var(--accent); }
-    .hci-green  { background:rgba(72,199,142,.18);  color:var(--accent2); }
-    .hci-orange { background:rgba(255,152,0,.18);   color:var(--warn); }
-    .hci-red    { background:rgba(255,99,99,.18);   color:var(--danger); }
-    .hero-card-label { font-size:.78rem; color:var(--tl); margin-bottom:2px; }
-    .hero-card-val   { font-size:1.1rem; font-weight:700; color:#fff; }
 
-    /* ── Hero responsive breakpoints ── */
+    /* Keyframes */
+    @keyframes heroPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(72,199,142,.45); }
+      50%      { box-shadow: 0 0 0 5px rgba(72,199,142,0); }
+    }
+    @keyframes heroBlink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .25; }
+    }
+
+    /* Hero responsive */
     @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
-      .hero-visual { display: none; }
       .hero { padding: 90px 24px 60px; }
+      .hero-top-row { flex-direction: column !important; }
+      .hero-alert-card { min-width: unset; width: 100%; }
+      .hero-card-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) {
       .hero { padding: 80px 18px 56px; }
-      .hero-badge { font-size: .7rem; padding: 4px 12px; }
-      .hero-subtitle { font-size: .9rem; }
-      .hero-cta { padding: 11px 20px; font-size: .88rem; }
-      .hero-stats { gap: 14px; margin-top: 28px; }
-      .hero-stat-val { font-size: 1.6rem; }
-      .hero-stat-lbl { font-size: .72rem; }
+      .hero-title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+      .hero-card-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     }
     @media (max-width: 480px) {
       .hero { padding: 80px 16px 56px; }
-      .hero-stats { gap: 12px; flex-wrap: nowrap; }
+      .hero-stats { gap: 14px; }
       .hero-stat-divider { display: none; }
-      .hero-subtitle { font-size: .88rem; max-width: 100%; }
-      .hero-badge { font-size: .68rem; padding: 4px 10px; }
     }
     @media (max-width: 390px) {
-      .hero { padding: 76px 14px 52px; }
-      .hero-title { font-size: clamp(1.55rem, 7.5vw, 2rem); }
-      .hero-stat-val { font-size: 1.45rem; }
-      .hero-stats { gap: 10px; }
-      .hero-cta { width: 100%; justify-content: center; }
+      .hero-cta-row { flex-direction: column; align-items: stretch; }
+      .hero-cta, .hero-cta-ghost { justify-content: center; }
     }
     @media (max-width: 360px) {
       .hero { padding: 72px 12px 50px; }
-      .hero-title { font-size: clamp(1.45rem, 8vw, 1.9rem); }
-      .hero-badge { font-size: .63rem; padding: 4px 9px; }
-      .hero-stat-val { font-size: 1.35rem; }
-      .hero-stat-lbl { font-size: .68rem; }
-      .hero-subtitle { font-size: .84rem; }
-    }
-    @media (max-width: 320px) {
-      .hero { padding: 68px 10px 46px; }
-      .hero-title { font-size: clamp(1.3rem, 8.5vw, 1.7rem); }
-      .hero-stats { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .hero-card-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
     }
 
     /* ── VISION / MISSION ── */
@@ -358,27 +395,10 @@
     .vm-card h4 { font-size:.95rem; font-weight:700; margin-bottom:10px; color:#fff; }
     .vm-card p  { font-size:.83rem; color:var(--tl); line-height:1.65; }
 
-    @media (max-width: 768px) {
-      .vm-section { padding: 60px 16px; }
-      .vm-grid { grid-template-columns: 1fr; gap: 12px; }
-      .section-title { margin-bottom: 32px; }
-    }
-    @media (max-width: 480px) {
-      .vm-section { padding: 48px 14px; }
-      .vm-card { padding: 20px 18px; }
-      .vm-card p { font-size: .82rem; }
-    }
-    @media (max-width: 360px) {
-      .vm-section { padding: 40px 12px; }
-      .vm-card { padding: 18px 14px; border-radius: 14px; }
-      .vm-card-icon { width: 36px; height: 36px; font-size: 1rem; margin-bottom: 12px; }
-      .vm-card h4 { font-size: .88rem; }
-      .vm-card p  { font-size: .8rem; }
-    }
-    @media (max-width: 320px) {
-      .vm-section { padding: 36px 10px; }
-      .vm-card { padding: 16px 12px; }
-    }
+    @media (max-width: 768px) { .vm-section { padding: 60px 16px; } .vm-grid { grid-template-columns: 1fr; gap: 12px; } .section-title { margin-bottom: 32px; } }
+    @media (max-width: 480px) { .vm-section { padding: 48px 14px; } .vm-card { padding: 20px 18px; } }
+    @media (max-width: 360px) { .vm-section { padding: 40px 12px; } .vm-card { padding: 18px 14px; border-radius: 14px; } .vm-card-icon { width: 36px; height: 36px; font-size: 1rem; margin-bottom: 12px; } .vm-card h4 { font-size: .88rem; } .vm-card p { font-size: .8rem; } }
+    @media (max-width: 320px) { .vm-section { padding: 36px 10px; } .vm-card { padding: 16px 12px; } }
 
     /* ── MODALS ── */
     .modal-content { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.18); border-radius:20px; color:#fff; box-shadow:0 28px 70px rgba(0,0,0,.55); }
@@ -413,34 +433,10 @@
     .btn-modal-submit { width:100%; background:var(--accent); color:#0d1a24; border:none; border-radius:11px; padding:11px; font-size:.92rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; margin-top:6px; }
     .btn-modal-submit:hover { background:#b8d4ec; }
 
-    @media (max-width: 575px) {
-      .modal-dialog { margin: 10px; }
-      .modal-content { border-radius: 16px; }
-      .modal-body { padding: 16px 16px; }
-      .modal-header { padding: 14px 16px 12px; }
-      .modal-title { font-size: .95rem; }
-    }
-    @media (max-width: 480px) {
-      .modal-dialog { margin: 8px; }
-      .pw-row { flex-direction: column; align-items: stretch; gap: 6px; }
-      .pw-strength { min-width: unset; }
-    }
-    @media (max-width: 390px) {
-      .modal-body { padding: 14px 14px; }
-      .fg input, .fg select { font-size: .84rem; padding: 8px 10px; }
-      .fg input { padding-left: 34px; }
-      .fg label { font-size: .74rem; }
-      .role-badge { font-size: .68rem; }
-      .btn-modal-submit { font-size: .88rem; padding: 10px; }
-    }
-    @media (max-width: 360px) {
-      .modal-dialog { margin: 6px; }
-      .modal-content { border-radius: 14px; }
-      .modal-body { padding: 12px 12px; }
-      .modal-header { padding: 12px 12px 10px; }
-      .fg { margin-bottom: 10px; }
-      .fg input, .fg select { font-size: .82rem; }
-    }
+    @media (max-width: 575px) { .modal-dialog { margin: 10px; } .modal-content { border-radius: 16px; } .modal-body { padding: 16px 16px; } .modal-header { padding: 14px 16px 12px; } .modal-title { font-size: .95rem; } }
+    @media (max-width: 480px) { .modal-dialog { margin: 8px; } .pw-row { flex-direction: column; align-items: stretch; gap: 6px; } .pw-strength { min-width: unset; } }
+    @media (max-width: 390px) { .modal-body { padding: 14px 14px; } .fg input, .fg select { font-size: .84rem; padding: 8px 10px; } .fg input { padding-left: 34px; } .fg label { font-size: .74rem; } .role-badge { font-size: .68rem; } .btn-modal-submit { font-size: .88rem; padding: 10px; } }
+    @media (max-width: 360px) { .modal-dialog { margin: 6px; } .modal-content { border-radius: 14px; } .modal-body { padding: 12px 12px; } .modal-header { padding: 12px 12px 10px; } .fg { margin-bottom: 10px; } .fg input, .fg select { font-size: .82rem; } }
 
     /* Toast */
     .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
@@ -536,132 +532,117 @@
     .legal-modal-btn:hover { background: rgba(159,193,225,.25); color: #fff; }
 
     /* Footer responsive */
-    @media (max-width: 1100px) {
-      .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; }
-      .footer-contact-col { grid-column: 1 / -1; }
-      .footer-contact-col .footer-contact-row { max-width: 380px; display: inline-flex; width: calc(50% - 4px); vertical-align: top; }
-      .footer-contact-col > div { display: flex; flex-wrap: wrap; gap: 8px; }
-    }
-    @media (max-width: 860px) {
-      .footer-cta { padding: 36px 24px; }
-      .footer-main { padding: 48px 24px 0; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
-      .footer-brand-col { grid-column: 1 / -1; }
-      .footer-contact-col { grid-column: 1 / -1; }
-      .footer-contact-col .footer-contact-row { width: 100%; display: flex; }
-      .footer-contact-col > div { display: block; }
-    }
-    @media (max-width: 600px) {
-      .footer-cta { padding: 28px 18px; gap: 20px; }
-      .footer-cta-text h3 { font-size: 1.1rem; }
-      .footer-cta-text p  { font-size: .82rem; }
-      .footer-cta-actions { width: 100%; }
-      .footer-cta-btn-primary,
-      .footer-cta-btn-ghost { flex: 1; justify-content: center; font-size: .82rem; padding: 10px 14px; }
-      .footer-main { padding: 36px 16px 0; }
-      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .footer-partners-belt { gap: 14px; }
-      .partners-logos-row { gap: 12px; }
-      .partners-logos-row img { height: 24px; }
-    }
-    @media (max-width: 480px) {
-      .footer-cta { padding: 24px 14px; }
-      .footer-main { padding: 32px 14px 0; }
-      .footer-contact-col .footer-contact-row { display: flex; }
-      .footer-bottom-right { gap: 10px; }
-    }
-    @media (max-width: 390px) {
-      .footer-cta { padding: 22px 12px; flex-direction: column; align-items: flex-start; }
-      .footer-main { padding: 28px 12px 0; }
-      .footer-cta-actions { flex-direction: column; gap: 8px; }
-      .footer-cta-btn-primary,
-      .footer-cta-btn-ghost { width: 100%; justify-content: center; }
-      .footer-tagline { max-width: 100%; }
-      .footer-grid { gap: 22px; }
-      .footer-contact-row { padding: 8px 10px; }
-      .footer-contact-row .fc-val { font-size: .75rem; }
-    }
-    @media (max-width: 360px) {
-      .footer-cta { padding: 20px 10px; }
-      .footer-main { padding: 24px 10px 0; }
-      .footer-cta-text h3 { font-size: 1rem; }
-      .footer-bottom-left { font-size: .72rem; }
-      .footer-bottom-right a { font-size: .7rem; }
-      .footer-ph-badge { font-size: .65rem; }
-      .legal-modal-header { padding: 14px 16px 12px; }
-      .legal-modal-body { padding: 16px 16px 20px; font-size: .8rem; }
-      .legal-modal-footer { padding: 12px 16px; }
-    }
-    @media (max-width: 320px) {
-      .footer-cta-btn-primary,
-      .footer-cta-btn-ghost { font-size: .78rem; padding: 9px 12px; }
-      .footer-contact-row .fc-val { font-size: .72rem; }
-      .footer-bottom-right { flex-direction: column; align-items: flex-start; gap: 6px; }
-      .legal-modal { border-radius: 14px; }
-      .legal-modal-header h4 { font-size: .82rem; }
-    }
+    @media (max-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; } .footer-contact-col { grid-column: 1 / -1; } .footer-contact-col .footer-contact-row { max-width: 380px; display: inline-flex; width: calc(50% - 4px); vertical-align: top; } .footer-contact-col > div { display: flex; flex-wrap: wrap; gap: 8px; } }
+    @media (max-width: 860px) { .footer-cta { padding: 36px 24px; } .footer-main { padding: 48px 24px 0; } .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } .footer-brand-col { grid-column: 1 / -1; } .footer-contact-col { grid-column: 1 / -1; } .footer-contact-col .footer-contact-row { width: 100%; display: flex; } .footer-contact-col > div { display: block; } }
+    @media (max-width: 600px) { .footer-cta { padding: 28px 18px; gap: 20px; } .footer-cta-text h3 { font-size: 1.1rem; } .footer-cta-text p { font-size: .82rem; } .footer-cta-actions { width: 100%; } .footer-cta-btn-primary, .footer-cta-btn-ghost { flex: 1; justify-content: center; font-size: .82rem; padding: 10px 14px; } .footer-main { padding: 36px 16px 0; } .footer-grid { grid-template-columns: 1fr; gap: 28px; } .footer-bottom { flex-direction: column; align-items: flex-start; gap: 10px; } .footer-partners-belt { gap: 14px; } .partners-logos-row { gap: 12px; } .partners-logos-row img { height: 24px; } }
+    @media (max-width: 480px) { .footer-cta { padding: 24px 14px; } .footer-main { padding: 32px 14px 0; } .footer-contact-col .footer-contact-row { display: flex; } .footer-bottom-right { gap: 10px; } }
+    @media (max-width: 390px) { .footer-cta { padding: 22px 12px; flex-direction: column; align-items: flex-start; } .footer-main { padding: 28px 12px 0; } .footer-cta-actions { flex-direction: column; gap: 8px; } .footer-cta-btn-primary, .footer-cta-btn-ghost { width: 100%; justify-content: center; } .footer-tagline { max-width: 100%; } .footer-grid { gap: 22px; } .footer-contact-row { padding: 8px 10px; } .footer-contact-row .fc-val { font-size: .75rem; } }
+    @media (max-width: 360px) { .footer-cta { padding: 20px 10px; } .footer-main { padding: 24px 10px 0; } .footer-cta-text h3 { font-size: 1rem; } .footer-bottom-left { font-size: .72rem; } .footer-bottom-right a { font-size: .7rem; } .footer-ph-badge { font-size: .65rem; } .legal-modal-header { padding: 14px 16px 12px; } .legal-modal-body { padding: 16px 16px 20px; font-size: .8rem; } .legal-modal-footer { padding: 12px 16px; } }
+    @media (max-width: 320px) { .footer-cta-btn-primary, .footer-cta-btn-ghost { font-size: .78rem; padding: 9px 12px; } .footer-contact-row .fc-val { font-size: .72rem; } .footer-bottom-right { flex-direction: column; align-items: flex-start; gap: 6px; } .legal-modal { border-radius: 14px; } .legal-modal-header h4 { font-size: .82rem; } }
   </style>
 </head>
 
 <body>
 {% include 'admin_template/topbar_template.html' %}
 {% include 'admin_template/sidebar_template.html' %}
-  <!-- ── HERO ── -->
+
+  <!-- ══════════════════════════════════
+       HERO — OPTION B
+       Warm & welcoming · Asymmetric editorial
+       Top row: headline left + alert card right
+       Bottom row: 4 quick-action cards + stats
+  ══════════════════════════════════ -->
   <section class="hero">
-    <div class="hero-inner">
-      <div>
-        <div class="hero-badge"><i class="bi bi-building-fill"></i> Dr. Graciano Lopez Jaena Learning Resource Center</div>
-        <h1 class="hero-title">Welcome to<br><span>Iloilo Public<br>Library</span></h1>
-        <p class="hero-subtitle">A community learning hub dedicated to accessible knowledge, lifelong learning, and cultural enrichment for all residents of Iloilo City.</p>
-        <a href="/dashboard" class="hero-cta"><i class="bi bi-speedometer2"></i> Go to Dashboard</a>
-        <div class="hero-stats">
-          <div>
-            <div class="hero-stat-val" id="heroTotalBooks">—</div>
-            <div class="hero-stat-lbl">Books in Catalog</div>
+    <div style="max-width:1200px;width:100%;position:relative;z-index:1;">
+
+      <!-- TOP ROW -->
+      <div class="hero-top-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:32px;margin-bottom:36px;flex-wrap:wrap;">
+
+        <!-- Left: brand + headline + CTAs -->
+        <div style="flex:1;min-width:260px;">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Dr. Graciano Lopez Jaena Learning Resource Center
           </div>
-          <div class="hero-stat-divider"></div>
-          <div>
-            <div class="hero-stat-val" id="heroAvailable">—</div>
-            <div class="hero-stat-lbl">Available Now</div>
+
+          <h1 class="hero-title">
+            Iloilo Public<br>
+            <span>Library</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            A community learning hub dedicated to accessible knowledge and lifelong learning for all residents of Iloilo City.
+          </p>
+
+          <div class="hero-cta-row">
+            <a href="/dashboard" class="hero-cta">
+              <i class="bi bi-speedometer2"></i> Go to Dashboard
+            </a>
+            <a href="/admin/announcements" class="hero-cta-ghost">
+              <i class="bi bi-megaphone"></i> Announcements
+            </a>
           </div>
-          <div class="hero-stat-divider"></div>
-          <div>
-            <div class="hero-stat-val" id="heroMembers">—</div>
-            <div class="hero-stat-lbl">Registered Members</div>
+        </div>
+
+        <!-- Right: pending alert card -->
+        <a href="/admin/account-requests" id="heroAlertCard" class="hero-alert-card">
+          <div class="alert-top-row">
+            <span class="alert-blink" id="heroAlertDot"></span>
+            <span class="alert-label" id="heroAlertLabel">Needs review</span>
           </div>
+          <div class="alert-num" id="heroReqNum">—</div>
+          <div class="alert-sub" id="heroAlertSub">pending account requests</div>
+        </a>
+
+      </div>
+
+      <!-- BOTTOM CARD GRID -->
+      <div class="hero-card-grid">
+
+        <a href="/librarian_management" class="hero-quick-card">
+          <i class="bi bi-person-fill-gear" style="color:#9fc1e1;"></i>
+          <div class="qc-name">Librarians</div>
+          <div class="qc-sub">Manage &amp; track all books & borrowers</div>
+        </a>
+
+        <a href="/user_management" class="hero-quick-card">
+          <i class="bi bi-people-fill qc-icon" style="color:#48c78e;"></i>
+          <div class="qc-name">Members</div>
+          <div class="qc-sub" id="heroMembersSub">— registered</div>
+        </a>
+
+        <a href="/library-cards" class="hero-quick-card">
+          <i class="bi bi-arrow-left-right qc-icon" style="color:#ffb74d;"></i>
+          <div class="qc-name">Borrowing</div>
+          <div class="qc-sub">Checkouts &amp; returns</div>
+        </a>
+
+        <a href="/book_management" class="hero-quick-card">
+          <i class="bi bi-boxes qc-icon" style="color:#5ed3c8;"></i>
+          <div class="qc-name">Manage Books & Inventory</div>
+          <div class="qc-sub" id="heroAvailSub">— available</div>
+        </a>
+
+      </div>
+
+      <!-- STATS ROW -->
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val" id="heroTotalBooks">—</div>
+          <div class="hero-stat-lbl">Books in Catalog</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val" id="heroAvailable">—</div>
+          <div class="hero-stat-lbl">Available Now</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val" id="heroMembers">—</div>
+          <div class="hero-stat-lbl">Registered Members</div>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-card">
-          <div class="hero-card-icon hci-blue"><i class="bi bi-book-fill"></i></div>
-          <div><div class="hero-card-label">Book Catalog</div><div class="hero-card-val">Manage &amp; Track All Titles</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-green"><i class="bi bi-people-fill"></i></div>
-          <div><div class="hero-card-label">Member Records</div><div class="hero-card-val">Borrowers &amp; Registrations</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-orange"><i class="bi bi-arrow-left-right"></i></div>
-          <div><div class="hero-card-label">Borrowing System</div><div class="hero-card-val">Checkouts, Returns &amp; History</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-blue"><i class="bi bi-boxes"></i></div>
-          <div><div class="hero-card-label">Inventory</div><div class="hero-card-val">Copies, Damage &amp; Loss Tracking</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-red"><i class="bi bi-exclamation-octagon-fill"></i></div>
-          <div>
-            <div class="hero-card-label">Account Requests</div>
-            <div class="hero-card-val">
-              <a href="/admin/account-requests" style="color:#fff; text-decoration:none;">
-                Review Pending Requests
-                <span id="heroReqCount" style="display:none; background:var(--danger); color:#fff; border-radius:20px; padding:1px 8px; font-size:.7rem; font-weight:700; margin-left:6px; vertical-align:middle;"></span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
   </section>
 
@@ -747,27 +728,64 @@
       try {
         const res = await fetch('/api/inventory/summary');
         const d   = await res.json();
-        document.getElementById('heroTotalBooks').textContent = d.total_titles ?? '—';
-        document.getElementById('heroAvailable').textContent  = d.available    ?? '—';
+        const books = d.total_titles ?? '—';
+        const avail = d.available    ?? '—';
+        document.getElementById('heroTotalBooks').textContent = books;
+        document.getElementById('heroAvailable').textContent  = avail;
+        document.getElementById('heroAvailSub').textContent   = avail + ' available';
       } catch {}
     }
 
     // ── Load pending account request count ──
     async function loadPendingRequestCount() {
       try {
-        const res  = await fetch('/api/admin/account-requests');
-        const data = await res.json();
+        const res     = await fetch('/api/admin/account-requests');
+        const data    = await res.json();
         const pending = (data.requests || []).filter(r => r.status === 'pending').length;
+
+        // Sidebar dots (existing)
         const dot = document.getElementById('acctReqDot');
-        if (pending > 0) { dot.textContent = pending > 9 ? '9+' : pending; dot.classList.add('show'); } else { dot.classList.remove('show'); }
+        if (dot) {
+          if (pending > 0) { dot.textContent = pending > 9 ? '9+' : pending; dot.classList.add('show'); }
+          else { dot.classList.remove('show'); }
+        }
         const dotMobile = document.getElementById('acctReqDotMobile');
-        if (dotMobile) { if (pending > 0) { dotMobile.textContent = pending > 9 ? '9+' : pending; dotMobile.classList.add('show'); } else { dotMobile.classList.remove('show'); } }
-        const heroPill = document.getElementById('heroReqCount');
-        if (pending > 0) { heroPill.textContent = `${pending} pending`; heroPill.style.display = 'inline'; } else { heroPill.style.display = 'none'; }
+        if (dotMobile) {
+          if (pending > 0) { dotMobile.textContent = pending > 9 ? '9+' : pending; dotMobile.classList.add('show'); }
+          else { dotMobile.classList.remove('show'); }
+        }
+
+        // Hero alert card
+        const card      = document.getElementById('heroAlertCard');
+        const alertDot  = document.getElementById('heroAlertDot');
+        const alertLbl  = document.getElementById('heroAlertLabel');
+        const alertNum  = document.getElementById('heroReqNum');
+        const alertSub  = document.getElementById('heroAlertSub');
+
+        alertNum.textContent = pending > 0 ? pending : '0';
+
+        if (pending === 0) {
+          card.classList.add('clear');
+          alertDot.classList.add('clear');
+          alertLbl.classList.add('clear');
+          alertLbl.textContent = 'All clear';
+          alertSub.classList.add('clear');
+          alertSub.textContent = 'no pending requests';
+        } else {
+          card.classList.remove('clear');
+          alertDot.classList.remove('clear');
+          alertLbl.classList.remove('clear');
+          alertLbl.textContent = 'Needs review';
+          alertSub.classList.remove('clear');
+          alertSub.textContent = 'pending account request' + (pending !== 1 ? 's' : '');
+        }
       } catch {}
     }
 
-    document.addEventListener('DOMContentLoaded', () => { loadHeroStats(); loadPendingRequestCount(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHeroStats();
+      loadPendingRequestCount();
+    });
 
     // ── Password toggle ──
     function togglePw(inputId, btn) {

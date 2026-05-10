@@ -261,10 +261,6 @@ def build_book_data(rows: list, date_fmt: str = "%Y-%m-%d") -> list:
     for b in rows:
         # b[3] is the `class` column — used for both "class" and "genre" keys in JS
         class_val = safe_decrypt(b[3]) if b[3] else ""
-
-        # FIX 4: safely parse page_count — int(float(...)) handles "352.0" from
-        # number inputs; return None (not 0) so the edit modal pre-fills blank
-        # and the view modal shows "—" instead of "0 pages".
         try:
             page_count_val = int(float(b[8])) if b[8] else None
         except (ValueError, TypeError):

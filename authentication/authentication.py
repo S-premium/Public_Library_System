@@ -169,35 +169,96 @@ def generate_otp() -> str:
 # =====================================================================
 
 def generate_captcha() -> dict:
-    if random.choice([True, False]):
-        a      = random.randint(2, 9)
-        b      = random.randint(2, 9)
-        answer = a * b
-        options = list({answer, answer + random.randint(1, 5),
-                        answer - random.randint(1, 5), answer + random.randint(6, 10)})
-        random.shuffle(options)
-        return {'question': f'What is {a} × {b}?', 'options': options, 'answer': answer}
-    else:
-        questions = [
-            {
-                'q': 'Who is the national hero of the Philippines?',
-                'a': 'Jose Rizal',
-                'choices': ['Jose Rizal', 'Andres Bonifacio', 'Emilio Aguinaldo', 'Lapu-Lapu'],
-            },
-            {
-                'q': 'Who was the first President of the Philippines?',
-                'a': 'Emilio Aguinaldo',
-                'choices': ['Emilio Aguinaldo', 'Manuel Quezon', 'Jose Laurel', 'Sergio Osmeña'],
-            },
-            {
-                'q': 'Where did the Cry of Pugad Lawin occur?',
-                'a': 'Quezon City',
-                'choices': ['Quezon City', 'Manila', 'Bulacan', 'Cavite'],
-            },
-        ]
-        item = random.choice(questions)
-        random.shuffle(item['choices'])
-        return {'question': item['q'], 'options': item['choices'], 'answer': item['a']}
+    questions = [
+        {
+            'q': 'What is the most famous festival of Iloilo City celebrated every January?',
+            'a': 'Dinagyang Festival',
+            'choices': ['Dinagyang Festival', 'Ati-Atihan Festival', 'MassKara Festival', 'Sinulog Festival'],
+        },
+        {
+            'q': 'The Dinagyang Festival is held in honor of which image of the Child Jesus?',
+            'a': 'Santo Niño',
+            'choices': ['Santo Niño', 'Black Nazarene', 'Our Lady of Fatima', 'Our Lady of Peñafrancia'],
+        },
+        {
+            'q': 'What is the most famous noodle soup dish from Iloilo?',
+            'a': 'La Paz Batchoy',
+            'choices': ['La Paz Batchoy', 'Bulalo', 'Sinigang', 'Mami'],
+        },
+        {
+            'q': 'Which district in Iloilo is the origin of Batchoy?',
+            'a': 'La Paz',
+            'choices': ['La Paz', 'Jaro', 'Molo', 'Mandurriao'],
+        },
+        {
+            'q': 'What famous pancit dish from Iloilo is known for its rich broth and toppings?',
+            'a': 'Pancit Molo',
+            'choices': ['Pancit Molo', 'Pancit Canton', 'Pancit Habhab', 'Pancit Malabon'],
+        },
+        {
+            'q': 'What Iloilo restaurant is well-known for traditional Filipino dishes and heritage vibes?',
+            'a': 'Breakthrough Restaurant',
+            'choices': ["Breakthrough Restaurant", "Roberto's", "Netong's Original La Paz Batchoy", "Deco's La Paz Batchoy"],
+        },
+        {
+            'q': 'Which restaurant is famous for its seafood and is located near the coastal area of Iloilo?',
+            'a': "Tatoy's Manokan and Seafood",
+            'choices': ["Tatoy's Manokan and Seafood", 'JD Bakery Café', 'Spring Palace', 'Monkey Grounds Coffee'],
+        },
+        {
+            'q': 'What popular fast-food chain known for chicken inasal started in Iloilo City?',
+            'a': 'Mang Inasal',
+            'choices': ['Mang Inasal', 'Jollibee', 'Chowking', 'Greenwich'],
+        },
+        {
+            'q': 'What famous toasted bread delicacy from Iloilo is a popular pasalubong?',
+            'a': 'Biscocho',
+            'choices': ['Biscocho', 'Ensaymada', 'Pianono', 'Hopia'],
+        },
+        {
+            'q': 'What is the name of the heritage street in Iloilo known for old ancestral houses and historic buildings?',
+            'a': 'Calle Real',
+            'choices': ['Calle Real', 'Escolta Street', 'Session Road', 'Rizal Street'],
+        },
+        {
+            'q': 'Which district in Iloilo is famous for its heritage mansions and old churches?',
+            'a': 'Jaro',
+            'choices': ['Jaro', 'Molo', 'Arevalo', 'Lapuz'],
+        },
+        {
+            'q': 'What famous cathedral in Iloilo is also known as the National Shrine of Our Lady of the Candles?',
+            'a': 'Jaro Cathedral',
+            'choices': ['Jaro Cathedral', 'Molo Church', 'Miagao Church', 'St. Anne Parish'],
+        },
+        {
+            'q': 'What bell tower located across Jaro Cathedral is one of Iloilo\'s iconic heritage landmarks?',
+            'a': 'Jaro Belfry',
+            'choices': ['Jaro Belfry', 'Molo Belfry', 'Miagao Belfry', 'Santa Barbara Belfry'],
+        },
+        {
+            'q': 'What old mansion in Iloilo is known for its preserved Spanish-era architecture?',
+            'a': 'Nelly Garden Mansion',
+            'choices': ['Nelly Garden Mansion', 'Molo Mansion', 'Balay na Bato', 'Casa Mariquit'],
+        },
+        {
+            'q': 'What do you call someone from Iloilo?',
+            'a': 'Ilonggo',
+            'choices': ['Ilonggo', 'Bisaya', 'Waray', 'Kapampangan'],
+        },
+        {
+            'q': 'What language is widely spoken in Iloilo?',
+            'a': 'Hiligaynon (Ilonggo)',
+            'choices': ['Hiligaynon (Ilonggo)', 'Cebuano', 'Waray', 'Kapampangan'],
+        },
+        {
+            'q': 'Iloilo is often called the "Heart of" what region?',
+            'a': 'Western Visayas',
+            'choices': ['Western Visayas', 'Luzon', 'Southern Mindanao', 'Northern Visayas'],
+        },
+    ]
+    item = random.choice(questions)
+    random.shuffle(item['choices'])
+    return {'question': item['q'], 'options': item['choices'], 'answer': item['a']}
 
 
 # =====================================================================
@@ -529,7 +590,6 @@ def verify_captcha():
     session.permanent      = True
     session["show_loader"] = True
 
-    flash("Login successful!", "success")
     return redirect('/home')
 
 
@@ -616,7 +676,6 @@ def verify_otp():
     session.permanent      = True
     session["show_loader"] = True
 
-    flash("Login successful!", "success")
     return redirect('/home')
 
 
@@ -725,7 +784,7 @@ def signup():
     is_government   = 1 if request.form.get('is_government') == '1' else 0
     office_phone    = request.form.get('office_phone',    '').strip()
     role            = request.form.get('role', 'user').strip()
-
+    age             = request.form.get('age', '').strip()
     if role not in ('admin', 'librarian', 'user'):
         role = 'user'
 
@@ -840,9 +899,9 @@ def signup():
     enc_education  = encrypt_pii(education_level)  if education_level else None
     enc_occupation = encrypt_pii(occupation)       if occupation      else None
     enc_off_phone  = encrypt_pii(office_phone)     if office_phone    else None
+    enc_age        = encrypt_pii(age)              if age             else None  # FIX: was missing
 
     # ── 7. Insert user ─────────────────────────────────────────────────
-    # FIX: added phone_number column (was missing from original INSERT)
     cur.execute("""
         INSERT INTO users (
             username,
@@ -865,22 +924,23 @@ def signup():
             occupation,
             is_government,
             office_phone,
-            valid_id_path
+            valid_id_path,
+            age
         ) VALUES (
             %s, %s, %s, %s, %s,
             'user', 0, 0, 'offline', 0, 0,
             %s, %s, %s, %s, %s,
             %s, %s, %s, %s,
-            %s
+            %s, %s
         )
     """, (
-        enc_username,       # HMAC — deterministic lookup key
-        enc_email_disp,     # Fernet — reversible for sending emails
+        enc_username,
+        enc_email_disp,
         enc_firstname,
         enc_lastname,
         hashed,
         enc_gender,
-        enc_phone,          # FIX: phone_number was missing in original
+        enc_phone,
         enc_school,
         enc_city,
         enc_province,
@@ -889,12 +949,12 @@ def signup():
         is_government,
         enc_off_phone,
         valid_id_path_enc,
+        enc_age,
     ))
     mysql.connection.commit()
     new_user_id = cur.lastrowid
 
     # ── 8. Pending approval record ─────────────────────────────────────
-    # FIX: store encrypted email in account_requests, not plain text
     cur.execute("""
         INSERT INTO account_requests
             (user_id, username, request_type, reason, status)
@@ -948,7 +1008,6 @@ def forgot_password():
     mysql.connection.commit()
     cur.close()
 
-    # FIX: use url_for to build the correct reset link
     reset_link = url_for('auth_bp.reset_password_form', token=token, _external=True)
 
     if send_reset_email(raw_email, reset_link):

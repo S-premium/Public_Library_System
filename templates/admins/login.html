@@ -123,8 +123,6 @@
       pointer-events: none; position: relative;
     }
     .form-box.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
-
-    /* Widen form box when signup is visible */
     .form-box.signup-wide { width: 680px; }
 
     @media (max-width: 1100px) {
@@ -302,8 +300,6 @@
       text-align: center;
       letter-spacing: .01em;
     }
-
-    /* ── FORM NOTE — orange ── */
     .form-note-box.note-orange {
       background: rgba(255,152,0,.08);
       border-color: rgba(255,152,0,.28);
@@ -377,12 +373,11 @@
     .strength-seg.s4 { background: var(--accent2); }
     .strength-seg.s5 { background: #2ecc71; }
 
-    /* ── QR LOGIN BUTTON — desktop only ── */
+    /* ── QR LOGIN BUTTON ── */
     .desktop-only { display: none !important; }
     @media (min-width: 993px) {
       .desktop-only { display: flex !important; }
     }
-
     .btn-qr-login {
       width: 100%; align-items: center; justify-content: center; gap: 10px;
       background: rgba(159,193,225,.08); border: 1px solid rgba(159,193,225,.22);
@@ -390,20 +385,9 @@
       font-size: .88rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
       cursor: pointer; transition: .2s; margin-top: 10px;
     }
-    .btn-qr-login:hover {
-      background: rgba(159,193,225,.15); border-color: rgba(159,193,225,.4);
-      transform: translateY(-1px);
-    }
-    .qr-btn-icon {
-      width: 26px; height: 26px; background: rgba(159,193,225,.14);
-      border-radius: 7px; display: flex; align-items: center; justify-content: center;
-      font-size: .9rem; flex-shrink: 0;
-    }
-    .qr-btn-badge {
-      background: rgba(72,199,142,.15); border: 1px solid rgba(72,199,142,.28);
-      color: #48c78e; font-size: .62rem; font-weight: 700; padding: 2px 7px;
-      border-radius: 10px; letter-spacing: .04em; text-transform: uppercase; margin-left: auto;
-    }
+    .btn-qr-login:hover { background: rgba(159,193,225,.15); border-color: rgba(159,193,225,.4); transform: translateY(-1px); }
+    .qr-btn-icon { width: 26px; height: 26px; background: rgba(159,193,225,.14); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
+    .qr-btn-badge { background: rgba(72,199,142,.15); border: 1px solid rgba(72,199,142,.28); color: #48c78e; font-size: .62rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; letter-spacing: .04em; text-transform: uppercase; margin-left: auto; }
 
     /* ── OR DIVIDER ── */
     .or-divider { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; }
@@ -705,6 +689,11 @@
     }
     .wz-btn-back:hover { background:rgba(255,255,255,.12); color:#fff; }
     .wz-btn-next { flex:1; margin-top:0 !important; }
+
+    /* ── AGE INPUT — hide number spinners ── */
+    input[type=number].form-control::-webkit-inner-spin-button,
+    input[type=number].form-control::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; margin: 0; }
+    input[type=number].form-control { -moz-appearance: textfield; appearance: textfield; }
   </style>
 </head>
 <body>
@@ -829,7 +818,6 @@
           <h3 style="font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:14px;">
             <i class="fas fa-user-plus me-2" style="color:var(--accent)"></i>Membership Registration
           </h3>
-          <!-- Step track -->
           <div style="display:flex;align-items:center;justify-content:center;">
             <div class="wz-step-item active" id="wz-si1">
               <div class="wz-circle active" id="wz-sc1"><span>1</span></div>
@@ -866,6 +854,20 @@
               <div id="signupLastnameHint" class="field-hint"></div>
             </div>
 
+            <!-- ── AGE FIELD (NEW) ── -->
+            <div class="fg">
+              <input name="age" id="signupAge" type="number" class="form-control"
+                     placeholder="Age" min="7" max="120" required
+                     oninput="validateAge(this)">
+              <div id="signupAgeHint" class="field-hint"></div>
+            </div>
+
+            <div class="fg">
+              <input name="phone" id="signupPhone" type="tel" class="form-control"
+                     placeholder="Phone (09XXXXXXXXX)" maxlength="15" required>
+              <div id="signupPhoneHint" class="field-hint"></div>
+            </div>
+
             <div class="fg signup-col-full">
               <label class="fg-label">
                 <i class="fas fa-venus-mars me-1" style="color:var(--accent);font-size:.65rem;"></i> Gender
@@ -885,12 +887,6 @@
                 </div>
               </div>
               <div id="signupGenderHint" class="field-hint"></div>
-            </div>
-
-            <div class="fg">
-              <input name="phone" id="signupPhone" type="tel" class="form-control"
-                     placeholder="Phone (09XXXXXXXXX)" maxlength="15" required>
-              <div id="signupPhoneHint" class="field-hint"></div>
             </div>
 
             <div class="fg">
@@ -964,7 +960,6 @@
                 <i class="fas fa-id-card me-1" style="color:var(--accent);font-size:.65rem;"></i> Valid ID
                 <span style="text-transform:none;letter-spacing:0;font-weight:400;color:rgba(255,255,255,.3)"> (attach file)</span>
               </label>
-              <!-- ══ VISIBLE upload UI (cosmetic only — no name attribute) ══ -->
               <div class="file-upload-wrap">
                 <input type="file" id="signupIdFilePreview" class="file-upload-input"
                        accept="image/jpeg,image/png,image/webp,application/pdf"
@@ -1011,19 +1006,13 @@
           </div>
           {% endif %}
 
-          <!--
-            ══════════════════════════════════════════════════════════
-            THE ACTUAL FORM — enctype MUST be multipart/form-data.
-            All hidden inputs AND the real file input live here so
-            they are included when the form is submitted.
-            ══════════════════════════════════════════════════════════
-          -->
           <form id="signupFormElement" action="/signup" method="POST" novalidate
                 enctype="multipart/form-data" onsubmit="return validateSignupForm()">
 
             <!-- Hidden fields populated from steps 1 & 2 -->
             <input type="hidden" name="firstname"       id="hFirstname">
             <input type="hidden" name="lastname"        id="hLastname">
+            <input type="hidden" name="age"             id="hAge">
             <input type="hidden" name="gender"          id="hGender">
             <input type="hidden" name="phone"           id="hPhone">
             <input type="hidden" name="school"          id="hSchool">
@@ -1034,11 +1023,6 @@
             <input type="hidden" name="is_government"   id="hGovEmployee">
             <input type="hidden" name="office_phone"    id="hOfficePhone">
 
-            <!--
-              ══ REAL file input (hidden visually, inside the form) ══
-              This receives the file via DataTransfer in handleFileSelect().
-              name="valid_id" must match what the Flask route expects.
-            -->
             <input type="file" name="valid_id" id="hValidId"
                    accept="image/jpeg,image/png,image/webp,application/pdf"
                    style="display:none;" tabindex="-1" aria-hidden="true">
@@ -1556,6 +1540,15 @@
     else{markOk(input.id,hintId,label+' looks good.');}
   }
 
+  /* ── SIGNUP — AGE (NEW) ── */
+  function validateAge(input) {
+    var val = parseInt(input.value);
+    if (!input.value) { clearMark('signupAge', 'signupAgeHint'); return; }
+    if (isNaN(val) || val < 7)  { markError('signupAge', 'signupAgeHint', 'Age must be at least 7.'); return; }
+    if (val > 120)               { markError('signupAge', 'signupAgeHint', 'Please enter a valid age (max 120).'); return; }
+    markOk('signupAge', 'signupAgeHint', 'Age looks good.');
+  }
+
   /* ── GOV TOGGLE ── */
   function toggleGovCheck() {
     var row=document.getElementById('govCheckRow'),chk=document.getElementById('govCheckbox'),wrap=document.getElementById('officePhoneWrap');
@@ -1563,12 +1556,7 @@
     if(chk.checked){setTimeout(function(){var f=document.getElementById('signupOfficePhone');if(f)f.focus();},320);}
   }
 
-  /* ══════════════════════════════════════════════════════════════
-     FILE UPLOAD — FIX
-     The cosmetic input (#signupIdFilePreview) has no name attr so
-     it is never submitted.  When a file is chosen we copy it via
-     DataTransfer into #hValidId which lives inside the <form>.
-  ══════════════════════════════════════════════════════════════ */
+  /* ── FILE UPLOAD ── */
   function handleFileSelect(input) {
     var ui    = document.getElementById('fileUploadUI');
     var icon  = document.getElementById('fuIcon');
@@ -1589,13 +1577,11 @@
       title.textContent = 'Click to upload your valid ID';
       sub.textContent   = 'JPG, PNG, WEBP or PDF · max 5 MB';
       iconI.className   = 'fas fa-cloud-arrow-up';
-      // Also clear the hidden form input
       var hid = document.getElementById('hValidId');
       if (hid) { try { hid.value = ''; } catch(e){} }
       return;
     }
 
-    /* ── Transfer the File object into the hidden input inside the form ── */
     var hid = document.getElementById('hValidId');
     if (hid) {
       try {
@@ -1603,16 +1589,13 @@
         dt.items.add(file);
         hid.files = dt.files;
       } catch (e) {
-        /* DataTransfer not available (very old browsers) — fallback:
-           show a warning so the user knows and can try a modern browser. */
-        console.warn('DataTransfer not supported. File may not upload.', e);
+        console.warn('DataTransfer not supported.', e);
         setHint('signupIdHint', 'error',
           '<i class="fas fa-circle-xmark"></i>&nbsp;Your browser does not support file transfer. Please use Chrome, Firefox, or Edge.');
         return;
       }
     }
 
-    /* ── Update the cosmetic UI ── */
     ui.classList.add('has-file');
     icon.classList.add('has-file');
     title.classList.add('has-file');
@@ -1724,25 +1707,38 @@
     if (step === 1) {
       var fn = document.getElementById('signupFirstname');
       var ln = document.getElementById('signupLastname');
+      var ag = document.getElementById('signupAge');
       var g  = document.querySelector('input[name="gender"]:checked');
       var ph = document.getElementById('signupPhone');
       var ok = true;
+
       if (!fn.value.trim() || fn.value.trim().length < 2) {
         markError('signupFirstname','signupFirstnameHint','First name must be at least 2 characters.');
         shakeInput('signupFirstname'); ok = false;
       } else { markOk('signupFirstname','signupFirstnameHint',''); }
+
       if (!ln.value.trim() || ln.value.trim().length < 2) {
         markError('signupLastname','signupLastnameHint','Last name must be at least 2 characters.');
         shakeInput('signupLastname'); ok = false;
       } else { markOk('signupLastname','signupLastnameHint',''); }
+
+      /* ── AGE VALIDATION ── */
+      var ageVal = parseInt(ag.value);
+      if (!ag.value || isNaN(ageVal) || ageVal < 7 || ageVal > 120) {
+        markError('signupAge','signupAgeHint','Please enter a valid age (7–120).');
+        shakeInput('signupAge'); ok = false;
+      } else { markOk('signupAge','signupAgeHint',''); }
+
       if (!g) {
         setHint('signupGenderHint','error','<i class="fas fa-circle-xmark"></i>&nbsp;Please select a gender.');
         ok = false;
       } else { clearHintEl('signupGenderHint'); }
+
       if (!ph.value.trim() || !isValidPhone(ph.value)) {
         markError('signupPhone','signupPhoneHint','Enter a valid phone number.');
         shakeInput('signupPhone'); ok = false;
       } else { markOk('signupPhone','signupPhoneHint',''); }
+
       return ok;
     }
     if (step === 2) { return true; }
@@ -1753,6 +1749,7 @@
     var map = {
       hFirstname:  'signupFirstname',
       hLastname:   'signupLastname',
+      hAge:        'signupAge',
       hPhone:      'signupPhone',
       hSchool:     'signupSchool',
       hCity:       'signupCity',
@@ -1814,7 +1811,7 @@
     openPoliciesModal(true);
   }
 
-  /* ── SHOW FORM (with signup-wide class) ── */
+  /* ── SHOW FORM ── */
   function showForm(formId) {
     document.querySelectorAll('.form-content').forEach(function(f){f.style.display='none';f.classList.remove('fade-in');});
     var target = document.getElementById(formId); if (!target) return;

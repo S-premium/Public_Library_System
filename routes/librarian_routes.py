@@ -535,22 +535,9 @@ def librarian_approve_account_request(req_id):
         author = f"{lr[0]} {lr[1]} (Librarian)"[:100] if lr else "Library Staff"
 
         cur.execute("""
-            INSERT INTO announcements (title, body, category, pinned, author)
-            VALUES (%s, %s, 'general', 0, %s)
-        """, (notif_title, notif_body, author))
-        new_ann_id = cur.lastrowid
-
-        cur.execute("SELECT id FROM users WHERE id != %s", (target_user_id,))
-        other_users = cur.fetchall()
-        if other_users:
-            cur.executemany("""
-                INSERT IGNORE INTO notification_reads (user_id, announcement_id, dismissed)
-                VALUES (%s, %s, 1)
-            """, [(u[0], new_ann_id) for u in other_users])
-
-        cur.execute("""
-            DELETE FROM notification_reads WHERE user_id=%s AND announcement_id=%s
-        """, (target_user_id, new_ann_id))
+            INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
+            VALUES (%s, %s, 'general', 0, %s, %s)
+        """, (notif_title, notif_body, author, target_user_id))
 
         mysql.connection.commit()
         cur.close()
@@ -599,22 +586,9 @@ def librarian_reject_account_request(req_id):
         author = f"{lr[0]} {lr[1]} (Librarian)"[:100] if lr else "Library Staff"
 
         cur.execute("""
-            INSERT INTO announcements (title, body, category, pinned, author)
-            VALUES (%s, %s, 'urgent', 0, %s)
-        """, (notif_title, notif_body, author))
-        new_ann_id = cur.lastrowid
-
-        cur.execute("SELECT id FROM users WHERE id != %s", (target_user_id,))
-        other_users = cur.fetchall()
-        if other_users:
-            cur.executemany("""
-                INSERT IGNORE INTO notification_reads (user_id, announcement_id, dismissed)
-                VALUES (%s, %s, 1)
-            """, [(u[0], new_ann_id) for u in other_users])
-
-        cur.execute("""
-            DELETE FROM notification_reads WHERE user_id=%s AND announcement_id=%s
-        """, (target_user_id, new_ann_id))
+            INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
+            VALUES (%s, %s, 'urgent', 0, %s, %s)
+        """, (notif_title, notif_body, author, target_user_id))
 
         mysql.connection.commit()
         cur.close()

@@ -47,6 +47,25 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
 
+BOOK_COVER_FOLDER   = os.path.join('static', 'uploads', 'books')
+BOOK_COVER_MAX_BYTES = 5 * 1024 * 1024   # 5 MB
+os.makedirs(BOOK_COVER_FOLDER, exist_ok=True)
+
+def _save_book_cover(file_obj) -> str | None:
+    """Validate + save a book cover upload. Returns the URL path or None."""
+    if not file_obj or not file_obj.filename:
+        return None
+    if not _allowed_file(file_obj.filename):
+        raise ValueError("Invalid image format. Use PNG, JPG, JPEG, WEBP, or GIF.")
+    file_obj.seek(0, os.SEEK_END)
+    if file_obj.tell() > BOOK_COVER_MAX_BYTES:
+        raise ValueError("Cover image must be under 5 MB.")
+    file_obj.seek(0)
+    ext      = secure_filename(file_obj.filename).rsplit('.', 1)[1].lower()
+    filename = f"cover_{uuid.uuid4().hex}.{ext}"
+    save_path = os.path.join(BOOK_COVER_FOLDER, filename)
+    file_obj.save(save_path)
+    return '/' + save_path.replace('\\', '/')   # e.g. /static/uploads/books/cover_abc.jpg
 
 # =====================================================================
 # PAGES
@@ -177,7 +196,14 @@ def add_book():
     published_date = request.form.get('published_date', '').strip() or None
     language       = request.form.get('language',       '').strip() or None
     description    = request.form.get('description',    '').strip() or None
-    thumbnail_url  = (
+    # Cover: prefer uploaded file, fall back to URL
+    _cover_file = request.files.get('cover_image_file')
+    try:
+        _uploaded_cover = _save_book_cover(_cover_file)
+    except ValueError as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+    thumbnail_url = _uploaded_cover or (
         request.form.get('thumbnail_url')
         or request.form.get('thumbnail_url_display')
         or ''
@@ -300,7 +326,14 @@ def update_book():
     published_date = request.form.get('published_date', '').strip() or None
     language       = request.form.get('language',       '').strip() or None
     description    = request.form.get('description',    '').strip() or None
-    thumbnail_url  = request.form.get('thumbnail_url',  '').strip() or None
+    # Cover: prefer uploaded file, fall back to URL
+    _cover_file = request.files.get('cover_image_file')
+    try:
+        _uploaded_cover = _save_book_cover(_cover_file)
+    except ValueError as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+    thumbnail_url = _uploaded_cover or request.form.get('thumbnail_url', '').strip() or None
 
     _pc            = request.form.get('page_count', '') or None
     try:
@@ -968,22 +1001,9 @@ def admin_approve_account_request(req_id):
             author = f"{safe_decrypt_pii(ar[0])} {safe_decrypt_pii(ar[1])} (Admin)"[:100] if ar else "Library Administration"
 
             cur.execute("""
-                INSERT INTO announcements (title, body, category, pinned, author)
-                VALUES (%s,%s,'general',0,%s)
-            """, (notif_title, notif_body, author))
-            new_ann_id = cur.lastrowid
-
-            cur.execute("SELECT id FROM users WHERE id != %s", (target_user_id,))
-            other_users = cur.fetchall()
-            if other_users:
-                cur.executemany("""
-                    INSERT IGNORE INTO notification_reads (user_id, announcement_id, dismissed)
-                    VALUES (%s, %s, 1)
-                """, [(u[0], new_ann_id) for u in other_users])
-
-            cur.execute("""
-                DELETE FROM notification_reads WHERE user_id=%s AND announcement_id=%s
-            """, (target_user_id, new_ann_id))
+                INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
+                VALUES (%s,%s,'general',0,%s,%s)
+            """, (notif_title, notif_body, author, target_user_id))
 
         mysql.connection.commit()
         cur.close()
@@ -1035,22 +1055,9 @@ def admin_reject_account_request(req_id):
         author = f"{safe_decrypt_pii(ar[0])} {safe_decrypt_pii(ar[1])} (Admin)"[:100] if ar else "Library Administration"
 
         cur.execute("""
-            INSERT INTO announcements (title, body, category, pinned, author)
-            VALUES (%s,%s,'urgent',0,%s)
-        """, (notif_title, notif_body, author))
-        new_ann_id = cur.lastrowid
-
-        cur.execute("SELECT id FROM users WHERE id != %s", (target_user_id,))
-        other_users = cur.fetchall()
-        if other_users:
-            cur.executemany("""
-                INSERT IGNORE INTO notification_reads (user_id, announcement_id, dismissed)
-                VALUES (%s, %s, 1)
-            """, [(u[0], new_ann_id) for u in other_users])
-
-        cur.execute("""
-            DELETE FROM notification_reads WHERE user_id=%s AND announcement_id=%s
-        """, (target_user_id, new_ann_id))
+            INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
+            VALUES (%s,%s,'urgent',0,%s,%s)
+        """, (notif_title, notif_body, author, target_user_id))
 
         mysql.connection.commit()
         cur.close()

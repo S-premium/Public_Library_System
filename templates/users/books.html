@@ -260,7 +260,7 @@
     .fm-btn.primary { background:var(--accent); color:#0d1a24; border-color:transparent; }
     .fm-btn.primary:hover { background:#b8d4ec; }
 
-    /* toggle switch (reused inside filter modal) */
+    /* toggle switch */
     .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
     .toggle-switch input { opacity:0; width:0; height:0; }
     .toggle-slider { position:absolute; cursor:pointer; inset:0; background:rgba(255,255,255,.12); border-radius:24px; transition:.3s; }
@@ -339,6 +339,17 @@
     .btn-modal-fav { width:40px; height:40px; flex-shrink:0; background:rgba(245,200,66,.1); border:1px solid rgba(245,200,66,.25); border-radius:10px; color:var(--gold); display:flex; align-items:center; justify-content:center; font-size:1rem; cursor:pointer; transition:.2s; }
     .btn-modal-fav:hover { background:rgba(245,200,66,.2); }
     .btn-modal-fav.bookmarked { background:rgba(245,200,66,.2); box-shadow:0 0 10px var(--gold-glow); }
+
+    /* ── INVENTORY COPY CARDS ── */
+    .inv-copy-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+    .inv-copy-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; transition:.15s; }
+    .inv-copy-card:hover { background:rgba(255,255,255,.07); }
+    .inv-copy-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .inv-copy-icon.total { background:rgba(159,193,225,.15); color:var(--accent); }
+    .inv-copy-icon.available { background:rgba(72,199,142,.15); color:var(--accent2); }
+    .inv-copy-label { font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:3px; }
+    .inv-copy-value { font-size:1.35rem; font-weight:700; color:#fff; line-height:1; }
+    .inv-copy-value.accent { color:var(--accent2); }
 
     /* ── BORROW STEPS MODAL ── */
     .bs-step-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:18px 20px; }
@@ -431,6 +442,7 @@
       .modal-hero-text h2 { font-size:.95rem; }
       .detail-grid { grid-template-columns:1fr; }
       .detail-cell.full { grid-column:1; }
+      .inv-copy-grid { grid-template-columns:1fr; }
       .footer-cta { padding: 40px 24px; }
       .footer-main { padding: 48px 24px 0; }
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
@@ -553,6 +565,8 @@
           </div>
         </div>
       </div>
+
+      <!-- TABS -->
       <div class="modal-tabs">
         <button class="modal-tab-btn active" id="tabBtnOverview" onclick="switchTab('overview')">
           <i class="bi bi-grid-1x2-fill"></i> Overview
@@ -560,8 +574,14 @@
         <button class="modal-tab-btn" id="tabBtnDetails" onclick="switchTab('details')">
           <i class="bi bi-info-circle-fill"></i> Details
         </button>
+        <button class="modal-tab-btn" id="tabBtnInventory" onclick="switchTab('inventory')">
+          <i class="bi bi-boxes"></i> Inventory
+        </button>
       </div>
+
       <div class="modal-tab-panels">
+
+        <!-- OVERVIEW PANEL -->
         <div class="modal-tab-panel active" id="panelOverview">
           <div class="overview-status-row" id="overviewStatusRow"></div>
           <div class="modal-description" id="modalDescBlock">
@@ -569,14 +589,9 @@
             <div class="modal-description-text" id="modalDescText"></div>
           </div>
         </div>
+
+        <!-- DETAILS PANEL -->
         <div class="modal-tab-panel" id="panelDetails">
-          <div class="shelf-highlight" id="shelfHighlight">
-            <div class="shelf-highlight-icon"><i class="bi bi-geo-alt-fill"></i></div>
-            <div>
-              <div class="shelf-highlight-label">Shelf Location</div>
-              <div class="shelf-highlight-value" id="shelfHighlightValue">—</div>
-            </div>
-          </div>
           <div class="detail-section-title"><i class="bi bi-book" style="color:var(--accent)"></i> Bibliographic</div>
           <div class="detail-grid" id="detailGridBiblio"></div>
           <div class="detail-section-title"><i class="bi bi-buildings" style="color:var(--accent)"></i> Publication</div>
@@ -584,7 +599,44 @@
           <div class="detail-section-title"><i class="bi bi-tags" style="color:var(--accent)"></i> Classification</div>
           <div class="detail-grid" id="detailGridClass"></div>
         </div>
+
+        <!-- INVENTORY PANEL -->
+        <div class="modal-tab-panel" id="panelInventory">
+          <!-- Shelf location (moved from Details) -->
+          <div class="shelf-highlight" id="invShelfHighlight">
+            <div class="shelf-highlight-icon"><i class="bi bi-geo-alt-fill"></i></div>
+            <div>
+              <div class="shelf-highlight-label">Shelf Location</div>
+              <div class="shelf-highlight-value" id="invShelfValue">—</div>
+            </div>
+          </div>
+
+          <div class="detail-section-title"><i class="bi bi-archive" style="color:var(--accent)"></i> Copy Counts</div>
+
+          <!-- Total & Available copy cards -->
+          <div class="inv-copy-grid">
+            <div class="inv-copy-card">
+              <div class="inv-copy-icon total"><i class="bi bi-stack"></i></div>
+              <div>
+                <div class="inv-copy-label">Total Copies</div>
+                <div class="inv-copy-value" id="invTotalCopies">—</div>
+              </div>
+            </div>
+            <div class="inv-copy-card">
+              <div class="inv-copy-icon available"><i class="bi bi-bookmark-check-fill"></i></div>
+              <div>
+                <div class="inv-copy-label">Available</div>
+                <div class="inv-copy-value accent" id="invAvailableCopies">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status row -->
+          <div class="detail-grid" id="invStatusGrid"></div>
+        </div>
+
       </div>
+
       <div class="modal-footer-bar">
         <button class="btn-modal-fav" id="modalFavBtn" onclick="modalToggleFav()" title="Add to favorites">
           <i class="bi bi-bookmark-star" id="modalFavIcon"></i>
@@ -1139,7 +1191,7 @@
       if (clearBtn) clearBtn.style.display = count ? '' : 'none';
     }
 
-    /* ── APPLY FILTER (updated — uses advFilters) ── */
+    /* ── APPLY FILTER ── */
     function applyFilter() {
       const q = document.getElementById('searchInput').value.trim().toLowerCase();
       let r = allBooks;
@@ -1210,9 +1262,11 @@
     /* ── BOOK DETAIL MODAL ── */
     function switchTab(tab) {
       _activeTab = tab;
-      ['overview','details'].forEach(t => {
-        document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
-        document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+      ['overview', 'details', 'inventory'].forEach(t => {
+        const btn   = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const panel = document.getElementById('panel'  + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn)   btn.classList.toggle('active',   t === tab);
+        if (panel) panel.classList.toggle('active', t === tab);
       });
     }
 
@@ -1245,6 +1299,8 @@
         ? `<span class="modal-pill borrow-yes"><i class="bi bi-bookmark-check-fill"></i> Borrowable</span>`
         : `<span class="modal-pill borrow-no"><i class="bi bi-bookmark-x-fill"></i> Not Borrowable</span>`;
       document.getElementById('modalPills').innerHTML = pillsHtml;
+
+      /* Overview tab */
       let dotClass='available', statusText='Available for Borrowing', statusSub='You can request to borrow this book';
       if(!isBorrowable(book)){dotClass='unavailable';statusText='Not for Borrowing';statusSub='This item is for reference use only';}
       document.getElementById('overviewStatusRow').innerHTML = `
@@ -1257,10 +1313,8 @@
       } else {
         descText.innerHTML = '<span class="no-desc">No description available for this book.</span>';
       }
-      const shelf = book.shelf_location || '';
-      const shelfVal = document.getElementById('shelfHighlightValue');
-      if(shelf){shelfVal.textContent=shelf;shelfVal.className='shelf-highlight-value';}
-      else{shelfVal.textContent='Not assigned';shelfVal.className='shelf-highlight-value empty';}
+
+      /* Details tab — bibliographic, publication, classification (no shelf here) */
       document.getElementById('detailGridBiblio').innerHTML =
         detailCell('bi-upc-scan',    'ISBN',        book.isbn) +
         detailCell('bi-person-fill', 'Author',      book.author) +
@@ -1285,10 +1339,31 @@
         detailCell('bi-coin',       'Cost Price',      book.cost_price ? '₱'+Number(book.cost_price).toFixed(2) : '') +
         detailCell('bi-bank',       'Source of Fund',  book.source_of_fund) +
         detailCell('bi-globe',      'API Source',      book.api_source);
+
+      /* Inventory tab — shelf location */
+      const shelf = book.shelf_location || '';
+      const invShelf = document.getElementById('invShelfValue');
+      if (invShelf) {
+        invShelf.textContent = shelf || 'Not assigned';
+        invShelf.className   = 'shelf-highlight-value' + (shelf ? '' : ' empty');
+      }
+
+      /* Inventory tab — total & available copy counts */
+      const totalEl     = document.getElementById('invTotalCopies');
+      const availableEl = document.getElementById('invAvailableCopies');
+      if (totalEl)     totalEl.textContent     = book.total_copies     != null ? String(book.total_copies)     : '0';
+      if (availableEl) availableEl.textContent = book.available_copies != null ? String(book.available_copies) : '0';
+
+      /* Inventory tab — status */
+      document.getElementById('invStatusGrid').innerHTML =
+        detailCell('bi-circle-half', 'Status', book.status || 'Available', true);
+
+      /* Footer borrow button */
       const borrowContainer = document.getElementById('modalBorrowContainer');
       borrowContainer.innerHTML = isBorrowable(book)
         ? `<button class="btn-modal-borrow" style="width:100%;" onclick="handleBorrow(event)"><i class="bi bi-bookmark-plus-fill"></i> Borrow This Book</button>`
         : `<button class="btn-modal-borrow-disabled" style="width:100%;"><i class="bi bi-bookmark-x-fill"></i> Not Available for Borrowing</button>`;
+
       updateModalFavBtn();
       switchTab('overview');
       document.getElementById('detailModal').classList.add('open');

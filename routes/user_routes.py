@@ -253,12 +253,13 @@ def get_user_notifications():
     cur.execute("""
         SELECT a.id, a.title, a.body, a.category, a.pinned, a.author, a.created_at
         FROM announcements a
-        WHERE a.id NOT IN (
+        WHERE (a.target_user_id IS NULL OR a.target_user_id = %s)
+          AND a.id NOT IN (
             SELECT announcement_id FROM notification_reads
             WHERE user_id=%s AND dismissed=1
         )
         ORDER BY a.pinned DESC, a.created_at DESC LIMIT 30
-    """, (user_id,))
+    """, (user_id, user_id,))
     rows = cur.fetchall()
 
     cur.execute("""

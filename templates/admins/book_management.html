@@ -912,7 +912,7 @@
       </div>
     </div>
 
-    <form id="addBookForm" onsubmit="handleAddSubmit(event)">
+    <form id="addBookForm" onsubmit="handleAddSubmit(event)" enctype="multipart/form-data">
       <input type="hidden" name="isbn_meta_json" id="addMetaJson">
       <input type="hidden" name="page_count"     id="addPageCount">
       <input type="hidden" name="api_source"     id="addApiSource">
@@ -966,9 +966,33 @@
             <div class="form-group"><label class="form-label">Category</label><input type="text" name="category" id="addCategory" class="form-control" placeholder="e.g. Fiction"></div>
             <div class="form-group"><label class="form-label">Class / Genre</label><input type="text" name="class" id="addGenre" class="form-control" placeholder="e.g. Novel"></div>
           </div>
-          <div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="addPubDate" class="form-control" placeholder="e.g. 2001 or 2001-06-26"></div>
+          <div class="form-grid"><div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="editPubDate" class="form-control"></div><div class="form-group"><label class="form-label">Language</label><input type="text" name="language" id="editLanguage" class="form-control"></div></div>
+          <div class="form-group">
+            <label class="form-label">Page Count</label>
+            <input type="number" name="page_count" id="editPageCount" class="form-control" min="1">
+          </div>
           <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="addDescription" class="form-control" rows="3" placeholder="Brief book description…"></textarea></div>
-          <div class="form-group" style="margin-bottom:0"><label class="form-label">Cover Image URL</label><input type="url" name="thumbnail_url_display" id="addThumbnail" class="form-control" placeholder="https://…" oninput="document.getElementById('addThumbnailHidden').value=this.value"></div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Cover Image</label>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <!-- File upload -->
+              <div id="addCoverDropZone" style="border:2px dashed rgba(159,193,225,.25);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative" onclick="document.getElementById('addCoverFile').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='rgba(159,193,225,.25)'" ondrop="handleCoverDrop(event,'add')">
+                <input type="file" name="cover_image_file" id="addCoverFile" accept="image/*" style="display:none" onchange="handleCoverFile(this,'add')">
+                <div id="addCoverPreviewWrap" style="display:none;position:relative;display:none">
+                  <img id="addCoverPreviewImg" src="" alt="Preview" style="max-height:80px;border-radius:6px;border:1px solid rgba(255,255,255,.15)">
+                  <button type="button" onclick="clearCover('add');event.stopPropagation()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--danger);border:none;color:#fff;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
+                </div>
+                <div id="addCoverPlaceholder" style="color:rgba(255,255,255,.35);font-size:.8rem"><i class="bi bi-cloud-upload" style="font-size:1.3rem;display:block;margin-bottom:5px;color:rgba(159,193,225,.5)"></i>Click or drag & drop a cover image<br><span style="font-size:.7rem;opacity:.6">PNG, JPG, WEBP, GIF — max 5 MB</span></div>
+              </div>
+              <!-- OR URL -->
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+                <span style="font-size:.72rem;color:rgba(255,255,255,.3);flex-shrink:0">or paste a URL</span>
+                <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+              </div>
+              <input type="url" name="thumbnail_url_display" id="addThumbnail" class="form-control" placeholder="https://…" oninput="onAddCoverUrlInput(this.value)">
+            </div>
+          </div>
         </div>
 
         <!-- Step 3: Library Classification -->
@@ -1231,7 +1255,7 @@
       <div class="vm-tab active" id="editTab0" onclick="editTabSwitch(0)"><i class="bi bi-book-fill"></i> Book Info</div>
       <div class="vm-tab"        id="editTab1" onclick="editTabSwitch(1)"><i class="bi bi-boxes"></i> Inventory</div>
     </div>
-    <form id="editForm">
+    <form id="editForm" enctype="multipart/form-data">
       <input type="hidden" name="book_id" id="editBookId">
       <div class="modal-body" style="padding-top:16px">
         <div id="editPane0">
@@ -1241,7 +1265,25 @@
           <div class="form-grid"><div class="form-group"><label class="form-label">ISBN <span style="color:var(--danger)">*</span></label><input type="text" name="isbn" id="editIsbn" class="form-control" required style="font-family:'DM Mono',monospace"></div><div class="form-group"><label class="form-label">Edition</label><input type="text" name="edition" id="editEdition" class="form-control" placeholder="e.g. 3rd"></div></div>
           <div class="form-grid"><div class="form-group"><label class="form-label">Category</label><input type="text" name="category" id="editCategory" class="form-control"></div><div class="form-group"><label class="form-label">Class / Genre</label><input type="text" name="class" id="editClass" class="form-control"></div></div>
           <div class="form-grid"><div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="editPubDate" class="form-control"></div><div class="form-group"><label class="form-label">Language</label><input type="text" name="language" id="editLanguage" class="form-control"></div></div>
-          <div class="form-grid"><div class="form-group"><label class="form-label">Page Count</label><input type="number" name="page_count" id="editPageCount" class="form-control" min="1"></div><div class="form-group"><label class="form-label">Cover / Thumbnail URL</label><input type="url" name="thumbnail_url" id="editThumbnail" class="form-control" placeholder="https://…"></div></div>
+          <div class="form-group">
+            <label class="form-label">Cover Image</label>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div id="editCoverDropZone" style="border:2px dashed rgba(159,193,225,.25);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative" onclick="document.getElementById('editCoverFile').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='rgba(159,193,225,.25)'" ondrop="handleCoverDrop(event,'edit')">
+                <input type="file" name="cover_image_file" id="editCoverFile" accept="image/*" style="display:none" onchange="handleCoverFile(this,'edit')">
+                <div id="editCoverPreviewWrap" style="display:none">
+                  <img id="editCoverPreviewImg" src="" alt="Preview" style="max-height:80px;border-radius:6px;border:1px solid rgba(255,255,255,.15)">
+                  <button type="button" onclick="clearCover('edit');event.stopPropagation()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--danger);border:none;color:#fff;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
+                </div>
+                <div id="editCoverPlaceholder" style="color:rgba(255,255,255,.35);font-size:.8rem"><i class="bi bi-cloud-upload" style="font-size:1.3rem;display:block;margin-bottom:5px;color:rgba(159,193,225,.5)"></i>Click or drag & drop a cover image<br><span style="font-size:.7rem;opacity:.6">PNG, JPG, WEBP, GIF — max 5 MB</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+                <span style="font-size:.72rem;color:rgba(255,255,255,.3);flex-shrink:0">or paste a URL</span>
+                <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
+              </div>
+              <input type="url" name="thumbnail_url" id="editThumbnail" class="form-control" placeholder="https://…">
+            </div>
+          </div>
           <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="editDescription" class="form-control" rows="3"></textarea></div>
           <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin:16px 0 12px"><i class="bi bi-building"></i> Library Classification <span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span></div>
           <div class="form-grid"><div class="form-group"><label class="form-label">Call Number</label><input type="text" name="call_number" id="editCallNumber" class="form-control"></div><div class="form-group"><label class="form-label">Copyright</label><input type="text" name="copy_right" id="editCopyRight" class="form-control"></div></div>
@@ -1850,7 +1892,6 @@ function openEditModal(id){
   document.getElementById('editClass').value=b.class||b.genre||'';
   document.getElementById('editPubDate').value=b.published_date||'';
   document.getElementById('editLanguage').value=b.language||'';
-  document.getElementById('editPageCount').value=b.page_count||'';
   document.getElementById('editDescription').value=b.description||'';
   document.getElementById('editThumbnail').value=b.thumbnail_url||'';
   document.getElementById('editCallNumber').value=b.call_number||'';
@@ -1909,6 +1950,86 @@ document.addEventListener('keydown',function(e){
 document.addEventListener('DOMContentLoaded', () => {
   fmBuildClouds(); applyFilters(); renderFilterChips(); fmUpdateMatchCount();
 });
+
+/* ── COVER IMAGE UPLOAD HELPERS ── */
+function handleCoverFile(input, ctx) {
+  const file = input.files[0];
+  if (!file) return;
+  const previewWrap = document.getElementById(ctx + 'CoverPreviewWrap');
+  const previewImg  = document.getElementById(ctx + 'CoverPreviewImg');
+  const placeholder = document.getElementById(ctx + 'CoverPlaceholder');
+  const reader = new FileReader();
+  reader.onload = e => {
+    previewImg.src = e.target.result;
+    previewWrap.style.display = 'block';
+    placeholder.style.display = 'none';
+    // Clear URL field since file takes priority
+    if (ctx === 'add') {
+      document.getElementById('addThumbnail').value = '';
+      document.getElementById('addThumbnailHidden').value = '';
+    } else {
+      document.getElementById('editThumbnail').value = '';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleCoverDrop(event, ctx) {
+  event.preventDefault();
+  document.getElementById(ctx + 'CoverDropZone').style.borderColor = 'rgba(159,193,225,.25)';
+  const file = event.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const input = document.getElementById(ctx + 'CoverFile');
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  handleCoverFile(input, ctx);
+}
+
+function clearCover(ctx) {
+  const input       = document.getElementById(ctx + 'CoverFile');
+  const previewWrap = document.getElementById(ctx + 'CoverPreviewWrap');
+  const placeholder = document.getElementById(ctx + 'CoverPlaceholder');
+  input.value = '';
+  previewWrap.style.display = 'none';
+  placeholder.style.display = 'block';
+}
+
+function onAddCoverUrlInput(val) {
+  // If typing a URL, clear any file upload
+  if (val.trim()) {
+    document.getElementById('addCoverFile').value = '';
+    document.getElementById('addCoverPreviewWrap').style.display = 'none';
+    document.getElementById('addCoverPlaceholder').style.display = 'block';
+  }
+  document.getElementById('addThumbnailHidden').value = val.trim();
+}
+
+// Show existing cover when edit modal opens
+const _origOpenEditModal = openEditModal;
+openEditModal = function(id) {
+  _origOpenEditModal(id);
+  // Reset file input
+  clearCover('edit');
+  // Show current thumbnail in drop zone if it exists
+  const b = allBooks.find(x => x.id === id);
+  if (b && b.thumbnail_url) {
+    const previewWrap = document.getElementById('editCoverPreviewWrap');
+    const previewImg  = document.getElementById('editCoverPreviewImg');
+    const placeholder = document.getElementById('editCoverPlaceholder');
+    previewImg.src = b.thumbnail_url;
+    previewWrap.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+};
+
+// When add modal resets, clear cover
+const _origResetAddForm = resetAddForm;
+resetAddForm = function() {
+  _origResetAddForm();
+  clearCover('add');
+  document.getElementById('addThumbnail').value = '';
+};
 </script>
 </body>
 </html>
