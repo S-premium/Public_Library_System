@@ -27,8 +27,9 @@ from helpers import (
     build_book_data, BOOK_INVENTORY_QUERY,
     save_card_photo, resolve_book_snapshots,
     insert_card_books, update_inventory_on_borrow,
-    event_to_dict,
+    event_to_dict, search_users,
 )
+
 from email_config import send_registration_decision_email
 
 bcrypt = Bcrypt(app)
@@ -47,9 +48,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
 
-BOOK_COVER_FOLDER   = os.path.join('static', 'uploads', 'books')
+BOOK_COVER_FOLDER    = os.path.join('static', 'uploads', 'books')
 BOOK_COVER_MAX_BYTES = 5 * 1024 * 1024   # 5 MB
 os.makedirs(BOOK_COVER_FOLDER, exist_ok=True)
+
 
 def _save_book_cover(file_obj) -> str | None:
     """Validate + save a book cover upload. Returns the URL path or None."""
@@ -61,11 +63,12 @@ def _save_book_cover(file_obj) -> str | None:
     if file_obj.tell() > BOOK_COVER_MAX_BYTES:
         raise ValueError("Cover image must be under 5 MB.")
     file_obj.seek(0)
-    ext      = secure_filename(file_obj.filename).rsplit('.', 1)[1].lower()
-    filename = f"cover_{uuid.uuid4().hex}.{ext}"
+    ext       = secure_filename(file_obj.filename).rsplit('.', 1)[1].lower()
+    filename  = f"cover_{uuid.uuid4().hex}.{ext}"
     save_path = os.path.join(BOOK_COVER_FOLDER, filename)
     file_obj.save(save_path)
-    return '/' + save_path.replace('\\', '/')   # e.g. /static/uploads/books/cover_abc.jpg
+    return '/' + save_path.replace('\\', '/')
+
 
 # =====================================================================
 # PAGES
@@ -136,7 +139,6 @@ def dashboard_stats():
     total_locked = cur.fetchone()[0]
     cur.close()
 
-    from datetime import timedelta
     today    = date.today()
     days_map = {today - timedelta(days=i): 0 for i in range(6, -1, -1)}
     for row in book_rows:
@@ -145,12 +147,12 @@ def dashboard_stats():
             days_map[d] = int(row[1])
 
     return jsonify({
-        'roles':        {'labels': ['Admins', 'Librarians', 'Users'],
-                         'data':   [role_map['admin'], role_map['librarian'], role_map['user']]},
-        'status':       {'active': active_count, 'offline': offline_count},
-        'books_per_day':{'labels': [d.strftime('%a %d') for d in sorted(days_map)],
-                         'data':   [days_map[d] for d in sorted(days_map)]},
-        'totals':       {'books': total_books, 'users': total_users, 'locked': total_locked},
+        'roles':         {'labels': ['Admins', 'Librarians', 'Users'],
+                          'data':   [role_map['admin'], role_map['librarian'], role_map['user']]},
+        'status':        {'active': active_count, 'offline': offline_count},
+        'books_per_day': {'labels': [d.strftime('%a %d') for d in sorted(days_map)],
+                          'data':   [days_map[d] for d in sorted(days_map)]},
+        'totals':        {'books': total_books, 'users': total_users, 'locked': total_locked},
     })
 
 
@@ -172,10 +174,6 @@ def book_management():
     return render_template('admins/book_management.html', books=build_book_data(books) or [])
 
 
-# =====================================================================
-# ADD BOOK  —  POST /add_book
-# =====================================================================
-
 @admin_bp.route('/add_book', methods=['POST'])
 def add_book():
     if not is_logged_in() or require_role('admin', 'librarian'):
@@ -196,7 +194,7 @@ def add_book():
     published_date = request.form.get('published_date', '').strip() or None
     language       = request.form.get('language',       '').strip() or None
     description    = request.form.get('description',    '').strip() or None
-    # Cover: prefer uploaded file, fall back to URL
+
     _cover_file = request.files.get('cover_image_file')
     try:
         _uploaded_cover = _save_book_cover(_cover_file)
@@ -208,7 +206,8 @@ def add_book():
         or request.form.get('thumbnail_url_display')
         or ''
     ).strip() or None
-    _pc            = request.form.get('page_count', '') or None
+
+    _pc = request.form.get('page_count', '') or None
     try:
         page_count = int(float(_pc)) if _pc else None
     except (ValueError, TypeError):
@@ -221,13 +220,13 @@ def add_book():
     source_of_fund = request.form.get('source_of_fund', '').strip() or None
     cost_price     = request.form.get('cost_price',     '') or None
 
-    total_copies   = max(0, int(request.form.get('total_copies',   1) or 1))
-    damaged_copies = max(0, int(request.form.get('damaged_copies', 0) or 0))
-    lost_copies    = max(0, int(request.form.get('lost_copies',    0) or 0))
+    total_copies     = max(0, int(request.form.get('total_copies',   1) or 1))
+    damaged_copies   = max(0, int(request.form.get('damaged_copies', 0) or 0))
+    lost_copies      = max(0, int(request.form.get('lost_copies',    0) or 0))
     available_copies = max(0, total_copies - damaged_copies - lost_copies)
-    shelf_location = request.form.get('shelf_location', '').strip() or None
-    status         = request.form.get('status', 'Available').strip()
-    is_borrowable  = 1 if request.form.get('is_borrowable') in ('1', 'on', 'true') else 0
+    shelf_location   = request.form.get('shelf_location', '').strip() or None
+    status           = request.form.get('status', 'Available').strip()
+    is_borrowable    = 1 if request.form.get('is_borrowable') in ('1', 'on', 'true') else 0
 
     try:
         cursor   = mysql.connection.cursor()
@@ -257,24 +256,15 @@ def add_book():
                 %s, NOW()
             )
         """, (
-            encrypt_data(title),
-            encrypt_data(author),
-            enc_isbn,
+            encrypt_data(title), encrypt_data(author), enc_isbn,
             subtitle,
             encrypt_data(publisher) if publisher else None,
             encrypt_data(category)  if category  else None,
             encrypt_data(genre_or_class) if genre_or_class else None,
-            edition,
-            published_date,
-            language,
-            description,
-            thumbnail_url,
-            page_count,
-            api_source,
-            call_number,
-            date_received or None,
-            copy_right,
-            source_of_fund,
+            edition, published_date, language, description, thumbnail_url,
+            page_count, api_source,
+            call_number, date_received or None,
+            copy_right, source_of_fund,
             float(cost_price) if cost_price else None,
             is_borrowable,
         ))
@@ -283,11 +273,9 @@ def add_book():
 
         cursor.execute("""
             INSERT INTO book_inventory
-                (book_id, volumes, available_copies, damaged_copies, lost_copies,
-                 status, shelf_location)
+                (book_id, volumes, available_copies, damaged_copies, lost_copies, status, shelf_location)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (new_id, total_copies, available_copies, damaged_copies,
-              lost_copies, status, shelf_location))
+        """, (new_id, total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location))
         mysql.connection.commit()
         cursor.close()
 
@@ -297,10 +285,6 @@ def add_book():
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
-
-# =====================================================================
-# UPDATE BOOK  —  POST /update_book
-# =====================================================================
 
 @admin_bp.route('/update_book', methods=['POST'])
 def update_book():
@@ -326,7 +310,7 @@ def update_book():
     published_date = request.form.get('published_date', '').strip() or None
     language       = request.form.get('language',       '').strip() or None
     description    = request.form.get('description',    '').strip() or None
-    # Cover: prefer uploaded file, fall back to URL
+
     _cover_file = request.files.get('cover_image_file')
     try:
         _uploaded_cover = _save_book_cover(_cover_file)
@@ -335,7 +319,7 @@ def update_book():
 
     thumbnail_url = _uploaded_cover or request.form.get('thumbnail_url', '').strip() or None
 
-    _pc            = request.form.get('page_count', '') or None
+    _pc = request.form.get('page_count', '') or None
     try:
         page_count = int(float(_pc)) if _pc else None
     except (ValueError, TypeError):
@@ -348,12 +332,12 @@ def update_book():
     cost_price     = request.form.get('cost_price',     '') or None
     is_borrowable  = 1 if request.form.get('is_borrowable') in ('1', 'on', 'true') else 0
 
-    total_copies   = max(0, int(request.form.get('total_copies',   0) or 0))
-    damaged_copies = max(0, int(request.form.get('damaged_copies', 0) or 0))
-    lost_copies    = max(0, int(request.form.get('lost_copies',    0) or 0))
+    total_copies     = max(0, int(request.form.get('total_copies',   0) or 0))
+    damaged_copies   = max(0, int(request.form.get('damaged_copies', 0) or 0))
+    lost_copies      = max(0, int(request.form.get('lost_copies',    0) or 0))
     available_copies = max(0, total_copies - damaged_copies - lost_copies)
-    status         = request.form.get('status', 'Available').strip()
-    shelf_location = request.form.get('shelf_location', '').strip() or None
+    status           = request.form.get('status', 'Available').strip()
+    shelf_location   = request.form.get('shelf_location', '').strip() or None
 
     try:
         cursor = mysql.connection.cursor()
@@ -364,81 +348,47 @@ def update_book():
             return jsonify({'success': False, 'message': 'Book not found.'}), 404
 
         enc_isbn = encrypt_data(isbn)
-        cursor.execute(
-            "SELECT id FROM books WHERE isbn = %s AND id != %s",
-            (enc_isbn, book_id)
-        )
+        cursor.execute("SELECT id FROM books WHERE isbn = %s AND id != %s", (enc_isbn, book_id))
         if cursor.fetchone():
             cursor.close()
             return jsonify({'success': False, 'message': 'Another book with this ISBN already exists.'}), 409
 
         cursor.execute("""
             UPDATE books SET
-                title          = %s,
-                author         = %s,
-                isbn           = %s,
-                subtitle       = %s,
-                publisher      = %s,
-                category       = %s,
-                `class`        = %s,
-                edition        = %s,
-                published_date = %s,
-                language       = %s,
-                description    = %s,
-                thumbnail_url  = %s,
-                page_count     = %s,
-                call_number    = %s,
-                date_received  = %s,
-                copy_right     = %s,
-                source_of_fund = %s,
-                cost_price     = %s,
-                is_borrowable  = %s,
-                updated_at     = NOW()
-            WHERE id = %s
+                title=%s, author=%s, isbn=%s,
+                subtitle=%s, publisher=%s, category=%s, `class`=%s,
+                edition=%s, published_date=%s, language=%s, description=%s, thumbnail_url=%s,
+                page_count=%s, call_number=%s, date_received=%s,
+                copy_right=%s, source_of_fund=%s, cost_price=%s,
+                is_borrowable=%s, updated_at=NOW()
+            WHERE id=%s
         """, (
-            encrypt_data(title),
-            encrypt_data(author),
-            enc_isbn,
+            encrypt_data(title), encrypt_data(author), enc_isbn,
             subtitle,
             encrypt_data(publisher) if publisher else None,
             encrypt_data(category)  if category  else None,
             encrypt_data(genre_or_class) if genre_or_class else None,
-            edition,
-            published_date,
-            language,
-            description,
-            thumbnail_url,
-            page_count,
-            call_number,
-            date_received or None,
-            copy_right,
-            source_of_fund,
+            edition, published_date, language, description, thumbnail_url,
+            page_count, call_number, date_received or None,
+            copy_right, source_of_fund,
             float(cost_price) if cost_price else None,
-            is_borrowable,
-            book_id,
+            is_borrowable, book_id,
         ))
 
         cursor.execute("SELECT id FROM book_inventory WHERE book_id = %s", (book_id,))
         if cursor.fetchone():
             cursor.execute("""
                 UPDATE book_inventory SET
-                    volumes          = %s,
-                    available_copies = %s,
-                    damaged_copies   = %s,
-                    lost_copies      = %s,
-                    status           = %s,
-                    shelf_location   = %s
-                WHERE book_id = %s
-            """, (total_copies, available_copies, damaged_copies,
-                  lost_copies, status, shelf_location, book_id))
+                    volumes=%s, available_copies=%s, damaged_copies=%s,
+                    lost_copies=%s, status=%s, shelf_location=%s
+                WHERE book_id=%s
+            """, (total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location, book_id))
         else:
             cursor.execute("""
                 INSERT INTO book_inventory
-                    (book_id, volumes, available_copies, damaged_copies,
-                     lost_copies, status, shelf_location)
+                    (book_id, volumes, available_copies, damaged_copies, lost_copies, status, shelf_location)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (book_id, total_copies, available_copies, damaged_copies,
-                  lost_copies, status, shelf_location))
+            """, (book_id, total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location))
 
         mysql.connection.commit()
         cursor.close()
@@ -448,10 +398,6 @@ def update_book():
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 
-
-# =====================================================================
-# DELETE BOOK  —  POST /delete_book/<book_id>
-# =====================================================================
 
 @admin_bp.route('/delete_book/<int:book_id>', methods=['POST'])
 def delete_book(book_id):
@@ -477,10 +423,6 @@ def delete_book(book_id):
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
-# =====================================================================
-# UPDATE INVENTORY  —  POST /update_inventory
-# =====================================================================
-
 @admin_bp.route('/update_inventory', methods=['POST'])
 def update_inventory():
     if not is_logged_in() or require_role('admin', 'librarian'):
@@ -496,9 +438,8 @@ def update_inventory():
         is_borrowable    = 1 if request.form.get('is_borrowable') in ('1', 'on', 'true') else 0
 
         cursor = mysql.connection.cursor()
-
         cursor.execute(
-            "UPDATE books SET is_borrowable = %s, updated_at = NOW() WHERE id = %s",
+            "UPDATE books SET is_borrowable=%s, updated_at=NOW() WHERE id=%s",
             (is_borrowable, book_id)
         )
 
@@ -506,23 +447,16 @@ def update_inventory():
         if cursor.fetchone():
             cursor.execute("""
                 UPDATE book_inventory SET
-                    volumes          = %s,
-                    available_copies = %s,
-                    damaged_copies   = %s,
-                    lost_copies      = %s,
-                    status           = %s,
-                    shelf_location   = %s
-                WHERE book_id = %s
-            """, (total_copies, available_copies, damaged_copies,
-                  lost_copies, status, shelf_location, book_id))
+                    volumes=%s, available_copies=%s, damaged_copies=%s,
+                    lost_copies=%s, status=%s, shelf_location=%s
+                WHERE book_id=%s
+            """, (total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location, book_id))
         else:
             cursor.execute("""
                 INSERT INTO book_inventory
-                    (book_id, volumes, available_copies, damaged_copies,
-                     lost_copies, status, shelf_location)
+                    (book_id, volumes, available_copies, damaged_copies, lost_copies, status, shelf_location)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (book_id, total_copies, available_copies, damaged_copies,
-                  lost_copies, status, shelf_location))
+            """, (book_id, total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location))
 
         mysql.connection.commit()
         cursor.close()
@@ -600,120 +534,78 @@ def unlock_user(user_id):
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
- 
+
 
 import os as _os
 
+
 @admin_bp.route('/admin/valid-id/<int:user_id>')
 def serve_valid_id(user_id):
-    """
-    Securely serve a user's valid ID file.
-    - Decrypts the stored path with decrypt_pii()
-    - Only admins can access this endpoint
-    - Blocks path traversal by verifying the file lives inside valid_id_vault/
-    """
     if not is_logged_in() or require_role('admin'):
         abort(403)
- 
+
     cur = mysql.connection.cursor()
     cur.execute("SELECT valid_id_path FROM users WHERE id = %s", (user_id,))
     row = cur.fetchone()
     cur.close()
- 
+
     if not row or not row[0]:
         abort(404)
- 
-    # Decrypt the stored value — it was saved as encrypt_pii(full_os_path)
+
     try:
         from helpers import decrypt_pii
         real_path = decrypt_pii(row[0])
     except Exception:
         abort(404)
- 
+
     if not real_path:
         abort(404)
- 
-    # Normalise separators (Windows paths may use backslashes)
+
     real_path = real_path.replace('\\', _os.sep).replace('/', _os.sep)
- 
-    # Security: make sure the file actually exists and is a regular file
+
     if not _os.path.isfile(real_path):
         app.logger.warning('[serve_valid_id] File not found on disk: %s', real_path)
         abort(404)
- 
-    # Security: confirm the file lives inside valid_id_vault/ to block
-    # any future path-traversal if decryption were ever compromised
-    vault_dir  = _os.path.realpath(_os.path.join(app.root_path, 'valid_id_vault'))
-    resolved   = _os.path.realpath(real_path)
+
+    vault_dir = _os.path.realpath(_os.path.join(app.root_path, 'valid_id_vault'))
+    resolved  = _os.path.realpath(real_path)
     if not resolved.startswith(vault_dir + _os.sep) and resolved != vault_dir:
         app.logger.warning('[serve_valid_id] Path outside vault! %s', resolved)
         abort(403)
- 
+
     app.logger.info('[serve_valid_id] Serving user %s → %s', user_id, resolved)
     return send_file(resolved)
- 
- 
+
+
 @admin_bp.route('/api/admin/user/<int:user_id>', methods=['GET'])
 def api_get_user_detail(user_id):
-    """Return full decrypted profile for one user (admin only)."""
     if not is_logged_in() or require_role('admin'):
         return jsonify({'error': 'Unauthorized'}), 401
- 
+
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT
-            id,
-            username,
-            email_display,
-            firstname,
-            lastname,
-            failed_attempts,
-            is_locked,
-            lock_until,
-            created_at,
-            status,
-            last_seen,
-            role,
-            is_active,
-            is_approved,
-            otp_enabled,
-            pin_enabled,
-            age,
-            gender,
-            phone_number,
-            school,
-            city,
-            province,
-            education_level,
-            occupation,
-            is_government,
-            office_phone,
-            valid_id_path
-        FROM users
-        WHERE id = %s
+        SELECT id, username, email_display, firstname, lastname,
+               failed_attempts, is_locked, lock_until, created_at, status, last_seen, role,
+               is_active, is_approved, otp_enabled, pin_enabled,
+               age, gender, phone_number, school, city, province,
+               education_level, occupation, is_government, office_phone, valid_id_path
+        FROM users WHERE id = %s
     """, (user_id,))
     r = cur.fetchone()
     cur.close()
- 
+
     if not r:
         return jsonify({'error': 'User not found'}), 404
- 
-    # Resolve live online status (5-minute window)
+
     status    = r[9]
     last_seen = r[10]
     if last_seen and isinstance(last_seen, datetime):
         if datetime.now() - last_seen > timedelta(minutes=5):
             status = 'offline'
- 
-    # Build the valid-ID URL — we route through /admin/valid-id/<user_id>
-    # which decrypts the path server-side and serves the file.
-    # This way the encrypted blob never touches the browser at all.
+
     valid_id_url = f'/admin/valid-id/{user_id}' if r[26] else ''
- 
-    # email_display (r[2]) = Fernet-encrypted readable email
-    # username      (r[1]) = HMAC digest — not human-readable
     email = safe_decrypt_email(r[2]) if r[2] else safe_decrypt_email(r[1])
- 
+
     return jsonify({
         'id':              r[0],
         'username':        email,
@@ -742,6 +634,7 @@ def api_get_user_detail(user_id):
         'office_phone':    safe_decrypt_pii(r[25]) if r[25] else '',
         'valid_id_url':    valid_id_url,
     }), 200
+
 
 @admin_bp.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
@@ -842,6 +735,25 @@ def admin_announcements():
     return render_template("admins/announcement.html")
 
 
+@admin_bp.route('/api/users/search')
+def api_users_search():
+    if not is_logged_in():
+        return jsonify({'error': 'Unauthorized'}), 401
+    if session.get('role') not in ('admin', 'librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT COUNT(*) FROM users")
+        count = cur.fetchone()
+        cur.execute("SELECT id, role FROM users LIMIT 5")
+        rows = cur.fetchall()
+        cur.close()
+        return jsonify({'count': count[0], 'sample': [{'id': r[0], 'role': r[1]} for r in rows]})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 # =====================================================================
 # ACCOUNT REQUESTS
 # =====================================================================
@@ -880,29 +792,24 @@ def admin_get_account_requests():
     cur.close()
 
     def _resolve_email(ar_raw, user_raw):
-        """Try every decryption strategy to get a readable email."""
         from cryptography.fernet import InvalidToken
         for raw in (user_raw, ar_raw):
             if not raw:
                 continue
-            # Strategy 1: direct Fernet via email_cipher (store_email path)
             try:
                 dec = decrypt_email(raw)
                 if dec and '@' in dec:
                     return dec
             except Exception:
                 pass
-            # Strategy 2: safe_decrypt_email fallback
             try:
                 dec = safe_decrypt_email(raw)
                 if dec and '@' in dec:
                     return dec
             except Exception:
                 pass
-        # Last resort: return ar_raw as-is
         return ar_raw or ''
 
-    # r[26] = user_created_at, r[27] = user_username
     return jsonify({'requests': [
         {
             'id': r[0], 'user_id': r[1],
@@ -910,8 +817,8 @@ def admin_get_account_requests():
             'request_type': r[3], 'reason': r[4], 'status': r[5],
             'created_at': fmt_dt(r[6]), 'reviewed_at': fmt_dt(r[7]) if r[7] else None,
             'admin_note': r[8] or '',
-            'fullname': f"{safe_decrypt_pii(r[9]) or ''} {safe_decrypt_pii(r[10]) or ''}".strip(),
-            'firstname': safe_decrypt_pii(r[9]) or '',
+            'fullname':  f"{safe_decrypt_pii(r[9]) or ''} {safe_decrypt_pii(r[10]) or ''}".strip(),
+            'firstname': safe_decrypt_pii(r[9])  or '',
             'lastname':  safe_decrypt_pii(r[10]) or '',
             'card_id': r[11],
             'renewal1_checked': bool(r[12]) if r[12] is not None else False,
@@ -991,13 +898,15 @@ def admin_approve_account_request(req_id):
                 send_registration_decision_email(target_user_id, approved=True, note=admin_note)
             elif req_type == 'renew':
                 notif_title = 'Library Card Renewal — Approved ✓'
-                notif_body  = "Your library card renewal has been approved." + (f' Note: "{admin_note}"' if admin_note else "")
+                notif_body  = "Your library card renewal has been approved." + (
+                    f' Note: "{admin_note}"' if admin_note else "")
             else:
                 notif_title = 'Account Deactivation Request — Approved'
-                notif_body  = "Your deactivation request has been approved." + (f' Note: "{admin_note}"' if admin_note else "")
+                notif_body  = "Your deactivation request has been approved." + (
+                    f' Note: "{admin_note}"' if admin_note else "")
 
             cur.execute("SELECT firstname, lastname FROM users WHERE id=%s", (admin_id,))
-            ar = cur.fetchone()
+            ar     = cur.fetchone()
             author = f"{safe_decrypt_pii(ar[0])} {safe_decrypt_pii(ar[1])} (Admin)"[:100] if ar else "Library Administration"
 
             cur.execute("""
@@ -1271,44 +1180,6 @@ def api_delete_event(event_id):
 # LIBRARY CARDS
 # =====================================================================
 
-@admin_bp.route('/api/users/search')
-def api_users_search():
-    if not is_logged_in() or require_role('admin', 'librarian'):
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    q = request.args.get('q', '').strip().lower()
-    if not q:
-        return jsonify({'users': []})
-
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT id, username, firstname, lastname, phone_number, address
-        FROM users WHERE role='user' AND is_active=1
-        ORDER BY id DESC
-    """)
-    rows = cur.fetchall()
-    cur.close()
-
-    results = []
-    for r in rows:
-        fn = safe_decrypt_pii(r[2]) or ''
-        ln = safe_decrypt_pii(r[3]) or ''
-        fullname = f"{fn} {ln}".strip().lower()
-        if q in fn.lower() or q in ln.lower() or q in fullname:
-            results.append({
-                'id':           r[0],
-                'username':     safe_decrypt_email(r[1]),
-                'firstname':    fn,
-                'lastname':     ln,
-                'phone_number': safe_decrypt_pii(r[4]) if r[4] else '',
-                'address':      safe_decrypt_pii(r[5]) if r[5] else '',
-            })
-        if len(results) >= 15:
-            break
-
-    return jsonify({'users': results})
-
-
 @admin_bp.route('/library-cards')
 def library_cards_page():
     if not is_logged_in() or require_role('admin'):
@@ -1570,7 +1441,7 @@ def api_get_library_card(card_id):
         'renewal1_date':    str(r[9])  if r[9]  else '',
         'renewal2_checked': bool(r[10]),
         'renewal2_date':    str(r[11]) if r[11] else '',
-        'card_type':  r[12] or '',
+        'card_type':   r[12] or '',
         'valid_until': r[13] or '',
         'photo_url': ('/' + r[14].replace('\\', '/')) if r[14] else '',
         'books': [{'book_id': br[0], 'title': br[1], 'author': br[2],
@@ -1613,8 +1484,7 @@ def api_update_library_card(card_id):
         """, (encrypt_pii(firstname), encrypt_pii(lastname),
               encrypt_pii(phone) if phone else None,
               encrypt_pii(address) if address else None,
-              date_return,
-              ren1_chk, ren1_date, ren2_chk, ren2_date, card_type, valid_until, card_id))
+              date_return, ren1_chk, ren1_date, ren2_chk, ren2_date, card_type, valid_until, card_id))
 
         for book_id, qty in old_books:
             cur.execute("""
@@ -1776,9 +1646,9 @@ def api_card_returns(card_id):
             items = [{'title': i[0], 'author': i[1], 'isbn': i[2], 'qty_returned': i[3]}
                      for i in cur.fetchall()]
             returns.append({
-                'id':         r[0],
-                'return_date': str(r[1]) if r[1] else '',
-                'created_at':  fmt_dt(r[2]),
+                'id':           r[0],
+                'return_date':  str(r[1]) if r[1] else '',
+                'created_at':   fmt_dt(r[2]),
                 'processed_by': f"{safe_decrypt_pii(r[3]) or ''} {safe_decrypt_pii(r[4]) or ''}".strip() or '—',
                 'items': items,
             })

@@ -153,6 +153,53 @@ def require_role(*roles) -> bool:
 
 
 # =====================================================================
+# USER SEARCH HELPER
+# =====================================================================
+def search_users(query: str, limit: int = 15) -> list:
+    if not query or not query.strip():
+        return []
+
+    q = query.strip().lower()
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT id, username, firstname, lastname, phone_number, address, email_display
+            FROM users
+            WHERE role = 'user'
+            ORDER BY id DESC
+        """)
+        rows = cur.fetchall()
+        cur.close()
+    except Exception as e:
+        return []
+
+    results = []
+    for r in rows:
+        try:
+            fn = pii_cipher.decrypt(r[2].encode()).decode() if r[2] else ''
+            ln = pii_cipher.decrypt(r[3].encode()).decode() if r[3] else ''
+        except Exception:
+            fn = r[2] or ''
+            ln = r[3] or ''
+
+        fullname = f"{fn} {ln}".strip().lower()
+        email = safe_decrypt_email(r[6]) if r[6] else safe_decrypt_email(r[1])
+
+        if q in fn.lower() or q in ln.lower() or q in fullname or q in email.lower():
+            results.append({
+                'id':        r[0],
+                'username':  email,
+                'firstname': fn,
+                'lastname':  ln,
+            })
+        if len(results) >= limit:
+            break
+
+    return results
+
+
+# =====================================================================
 # USER DATA BUILDER
 # =====================================================================
 
@@ -280,7 +327,7 @@ def build_book_data(rows: list, date_fmt: str = "%Y-%m-%d") -> list:
             "isbn":             safe_decrypt(b[6])  if b[6]  else "",
             # ── Physical / edition ────────────────────────────────────
             "edition":          b[7]  or "",
-            "page_count":       page_count_val,   # FIX 4: None instead of 0
+            "page_count":       page_count_val,
             # ── Classification ────────────────────────────────────────
             "category":         safe_decrypt(b[9])  if b[9]  else "",
             # ── Acquisition ───────────────────────────────────────────

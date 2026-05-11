@@ -4,6 +4,7 @@ from .helpers import (
     encrypt_email, store_email, decrypt_email, safe_decrypt_email,
     fmt_dt,
     is_logged_in, require_role,
+    search_users,
     build_users_data,
     build_book_data, BOOK_INVENTORY_QUERY,
     calc_storage,
@@ -12,4 +13,4 @@ from .helpers import (
     event_to_dict,
     save_search_history,
 )
- 
+print(f"DEBUG __init__: search_users is {search_users}")

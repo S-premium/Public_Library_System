@@ -26,11 +26,12 @@ from conn import mysql, app
 from helpers import (
     is_logged_in, require_role,
     encrypt_data, decrypt_data, safe_decrypt, fmt_dt,
+    encrypt_pii, safe_decrypt_pii,
     build_users_data,
     build_book_data, BOOK_INVENTORY_QUERY,
     save_card_photo, resolve_book_snapshots,
     insert_card_books, update_inventory_on_borrow,
-    event_to_dict,
+    event_to_dict, search_users,
 )
 from email_config import send_registration_decision_email
 bcrypt = Bcrypt(app)
@@ -210,7 +211,7 @@ def librarian_dashboard_stats():
 
 @librarian_bp.route('/librarian/announcements')
 def librarian_announcements():
-    if not is_logged_in() or require_role('librarian', 'admin'):
+    if not is_logged_in() or require_role('librarian'):
         flash("Unauthorized access", "danger")
         return redirect('/')
     return render_template("librarians/announcement.html")
@@ -244,35 +245,50 @@ def create_announcement():
     if not is_logged_in() or require_role('librarian', 'admin'):
         return jsonify({'error': 'Unauthorized'}), 401
 
-    data     = request.get_json()
-    title    = (data.get('title') or '').strip()
-    body     = (data.get('body')  or '').strip()
-    category = data.get('category', 'general')
-    pinned   = bool(data.get('pinned', False))
+    data           = request.get_json()
+    title          = (data.get('title') or '').strip()
+    body           = (data.get('body')  or '').strip()
+    category       = data.get('category', 'general')
+    pinned         = bool(data.get('pinned', False))
+    target_user_id = data.get('target_user_id') or None
 
     if not title or not body:
         return jsonify({'error': 'Title and body are required'}), 400
     if category not in ('general', 'urgent', 'event', 'reminder'):
         category = 'general'
+    if target_user_id is not None:
+        try:
+            target_user_id = int(target_user_id)
+        except (ValueError, TypeError):
+            target_user_id = None
 
     cur = mysql.connection.cursor()
+
+    if target_user_id is not None:
+        cur.execute("SELECT id FROM users WHERE id=%s AND role='user'", (target_user_id,))
+        if not cur.fetchone():
+            cur.close()
+            return jsonify({'error': 'Target user not found.'}), 404
+
     cur.execute("SELECT firstname, lastname, role FROM users WHERE id=%s", (session['user_id'],))
     user = cur.fetchone()
     if user:
         role_label = {'admin': 'Admin', 'librarian': 'Librarian', 'user': 'User'}.get(user[2], 'Librarian')
-        author = f"{user[0]} {user[1]} ({role_label})"
+        fname = safe_decrypt_pii(user[0]) if user[0] else ''
+        lname = safe_decrypt_pii(user[1]) if user[1] else ''
+        author = f"{fname} {lname} ({role_label})".strip()
     else:
         author = 'Librarian'
 
     cur.execute("""
-        INSERT INTO announcements (title, body, category, pinned, author)
-        VALUES (%s,%s,%s,%s,%s)
-    """, (title, body, category, int(pinned), author))
+        INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
+        VALUES (%s,%s,%s,%s,%s,%s)
+    """, (title, body, category, int(pinned), author, target_user_id))
     mysql.connection.commit()
     new_id = cur.lastrowid
 
     cur.execute("""
-        SELECT id, title, body, category, pinned, author, created_at
+        SELECT id, title, body, category, pinned, author, created_at, target_user_id
         FROM announcements WHERE id=%s
     """, (new_id,))
     row = cur.fetchone()
@@ -284,6 +300,7 @@ def create_announcement():
             'id': row[0], 'title': row[1], 'body': row[2], 'category': row[3],
             'pinned': bool(row[4]), 'author': row[5],
             'created_at': row[6].isoformat() if row[6] else '',
+            'target_user_id': row[7],
         },
     }), 201
 
@@ -339,8 +356,6 @@ def toggle_pin(ann_id):
     mysql.connection.commit()
     cur.close()
     return jsonify({'success': True, 'pinned': bool(new_pinned)})
-
-
 # =====================================================================
 # INVENTORY
 # =====================================================================
@@ -477,7 +492,7 @@ def librarian_get_account_requests():
             'request_type': r[3], 'reason': r[4], 'status': r[5],
             'created_at': fmt_dt(r[6]), 'reviewed_at': fmt_dt(r[7]) if r[7] else None,
             'admin_note': r[8] or '',
-            'fullname': f"{r[9] or ''} {r[10] or ''}".strip(),
+            'fullname': f"{safe_decrypt_pii(r[9]) or ''} {safe_decrypt_pii(r[10]) or ''}".strip(),
             'card_id': r[11],
             'renewal1_checked': bool(r[12]) if r[12] is not None else False,
             'renewal1_date':    str(r[13]) if r[13] else '',
@@ -532,7 +547,7 @@ def librarian_approve_account_request(req_id):
 
         cur.execute("SELECT firstname, lastname FROM users WHERE id=%s", (librarian_id,))
         lr     = cur.fetchone()
-        author = f"{lr[0]} {lr[1]} (Librarian)"[:100] if lr else "Library Staff"
+        author = f"{safe_decrypt_pii(lr[0])} {safe_decrypt_pii(lr[1])} (Librarian)"[:100] if lr else "Library Staff"
 
         cur.execute("""
             INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
@@ -583,7 +598,7 @@ def librarian_reject_account_request(req_id):
 
         cur.execute("SELECT firstname, lastname FROM users WHERE id=%s", (librarian_id,))
         lr     = cur.fetchone()
-        author = f"{lr[0]} {lr[1]} (Librarian)"[:100] if lr else "Library Staff"
+        author = f"{safe_decrypt_pii(lr[0])} {safe_decrypt_pii(lr[1])} (Librarian)"[:100] if lr else "Library Staff"
 
         cur.execute("""
             INSERT INTO announcements (title, body, category, pinned, author, target_user_id)
@@ -1131,7 +1146,7 @@ def api_library_cards():
             'renewal2_date':    str(r[11]) if r[11] else '',
             'card_type': r[12] or '', 'valid_until': r[13] or '',
             'photo_url': photo_url, 'created_at': fmt_dt(r[15]),
-            'registered_by': f"{r[16] or ''} {r[17] or ''}".strip() or '—',
+            'registered_by': f"{safe_decrypt_pii(r[16]) or ''} {safe_decrypt_pii(r[17]) or ''}".strip() or '—',
             'user_id': r[18],
             'books': books_by_card.get(r[0], []),
         })
@@ -1335,11 +1350,12 @@ def api_list_returns():
         returns = [
             {
                 'id': r[0], 'card_id': r[1], 'card_type': r[2],
-                'firstname': r[3], 'lastname': r[4],
-                'phone_number': r[5] or '',
+                'firstname': safe_decrypt_pii(r[3]),
+                'lastname': safe_decrypt_pii(r[4]),
+                'phone_number': safe_decrypt_pii(r[5]) if r[5] else '',
                 'date_issued':  str(r[6]) if r[6] else '',
                 'return_date':  str(r[7]) if r[7] else '',
-                'processed_by': f"{r[8] or ''} {r[9] or ''}".strip() or '—',
+                'processed_by': f"{safe_decrypt_pii(r[8]) or ''} {safe_decrypt_pii(r[9]) or ''}".strip() or '—',
                 'books': items_by_return.get(r[0], []),
             }
             for r in rows
@@ -1373,7 +1389,7 @@ def api_card_returns(card_id):
             returns.append({
                 'id': r[0], 'return_date': str(r[1]) if r[1] else '',
                 'created_at': fmt_dt(r[2]),
-                'processed_by': f"{r[3] or ''} {r[4] or ''}".strip() or '—',
+                'processed_by': f"{safe_decrypt_pii(r[3]) or ''} {safe_decrypt_pii(r[4]) or ''}".strip() or '—',
                 'items': items,
             })
         cur.close()
