@@ -1,4 +1,15 @@
+"""
+backup/backup.py — Layer 7: Encrypted Backups
+==============================================
+Changes from original:
+  - Added encrypt_backup() — wraps the backup file with Fernet encryption
+  - Encrypted file saved as .enc alongside original
+  - Original unencrypted file deleted after encryption
+  - Everything else unchanged (logging, rotation, alerts, scheduler)
+"""
+
 import logging
+import os
 import shutil
 import smtplib
 import subprocess
@@ -7,9 +18,14 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from pathlib import Path
 
+from cryptography.fernet import Fernet
+from dotenv import load_dotenv
+
 from .config import config
 
-# ── Logging ──────────────────────────────────────────────────────────────────
+load_dotenv()
+
+# ── Logging ───────────────────────────────────────────────────────────
 
 config["log_path"].parent.mkdir(parents=True, exist_ok=True)
 
@@ -23,10 +39,74 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# ── Email alert ───────────────────────────────────────────────────────────────
+# ── Layer 7: Backup Encryption ────────────────────────────────────────
+
+def _get_backup_cipher() -> Fernet:
+    """Load Fernet cipher from BACKUP_ENCRYPTION_KEY in .env."""
+    key = os.getenv('BACKUP_ENCRYPTION_KEY')
+    if not key:
+        raise RuntimeError(
+            "BACKUP_ENCRYPTION_KEY missing from .env — backups will not be encrypted!"
+        )
+    return Fernet(key.encode())
+
+
+def encrypt_backup(backup_path: Path) -> Path:
+    """
+    Encrypt a backup file using Fernet (AES-128-CBC).
+    Returns path to the encrypted .enc file.
+    Deletes the original unencrypted file afterward.
+    """
+    if not backup_path.exists():
+        log.error("Backup file not found for encryption: %s", backup_path)
+        return backup_path
+
+    try:
+        cipher      = _get_backup_cipher()
+        plaintext   = backup_path.read_bytes()
+        ciphertext  = cipher.encrypt(plaintext)
+
+        enc_path = backup_path.with_suffix(backup_path.suffix + '.enc')
+        enc_path.write_bytes(ciphertext)
+
+        # Remove the unencrypted original
+        backup_path.unlink()
+
+        log.info("Backup encrypted: %s → %s", backup_path.name, enc_path.name)
+        return enc_path
+
+    except Exception as e:
+        log.error("Backup encryption failed: %s", e)
+        # Return original path — better to keep unencrypted than lose the backup
+        return backup_path
+
+
+def decrypt_backup(enc_path: Path, output_path: Path) -> bool:
+    """
+    Decrypt a backup .enc file back to its original form.
+    Use this when you need to restore from backup.
+
+    Example:
+        python -c "
+        from backup.backup import decrypt_backup
+        from pathlib import Path
+        decrypt_backup(Path('backups/backup_2025.sql.enc'), Path('restore.sql'))
+        "
+    """
+    try:
+        cipher     = _get_backup_cipher()
+        ciphertext = enc_path.read_bytes()
+        plaintext  = cipher.decrypt(ciphertext)
+        output_path.write_bytes(plaintext)
+        log.info("Backup decrypted to: %s", output_path)
+        return True
+    except Exception as e:
+        log.error("Backup decryption failed: %s", e)
+        return False
+
+# ── Email alert ───────────────────────────────────────────────────────
 
 def send_failure_alert(reason: str) -> None:
-    """Send an email when backup fails."""
     if not all([config["smtp_user"], config["smtp_password"], config["alert_recipient"]]):
         log.warning("Email not configured — skipping alert.")
         return
@@ -47,11 +127,15 @@ def send_failure_alert(reason: str) -> None:
     except Exception as e:
         log.error("Could not send alert email: %s", e)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────
 
 def rotate_old_backups() -> None:
     backup_dir = config["backup_exe"].parent
-    backups = sorted(backup_dir.glob("backup_*"), key=lambda p: p.stat().st_mtime)
+    # Include both .exe outputs and .enc encrypted backups in rotation
+    backups = sorted(
+        list(backup_dir.glob("backup_*")) + list(backup_dir.glob("*.enc")),
+        key=lambda p: p.stat().st_mtime
+    )
     for old in backups[: -config["max_backups"]]:
         log.info("Rotating old backup: %s", old.name)
         shutil.rmtree(old) if old.is_dir() else old.unlink()
@@ -64,7 +148,7 @@ def validate() -> bool:
         return False
     return True
 
-# ── Core ──────────────────────────────────────────────────────────────────────
+# ── Core ──────────────────────────────────────────────────────────────
 
 def run_backup() -> bool:
     if not validate():
@@ -76,7 +160,7 @@ def run_backup() -> bool:
 
     try:
         result = subprocess.run(
-            [str(config["backup_exe"])],  # list form — no shell=True
+            [str(config["backup_exe"])],
             check=True,
             capture_output=True,
             text=True,
@@ -84,6 +168,21 @@ def run_backup() -> bool:
         )
         elapsed = (datetime.now() - start).seconds
         log.info("Backup completed in %ds.", elapsed)
+
+        # ── Layer 7: Encrypt the backup output ────────────────────────
+        # Find the most recently modified backup file
+        backup_dir    = config["backup_exe"].parent
+        backup_files  = [
+            f for f in backup_dir.iterdir()
+            if f.is_file() and not f.suffix == '.enc' and f.name != config["backup_exe"].name
+        ]
+        if backup_files:
+            latest = max(backup_files, key=lambda f: f.stat().st_mtime)
+            encrypt_backup(latest)
+            log.info("Layer 7: Backup encrypted successfully.")
+        else:
+            log.warning("Layer 7: No backup file found to encrypt.")
+
         rotate_old_backups()
         return True
 

@@ -27,7 +27,7 @@ from helpers import (
     build_book_data, BOOK_INVENTORY_QUERY,
     save_card_photo, resolve_book_snapshots,
     insert_card_books, update_inventory_on_borrow,
-    event_to_dict, search_users,
+    event_to_dict, search_users, search_members,
 )
 
 from email_config import send_registration_decision_email
@@ -1187,6 +1187,22 @@ def library_cards_page():
         return redirect('/')
     return render_template("admins/library_cards.html")
 
+# =====================================================================
+# MEMBER SEARCH FOR LIBRARY CARD
+# =====================================================================
+
+@admin_bp.route('/api/members/search')
+def api_members_search():
+    if not is_logged_in():
+        return jsonify({'error': 'Unauthorized'}), 401
+    if session.get('role') not in ('admin', 'librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    q = request.args.get('q', '').strip()
+    if not q:
+        return jsonify({'users': []}), 200
+
+    return jsonify({'users': search_members(q)})
 
 @admin_bp.route('/register/member', methods=['POST'])
 def register_member():

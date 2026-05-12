@@ -54,8 +54,8 @@ bcrypt = Bcrypt(app)
 
 auth_bp = Blueprint("auth_bp", __name__)
 
-SECURITY_PASSWORD_SALT = 'iloilo-library-reset-salt-2024'
-PIN_RESET_SALT         = 'iloilo-library-pin-reset-salt-2024'
+SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT', 'iloilo-library-reset-salt-2024')
+PIN_RESET_SALT         = os.getenv('PIN_RESET_SALT', 'iloilo-library-pin-reset-salt-2024')
 PIN_EXPIRY_DAYS        = 7
 
 

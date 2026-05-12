@@ -786,7 +786,7 @@ function doUserSearch(q) {
   drop.innerHTML = `<div class="sload"><i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i>Searching…</div>`;
   drop.classList.add('show');
   _uTimer = setTimeout(() => {
-    fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
+    fetch(`/api/members/search?q=${encodeURIComponent(q)}`)
       .then(r => r.json()).then(d => renderUsers(d.users || [], drop))
       .catch(() => renderUsers([], drop));
   }, 260);

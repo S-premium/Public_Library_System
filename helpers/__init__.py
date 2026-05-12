@@ -11,6 +11,6 @@ from .helpers import (
     save_card_photo, resolve_book_snapshots,
     insert_card_books, update_inventory_on_borrow,
     event_to_dict,
-    save_search_history,
+    save_search_history, search_members,
 )
 print(f"DEBUG __init__: search_users is {search_users}")
