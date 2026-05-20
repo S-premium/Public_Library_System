@@ -1,10 +1,9 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/static/images/logo.png">
-  <title>Home | Iloilo Public Library</title>
+  <title>Home | Iloilo Public Library — Librarian</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -26,156 +25,349 @@
       font-family: 'DM Sans', sans-serif;
       background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
       background-attachment: fixed;
-      color: #fff; min-height: 100vh; overflow-x: hidden;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* ── HERO ── */
-    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 60px 40px 80px; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 700px; height: 700px; background: radial-gradient(circle, rgba(159,193,225,0.07) 0%, transparent 70%); pointer-events: none; }
-    .hero-inner { max-width: 1200px; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.25); border-radius: 20px; padding: 5px 14px; font-size: .75rem; font-weight: 700; color: var(--accent); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 20px; }
-    .hero-title { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; line-height: 1.15; letter-spacing: -.03em; margin-bottom: 18px; }
+    /* ══════════════════════════════════
+       HERO SECTION
+    ══════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 90px 40px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: 20%; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(159,193,225,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Badge */
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.25);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: .75rem; font-weight: 700; color: var(--accent);
+      letter-spacing: .05em; text-transform: uppercase; margin-bottom: 20px;
+      white-space: normal; word-break: break-word; max-width: 100%;
+    }
+    .hero-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #48c78e;
+      flex-shrink: 0; animation: heroPulse 2s infinite;
+    }
+
+    /* Title & subtitle */
+    .hero-title {
+      font-size: clamp(1.7rem, 5vw, 3.2rem); font-weight: 700;
+      line-height: 1.15; letter-spacing: -.03em; margin-bottom: 18px;
+    }
     .hero-title span { color: var(--accent); }
-    .hero-subtitle { color: var(--tl); font-size: .98rem; line-height: 1.7; margin-bottom: 32px; max-width: 440px; }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
-    .btn-primary-custom { background:var(--accent); color:#0d1a24; border:none; border-radius:12px; padding:10px 22px; font-weight:700; font-size:.9rem; text-decoration:none; transition:.2s; box-shadow:0 4px 16px rgba(159,193,225,.25); font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:7px; }
-    .btn-primary-custom:hover { background:#b8d4ec; color:#0d1a24; transform:translateY(-2px); }
-    .btn-outline-custom { background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:10px 22px; font-weight:600; font-size:.9rem; text-decoration:none; transition:.2s; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:7px; }
-    .btn-outline-custom:hover { background:rgba(255,255,255,.14); color:#fff; border-color:rgba(255,255,255,.4); }
-    .hero-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+    .hero-subtitle {
+      color: var(--tl); font-size: .98rem; line-height: 1.7;
+      margin-bottom: 28px; max-width: 480px;
+    }
+
+    /* CTA buttons */
+    .hero-cta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #0d1a24;
+      border: none; border-radius: 12px; padding: 12px 24px;
+      font-size: .92rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; text-decoration: none;
+    }
+    .hero-cta:hover { background: #b8d4ec; transform: translateY(-2px); color: #0d1a24; }
+    .hero-cta-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.08); color: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.15); border-radius: 12px; padding: 11px 20px;
+      font-size: .92rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; text-decoration: none;
+    }
+    .hero-cta-ghost:hover { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.28); }
+
+    /* ── Overdue alert card (mirrors admin's pending-requests card) ── */
+    .hero-alert-card {
+      flex-shrink: 0; min-width: 188px;
+      background: rgba(255,99,99,.1); border: 1px solid rgba(255,99,99,.28);
+      border-radius: 16px; padding: 20px 22px;
+      cursor: pointer; text-decoration: none; display: block; transition: .25s;
+    }
+    .hero-alert-card:hover {
+      background: rgba(255,99,99,.18); transform: translateY(-3px);
+      border-color: rgba(255,99,99,.45);
+    }
+    .hero-alert-card.clear {
+      background: rgba(72,199,142,.08); border-color: rgba(72,199,142,.25);
+    }
+    .hero-alert-card.clear:hover { background: rgba(72,199,142,.15); border-color: rgba(72,199,142,.4); }
+
+    .alert-top-row { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+    .alert-blink {
+      width: 7px; height: 7px; border-radius: 50%; background: #ff7070;
+      flex-shrink: 0; animation: heroBlink 1.8s infinite;
+    }
+    .alert-blink.clear { background: #48c78e; animation: none; }
+    .alert-label {
+      font-size: .62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: rgba(255,140,140,.75);
+    }
+    .alert-label.clear { color: rgba(72,199,142,.75); }
+    .alert-num { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; }
+    .alert-sub { font-size: .72rem; color: rgba(255,150,150,.6); margin-top: 4px; }
+    .alert-sub.clear { color: rgba(72,199,142,.55); }
+
+    /* ── Quick-action card grid ── */
+    .hero-card-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+      border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px;
+    }
+    .hero-quick-card {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+      border-radius: 14px; padding: 16px; cursor: pointer;
+      text-decoration: none; display: block; transition: .2s;
+    }
+    .hero-quick-card:hover {
+      background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18);
+      transform: translateY(-3px);
+    }
+    .qc-icon { font-size: 1.1rem; display: block; margin-bottom: 10px; }
+    .qc-name { font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.85); }
+    .qc-sub  { font-size: .67rem; color: rgba(218,232,245,.4); margin-top: 3px; }
+
+    /* ── Stats row ── */
+    .hero-stats {
+      display: flex; gap: 24px; margin-top: 20px; padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      flex-wrap: wrap; align-items: center;
+    }
     .hero-stat-val { font-size: 1.8rem; font-weight: 700; color: #fff; line-height: 1; }
+    .hero-stat-val.danger { color: var(--danger); }
     .hero-stat-lbl { font-size: .75rem; color: var(--tl); margin-top: 3px; }
-    .hero-stat-divider { width: 1px; background: rgba(255,255,255,.12); }
-    .hero-visual { display: flex; flex-direction: column; gap: 14px; }
-    .hero-card { background: var(--card); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 18px 20px; backdrop-filter: blur(10px); transition: .2s; display: flex; align-items: center; gap: 14px; }
-    .hero-card:hover { background: var(--card-b); transform: translateX(4px); }
-    .hero-card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
-    .hci-blue   { background: rgba(159,193,225,.18); color: var(--accent); }
-    .hci-green  { background: rgba(72,199,142,.18);  color: var(--accent2); }
-    .hci-orange { background: rgba(255,152,0,.18);   color: var(--warn); }
-    .hero-card-label { font-size: .78rem; color: var(--tl); margin-bottom: 2px; }
-    .hero-card-val   { font-size: 1.1rem; font-weight: 700; color: #fff; }
-    @media (max-width: 900px) { .hero-inner { grid-template-columns: 1fr; gap: 48px; } .hero-visual { display: none; } .hero { padding: 100px 20px 60px; } }
+    .hero-stat-divider { width: 1px; background: rgba(255,255,255,.12); align-self: stretch; }
 
-    /* ── VISION MISSION ── */
-    .vm-section { background:rgba(255,255,255,.03); border-top:1px solid rgba(255,255,255,.07); padding:90px 10%; text-align:center; }
-    .vm-section h2 { font-size:1.75rem; font-weight:700; letter-spacing:-.02em; color:var(--accent); margin-bottom:36px; }
-    .vm-row { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
-    .vm-card { background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:28px 26px; width:270px; text-align:center; transition:.2s; backdrop-filter:blur(8px); }
-    .vm-card:hover { background:var(--card-b); transform:translateY(-5px); }
-    .vm-card h4 { font-weight:700; font-size:.95rem; margin-bottom:12px; color:var(--accent); }
-    .vm-card p  { font-size:.83rem; color:rgba(218,232,245,.6); line-height:1.65; }
-    @media (max-width:768px) { .vm-section { padding:60px 5%; } .vm-card { width:100%; max-width:320px; } }
+    /* Keyframes */
+    @keyframes heroPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(72,199,142,.45); }
+      50%      { box-shadow: 0 0 0 5px rgba(72,199,142,0); }
+    }
+    @keyframes heroBlink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .25; }
+    }
 
-    /* Legal modals */
-    .legal-modal-overlay { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px; }
-    .legal-modal { background: #1b2a35; border: 1px solid rgba(159,193,225,.18); border-radius: 20px; width: 100%; max-width: 640px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 24px 72px rgba(0,0,0,.6); animation: modalIn .25s cubic-bezier(.16,.84,.44,1); }
-    @keyframes modalIn { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
-    .legal-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
-    .legal-modal-header h4 { font-size: .92rem; font-weight: 700; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin: 0; }
-    .legal-modal-close { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.55); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: .95rem; cursor: pointer; transition: .18s; flex-shrink: 0; }
-    .legal-modal-close:hover { background: rgba(255,100,100,.1); border-color: rgba(255,100,100,.25); color: #ff7070; }
-    .legal-modal-body { padding: 22px 24px 26px; overflow-y: auto; flex: 1; font-size: .84rem; color: rgba(255,255,255,.58); line-height: 1.8; }
-    .legal-modal-body::-webkit-scrollbar { width: 4px; }
-    .legal-modal-body::-webkit-scrollbar-thumb { background: rgba(159,193,225,.2); border-radius: 4px; }
-    .legal-modal-body h5 { font-size: .82rem; font-weight: 700; color: rgba(255,255,255,.85); margin: 18px 0 6px; letter-spacing: .03em; }
-    .legal-modal-body h5:first-child { margin-top: 0; }
-    .legal-modal-body p { margin-bottom: 10px; }
-    .legal-modal-body ul { padding-left: 18px; margin-bottom: 10px; }
-    .legal-modal-body ul li { margin-bottom: 5px; }
-    .legal-modal-footer { padding: 14px 24px; border-top: 1px solid rgba(255,255,255,.07); display: flex; justify-content: flex-end; flex-shrink: 0; }
-    .legal-modal-btn { background: rgba(159,193,225,.15); border: 1px solid rgba(159,193,225,.25); color: var(--accent); border-radius: 10px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: .8rem; font-weight: 700; cursor: pointer; transition: .2s; }
-    .legal-modal-btn:hover { background: rgba(159,193,225,.25); color: #fff; }
-
-    /* Footer responsive */
-    @media (max-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; } .footer-contact-col { grid-column: 1 / -1; } .footer-contact-col .footer-contact-row { max-width: 380px; display: inline-flex; width: calc(50% - 4px); vertical-align: top; } .footer-contact-col > div { display: flex; flex-wrap: wrap; gap: 8px; } }
-    @media (max-width: 860px) { .footer-cta { padding: 40px 24px; } .footer-main { padding: 48px 24px 0; } .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; } .footer-brand-col { grid-column: 1 / -1; } .footer-contact-col { grid-column: 1 / -1; } .footer-contact-col .footer-contact-row { width: 100%; display: flex; } .footer-contact-col > div { display: block; } }
-    @media (max-width: 560px) { .footer-grid { grid-template-columns: 1fr; } .footer-cta-text h3 { font-size: 1.15rem; } .footer-bottom { flex-direction: column; align-items: flex-start; } .footer-partners-belt { gap: 14px; } }
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hero { padding: 90px 24px 60px; }
+      .hero-top-row { flex-direction: column !important; }
+      .hero-alert-card { min-width: unset; width: 100%; }
+      .hero-card-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 80px 18px 56px; }
+      .hero-title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+      .hero-card-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    }
+    @media (max-width: 480px) {
+      .hero { padding: 80px 16px 56px; }
+      .hero-stats { gap: 14px; }
+      .hero-stat-divider { display: none; }
+    }
+    @media (max-width: 390px) {
+      .hero-cta-row { flex-direction: column; align-items: stretch; }
+      .hero-cta, .hero-cta-ghost { justify-content: center; }
+    }
   </style>
 </head>
 <body>
-{% include 'librarian_template/topbar_template.html' %} 
+
+{% include 'librarian_template/topbar_template.html' %}
 {% include 'librarian_template/sidebar_template.html' %}
 
-  <!-- ── HERO ── -->
+  <!-- ══════════════════════════════════
+       HERO — OPTION A
+       Mirrors admin hero layout exactly.
+       Top row: headline left + overdue alert card right
+       Bottom: 4 quick-action cards + stats row
+  ══════════════════════════════════ -->
   <section class="hero">
-    <div class="hero-inner">
-      <div>
-        <div class="hero-badge"><i class="bi bi-building-fill"></i> Dr. Graciano Lopez Jaena Learning Resource Center</div>
-        <h1 class="hero-title">Welcome to<br><span>Iloilo Public<br>Library</span></h1>
-        <p class="hero-subtitle">Manage collections, assist members, and keep the library running smoothly — all from one place.</p>
-        <div class="hero-actions">
-          <a href="/librarian_book_management" class="btn-primary-custom"><i class="bi bi-book-fill"></i> Manage Books</a>
-          <a href="/librarian_user_management" class="btn-outline-custom"><i class="bi bi-people-fill"></i> View Members</a>
+    <div style="max-width:1200px; width:100%; position:relative; z-index:1;">
+
+      <!-- TOP ROW -->
+      <div class="hero-top-row"
+           style="display:flex; align-items:flex-start; justify-content:space-between; gap:32px; margin-bottom:36px; flex-wrap:wrap;">
+
+        <!-- Left: brand + headline + CTAs -->
+        <div style="flex:1; min-width:260px;">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Dr. Graciano Lopez Jaena Learning Resource Center
+          </div>
+
+          <h1 class="hero-title">
+            Iloilo Public<br>
+            <span>Library</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Manage collections, assist members, and keep the library running smoothly — all from one place.
+          </p>
+
+          <div class="hero-cta-row">
+            <a href="/librarian_book_management" class="hero-cta">
+              <i class="bi bi-book-fill"></i> Manage Books
+            </a>
+            <a href="/librarian_user_management" class="hero-cta-ghost">
+              <i class="bi bi-people-fill"></i> View Members
+            </a>
+          </div>
         </div>
-        <div class="hero-stats">
-          <div>
-            <div class="hero-stat-val" id="heroTotalBooks">—</div>
-            <div class="hero-stat-lbl">Books in Catalog</div>
+
+        <!-- Right: overdue alert card -->
+        <a href="/librarian/overdue" id="heroAlertCard" class="hero-alert-card">
+          <div class="alert-top-row">
+            <span class="alert-blink" id="heroAlertDot"></span>
+            <span class="alert-label" id="heroAlertLabel">Needs attention</span>
           </div>
-          <div class="hero-stat-divider"></div>
-          <div>
-            <div class="hero-stat-val" id="heroAvailable">—</div>
-            <div class="hero-stat-lbl">Available Now</div>
-          </div>
-          <div class="hero-stat-divider"></div>
-          <div>
-            <div class="hero-stat-val" id="heroMembers">—</div>
-            <div class="hero-stat-lbl">Registered Members</div>
-          </div>
+          <div class="alert-num" id="heroOverdueNum">—</div>
+          <div class="alert-sub" id="heroAlertSub">overdue books</div>
+        </a>
+
+      </div>
+
+      <!-- QUICK-ACTION CARD GRID -->
+      <div class="hero-card-grid">
+
+        <a href="/librarian_book_management" class="hero-quick-card">
+          <i class="bi bi-book-fill qc-icon" style="color:#9fc1e1;"></i>
+          <div class="qc-name">Book Catalog</div>
+          <div class="qc-sub" id="heroTotalSub">— titles</div>
+        </a>
+
+        <a href="/librarian_user_management" class="hero-quick-card">
+          <i class="bi bi-people-fill qc-icon" style="color:#48c78e;"></i>
+          <div class="qc-name">Members</div>
+          <div class="qc-sub" id="heroMembersSub">— registered</div>
+        </a>
+
+        <a href="/librarian/borrowing" class="hero-quick-card">
+          <i class="bi bi-arrow-left-right qc-icon" style="color:#ffb74d;"></i>
+          <div class="qc-name">Borrowing</div>
+          <div class="qc-sub" id="heroCheckedSub">Checkouts &amp; returns</div>
+        </a>
+
+        <a href="/librarian/event" class="hero-quick-card">
+          <i class="bi bi-calendar-week qc-icon" style="color:#5ed3c8;"></i>
+          <div class="qc-name">Events</div>
+          <div class="qc-sub">Upcoming calendar</div>
+        </a>
+
+      </div>
+
+      <!-- STATS ROW -->
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val" id="heroTotalBooks">—</div>
+          <div class="hero-stat-lbl">Books in Catalog</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val" id="heroAvailable">—</div>
+          <div class="hero-stat-lbl">Available Now</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val" id="heroMembers">—</div>
+          <div class="hero-stat-lbl">Registered Members</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div>
+          <div class="hero-stat-val danger" id="heroOverdue">—</div>
+          <div class="hero-stat-lbl">Overdue Books</div>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-card">
-          <div class="hero-card-icon hci-blue"><i class="bi bi-book-fill"></i></div>
-          <div><div class="hero-card-label">Book Catalog</div><div class="hero-card-val">Browse &amp; Manage Titles</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-green"><i class="bi bi-people-fill"></i></div>
-          <div><div class="hero-card-label">Member Records</div><div class="hero-card-val">Borrowers &amp; Registrations</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-orange"><i class="bi bi-arrow-left-right"></i></div>
-          <div><div class="hero-card-label">Borrowing System</div><div class="hero-card-val">Checkouts, Returns &amp; History</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-blue"><i class="bi bi-boxes"></i></div>
-          <div><div class="hero-card-label">Inventory</div><div class="hero-card-val">Copies, Damage &amp; Loss Tracking</div></div>
-        </div>
-        <div class="hero-card">
-          <div class="hero-card-icon hci-green"><i class="bi bi-calendar-week"></i></div>
-          <div>
-            <div class="hero-card-label">Event Calendar</div>
-            <div class="hero-card-val"><a href="/librarian/event" style="color:#fff; text-decoration:none;">View Upcoming Events</a></div>
-          </div>
-        </div>
-      </div>
+
     </div>
   </section>
-  {% include 'librarian_template/footer_template.html' %}
+
+{% include 'librarian_template/footer_template.html' %}
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ── Load hero stats ──
+    /* ── Load inventory stats ── */
     async function loadHeroStats() {
       try {
         const res = await fetch('/api/inventory/summary');
         const d   = await res.json();
-        document.getElementById('heroTotalBooks').textContent = d.total_titles ?? '—';
-        document.getElementById('heroAvailable').textContent  = d.available    ?? '—';
-      } catch {}
+        const total = d.total_titles ?? '—';
+        const avail = d.available    ?? '—';
+        document.getElementById('heroTotalBooks').textContent = total;
+        document.getElementById('heroAvailable').textContent  = avail;
+        document.getElementById('heroTotalSub').textContent   = (total !== '—' ? total : '—') + ' titles';
+      } catch (e) { console.debug('Inventory summary error:', e); }
     }
-    document.addEventListener('DOMContentLoaded', loadHeroStats);
 
-    // ── Mobile nav toggle ──
+    /* ── Load member count ── */
+    async function loadMemberCount() {
+      try {
+        const res  = await fetch('/api/members/count');
+        const data = await res.json();
+        const n = data.count ?? '—';
+        document.getElementById('heroMembers').textContent    = n;
+        document.getElementById('heroMembersSub').textContent = (n !== '—' ? n : '—') + ' registered';
+      } catch (e) { console.debug('Member count error:', e); }
+    }
+
+    /* ── Load overdue count and update alert card ── */
+    async function loadOverdueCount() {
+      try {
+        const res     = await fetch('/api/borrowing/overdue/count');
+        const data    = await res.json();
+        const overdue = data.count ?? 0;
+
+        const card     = document.getElementById('heroAlertCard');
+        const dot      = document.getElementById('heroAlertDot');
+        const label    = document.getElementById('heroAlertLabel');
+        const num      = document.getElementById('heroOverdueNum');
+        const sub      = document.getElementById('heroAlertSub');
+        const statNum  = document.getElementById('heroOverdue');
+
+        num.textContent    = overdue > 0 ? overdue : '0';
+        statNum.textContent = overdue > 0 ? overdue : '0';
+
+        if (overdue === 0) {
+          card.classList.add('clear');
+          dot.classList.add('clear');
+          label.classList.add('clear');
+          label.textContent = 'All clear';
+          sub.classList.add('clear');
+          sub.textContent   = 'no overdue books';
+        } else {
+          card.classList.remove('clear');
+          dot.classList.remove('clear');
+          label.classList.remove('clear');
+          label.textContent = 'Needs attention';
+          sub.classList.remove('clear');
+          sub.textContent   = 'overdue book' + (overdue !== 1 ? 's' : '');
+        }
+      } catch (e) { console.debug('Overdue count error:', e); }
+    }
+
+    /* ── Mobile nav toggle ── */
     const menuToggle = document.getElementById('menuToggle');
     const navMobile  = document.getElementById('navLinksMobile');
     const navOverlay = document.getElementById('navOverlay');
-    function openMobileNav()  { navMobile.classList.add('open'); navOverlay.classList.add('show'); menuToggle.querySelector('i').className = 'bi bi-x'; }
-    function closeMobileNav() { navMobile.classList.remove('open'); navOverlay.classList.remove('show'); menuToggle.querySelector('i').className = 'bi bi-list'; }
-    menuToggle.addEventListener('click', () => navMobile.classList.contains('open') ? closeMobileNav() : openMobileNav());
-    navOverlay.addEventListener('click', closeMobileNav);
+    function openMobileNav()  { navMobile?.classList.add('open'); navOverlay?.classList.add('show'); if (menuToggle) menuToggle.querySelector('i').className = 'bi bi-x'; }
+    function closeMobileNav() { navMobile?.classList.remove('open'); navOverlay?.classList.remove('show'); if (menuToggle) menuToggle.querySelector('i').className = 'bi bi-list'; }
+    menuToggle?.addEventListener('click', () => navMobile?.classList.contains('open') ? closeMobileNav() : openMobileNav());
+    navOverlay?.addEventListener('click', closeMobileNav);
 
-    // ── Mobile sub-menu accordion ──
+    /* ── Mobile sub-menu accordion ── */
     function toggleMobileSub(btn) {
       const body = btn.nextElementSibling, isOpen = body.classList.contains('open');
       document.querySelectorAll('.mobile-submenu-body.open').forEach(b => b.classList.remove('open'));
@@ -183,66 +375,66 @@
       if (!isOpen) { body.classList.add('open'); btn.classList.add('expanded'); }
     }
 
-    // ── Desktop sidebar dock — hover + click to pin ──
+    /* ── Desktop sidebar dock ── */
     const sideDock = document.getElementById('sideDock');
     const sideTab  = document.getElementById('sideTab');
     let pinned = false;
-    sideTab.addEventListener('click', (e) => {
-      e.stopPropagation();
-      pinned = !pinned;
-      sideDock.classList.toggle('open', pinned);
+    sideTab?.addEventListener('click', (e) => {
+      e.stopPropagation(); pinned = !pinned;
+      sideDock?.classList.toggle('open', pinned);
     });
     document.addEventListener('click', e => {
-      if (pinned && !sideDock.contains(e.target)) {
-        pinned = false;
-        sideDock.classList.remove('open');
+      if (pinned && sideDock && !sideDock.contains(e.target)) {
+        pinned = false; sideDock.classList.remove('open');
       }
     });
 
-    // ── Mobile right-side drawer ──
-    const mobDrawer  = document.getElementById('mobDrawer');
-    const mobTab     = document.getElementById('mobDrawerTab');
-    const backdrop   = document.getElementById('drawerBackdrop');
-    let drawerOpen   = false;
-
-    function openDrawer()  { drawerOpen = true;  mobDrawer.classList.add('open');    backdrop.classList.add('open'); }
-    function closeDrawer() { drawerOpen = false; mobDrawer.classList.remove('open'); backdrop.classList.remove('open'); }
-
-    mobTab.addEventListener('click', (e) => { e.stopPropagation(); drawerOpen ? closeDrawer() : openDrawer(); });
-    backdrop.addEventListener('click', closeDrawer);
+    /* ── Mobile right-side drawer ── */
+    const mobDrawer = document.getElementById('mobDrawer');
+    const mobTab    = document.getElementById('mobDrawerTab');
+    const backdrop  = document.getElementById('drawerBackdrop');
+    let drawerOpen  = false;
+    function openDrawer()  { drawerOpen = true;  mobDrawer?.classList.add('open');    backdrop?.classList.add('open'); }
+    function closeDrawer() { drawerOpen = false; mobDrawer?.classList.remove('open'); backdrop?.classList.remove('open'); }
+    mobTab?.addEventListener('click', (e) => { e.stopPropagation(); drawerOpen ? closeDrawer() : openDrawer(); });
+    backdrop?.addEventListener('click', closeDrawer);
     document.addEventListener('click', e => {
-      if (drawerOpen && !mobDrawer.contains(e.target)) closeDrawer();
+      if (drawerOpen && mobDrawer && !mobDrawer.contains(e.target)) closeDrawer();
     });
 
-    // ── Pending request count — updates all dots ──
+    /* ── Pending account requests dot (sidebar) ── */
     async function loadPendingRequestCount() {
       try {
         const res  = await fetch('/api/admin/account-requests');
         const data = await res.json();
         const n = (data.requests || []).filter(r => r.status === 'pending').length;
-        const setDot = (id, show) => {
+        ['acctReqDot', 'mobReqDot'].forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
-          if (show) { el.textContent = n > 9 ? '9+' : n; el.classList.add('show'); }
+          if (n > 0) { el.textContent = n > 9 ? '9+' : n; el.classList.add('show'); }
           else { el.classList.remove('show'); }
-        };
-        setDot('acctReqDot', n > 0); // Desktop sidebar dot
-        setDot('mobReqDot',  n > 0); // Mobile drawer dot
-      } catch (err) { console.debug('Could not fetch account requests:', err); }
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadPendingRequestCount);
-    } else {
-      loadPendingRequestCount();
+        });
+      } catch (e) { console.debug('Pending requests error:', e); }
     }
 
-    // ── Footer year + legal modal ESC close ──
-    document.getElementById('footerYear').textContent = new Date().getFullYear();
+    /* ── Footer year + ESC for legal modals ── */
+    const footerYear = document.getElementById('footerYear');
+    if (footerYear) footerYear.textContent = new Date().getFullYear();
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        document.getElementById('privacyModal').style.display = 'none';
-        document.getElementById('termsModal').style.display   = 'none';
+        const p = document.getElementById('privacyModal');
+        const t = document.getElementById('termsModal');
+        if (p) p.style.display = 'none';
+        if (t) t.style.display = 'none';
       }
+    });
+
+    /* ── Boot ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHeroStats();
+      loadMemberCount();
+      loadOverdueCount();
+      loadPendingRequestCount();
     });
   </script>
 </body>
