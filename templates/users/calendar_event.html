@@ -33,7 +33,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%); background-attachment: fixed; color: #fff; min-height: 100vh; overflow-x: hidden; }
 
-    /* ── PAGE LAYOUT (unchanged from original) ── */
+    /* ── PAGE LAYOUT ── */
     .page-wrapper { padding: 80px 40px 48px; min-height: 100vh; }
     .page-header { max-width:1240px; margin:0 auto 24px; width:100%; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
     .page-header-left { display:flex; flex-direction:column; gap:4px; }
@@ -51,6 +51,8 @@
     .sci-yellow { background:rgba(247,201,75,.15); color:var(--accent3); }
     .stat-chip-label { font-size:.72rem; color:rgba(255,255,255,.45); font-weight:500; }
     .stat-chip-value { font-size:.95rem; font-weight:700; color:#fff; }
+
+    /* ── CALENDAR SHELL ── */
     .calendar-shell { max-width:1240px; margin:0 auto; width:100%; background:var(--card); border:1px solid var(--border); border-radius:20px; backdrop-filter:blur(10px); box-shadow:var(--shadow); overflow:visible; position:relative; }
     .calendar-shell .fc { padding:24px; }
     .fc .fc-toolbar { margin-bottom:20px!important; gap:12px; flex-wrap:wrap; }
@@ -65,7 +67,19 @@
     .fc .fc-today-button:hover { background:rgba(72,199,142,.25)!important; border-color:rgba(72,199,142,.5)!important; color:#fff!important; }
     .fc-theme-standard td, .fc-theme-standard th { border-color:rgba(159,193,225,.07)!important; }
     .fc-theme-standard .fc-scrollgrid { border-color:rgba(159,193,225,.07)!important; }
-    .fc .fc-col-header-cell { background:transparent!important; border-bottom:1px solid rgba(159,193,225,.1)!important; padding:10px 0!important; }
+
+    /* ── FIX: white header background ── */
+    .fc .fc-col-header-cell,
+    .fc .fc-col-header,
+    .fc-scrollgrid-section-header > td,
+    .fc-scrollgrid-section-header > th,
+    .fc-scrollgrid-section-header .fc-scroller-harness,
+    .fc-scrollgrid-section-header .fc-scroller,
+    .fc .fc-scrollgrid-section-header,
+    .fc .fc-col-header-cell .fc-scrollgrid-sync-inner,
+    .fc .fc-col-header .fc-scroller { background: transparent !important; background-color: transparent !important; }
+
+    .fc .fc-col-header-cell { border-bottom:1px solid rgba(159,193,225,.1)!important; padding:10px 0!important; }
     .fc .fc-col-header-cell-cushion { font-weight:700!important; font-size:.75rem!important; letter-spacing:.1em!important; text-transform:uppercase!important; color:rgba(218,232,245,.5)!important; text-decoration:none!important; padding:4px 8px!important; }
     .fc .fc-daygrid-day { background:transparent!important; transition:background .15s; }
     .fc .fc-daygrid-day:hover { background:rgba(159,193,225,.04)!important; }
@@ -87,10 +101,14 @@
     .fc .fc-timegrid-slot-label-cushion { font-size:.72rem!important; font-weight:600!important; color:rgba(218,232,245,.35)!important; text-transform:uppercase!important; letter-spacing:.06em!important; }
     .fc-scroller::-webkit-scrollbar { width:4px; }
     .fc-scroller::-webkit-scrollbar-thumb { background:rgba(159,193,225,.2); border-radius:4px; }
+
+    /* ── LOADING ── */
     .cal-loading { display:none; position:absolute; inset:0; background:rgba(30,45,61,.55); border-radius:20px; backdrop-filter:blur(4px); z-index:20; align-items:center; justify-content:center; }
     .cal-loading.show { display:flex; }
     .cal-spinner { width:36px; height:36px; border:3px solid rgba(159,193,225,.15); border-top-color:var(--accent2); border-radius:50%; animation:spin .7s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── LEGEND ── */
     .cal-legend { display:flex; flex-wrap:wrap; gap:10px; max-width:1240px; margin:14px auto 0; padding:0 2px; }
     .legend-item { display:flex; align-items:center; gap:6px; font-size:.75rem; font-weight:600; color:rgba(255,255,255,.45); cursor:pointer; transition:.15s; padding:4px 10px; border-radius:20px; border:1px solid transparent; }
     .legend-item:hover { color:#fff; background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.08); }
@@ -98,6 +116,8 @@
     .legend-item.dimmed { opacity:.3; }
     .legend-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
     .legend-all { color:rgba(255,255,255,.3); font-style:italic; }
+
+    /* ── SUMMARY PANEL ── */
     .summary-panel { max-width:1240px; margin:20px auto 0; width:100%; background:var(--card); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(10px); overflow:hidden; }
     .summary-header { display:flex; align-items:center; gap:12px; padding:16px 22px; border-bottom:1px solid var(--border); background:rgba(159,193,225,.04); }
     .summary-header-icon { width:32px; height:32px; border-radius:9px; background:rgba(72,199,142,.15); border:1px solid rgba(72,199,142,.25); display:flex; align-items:center; justify-content:center; color:var(--accent2); font-size:.9rem; flex-shrink:0; }
@@ -120,6 +140,8 @@
     .upcoming-meta-row { font-size:.73rem; color:rgba(255,255,255,.38); margin-top:3px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .upcoming-empty { text-align:center; padding:32px 0; color:rgba(255,255,255,.2); font-size:.85rem; }
     .upcoming-empty i { font-size:2rem; display:block; margin-bottom:10px; }
+
+    /* ── MODAL ── */
     .modal { padding-top: var(--topbar-h) !important; }
     .modal-dialog-scrollable { max-height: calc(100vh - var(--topbar-h) - 24px); }
     .modal-dialog-centered { min-height: calc(100vh - var(--topbar-h)); margin-top:0; margin-bottom:0; align-self:center; }
@@ -143,6 +165,8 @@
     .detail-desc { font-size:.87rem; color:rgba(255,255,255,.58); line-height:1.65; white-space:pre-wrap; }
     .btn-modal-close { background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22); color:var(--accent); border-radius:11px; padding:10px 24px; font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:700; cursor:pointer; transition:.2s; }
     .btn-modal-close:hover { background:rgba(159,193,225,.22); color:#fff; }
+
+    /* ── TOAST ── */
     .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
     .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:12px 16px; font-size:.84rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; }
     .toast-msg.error { border-left:3px solid var(--danger); }
@@ -211,12 +235,14 @@
     .legal-modal-footer { padding:14px 24px; border-top:1px solid rgba(255,255,255,.07); display:flex; justify-content:flex-end; flex-shrink:0; }
     .legal-modal-btn { background:rgba(159,193,225,.15); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:10px; padding:9px 20px; font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:700; cursor:pointer; transition:.2s; }
     .legal-modal-btn:hover { background:rgba(159,193,225,.25); color:#fff; }
+    
+    /* ── RESPONSIVE ── */
     @media (max-width:1100px) { .footer-grid { grid-template-columns:1.5fr 1fr 1fr; } .footer-contact-col { grid-column:1/-1; } }
     @media (max-width:860px) { .footer-cta { padding:40px 24px; } .footer-main { padding:48px 24px 0; } .footer-grid { grid-template-columns:1fr 1fr; gap:36px; } .footer-brand-col { grid-column:1/-1; } .footer-contact-col { grid-column:1/-1; } }
     @media (max-width:560px) { .footer-grid { grid-template-columns:1fr; } .footer-bottom { flex-direction:column; align-items:flex-start; } }
     @media (max-width:768px) { .page-wrapper{padding:80px 16px 40px;} .page-header{flex-direction:column;align-items:flex-start;gap:12px;} .stat-chips{width:100%;} .stat-chip{flex:1;min-width:0;} .calendar-shell .fc{padding:12px;} .fc .fc-toolbar-title{font-size:1.05rem!important;} .fc .fc-button{font-size:.68rem!important;padding:5px 8px!important;} .sum-stats{grid-template-columns:repeat(2,1fr);} .detail-two-col{grid-template-columns:1fr;} .modal{padding-top:calc(var(--topbar-h) + 8px)!important;} }
     @media (max-width:480px) { .sum-stats{grid-template-columns:repeat(2,1fr);} }
-  </style>
+</style>
   <script src="/static/js/appearance.js"></script>
 </head>
 <body>

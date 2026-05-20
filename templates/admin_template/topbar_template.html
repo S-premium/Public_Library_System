@@ -112,7 +112,7 @@
 
   <!-- DESKTOP NAV -->
   <nav class="nav-links d-none d-lg-flex" id="navLinksDesktop">
-      <a href="/admin/home"<i class="bi bi-house-door-fill me-1"></i> Home</a>
+      <a href="/admin/home"><i class="bi bi-house-door-fill me-1"></i> Home</a>
       <a href="/dashboard"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
       <a href="/admin/announcements"><i class="bi bi-megaphone me-1"></i> Announcement</a>
       <div class="dropdown">
@@ -135,7 +135,16 @@
               <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#addAdminModal"><i class="bi bi-shield-fill-check me-2"></i>Add Admin</a></li>
             </ul>
           </li>
-          <a class="dropdown-item" href="/library-cards"><i class="bi bi-journal-plus me-2"></i>Borrowing Form</a>
+
+          <!-- ── BORROWING (now a submenu) ── -->
+          <li class="dropdown-submenu">
+            <a class="dropdown-item" href="#"><i class="bi bi-journal-plus me-2"></i>Borrow Management</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/library-cards"><i class="bi bi-journal-plus me-2"></i>Borrowing Form</a></li>
+              <li><a class="dropdown-item" href="/records_returns"><i class="bi bi-clock-history me-2"></i>Borrow History</a></li>
+            </ul>
+          </li>
+
           <li><a class="dropdown-item" href="/book_management"><i class="bi bi-book-fill me-2"></i>Book Management</a></li>
         </ul>
       </div>
@@ -155,10 +164,9 @@
 
 <nav class="nav-links d-lg-none" id="navLinksMobile">
   <span class="nav-section-label">Main</span>
-  <a href="/admin/home"<i class="bi bi-house-door-fill me-1"></i> Home</a>
+  <a href="/admin/home"><i class="bi bi-house-door-fill me-1"></i> Home</a>
   <a href="/dashboard"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
   <a href="/admin/announcements"><i class="bi bi-megaphone me-1"></i> Announcement</a>
-  <a href="/admin/inventory"><i class="bi bi-boxes me-1"></i> Inventory</a>
 
   <span class="nav-section-label" style="margin-top:6px;">Management</span>
 
@@ -185,13 +193,14 @@
     </a>
   </div>
 
+  <!-- ── BORROWING FORM (mobile submenu) ── -->
   <button class="mobile-submenu-toggle" onclick="toggleMobileSub(this)">
     <i class="bi bi-journal-check"></i> Borrow Management
     <i class="bi bi-chevron-down chevron"></i>
   </button>
   <div class="mobile-submenu-body">
-    <a href="#"><i class="bi bi-journal-plus me-2"></i>User Borrow</a>
-    <a href="#"><i class="bi bi-clock-history me-2"></i>Borrow History</a>
+    <a href="/library-cards"><i class="bi bi-journal-plus me-2"></i>Borrowing Form</a>
+    <a href="/records_returns"><i class="bi bi-clock-history me-2"></i>Borrow History</a>
   </div>
 
   <a href="/book_management" class="{{ 'active' if active_page == 'book_mgmt' else '' }}">

@@ -127,6 +127,10 @@
     .renew-bar-btn.primary:hover { background:rgba(72,199,142,.35);color:#fff; }
     .renew-bar-btn.danger { background:rgba(255,99,99,.12);border-color:rgba(255,99,99,.3);color:#ff9999; }
     .renew-bar-btn.danger:hover { background:rgba(255,99,99,.25);color:#fff; }
+    /* PDF download button style */
+    .renew-bar-btn.pdf { background:rgba(220,80,60,.18);border-color:rgba(220,80,60,.35);color:#ff8a75; }
+    .renew-bar-btn.pdf:hover { background:rgba(220,80,60,.32);color:#fff; }
+    .renew-bar-btn:disabled { opacity:.55;cursor:not-allowed;transform:none !important; }
     .icpl-form { padding:22px 28px 20px;background:#eef0f8; }
     .icpl-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px; }
     .icpl-logo-circle { width:44px;height:44px;border-radius:50%;border:2px solid #4a5aaa;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4a5aaa;font-size:1.1rem; }
@@ -157,7 +161,6 @@
     .icpl-reason-textarea { width:100%;background:#fff;border:1px solid #b0b8d8;border-radius:4px;padding:8px 10px;font-size:.78rem;font-family:'DM Sans',sans-serif;color:#222;resize:vertical;min-height:60px;outline:none;transition:.2s; }
     .icpl-reason-textarea:focus { border-color:#4a5aaa; }
     .icpl-footer-code { text-align:center;font-size:.58rem;color:#666;margin-top:10px;padding-top:6px;border-top:1px solid #c0c8e0; }
-    @media print { body > *:not(.renew-overlay) { display:none !important; } .renew-overlay { position:static !important;background:none !important;padding:0 !important;display:block !important; } .renew-modal { box-shadow:none !important;max-height:none !important;border-radius:0; } .renew-modal-bar,.icpl-reason-wrap { display:none !important; } .icpl-form { padding:14px 18px !important;background:#fff !important; } }
 
     /* ── EMPTY / SKELETON ── */
     .empty-state { grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:72px 24px;text-align:center;background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:20px; }
@@ -258,7 +261,8 @@
       <div class="renew-modal-bar-title"><i class="bi bi-arrow-repeat"></i> Library Card Renewal</div>
       <div class="renew-modal-bar-actions">
         <button class="renew-bar-btn primary" id="renewSubmitBtn" onclick="submitRenewal()"><i class="bi bi-check2-circle"></i> Confirm Renewal</button>
-        <button class="renew-bar-btn" onclick="printCard()"><i class="bi bi-printer-fill"></i> Print Card</button>
+        <!-- ↓ CHANGED: Print → Download PDF -->
+        <button class="renew-bar-btn pdf" id="downloadPdfBtn" onclick="downloadCardPDF()"><i class="bi bi-file-earmark-pdf-fill"></i> Download PDF</button>
         <button class="renew-bar-btn danger" onclick="closeRenew()"><i class="bi bi-x"></i> Cancel</button>
       </div>
     </div>
@@ -417,7 +421,38 @@
     finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-check2-circle"></i> Confirm Renewal';}
   }
 
-  function printCard() { window.print(); }
+  /* ── DOWNLOAD PDF (replaces printCard) ── */
+  async function downloadCardPDF() {
+    if (!_renewCardId) return;
+    const btn = document.getElementById('downloadPdfBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat" style="animation:spin .8s linear infinite"></i> Generating…';
+    try {
+      const res = await fetch(`/api/user/card/${_renewCardId}/download-pdf`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showToast(err.error || 'Failed to generate PDF.', 'danger');
+        return;
+      }
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      const disposition = res.headers.get('Content-Disposition');
+      const match = disposition && disposition.match(/filename\*?=(?:UTF-8'')?["']?([^"';\n]+)/i);
+      a.download = match ? decodeURIComponent(match[1].trim()) : `borrower's_card_${_renewCardId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('PDF downloaded successfully!', 'success');
+    } catch {
+      showToast('Network error. Please try again.', 'danger');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill"></i> Download PDF';
+    }
+  }
 
   /* ── TOAST ── */
   function showToast(msg,type='info') {

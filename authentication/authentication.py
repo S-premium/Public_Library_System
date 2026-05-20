@@ -953,7 +953,16 @@ def signup():
     ))
     mysql.connection.commit()
     new_user_id = cur.lastrowid
-
+    # Store blind indexes for fast search
+    from helpers import name_blind_index, phone_blind_index
+    _n_hash = name_blind_index(firstname, lastname)
+    _p_hash = phone_blind_index(phone) if phone else None
+    cur.execute(
+        "UPDATE users SET name_index=%s, phone_index=%s WHERE id=%s",
+        (_n_hash, _p_hash, new_user_id)
+    )
+    mysql.connection.commit()
+    
     # ── 8. Pending approval record ─────────────────────────────────────
     cur.execute("""
         INSERT INTO account_requests

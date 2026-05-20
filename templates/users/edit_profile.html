@@ -23,17 +23,14 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%); background-attachment: fixed; color: #fff; min-height: 100vh; overflow-x: hidden; }
 
-    /* ── PAGE ── */
     .page-wrap { padding: 80px 40px 60px; max-width: 1000px; margin: 0 auto; }
     .page-header { text-align:center; padding:32px 0 28px; }
     .page-header h1 { font-size:1.75rem; font-weight:700; letter-spacing:-.03em; margin-bottom:6px; }
     .page-header h1 span { color:var(--accent); }
     .page-header p { color:var(--tl); font-size:.88rem; }
 
-    /* ── PROFILE CARD ── */
     .profile-card { background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:20px; overflow:hidden; backdrop-filter:blur(10px); }
 
-    /* ── AVATAR BANNER ── */
     .avatar-banner { display:flex; align-items:center; gap:20px; padding:24px 28px; background:rgba(159,193,225,.06); border-bottom:1px solid rgba(255,255,255,.07); }
     .ep-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#5a8ab0); display:flex; align-items:center; justify-content:center; font-size:1.7rem; font-weight:700; color:#fff; border:3px solid rgba(255,255,255,.15); box-shadow:0 4px 18px rgba(0,0,0,.3); flex-shrink:0; user-select:none; letter-spacing:-.02em; }
     .avatar-info h3 { font-size:1rem; font-weight:700; color:#fff; margin-bottom:3px; }
@@ -41,30 +38,36 @@
     .avatar-badge { display:inline-flex; align-items:center; gap:5px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); border-radius:20px; padding:2px 10px; font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-top:6px; }
     .avatar-badge .dot { width:5px; height:5px; border-radius:50%; background:var(--accent2); }
 
-    /* ── SECTION ── */
     .section-head { display:flex; align-items:center; gap:8px; padding:14px 22px 12px; border-bottom:1px solid rgba(255,255,255,0.06); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--accent); }
     .full-row { border-bottom:1px solid rgba(255,255,255,.07); }
 
-    /* ── TWO / THREE COLUMN GRIDS ── */
     .cols-wrap-2 { display:grid; grid-template-columns:1fr 1fr; }
     .cols-wrap-3 { display:grid; grid-template-columns:1fr 1fr 1fr; }
     .col-panel { display:flex; flex-direction:column; }
     .col-panel + .col-panel { border-left:1px solid rgba(255,255,255,.07); }
 
-    /* ── FIELD ROW ── */
     .field-row { display:flex; align-items:center; justify-content:space-between; padding:14px 22px; border-bottom:1px solid rgba(255,255,255,.05); transition:.18s; }
     .field-row:last-child { border-bottom:none; }
-    .field-row:not(.readonly):hover { background:rgba(255,255,255,.04); }
+    .field-row:not(.readonly):not(.locked):hover { background:rgba(255,255,255,.04); }
     .field-row.readonly { opacity:.5; cursor:not-allowed; }
+
+    /* Locked = office phone when gov is OFF */
+    .field-row.locked { opacity:.38; pointer-events:none; }
+    .field-row.locked .field-icon { background:rgba(255,255,255,.05); }
+    .field-row.locked .field-value { color:rgba(255,255,255,.2); }
+
     .field-inner { display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
-    .field-icon { width:34px; height:34px; background:rgba(159,193,225,.1); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.88rem; color:var(--accent); flex-shrink:0; }
+    .field-icon { width:34px; height:34px; background:rgba(159,193,225,.1); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.88rem; color:var(--accent); flex-shrink:0; transition:.25s; }
     .field-label { font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:2px; }
-    .field-value { font-size:.88rem; color:rgba(255,255,255,.85); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .field-value { font-size:.88rem; color:rgba(255,255,255,.85); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:.25s; }
     .field-value.empty { color:rgba(255,255,255,.25); font-style:italic; }
+
+    /* Locked hint badge */
+    .lock-hint { font-size:.6rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.25); background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); border-radius:20px; padding:2px 8px; margin-left:8px; white-space:nowrap; }
+
     .field-edit-btn { background:rgba(159,193,225,.08); border:1px solid rgba(159,193,225,.15); color:var(--accent); width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.78rem; cursor:pointer; transition:.18s; flex-shrink:0; margin-left:10px; }
     .field-edit-btn:hover { background:rgba(159,193,225,.2); border-color:rgba(159,193,225,.35); color:#fff; transform:scale(1.08); }
 
-    /* Toggle row for is_government */
     .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:15px 22px; border-bottom:1px solid rgba(255,255,255,.05); }
     .toggle-inner { display:flex; align-items:center; gap:14px; flex:1; }
     .toggle-text h4 { font-size:.88rem; font-weight:600; color:rgba(255,255,255,.85); margin:0 0 2px; }
@@ -94,8 +97,12 @@
     }
     .fg input::placeholder, .fg textarea::placeholder { color:rgba(255,255,255,.35); }
     .fg input:focus, .fg select:focus, .fg textarea:focus { border-color:var(--accent); background:rgba(255,255,255,.10); }
+    .fg input.invalid, .fg select.invalid { border-color:var(--danger) !important; background:rgba(255,99,99,.07) !important; }
     .fg select option { background:#253545; }
     .fg textarea { resize:vertical; min-height:72px; }
+    .field-hint { font-size:.71rem; color:rgba(255,255,255,.35); margin-top:5px; }
+    .field-error { font-size:.71rem; color:var(--danger); margin-top:5px; display:none; }
+    .field-error.show { display:block; }
     .m-footer { display:flex; gap:10px; margin-top:20px; }
     .btn-cancel { flex:1; background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.15); border-radius:10px; padding:10px; font-size:.88rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.2s; }
     .btn-cancel:hover { background:rgba(255,255,255,.14); }
@@ -114,7 +121,6 @@
     @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
     @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-    /* ── RESPONSIVE ── */
     @media (max-width:860px) {
       .cols-wrap-3 { grid-template-columns:1fr 1fr; }
       .cols-wrap-3 .col-panel:nth-child(3) { grid-column:1/-1; border-left:none; border-top:1px solid rgba(255,255,255,.07); }
@@ -152,9 +158,7 @@
         </div>
       </div>
 
-      <!-- ══════════════════════════════════
-           SECTION 1 — ACCOUNT (read-only)
-      ══════════════════════════════════ -->
+      <!-- ── SECTION 1: ACCOUNT (read-only) ── -->
       <div class="full-row">
         <div class="section-head"><i class="bi bi-shield-fill-check"></i> Account</div>
         <div class="field-row readonly">
@@ -177,14 +181,11 @@
         </div>
       </div>
 
-      <!-- ══════════════════════════════════
-           SECTION 2 — PERSONAL (2 cols)
-      ══════════════════════════════════ -->
+      <!-- ── SECTION 2: PERSONAL (2 cols) ── -->
       <div class="full-row">
         <div class="section-head"><i class="bi bi-person-fill"></i> Personal Information</div>
         <div class="cols-wrap-2">
           <div class="col-panel">
-            <!-- First Name -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-person"></i></div>
@@ -195,7 +196,6 @@
               </div>
               <button class="field-edit-btn" onclick="openModal('firstName','First Name','text','f_firstname')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- Last Name -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-person"></i></div>
@@ -206,7 +206,6 @@
               </div>
               <button class="field-edit-btn" onclick="openModal('lastName','Last Name','text','f_lastname')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- Age -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-123"></i></div>
@@ -220,7 +219,6 @@
           </div>
 
           <div class="col-panel">
-            <!-- Gender -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-gender-ambiguous"></i></div>
@@ -231,7 +229,6 @@
               </div>
               <button class="field-edit-btn" onclick="openModal('gender','Gender','select-gender','f_gender')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- School -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-mortarboard"></i></div>
@@ -242,7 +239,6 @@
               </div>
               <button class="field-edit-btn" onclick="openModal('school','School / Institution','text','f_school')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- Education Level -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-book"></i></div>
@@ -257,9 +253,7 @@
         </div>
       </div>
 
-      <!-- ══════════════════════════════════
-           SECTION 3 — CONTACT & LOCATION (3 cols)
-      ══════════════════════════════════ -->
+      <!-- ── SECTION 3: CONTACT & LOCATION (3 cols) ── -->
       <div class="full-row">
         <div class="section-head"><i class="bi bi-telephone-fill"></i> Contact &amp; Location</div>
         <div class="cols-wrap-3">
@@ -273,23 +267,25 @@
                   <div class="field-value {{ 'empty' if not user.phone }}" id="phoneDisplay" data-original="{{ user.phone or '' }}">{{ user.phone or '—' }}</div>
                 </div>
               </div>
-              <button class="field-edit-btn" onclick="openModal('phone','Phone Number','text','f_phone')"><i class="bi bi-pencil-fill"></i></button>
+              <button class="field-edit-btn" onclick="openModal('phone','Phone Number','phone','f_phone')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- Office Phone -->
-            <div class="field-row">
+            <!-- Office Phone — locked unless gov is ON -->
+            <div class="field-row {{ '' if user.is_government else 'locked' }}" id="officePhoneRow">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-telephone-plus"></i></div>
-                <div>
-                  <div class="field-label">Office Phone</div>
-                  <div class="field-value {{ 'empty' if not user.office_phone }}" id="officePhoneDisplay" data-original="{{ user.office_phone or '' }}">{{ user.office_phone or '—' }}</div>
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+                  <div style="width:100%">
+                    <div class="field-label">Office Phone</div>
+                    <div class="field-value {{ 'empty' if not user.office_phone }}" id="officePhoneDisplay" data-original="{{ user.office_phone or '' }}">{{ user.office_phone or '—' }}</div>
+                  </div>
+                  <span class="lock-hint {{ 'd-none' if user.is_government else '' }}" id="officeLockHint"><i class="bi bi-lock-fill me-1"></i>Gov. employees only</span>
                 </div>
               </div>
-              <button class="field-edit-btn" onclick="openModal('officePhone','Office Phone','text','f_office_phone')"><i class="bi bi-pencil-fill"></i></button>
+              <button class="field-edit-btn" id="officePhoneBtn" onclick="openModal('officePhone','Office Phone','phone','f_office_phone')"><i class="bi bi-pencil-fill"></i></button>
             </div>
           </div>
 
           <div class="col-panel">
-            <!-- City -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-building"></i></div>
@@ -300,7 +296,6 @@
               </div>
               <button class="field-edit-btn" onclick="openModal('city','City / Municipality','text','f_city')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- Province -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-map"></i></div>
@@ -314,7 +309,6 @@
           </div>
 
           <div class="col-panel">
-            <!-- Occupation -->
             <div class="field-row">
               <div class="field-inner">
                 <div class="field-icon"><i class="bi bi-briefcase-fill"></i></div>
@@ -325,7 +319,7 @@
               </div>
               <button class="field-edit-btn" onclick="openModal('occupation','Occupation','text','f_occupation')"><i class="bi bi-pencil-fill"></i></button>
             </div>
-            <!-- Is Government (toggle) -->
+            <!-- Government toggle -->
             <div class="toggle-row">
               <div class="toggle-inner">
                 <div class="field-icon"><i class="bi bi-shield-check"></i></div>
@@ -371,7 +365,6 @@
   <script>
   (function () {
 
-    /* ── Field map: field key → display element id ── */
     const fieldMap = {
       firstName:      'firstNameDisplay',
       lastName:       'lastNameDisplay',
@@ -386,30 +379,63 @@
       occupation:     'occupationDisplay',
     };
 
+    /* ── Validation rules per field key ── */
+    const validators = {
+      firstName:    { fn: v => /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-]{1,60}$/.test(v),  msg: 'Letters, spaces, hyphens, and apostrophes only (max 60 chars).' },
+      lastName:     { fn: v => /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-]{1,60}$/.test(v),  msg: 'Letters, spaces, hyphens, and apostrophes only (max 60 chars).' },
+      age:          { fn: v => /^\d+$/.test(v) && +v >= 1 && +v <= 120,     msg: 'Age must be a number between 1 and 120.' },
+      phone:        { fn: v => /^\d{11}$/.test(v),                          msg: 'Phone number must be exactly 11 digits (numbers only).' },
+      officePhone:  { fn: v => /^\d{11}$/.test(v),                          msg: 'Office phone must be exactly 11 digits (numbers only).' },
+      city:         { fn: v => v.length >= 2 && v.length <= 80,             msg: 'City must be 2–80 characters.' },
+      province:     { fn: v => v.length >= 2 && v.length <= 80,             msg: 'Province must be 2–80 characters.' },
+      school:       { fn: v => v.length <= 120,                             msg: 'School name must be 120 characters or fewer.' },
+      occupation:   { fn: v => v.length <= 80,                              msg: 'Occupation must be 80 characters or fewer.' },
+    };
+
     let currentField = '', currentDisplayId = '';
 
     /* ── Build modal input HTML ── */
     function buildInput(type, value) {
-      const esc = (s) => s.replace(/"/g, '&quot;');
+      const esc = s => s.replace(/"/g, '&quot;');
+
       if (type === 'number') {
-        return `<input type="number" min="1" max="120" id="modalInput" value="${esc(value)}" placeholder="Enter age">`;
+        return `<input type="number" min="1" max="120" id="modalInput" value="${esc(value)}" placeholder="Enter age (1–120)">
+                <div class="field-hint">Must be a whole number between 1 and 120.</div>
+                <div class="field-error" id="modalError"></div>`;
+      }
+      if (type === 'phone') {
+        return `<input type="tel" inputmode="numeric" maxlength="11" id="modalInput" value="${esc(value)}" placeholder="e.g. 09171234567" autocomplete="tel">
+                <div class="field-hint">11 digits only, no spaces or dashes (e.g. 09171234567).</div>
+                <div class="field-error" id="modalError"></div>`;
       }
       if (type === 'select-gender') {
         const opts = ['Male','Female','Non-binary','Prefer not to say'];
         return `<select id="modalInput">
           <option value="">— Select gender —</option>
           ${opts.map(o => `<option value="${o}"${value===o?' selected':''}>${o}</option>`).join('')}
-        </select>`;
+        </select>
+        <div class="field-error" id="modalError"></div>`;
       }
       if (type === 'select-education') {
         const opts = ['Elementary','High School','Senior High School','Vocational / Technical','College / Bachelor\'s','Graduate School','Post-Graduate (PhD / Doctorate)'];
         return `<select id="modalInput">
           <option value="">— Select level —</option>
           ${opts.map(o => `<option value="${o}"${value===o?' selected':''}>${o}</option>`).join('')}
-        </select>`;
+        </select>
+        <div class="field-error" id="modalError"></div>`;
       }
-      // default text / tel
-      return `<input type="text" id="modalInput" value="${esc(value)}" placeholder="Enter ${currentField.replace(/([A-Z])/g,' $1').toLowerCase()}">`;
+      const hintMap = {
+        firstName:  'Letters only, up to 60 characters.',
+        lastName:   'Letters only, up to 60 characters.',
+        school:     'Up to 120 characters.',
+        city:       '2–80 characters.',
+        province:   '2–80 characters.',
+        occupation: 'Up to 80 characters.',
+      };
+      const hint = hintMap[currentField] ? `<div class="field-hint">${hintMap[currentField]}</div>` : '';
+      return `<input type="text" id="modalInput" value="${esc(value)}" placeholder="Enter ${currentField.replace(/([A-Z])/g,' $1').toLowerCase().trim()}">
+              ${hint}
+              <div class="field-error" id="modalError"></div>`;
     }
 
     /* ── Open modal ── */
@@ -423,6 +449,13 @@
       document.getElementById('modalBody').innerHTML =
         `<label>${label}</label>${buildInput(type, value)}`;
 
+      // For phone fields: allow digits only while typing
+      if (type === 'phone') {
+        document.getElementById('modalInput').addEventListener('input', function () {
+          this.value = this.value.replace(/\D/g, '').slice(0, 11);
+        });
+      }
+
       document.getElementById('editOverlay').classList.add('open');
       document.body.style.overflow = 'hidden';
       setTimeout(() => document.getElementById('modalInput')?.focus(), 60);
@@ -434,23 +467,28 @@
       document.body.style.overflow = '';
     };
 
-    /* ── Click outside closes ── */
     document.getElementById('editOverlay').addEventListener('click', e => {
       if (e.target === document.getElementById('editOverlay')) closeModal();
     });
 
-    /* ── Keyboard ESC ── */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeModal();
     });
 
-    /* ── Enter submits ── */
     document.getElementById('modalBody').addEventListener('keydown', e => {
       if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
         e.preventDefault();
         document.getElementById('saveBtn').click();
       }
     });
+
+    /* ── Validate ── */
+    function validate(field, value) {
+      if (!value) return null; // empty is allowed (clears the field); server can enforce required
+      const rule = validators[field];
+      if (!rule) return null;
+      return rule.fn(value) ? null : rule.msg;
+    }
 
     /* ── Save ── */
     document.getElementById('saveBtn').addEventListener('click', () => {
@@ -459,16 +497,28 @@
       const displayEl = document.getElementById(currentDisplayId);
       const original  = displayEl.dataset.original || '';
       const saveBtn   = document.getElementById('saveBtn');
+      const errorEl   = document.getElementById('modalError');
+
+      // Client-side validation
+      if (newVal) {
+        const err = validate(currentField, newVal);
+        if (err) {
+          input.classList.add('invalid');
+          if (errorEl) { errorEl.textContent = err; errorEl.classList.add('show'); }
+          input.focus();
+          return;
+        }
+      }
+      if (input) input.classList.remove('invalid');
+      if (errorEl) errorEl.classList.remove('show');
 
       saveBtn.classList.add('loading');
       saveBtn.disabled = true;
 
-      // Optimistic update
       displayEl.innerText = newVal || '—';
       displayEl.classList.toggle('empty', !newVal);
       closeModal();
 
-      // Update avatar name preview if name fields changed
       if (currentField === 'firstName' || currentField === 'lastName') {
         updateAvatarPreview();
       }
@@ -484,7 +534,6 @@
           displayEl.dataset.original = newVal;
           showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> ${currentField.replace(/([A-Z])/g,' $1')} updated`, 'success');
         } else {
-          // Revert
           displayEl.innerText = original || '—';
           displayEl.classList.toggle('empty', !original);
           showToast(`<i class="bi bi-exclamation-triangle-fill" style="color:var(--danger)"></i> ${d.message || 'Update failed'}`, 'error');
@@ -501,9 +550,25 @@
       });
     });
 
-    /* ── Government toggle ── */
-    document.getElementById('govToggle').addEventListener('change', function () {
+    /* ── Government toggle — also controls Office Phone row ── */
+    const govToggle      = document.getElementById('govToggle');
+    const officePhoneRow = document.getElementById('officePhoneRow');
+    const officeLockHint = document.getElementById('officeLockHint');
+
+    function setOfficePhoneState(isGov) {
+      if (isGov) {
+        officePhoneRow.classList.remove('locked');
+        if (officeLockHint) officeLockHint.style.display = 'none';
+      } else {
+        officePhoneRow.classList.add('locked');
+        if (officeLockHint) officeLockHint.style.display = '';
+      }
+    }
+
+    govToggle.addEventListener('change', function () {
       const val = this.checked ? '1' : '0';
+      setOfficePhoneState(this.checked);
+
       fetch('/user/update_profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -514,17 +579,19 @@
         if (d.success) {
           showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Government status ${this.checked ? 'enabled' : 'disabled'}`, 'success');
         } else {
-          this.checked = !this.checked; // revert
+          this.checked = !this.checked;
+          setOfficePhoneState(this.checked); // revert UI too
           showToast(`<i class="bi bi-exclamation-triangle-fill" style="color:var(--danger)"></i> ${d.message || 'Update failed'}`, 'error');
         }
       })
       .catch(() => {
         this.checked = !this.checked;
+        setOfficePhoneState(this.checked);
         showToast('<i class="bi bi-wifi-off" style="color:var(--danger)"></i> Request failed', 'error');
       });
     });
 
-    /* ── Avatar preview update ── */
+    /* ── Avatar preview ── */
     function updateAvatarPreview() {
       const fn = (document.getElementById('firstNameDisplay')?.innerText || '').replace('—','').trim();
       const ln = (document.getElementById('lastNameDisplay')?.innerText  || '').replace('—','').trim();

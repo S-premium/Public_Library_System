@@ -19,6 +19,9 @@ import re
 from datetime import datetime, timedelta
 from PIL import Image
 import io
+from fpdf import FPDF
+import pikepdf, io, os, requests
+from flask import send_file
 
 from flask import (
     Blueprint, render_template, request, redirect,
@@ -42,8 +45,26 @@ from authentication.authentication import _save_valid_id
 bcrypt = Bcrypt(app)
 
 user_bp = Blueprint("user_bp", __name__)
+    
+# ============================ People use our System Everyday=========================================
 
-
+@user_bp.route('/api/user/daily-active-count')
+def api_daily_active_count():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT COUNT(DISTINCT id)
+            FROM users
+            WHERE last_seen >= NOW() - INTERVAL 24 HOUR
+              AND role   = 'user'
+              AND status = 'active'
+        """)
+        row = cur.fetchone()
+        cur.close()
+        count = int(row[0]) if row and row[0] else 0
+        return jsonify({'count': count}), 200
+    except Exception as e:
+        return jsonify({'count': 0, 'error': str(e)}), 500
 # ── Shared user-data loader ───────────────────────────────────────────
 
 def _load_user(user_id: int) -> dict:
@@ -356,12 +377,25 @@ def mark_notification_unread(notif_id):
 def api_books():
     if not is_logged_in():
         return jsonify({'error': 'Unauthorized'}), 401
-    cursor = mysql.connection.cursor()
-    cursor.execute(BOOK_INVENTORY_QUERY)
-    rows = cursor.fetchall()
-    cursor.close()
-    return jsonify({'books': build_book_data(rows)})
 
+    q = request.args.get('q', '').strip()
+
+    cursor = mysql.connection.cursor()
+
+    if q:
+        # Search mode — use blind index
+        from helpers import search_books
+        return jsonify({'books': search_books(q)})
+    else:
+        # Browse mode — return all (paginated)
+        page     = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 50))
+        offset   = (page - 1) * per_page
+
+        cursor.execute(BOOK_INVENTORY_QUERY + f" LIMIT {per_page} OFFSET {offset}")
+        rows = cursor.fetchall()
+        cursor.close()
+        return jsonify({'books': build_book_data(rows)})
 
 # =====================================================================
 # FAVORITES
@@ -877,8 +911,11 @@ def api_user_borrowed_books():
     for r in rows:
         photo_url = ('/' + r[14].replace('\\', '/')) if r[14] else ''
         cards.append({
-            'id': r[0], 'type': r[1], 'firstname': r[2], 'lastname': r[3],
-            'phone_number': r[4] or '', 'address': r[5] or '',
+            'id': r[0], 'type': r[1],
+            'firstname':    safe_decrypt_pii(r[2]) if r[2] else '',  # encrypted
+            'lastname':     safe_decrypt_pii(r[3]) if r[3] else '',  # encrypted
+            'phone_number': safe_decrypt_pii(r[4]) or '',                               # plain text ← fix
+            'address':      safe_decrypt_pii(r[5]) or '',                               # plain text ← fix
             'date_issued':      str(r[6])  if r[6]  else '',
             'date_return':      str(r[7])  if r[7]  else '',
             'renewal1_checked': bool(r[8]),
@@ -892,7 +929,6 @@ def api_user_borrowed_books():
         })
 
     return jsonify({'cards': cards, 'total': len(cards)})
-
 
 @user_bp.route('/api/user/return-history')
 def api_user_return_history():
@@ -1016,7 +1052,321 @@ def api_user_renew_card(card_id):
         mysql.connection.rollback()
         return jsonify({'error': str(e)}), 500
 
-
+@user_bp.route('/api/user/card/<int:card_id>/download-pdf')
+def download_card_pdf(card_id):
+    if not is_logged_in() or require_role('user'):
+        return jsonify({'error': 'Unauthorized'}), 401
+ 
+    user_id = session['user_id']
+    cur = mysql.connection.cursor()
+ 
+    cur.execute("""
+        SELECT id, card_type_category, firstname, lastname, phone_number, address,
+               date_issued, date_return,
+               renewal1_checked, renewal1_date, renewal2_checked, renewal2_date,
+               card_type, valid_until, photo_path, created_at
+        FROM library_cards WHERE id=%s AND user_id=%s
+    """, (card_id, user_id))
+    row = cur.fetchone()
+    if not row:
+        cur.close()
+        return jsonify({'error': 'Card not found'}), 404
+ 
+    cur.execute("""
+        SELECT book_title, book_author, quantity
+        FROM library_card_books WHERE card_id=%s
+    """, (card_id,))
+    book_rows = cur.fetchall()
+    cur.close()
+ 
+    try:
+        import io, os, tempfile
+        from datetime import datetime as _dt
+        from PIL import Image as PILImage, ImageDraw as PILDraw
+        from fpdf import FPDF
+        import pikepdf
+ 
+        # ── Decrypt fields ─────────────────────────────────────────
+        firstname        = safe_decrypt_pii(row[2])  if row[2]  else ''
+        lastname         = safe_decrypt_pii(row[3])  if row[3]  else ''
+        phone_number     = safe_decrypt_pii(row[4])  if row[4]  else ''
+        address          = safe_decrypt_pii(row[5])  if row[5]  else ''
+        date_return      = str(row[7])               if row[7]  else ''
+        renewal1_checked = bool(row[8])
+        renewal1_date    = str(row[9])               if row[9]  else ''
+        renewal2_checked = bool(row[10])
+        renewal2_date    = str(row[11])              if row[11] else ''
+        valid_until      = str(row[13])              if row[13] else ''
+        photo_path       = row[14]                   or ''
+        fullname         = f'{firstname} {lastname}'.strip()
+ 
+        def fmt(d):
+            if not d or str(d) == 'None':
+                return ''
+            try:
+                if hasattr(d, 'strftime'):
+                    return d.strftime('%b %d, %Y')
+                return _dt.strptime(str(d), '%Y-%m-%d').strftime('%b %d, %Y')
+            except Exception:
+                return str(d)
+ 
+        # ── Temp file tracker (cleaned up at end) ──────────────────
+        tmp_files = []
+ 
+        def make_circle_logo(src_path, size_px=160):
+            img  = PILImage.open(src_path).convert('RGBA')
+            img  = img.resize((size_px, size_px), PILImage.LANCZOS)
+            mask = PILImage.new('L', (size_px, size_px), 0)
+            draw = PILDraw.Draw(mask)
+            draw.ellipse((0, 0, size_px - 1, size_px - 1), fill=255)
+            result = PILImage.new('RGBA', (size_px, size_px), (255, 255, 255, 0))
+            result.paste(img, mask=mask)
+            fd, path = tempfile.mkstemp(suffix='.png')
+            os.close(fd)
+            result.save(path, 'PNG')
+            tmp_files.append(path)
+            return path
+ 
+        def make_square_photo(src_path):
+            img  = PILImage.open(src_path).convert('RGB')
+            w, h = img.size
+            side = min(w, h)
+            img  = img.crop(((w - side) // 2, (h - side) // 2,
+                             (w + side) // 2, (h + side) // 2))
+            fd, path = tempfile.mkstemp(suffix='.jpg')
+            os.close(fd)
+            img.save(path, 'JPEG', quality=92)
+            tmp_files.append(path)
+            return path
+ 
+        # ── Build PDF ──────────────────────────────────────────────
+        pdf = FPDF(orientation='P', unit='mm', format='A4')
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+        pdf.set_margins(18, 15, 18)
+        page_w = pdf.w - pdf.l_margin - pdf.r_margin
+ 
+        # Light blue background
+        pdf.set_fill_color(235, 238, 250)
+        pdf.rect(0, 0, pdf.w, pdf.h, style='F')
+ 
+        # ── LOGO with circle crop ──────────────────────────────────
+        LOGO_MM = 20
+        LOGO_Y  = 11
+        logo_path = os.path.join(app.root_path, 'static', 'images', 'logo.png')
+        if os.path.exists(logo_path):
+            circle_logo = make_circle_logo(logo_path)
+            pdf.image(circle_logo, x=pdf.l_margin, y=LOGO_Y, w=LOGO_MM, h=LOGO_MM)
+            pdf.set_draw_color(42, 48, 128)
+            pdf.set_line_width(0.5)
+            pdf.ellipse(pdf.l_margin, LOGO_Y, LOGO_MM, LOGO_MM, style='D')
+ 
+        # ── PHOTO — square cropped ─────────────────────────────────
+        PHOTO_MM = 22
+        PHOTO_X  = pdf.w - pdf.r_margin - PHOTO_MM
+        PHOTO_Y  = 10
+        if photo_path:
+            photo_abs = os.path.join(app.root_path, photo_path.lstrip('/').lstrip('\\'))
+            if os.path.exists(photo_abs):
+                sq_photo = make_square_photo(photo_abs)
+                pdf.image(sq_photo, x=PHOTO_X, y=PHOTO_Y, w=PHOTO_MM, h=PHOTO_MM)
+                pdf.set_draw_color(42, 48, 128)
+                pdf.set_line_width(0.3)
+                pdf.rect(PHOTO_X, PHOTO_Y, PHOTO_MM, PHOTO_MM, style='D')
+ 
+        # ── HEADER TEXT ────────────────────────────────────────────
+        header_left = pdf.l_margin + LOGO_MM + 2
+        header_w    = PHOTO_X - 2 - header_left
+ 
+        pdf.set_xy(header_left, 11)
+        pdf.set_font('Helvetica', 'B', 11)
+        pdf.set_text_color(42, 48, 128)
+        pdf.cell(header_w, 6, 'ILOILO PUBLIC LIBRARY', align='C',
+                 new_x='LEFT', new_y='NEXT')
+        pdf.set_x(header_left)
+        pdf.set_font('Helvetica', '', 8)
+        pdf.set_text_color(60, 60, 60)
+        pdf.cell(header_w, 5, 'Office of City Mayor', align='C',
+                 new_x='LEFT', new_y='NEXT')
+        pdf.set_x(header_left)
+        pdf.cell(header_w, 5, 'Tel. (033) 337-6567', align='C',
+                 new_x='LMARGIN', new_y='NEXT')
+ 
+        # ── TITLE ──────────────────────────────────────────────────
+        pdf.ln(5)
+        pdf.set_font('Helvetica', 'B', 13)
+        pdf.set_text_color(17, 17, 17)
+        pdf.cell(0, 7, "LIBRARY BORROWER'S CARD", align='C',
+                 new_x='LMARGIN', new_y='NEXT')
+        pdf.set_font('Helvetica', 'I', 8)
+        pdf.set_text_color(68, 68, 68)
+        pdf.cell(0, 5,
+                 'This entitles herein named person to borrow materials'
+                 ' at The Library subject to the policies.',
+                 align='C', new_x='LMARGIN', new_y='NEXT')
+        pdf.ln(4)
+ 
+        # ── FIELD HELPERS ──────────────────────────────────────────
+        pdf.set_draw_color(122, 132, 204)
+        pdf.set_text_color(17, 17, 17)
+ 
+        def field_line(label, value, lw=30):
+            pdf.set_font('Helvetica', '', 9)
+            pdf.cell(lw, 6, label)
+            pdf.set_font('Helvetica', 'B', 9)
+            pdf.cell(0, 6, value, border='B',
+                     new_x='LMARGIN', new_y='NEXT')
+            pdf.ln(1)
+ 
+        def two_col_line(label1, value1, label2, value2,
+                         lw1=32, col1=90, lw2=24):
+            pdf.set_font('Helvetica', '', 9)
+            pdf.cell(lw1, 6, label1)
+            pdf.set_font('Helvetica', 'B', 9)
+            pdf.cell(col1 - lw1, 6, value1, border='B')
+            pdf.set_font('Helvetica', '', 9)
+            pdf.cell(lw2, 6, label2)
+            pdf.set_font('Helvetica', 'B', 9)
+            pdf.cell(0, 6, value2, border='B',
+                     new_x='LMARGIN', new_y='NEXT')
+            pdf.ln(1)
+ 
+        field_line('Name:', fullname)
+        two_col_line("Borrower's No.:", f'#{card_id}', '  Tel. No.:', phone_number)
+        field_line('Address:', address)
+ 
+        # Valid Until
+        pdf.set_font('Helvetica', '', 9)
+        pdf.cell(22, 6, 'Valid Until:')
+        pdf.set_font('Helvetica', 'B', 9)
+        suffix_w = pdf.get_string_width('  unless officially') + 4
+        pdf.cell(page_w - 22 - suffix_w, 6, valid_until, border='B')
+        pdf.set_font('Helvetica', '', 9)
+        pdf.cell(suffix_w, 6, '  unless officially',
+                 new_x='LMARGIN', new_y='NEXT')
+        pdf.ln(1)
+ 
+        # Renewals
+        chk1 = 'x' if renewal1_checked else ' '
+        chk2 = 'x' if renewal2_checked else ' '
+ 
+        pdf.set_font('Helvetica', '', 9)
+        pdf.cell(18, 5, 'renewed:')
+        pdf.cell(6,  5, f'[{chk1}]', align='C')
+        pdf.cell(26, 5, ' 1st renewal on:')
+        pdf.set_font('Helvetica', 'B', 9)
+        pdf.cell(42, 5, fmt(renewal1_date) if renewal1_checked else '',
+                 border='B', new_x='LMARGIN', new_y='NEXT')
+        pdf.ln(6)
+ 
+        pdf.set_font('Helvetica', '', 9)
+        pdf.cell(18, 5, '')
+        pdf.cell(6,  5, f'[{chk2}]', align='C')
+        pdf.cell(26, 5, ' 2nd renewal on:')
+        pdf.set_font('Helvetica', 'B', 9)
+        pdf.cell(42, 5, fmt(renewal2_date) if renewal2_checked else '',
+                 border='B', new_x='LMARGIN', new_y='NEXT')
+        pdf.ln(9)
+ 
+        # ── BOOKS TABLE ────────────────────────────────────────────
+        col_w   = [28, page_w - 28 - 16 - 32, 16, 32]
+        headers = ['Date Due &\nIntl.',
+                   'Book Author/Title/Ed. Borrowed',
+                   'Qty',
+                   'Date Rtrd.\n& Intl.']
+ 
+        pdf.set_fill_color(213, 217, 240)
+        pdf.set_draw_color(122, 132, 204)
+        pdf.set_line_width(0.3)
+        pdf.set_font('Helvetica', 'B', 7)
+        pdf.set_text_color(17, 17, 17)
+ 
+        # Draw header row manually for precise two-line centering
+        header_h = 9
+        x_start  = pdf.l_margin
+        y_start  = pdf.get_y()
+ 
+        for i, h in enumerate(headers):
+            x     = x_start + sum(col_w[:i])
+            lines = h.split('\n')
+            pdf.rect(x, y_start, col_w[i], header_h, style='FD')
+            line_h = 3.5
+            text_y = y_start + (header_h - len(lines) * line_h) / 2
+            for j, line in enumerate(lines):
+                pdf.set_xy(x, text_y + j * line_h)
+                pdf.cell(col_w[i], line_h, line, align='C')
+ 
+        pdf.set_xy(x_start, y_start + header_h)
+ 
+        # Data rows
+        pdf.set_font('Helvetica', '', 7)
+        total_rows = max(len(book_rows) + 5, 20)
+        row_h = 5
+ 
+        for i in range(total_rows):
+            if i < len(book_rows):
+                b     = book_rows[i]
+                due   = fmt(date_return)
+                title = f'{b[0]} / {b[1]}' if b[1] else (b[0] or '')
+                qty   = str(b[2] or 1)
+            else:
+                due = title = qty = ''
+ 
+            # Clip title so it never overflows the cell
+            max_chars = int(col_w[1] / 1.85)
+            if len(title) > max_chars:
+                title = title[:max_chars - 1] + '...'
+ 
+            pdf.cell(col_w[0], row_h, due,   border=1)
+            pdf.cell(col_w[1], row_h, title, border=1)
+            pdf.cell(col_w[2], row_h, qty,   border=1, align='C')
+            pdf.cell(col_w[3], row_h, '',    border=1,
+                     new_x='LMARGIN', new_y='NEXT')
+ 
+        pdf.ln(3)
+        pdf.set_font('Helvetica', 'I', 7)
+        pdf.set_text_color(120, 120, 140)
+        pdf.cell(0, 5, 'ICPL Form 2 - 11/04', align='C',
+                 new_x='LMARGIN', new_y='NEXT')
+ 
+        # ── Cleanup temp files ─────────────────────────────────────
+        for p in tmp_files:
+            try:
+                os.unlink(p)
+            except Exception:
+                pass
+ 
+        # ── Password-protect & serve ───────────────────────────────
+        pdf_bytes = bytes(pdf.output())
+        reader    = pikepdf.open(io.BytesIO(pdf_bytes))
+        out       = io.BytesIO()
+        reader.save(out, encryption=pikepdf.Encryption(
+            owner=os.getenv('PDF_PASSWORD', 'owner'),
+            user='',
+            allow=pikepdf.Permissions(
+                print_highres=True,
+                extract=False,
+                modify_annotation=False,
+                modify_form=False,
+                modify_other=False,
+                modify_assembly=False,
+            )
+        ))
+        out.seek(0)
+ 
+        safe_name = f"{fullname} Borrower's Card.pdf"
+        return send_file(
+            out,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=safe_name
+        )
+ 
+    except Exception as e:
+        import traceback
+        traceback.print_exc()   # full stack trace appears in your terminal/logs
+        return jsonify({'error': str(e)}), 500
+ 
 # =====================================================================
 # RECENT ACTIVITY
 # =====================================================================

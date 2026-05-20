@@ -81,7 +81,7 @@
     }
 
     /* ============================================================
-       BRAIN STAGE — fixed, 300×300
+       BRAIN STAGE
     ============================================================ */
     #brain-stage {
       position: fixed;
@@ -186,8 +186,18 @@
     .hero-sp-text { font-size:.76rem; color:var(--tl); line-height:1.45; }
     .hero-sp-text strong { color:#fff; font-weight:700; }
 
+    @keyframes count-pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.18); }
+      100% { transform: scale(1); }
+    }
+    .hero-sp-text strong.count-updated {
+      animation: count-pop .4s ease;
+      display: inline-block;
+    }
+
     /* ============================================================
-       BRAIN WRAP — ENHANCED GLOW EFFECTS
+       BRAIN WRAP
     ============================================================ */
     .brain-wrap {
       position: relative;
@@ -196,7 +206,6 @@
       cursor: crosshair;
     }
 
-    /* Outermost halo — large, very soft breathe */
     .brain-halo-outer {
       position: absolute;
       width: 520px; height: 520px;
@@ -210,7 +219,6 @@
       50%      { transform: scale(1.14); opacity: 1; }
     }
 
-    /* Inner core glow */
     .brain-glow-bg {
       position: absolute;
       inset: -30px;
@@ -220,7 +228,6 @@
       pointer-events: none;
     }
 
-    /* Corona shimmer — color-shifts blue ↔ green */
     .brain-corona {
       position: absolute;
       width: 300px; height: 300px;
@@ -243,19 +250,16 @@
       }
     }
 
-    /* Orbit rings */
     .brain-orbit {
       position: absolute;
       border-radius: 50%;
       pointer-events: none;
     }
-    /* Outer faint ring */
     .brain-orbit.b3 {
       width: 460px; height: 460px;
       border: 1px solid rgba(93,184,224,.05);
       animation: ring-spin 38s linear infinite;
     }
-    /* Main ring with arc highlight */
     .brain-orbit.b1 {
       width: 380px; height: 380px;
       border: 1px solid rgba(93,184,224,.13);
@@ -271,14 +275,12 @@
       border-right-color: rgba(72,199,142,.32);
       animation: ring-spin 4s linear infinite;
     }
-    /* Dashed inner ring */
     .brain-orbit.b2 {
       width: 280px; height: 280px;
       border: 1px dashed rgba(72,199,142,.16);
       animation: ring-spin 13s linear infinite reverse;
     }
 
-    /* Constellation SVG (co-rotates with b1) */
     .brain-constellation {
       position: absolute;
       width: 380px; height: 380px;
@@ -288,7 +290,6 @@
       animation: ring-spin 20s linear infinite;
     }
 
-    /* Scan line sweep */
     .brain-scan {
       position: absolute;
       width: 320px; height: 320px;
@@ -317,7 +318,6 @@
       100% { top: 324px; opacity: 0; }
     }
 
-    /* Expanding pulse rings */
     .brain-pulse-ring {
       position: absolute;
       border-radius: 50%;
@@ -333,7 +333,6 @@
       100% { transform: scale(3.5); opacity: 0; }
     }
 
-    /* Orbit nodes */
     .brain-nnode {
       position: absolute;
       width: 8px; height: 8px;
@@ -348,7 +347,6 @@
       box-shadow: 0 0 10px 3px rgba(72,199,142,.5), 0 0 3px 1px rgba(72,199,142,.9);
     }
 
-    /* Hero model-viewer */
     #hero-mv {
       width: 280px; height: 280px; background: transparent;
       position: relative; z-index: 2;
@@ -358,7 +356,6 @@
     #hero-mv.show { opacity: 1; }
     #hero-mv::part(default-ar-button) { display: none; }
 
-    /* Float cards */
     .hero-float-card { position:absolute; background:rgba(0,0,0,.45); border:1px solid rgba(93,184,224,.2); border-radius:11px; padding:9px 13px; backdrop-filter:blur(12px); z-index:4; white-space:nowrap; opacity:0; transform:translateY(8px); transition:opacity .5s ease,transform .5s ease; }
     .hero-float-card.show { opacity:1; transform:translateY(0); animation:flt 4s ease-in-out infinite; }
     .hfc-label { font-size:9.5px; color:var(--tl); text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
@@ -366,132 +363,12 @@
     .hfc-val span { color:var(--accent2); }
     @keyframes flt { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
 
-    /* Synapse particles */
     .brain-syn { position:absolute; width:5px; height:5px; border-radius:50%; pointer-events:none; animation:syn-fly 1.1s ease forwards; }
     @keyframes syn-fly { 0%{transform:scale(1);opacity:1} 100%{transform:scale(0) translate(var(--tx),var(--ty));opacity:0} }
 
     /* ============================================================
-       RESPONSIVE — Tablet (≤1100px)
+       SECTIONS
     ============================================================ */
-    @media (max-width:1100px) {
-      .hero-content { padding:100px 36px 70px; }
-      .hero-text-col { flex:0 0 52%; max-width:52%; padding-right:24px; }
-      .brain-wrap { width:280px; height:280px; }
-      .brain-orbit.b1 { width:300px; height:300px; }
-      .brain-orbit.b2 { width:220px; height:220px; }
-      .brain-orbit.b3 { width:370px; height:370px; }
-      .brain-halo-outer { width:430px; height:430px; }
-      .brain-constellation { width:300px; height:300px; }
-      #hero-mv { width:240px; height:240px; }
-    }
-
-    /* ============================================================
-       RESPONSIVE — Large phones / small tablets (≤900px)
-    ============================================================ */
-    @media (max-width:900px) {
-      .hero { min-height:100svh; align-items:flex-start; }
-      .hero-content {
-        flex-direction:column;
-        align-items:center;
-        padding:90px 24px 60px;
-        gap:0;
-      }
-      .hero-text-col {
-        flex:unset; max-width:100%; width:100%;
-        padding-right:0;
-        margin-bottom:36px;
-        align-items:flex-start;
-      }
-      .hero-brain-col {
-        width:100%;
-        min-height:300px;
-        justify-content:center;
-      }
-      .hero-circle-divider {
-        width:130vw; height:130vw;
-        top:auto; bottom:-20%;
-        left:50%; transform:translateX(-50%);
-      }
-      #hfc1 { top:4% !important; right:2% !important; font-size:11px; padding:7px 10px; }
-      #hfc2 { bottom:10% !important; right:2% !important; font-size:11px; padding:7px 10px; }
-      #hfc3 { bottom:28% !important; left:2% !important; font-size:11px; padding:7px 10px; }
-      .hfc-val { font-size:.88rem; }
-
-      .brain-wrap { width:260px; height:260px; }
-      .brain-orbit.b1 { width:280px; height:280px; }
-      .brain-orbit.b2 { width:200px; height:200px; }
-      .brain-orbit.b3 { width:340px; height:340px; }
-      .brain-halo-outer { width:400px; height:400px; }
-      .brain-constellation { width:280px; height:280px; }
-      #hero-mv { width:220px; height:220px; }
-
-      .hero-btns { width:100%; }
-      .hero-btn-primary,
-      .hero-btn-sec { flex:1; justify-content:center; min-width:130px; }
-    }
-
-    /* ============================================================
-       RESPONSIVE — Mid phones (≤600px)
-    ============================================================ */
-    @media (max-width:600px) {
-      .hero-content { padding:80px 18px 50px; }
-      .hero h1 { font-size:clamp(1.65rem,7vw,2.2rem); }
-      .hero-sub { font-size:.82rem; max-width:100%; }
-
-      .brain-wrap { width:220px; height:220px; }
-      .brain-orbit.b1 { width:240px; height:240px; }
-      .brain-orbit.b2 { width:170px; height:170px; }
-      .brain-orbit.b3 { width:290px; height:290px; }
-      .brain-halo-outer { width:340px; height:340px; }
-      .brain-constellation { width:240px; height:240px; }
-      #hero-mv { width:190px; height:190px; }
-
-      .hero-float-card { display:none !important; }
-      .hero-social-proof { max-width:100%; flex-wrap:wrap; gap:8px; }
-    }
-
-    /* ============================================================
-       RESPONSIVE — Small phones (≤400px)
-    ============================================================ */
-    @media (max-width:400px) {
-      .hero-content { padding:74px 14px 44px; }
-      .hero-eyebrow { font-size:9.5px; padding:4px 11px; }
-      .hero h1 { font-size:clamp(1.5rem,8vw,1.9rem); letter-spacing:-.02em; }
-      .hero-sub { font-size:.78rem; line-height:1.65; }
-      .hero-btn-primary,
-      .hero-btn-sec { font-size:.78rem; padding:10px 14px; }
-
-      .brain-wrap { width:180px; height:180px; }
-      .brain-orbit.b1 { width:196px; height:196px; }
-      .brain-orbit.b2 { width:140px; height:140px; }
-      .brain-orbit.b3 { width:240px; height:240px; }
-      .brain-halo-outer { width:280px; height:280px; }
-      .brain-constellation { width:196px; height:196px; }
-      #hero-mv { width:156px; height:156px; }
-
-      .hero-brain-col { min-height:220px; }
-      .hero-social-proof { display:none; }
-    }
-
-    /* ============================================================
-       RESPONSIVE — Very small phones (≤360px)
-    ============================================================ */
-    @media (max-width:360px) {
-      .hero-content { padding:70px 12px 40px; }
-      .hero h1 { font-size:1.45rem; }
-      .hero-btns { flex-direction:column; }
-      .hero-btn-primary,
-      .hero-btn-sec { width:100%; flex:unset; }
-      .brain-wrap { width:160px; height:160px; }
-      .brain-orbit.b1 { width:176px; height:176px; }
-      .brain-orbit.b2 { width:126px; height:126px; }
-      .brain-orbit.b3 { width:214px; height:214px; }
-      .brain-halo-outer { width:250px; height:250px; }
-      .brain-constellation { width:176px; height:176px; }
-      #hero-mv { width:140px; height:140px; }
-    }
-
-    /* ── SECTIONS ── */
     .offerings-section { padding:100px 40px; background:rgba(0,0,0,.08); }
     .offerings-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1200px; margin:0 auto; }
     .offerings-left .section-eyebrow { display:inline-flex; align-items:center; gap:8px; background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.2); border-radius:20px; padding:5px 14px; font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent2); margin-bottom:20px; }
@@ -553,8 +430,140 @@
     .services-img img { width:100%; height:100%; object-fit:cover; display:block; transition:.4s ease; }
     .services-img:hover img { transform:scale(1.04); }
 
+    /* ============================================================
+       SCROLL REVEAL ANIMATIONS
+    ============================================================ */
+    @keyframes sr-up    { from{opacity:0;transform:translateY(44px)}       to{opacity:1;transform:translateY(0)} }
+    @keyframes sr-down  { from{opacity:0;transform:translateY(-32px)}      to{opacity:1;transform:translateY(0)} }
+    @keyframes sr-left  { from{opacity:0;transform:translateX(-52px)}      to{opacity:1;transform:translateX(0)} }
+    @keyframes sr-right { from{opacity:0;transform:translateX(52px)}       to{opacity:1;transform:translateX(0)} }
+    @keyframes sr-zoom  { from{opacity:0;transform:scale(.82)}             to{opacity:1;transform:scale(1)} }
+    @keyframes sr-flip  { from{opacity:0;transform:perspective(700px) rotateX(-22deg) translateY(28px)} to{opacity:1;transform:perspective(700px) rotateX(0) translateY(0)} }
+    @keyframes sr-slide { from{opacity:0;transform:translateY(60px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes sr-stag  { from{opacity:0;transform:translateX(-18px)}      to{opacity:1;transform:translateX(0)} }
+    @keyframes sr-pop   { from{opacity:0;transform:scale(.75) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+    /* hidden base state — set before JS kicks in */
+    [data-sr]                       { opacity:0; will-change:transform,opacity; }
+    [data-sr-group] [data-sr-child] { opacity:0; }
+
+    /* triggered states */
+    [data-sr].vis { animation-fill-mode:both; }
+    [data-sr="up"].vis    { animation:sr-up    .72s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="down"].vis  { animation:sr-down  .72s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="left"].vis  { animation:sr-left  .70s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="right"].vis { animation:sr-right .70s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="zoom"].vis  { animation:sr-zoom  .65s cubic-bezier(.34,1.36,.64,1) both; }
+    [data-sr="flip"].vis  { animation:sr-flip  .72s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="slide"].vis { animation:sr-slide .78s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="pop"].vis   { animation:sr-pop   .65s cubic-bezier(.34,1.56,.64,1) both; }
+
+    /* stagger group children */
+    [data-sr-group].vis [data-sr-child] { animation:sr-stag .55s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr-group].vis [data-sr-child]:nth-child(1)  { animation-delay:.04s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(2)  { animation-delay:.11s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(3)  { animation-delay:.18s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(4)  { animation-delay:.25s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(5)  { animation-delay:.32s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(6)  { animation-delay:.39s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(7)  { animation-delay:.46s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(8)  { animation-delay:.53s; }
+
+    /* custom delay modifiers */
+    [data-sr-delay="100"].vis { animation-delay:.1s !important; }
+    [data-sr-delay="200"].vis { animation-delay:.2s !important; }
+    [data-sr-delay="300"].vis { animation-delay:.3s !important; }
+
+    /* accessibility: respect reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      [data-sr].vis,
+      [data-sr-group].vis [data-sr-child] {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width:1100px) {
+      .hero-content { padding:100px 36px 70px; }
+      .hero-text-col { flex:0 0 52%; max-width:52%; padding-right:24px; }
+      .brain-wrap { width:280px; height:280px; }
+      .brain-orbit.b1 { width:300px; height:300px; }
+      .brain-orbit.b2 { width:220px; height:220px; }
+      .brain-orbit.b3 { width:370px; height:370px; }
+      .brain-halo-outer { width:430px; height:430px; }
+      .brain-constellation { width:300px; height:300px; }
+      #hero-mv { width:240px; height:240px; }
+    }
+    @media (max-width:900px) {
+      .hero { min-height:100svh; align-items:flex-start; }
+      .hero-content { flex-direction:column; align-items:center; padding:90px 24px 60px; gap:0; }
+      .hero-text-col { flex:unset; max-width:100%; width:100%; padding-right:0; margin-bottom:36px; align-items:flex-start; }
+      .hero-brain-col { width:100%; min-height:300px; justify-content:center; }
+      .hero-circle-divider { width:130vw; height:130vw; top:auto; bottom:-20%; left:50%; transform:translateX(-50%); }
+      #hfc1 { top:4% !important; right:2% !important; font-size:11px; padding:7px 10px; }
+      #hfc2 { bottom:10% !important; right:2% !important; font-size:11px; padding:7px 10px; }
+      #hfc3 { bottom:28% !important; left:2% !important; font-size:11px; padding:7px 10px; }
+      .hfc-val { font-size:.88rem; }
+      .brain-wrap { width:260px; height:260px; }
+      .brain-orbit.b1 { width:280px; height:280px; }
+      .brain-orbit.b2 { width:200px; height:200px; }
+      .brain-orbit.b3 { width:340px; height:340px; }
+      .brain-halo-outer { width:400px; height:400px; }
+      .brain-constellation { width:280px; height:280px; }
+      #hero-mv { width:220px; height:220px; }
+      .hero-btns { width:100%; }
+      .hero-btn-primary, .hero-btn-sec { flex:1; justify-content:center; min-width:130px; }
+    }
+    @media (max-width:600px) {
+      .hero-content { padding:80px 18px 50px; }
+      .hero h1 { font-size:clamp(1.65rem,7vw,2.2rem); }
+      .hero-sub { font-size:.82rem; max-width:100%; }
+      .brain-wrap { width:220px; height:220px; }
+      .brain-orbit.b1 { width:240px; height:240px; }
+      .brain-orbit.b2 { width:170px; height:170px; }
+      .brain-orbit.b3 { width:290px; height:290px; }
+      .brain-halo-outer { width:340px; height:340px; }
+      .brain-constellation { width:240px; height:240px; }
+      #hero-mv { width:190px; height:190px; }
+      .hero-float-card { display:none !important; }
+      .hero-social-proof { max-width:100%; flex-wrap:wrap; gap:8px; }
+    }
+    @media (max-width:400px) {
+      .hero-content { padding:74px 14px 44px; }
+      .hero-eyebrow { font-size:9.5px; padding:4px 11px; }
+      .hero h1 { font-size:clamp(1.5rem,8vw,1.9rem); letter-spacing:-.02em; }
+      .hero-sub { font-size:.78rem; line-height:1.65; }
+      .hero-btn-primary, .hero-btn-sec { font-size:.78rem; padding:10px 14px; }
+      .brain-wrap { width:180px; height:180px; }
+      .brain-orbit.b1 { width:196px; height:196px; }
+      .brain-orbit.b2 { width:140px; height:140px; }
+      .brain-orbit.b3 { width:240px; height:240px; }
+      .brain-halo-outer { width:280px; height:280px; }
+      .brain-constellation { width:196px; height:196px; }
+      #hero-mv { width:156px; height:156px; }
+      .hero-brain-col { min-height:220px; }
+      .hero-social-proof { display:none; }
+    }
+    @media (max-width:360px) {
+      .hero-content { padding:70px 12px 40px; }
+      .hero h1 { font-size:1.45rem; }
+      .hero-btns { flex-direction:column; }
+      .hero-btn-primary, .hero-btn-sec { width:100%; flex:unset; }
+      .brain-wrap { width:160px; height:160px; }
+      .brain-orbit.b1 { width:176px; height:176px; }
+      .brain-orbit.b2 { width:126px; height:126px; }
+      .brain-orbit.b3 { width:214px; height:214px; }
+      .brain-halo-outer { width:250px; height:250px; }
+      .brain-constellation { width:176px; height:176px; }
+      #hero-mv { width:140px; height:140px; }
+    }
+
     @media (max-width:1024px) { .offerings-inner { grid-template-columns:1fr; gap:40px; } .offerings-collage { grid-template-rows:100px 100px 100px 100px; } }
-    @media (max-width:600px)  {
+    @media (max-width:600px) {
       .offerings-section,.features-section,.vm-section,.services-section { padding:60px 20px; }
       .offerings-collage { grid-template-columns:repeat(2,1fr); grid-template-rows:auto; }
       .offerings-collage .col-wide { grid-column:span 1; }
@@ -629,7 +638,9 @@
         </div>
         <div class="hero-social-proof">
           <div class="hero-avatars" id="heroAvatars"></div>
-          <div class="hero-sp-text"><strong id="heroMemberCount">150+</strong> People use our System Everyday</div>
+          <div class="hero-sp-text">
+            <strong id="heroMemberCount">—</strong> People use our System Everyday
+          </div>
         </div>
       </div>
 
@@ -645,64 +656,37 @@
         </div>
 
         <div class="brain-wrap" id="brainWrap">
-
-          <!-- Layer 1: Outermost soft halo -->
           <div class="brain-halo-outer"></div>
-
-          <!-- Layer 2: Expanding pulse rings -->
           <div class="brain-pulse-ring"></div>
           <div class="brain-pulse-ring"></div>
           <div class="brain-pulse-ring"></div>
-
-          <!-- Layer 3: Outer faint orbit ring -->
           <div class="brain-orbit b3"></div>
-
-          <!-- Layer 4: Main orbit ring (with arc highlight via ::before) -->
           <div class="brain-orbit b1"></div>
-
-          <!-- Layer 5: Constellation lines co-rotating with b1 -->
           <svg class="brain-constellation" viewBox="0 0 380 380" fill="none" xmlns="http://www.w3.org/2000/svg">
             <line x1="190" y1="0"   x2="380" y2="190" stroke="rgba(93,184,224,.15)" stroke-width="0.8" stroke-dasharray="4 6"/>
             <line x1="380" y1="190" x2="190" y2="380" stroke="rgba(93,184,224,.12)" stroke-width="0.8" stroke-dasharray="4 6"/>
             <line x1="190" y1="380" x2="0"   y2="190" stroke="rgba(93,184,224,.15)" stroke-width="0.8" stroke-dasharray="4 6"/>
             <line x1="0"   y1="190" x2="190" y2="0"   stroke="rgba(93,184,224,.12)" stroke-width="0.8" stroke-dasharray="4 6"/>
           </svg>
-
-          <!-- Layer 6: Inner dashed orbit -->
           <div class="brain-orbit b2"></div>
-
-          <!-- Layer 7: Inner core glow -->
           <div class="brain-glow-bg"></div>
-
-          <!-- Layer 8: Corona shimmer ring -->
           <div class="brain-corona"></div>
-
-          <!-- Layer 9: Scan line sweep -->
           <div class="brain-scan"></div>
-
-          <!-- Blue orbit nodes — cardinal positions on b1 -->
           <div class="brain-nnode" style="top:10%;left:48%;animation-delay:0s;"></div>
           <div class="brain-nnode" style="top:48%;left:4%;animation-delay:.7s;width:6px;height:6px;"></div>
           <div class="brain-nnode" style="top:48%;right:4%;animation-delay:1.4s;"></div>
           <div class="brain-nnode" style="bottom:10%;left:48%;animation-delay:.4s;width:6px;height:6px;"></div>
-
-          <!-- Green orbit nodes — diagonal positions -->
           <div class="brain-nnode green" style="top:22%;right:17%;animation-delay:1s;width:6px;height:6px;"></div>
           <div class="brain-nnode green" style="bottom:22%;right:17%;animation-delay:2.1s;width:5px;height:5px;"></div>
           <div class="brain-nnode green" style="bottom:22%;left:17%;animation-delay:.5s;width:6px;height:6px;"></div>
           <div class="brain-nnode green" style="top:22%;left:17%;animation-delay:1.7s;width:5px;height:5px;"></div>
-
-          <!-- Inner b2 ring accent nodes -->
           <div class="brain-nnode" style="top:calc(50% - 140px - 3px);left:calc(50% - 3px);animation-delay:.3s;width:5px;height:5px;opacity:.7;"></div>
           <div class="brain-nnode" style="top:calc(50% - 3px);right:calc(50% - 140px - 3px);animation-delay:1.1s;width:5px;height:5px;opacity:.7;"></div>
-
-          <!-- The 3D brain model -->
           <model-viewer id="hero-mv"
             src="/static/models/brain.glb" alt="3D Brain Model"
             auto-rotate auto-rotate-delay="0" rotation-per-second="30deg"
             camera-controls disable-zoom exposure="1.4" shadow-intensity="0" environment-image="neutral">
           </model-viewer>
-
         </div>
       </div>
     </div>
@@ -712,20 +696,23 @@
   <section class="offerings-section" id="offerings">
     <div class="offerings-inner">
       <div class="offerings-left">
-        <div class="section-eyebrow"><i class="bi bi-collection-fill"></i> What's Inside</div>
-        <h2>Library <span>Offerings</span></h2>
-        <ul class="offerings-list">
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Free Study or Working Space with Free WiFi</strong><span>The library provides a conducive environment for learning and work, complete with free WiFi for connectivity.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Archives with Historical Materials on the Iloilo Province</strong><span>Delve into the past with the library's extensive collection of historical materials, offering insights into the rich heritage of the Iloilo Province.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Filipiniana Collection</strong><span>Explore a curated collection of books about the Philippines, encompassing various aspects of the nation's culture, history, and literature.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Rizaliana Collection</strong><span>Immerse yourself in materials dedicated to Jose Rizal, a collection that pays homage to the national hero's legacy.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Children's Corner</strong><span>Nurturing the love for reading from a young age, the library features a dedicated Children's Corner with age-appropriate books and engaging spaces.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Theses and Dissertations</strong><span>Catering to academic pursuits, the library houses a comprehensive collection of theses and dissertations.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>General Collection</strong><span>Dive into a diverse array of books covering various subjects, including fiction, ensuring there's something for every curious mind.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Magazines and Newspapers</strong><span>Stay informed with the latest news and insights through the library's collection of magazines.</span></div></li>
+        <!-- eyebrow + heading animate in from left -->
+        <div class="section-eyebrow" data-sr="left"><i class="bi bi-collection-fill"></i> What's Inside</div>
+        <h2 data-sr="left" data-sr-delay="100">Library <span>Offerings</span></h2>
+        <!-- List items stagger in one by one -->
+        <ul class="offerings-list" data-sr-group>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Free Study or Working Space with Free WiFi</strong><span>The library provides a conducive environment for learning and work, complete with free WiFi for connectivity.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Archives with Historical Materials on the Iloilo Province</strong><span>Delve into the past with the library's extensive collection of historical materials, offering insights into the rich heritage of the Iloilo Province.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Filipiniana Collection</strong><span>Explore a curated collection of books about the Philippines, encompassing various aspects of the nation's culture, history, and literature.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Rizaliana Collection</strong><span>Immerse yourself in materials dedicated to Jose Rizal, a collection that pays homage to the national hero's legacy.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Children's Corner</strong><span>Nurturing the love for reading from a young age, the library features a dedicated Children's Corner with age-appropriate books and engaging spaces.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Theses and Dissertations</strong><span>Catering to academic pursuits, the library houses a comprehensive collection of theses and dissertations.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>General Collection</strong><span>Dive into a diverse array of books covering various subjects, including fiction, ensuring there's something for every curious mind.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Magazines and Newspapers</strong><span>Stay informed with the latest news and insights through the library's collection of magazines.</span></div></li>
         </ul>
       </div>
-      <div class="offerings-collage">
+      <!-- Collage slides in from the right -->
+      <div class="offerings-collage" data-sr="right">
         <div class="col-img col-wide"><img src="/static/images/library1.png" alt="" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&q=80'"></div>
         <div class="col-img col-tall"><img src="/static/images/library2.png" alt="" onerror="this.src='https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&q=80'"></div>
         <div class="col-img"><img src="/static/images/library3.png" alt="" onerror="this.src='https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80'"></div>
@@ -744,34 +731,51 @@
 
   <!-- FEATURES -->
   <section class="features-section" id="features">
-    <div class="section-head"><h2>What We <span>Offer</span></h2><p>Everything you need — all in one place.</p></div>
-    <div class="features-grid">
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-search"></i></div><h4>Book Catalog &amp; Search</h4><p>Browse thousands of titles across all categories — from Philippine literature to science, technology, and more.</p></div>
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-bookmark-check-fill"></i></div><h4>Book Borrowing</h4><p>Check out books for home reading. Track your borrowed titles and due dates from your member profile.</p></div>
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-building-fill"></i></div><h4>Local History Archive</h4><p>Explore Iloilo's rich heritage through curated documents, photographs, and rare historical texts.</p></div>
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-calendar-event-fill"></i></div><h4>Events &amp; Programs</h4><p>Join storytelling sessions, author talks, literacy workshops, and community events throughout the year.</p></div>
+    <!-- Section heading flips in -->
+    <div class="section-head" data-sr="flip">
+      <h2>What We <span>Offer</span></h2>
+      <p>Everything you need — all in one place.</p>
+    </div>
+    <!-- Cards stagger in one by one -->
+    <div class="features-grid" data-sr-group>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-search"></i></div><h4>Book Catalog &amp; Search</h4><p>Browse thousands of titles across all categories — from Philippine literature to science, technology, and more.</p></div>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-bookmark-check-fill"></i></div><h4>Book Borrowing</h4><p>Check out books for home reading. Track your borrowed titles and due dates from your member profile.</p></div>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-building-fill"></i></div><h4>Local History Archive</h4><p>Explore Iloilo's rich heritage through curated documents, photographs, and rare historical texts.</p></div>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-calendar-event-fill"></i></div><h4>Events &amp; Programs</h4><p>Join storytelling sessions, author talks, literacy workshops, and community events throughout the year.</p></div>
     </div>
   </section>
 
   <!-- VISION & MISSION -->
   <section class="vm-section" id="Vission_and_Mission">
-    <div class="section-head"><h2>Our Vision <span>&amp; Mission</span></h2><p>The values that guide everything we do.</p></div>
-    <div class="vm-mandate">
+    <!-- Section heading zooms in with a bounce -->
+    <div class="section-head" data-sr="zoom">
+      <h2>Our Vision <span>&amp; Mission</span></h2>
+      <p>The values that guide everything we do.</p>
+    </div>
+    <!-- Mandate slides and scales up -->
+    <div class="vm-mandate" data-sr="slide">
       <h4><i class="bi bi-stars me-2"></i>Mandate</h4>
       <p>Republic act no. 7743, june 17, 1994 — An act providing for the establishment of congressional, city and municipal libraries and barangay reading centers throughout the philippines, appropriating the necessary funds therefor and for other purposes.</p>
     </div>
-    <div class="vm-grid">
-      <div class="vm-card"><h4><i class="bi bi-eye-fill me-2"></i>Vision</h4><p>The Iloilo City Public Library empowers Ilonggos through lifelong learning and cultural preservation, cultivating information-literate and skilled citizens who actively contribute to a livable, sustainable, and well-governed Iloilo with a robust and inclusive economy.</p></div>
-      <div class="vm-card"><h4><i class="bi bi-bullseye me-2"></i>Mission</h4><p>Provides inclusive and responsive services that empower the Ilonggo community through equitable access to information and resources, preserving our cultural heritage and fostering the development of a livable, sustainable, and resilient city.</p></div>
+    <!-- Vision & Mission cards pop in with stagger -->
+    <div class="vm-grid" data-sr-group>
+      <div class="vm-card" data-sr-child><h4><i class="bi bi-eye-fill me-2"></i>Vision</h4><p>The Iloilo City Public Library empowers Ilonggos through lifelong learning and cultural preservation, cultivating information-literate and skilled citizens who actively contribute to a livable, sustainable, and well-governed Iloilo with a robust and inclusive economy.</p></div>
+      <div class="vm-card" data-sr-child><h4><i class="bi bi-bullseye me-2"></i>Mission</h4><p>Provides inclusive and responsive services that empower the Ilonggo community through equitable access to information and resources, preserving our cultural heritage and fostering the development of a livable, sustainable, and resilient city.</p></div>
     </div>
   </section>
 
   <!-- SERVICES & RESOURCES -->
   <section class="services-section" id="services">
     <div class="services-inner">
-      <div class="section-head" style="margin-bottom:56px;"><h2>Services <span>&amp; Resources</span></h2><p>What we provide for our community.</p></div>
+      <!-- Heading flips in -->
+      <div class="section-head" style="margin-bottom:56px;" data-sr="flip">
+        <h2>Services <span>&amp; Resources</span></h2>
+        <p>What we provide for our community.</p>
+      </div>
+
+      <!-- Row 1: text slides from left, image from right -->
       <div class="services-row">
-        <div class="services-text">
+        <div class="services-text" data-sr="left">
           <h3>Readers' <span>Services</span></h3>
           <ul class="services-checklist">
             <li>Free study and work space with WiFi</li>
@@ -779,10 +783,14 @@
             <li>Regular outreach to schools and libraries through literacy programs and book donations</li>
           </ul>
         </div>
-        <div class="services-img"><img src="/static/images/readers1.jpg" alt="Readers' Services" onerror="this.src='https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80'"></div>
+        <div class="services-img" data-sr="right">
+          <img src="/static/images/readers1.jpg" alt="Readers' Services" onerror="this.src='https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80'">
+        </div>
       </div>
+
+      <!-- Row 2: image slides from left, text from right (reversed layout) -->
       <div class="services-row reverse">
-        <div class="services-text">
+        <div class="services-text" data-sr="right">
           <h3><span>Archives</span></h3>
           <ul class="services-checklist">
             <li>Inventory and disposal of records for Iloilo Provincial Government Offices and district hospitals</li>
@@ -790,7 +798,9 @@
             <li>Safekeeping of historical and cultural resources of Iloilo Province</li>
           </ul>
         </div>
-        <div class="services-img"><img src="/static/images/readers2.jpg" alt="Archives" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80'"></div>
+        <div class="services-img" data-sr="left">
+          <img src="/static/images/readers2.jpg" alt="Archives" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80'">
+        </div>
       </div>
     </div>
   </section>
@@ -927,7 +937,7 @@
     if (!se) return;
     se.innerHTML = '';
     if (ne) ne.textContent = avg.toFixed(1);
-    if (ce) ce.textContent = cnt > 0 ? '(' + cnt + ' reviews)' : '(No reviews yet)';
+    if (ce) ce.textContent = cnt > 0 ? '' : '';
     var full = Math.floor(avg), half = (avg - full) >= 0.4;
     for (var i = 1; i <= 5; i++) {
       var s = document.createElement('span');
@@ -938,18 +948,49 @@
     }
   }
 
+  /* ─── DAILY ACTIVE COUNT ─── */
+  function formatActiveCount(n) {
+    if      (n >= 1000) return '1,000+';
+    else if (n >= 500)  return '500+';
+    else if (n >= 200)  return '200+';
+    else if (n >= 100)  return '100+';
+    else if (n >= 50)   return '50+';
+    else if (n > 0)     return String(n);
+    else                return '—';
+  }
+
+  function loadDailyActiveCount() {
+    var mc = document.getElementById('heroMemberCount');
+    if (!mc) return;
+
+    fetch('/api/user/daily-active-count')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d) { mc.textContent = '—'; return; }
+        var label = formatActiveCount(d.count || 0);
+        mc.textContent = label;
+        mc.classList.remove('count-updated');
+        void mc.offsetWidth;
+        mc.classList.add('count-updated');
+      })
+      .catch(function () {
+        mc.textContent = '—';
+      });
+  }
+
+  /* ─── RATINGS FETCH ─── */
   fetch('/api/ratings/average')
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (d) {
       if (d) {
         renderRating(d.average || 4.8, d.count || 0);
-        var mc = document.getElementById('heroMemberCount');
-        if (mc) mc.textContent = (d.member_count > 150) ? '150+' : (d.member_count || '150+');
       } else {
         renderRating(4.8, 128);
       }
     })
     .catch(function () { renderRating(4.8, 128); });
+
+  loadDailyActiveCount();
 
   /* ─── BRAIN CLICK: synapse burst ─── */
   if (brainWrap) {
@@ -978,12 +1019,37 @@
 
   /* ─── KICK OFF ─── */
   var showLoader = document.body.getAttribute('data-show-loader') === 'true';
-
   if (showLoader) {
     phase1_init();
   } else {
     skipLoader();
   }
+
+  /* ============================================================
+     SCROLL REVEAL — IntersectionObserver
+  ============================================================ */
+  (function () {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('vis');
+        io.unobserve(e.target);
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    /* Observe every [data-sr] element */
+    document.querySelectorAll('[data-sr]').forEach(function (el) {
+      io.observe(el);
+    });
+
+    /* Observe every [data-sr-group] (triggers children stagger) */
+    document.querySelectorAll('[data-sr-group]').forEach(function (el) {
+      io.observe(el);
+    });
+  }());
 
 }());
   </script>

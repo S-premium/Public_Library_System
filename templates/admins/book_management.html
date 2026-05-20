@@ -115,6 +115,8 @@
     .toolbar-btn.primary:hover { background:#b8d4ec; }
     .toolbar-btn.danger  { background:rgba(255,99,99,.12); color:var(--danger); border-color:rgba(255,99,99,.25); }
     .toolbar-btn.danger:hover { background:rgba(255,99,99,.22); }
+    .toolbar-btn.export { background:rgba(72,199,142,.08); color:var(--accent2); border-color:rgba(72,199,142,.22); }
+    .toolbar-btn.export:hover { background:rgba(72,199,142,.16); border-color:rgba(72,199,142,.4); }
 
     .filter-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(159,193,225,.25); background:rgba(159,193,225,.08); color:var(--accent); white-space:nowrap; position:relative; }
     .filter-btn:hover { background:rgba(159,193,225,.16); border-color:rgba(159,193,225,.4); }
@@ -194,7 +196,6 @@
       box-shadow:0 24px 60px rgba(0,0,0,.55);
       transform:translateY(16px) scale(.98);
       transition:transform .25s cubic-bezier(.22,1,.36,1);
-      /* prevent content from being cut off */
       -webkit-overflow-scrolling:touch;
     }
     .modal-overlay.open .modal-box { transform:translateY(0) scale(1); }
@@ -329,7 +330,7 @@
     .cm-tag.lang  { background:rgba(159,193,225,.14); color:var(--accent); }
     .cm-tag.pages { background:rgba(72,199,142,.14);  color:var(--accent2); }
     .cm-tag.year  { background:rgba(245,200,66,.12);  color:var(--gold); }
-    @keyframes fieldPop { 0%{background:rgba(159,193,225,.2)} 60%{background:rgba(159,193,225,.08)} 100%{background:rgba(255,255,255,.07)} }
+    @keyframes fieldPop { 0%{background:rgba(159,193,225,.2)} 60%{background:rgba(159,193,142,.08)} 100%{background:rgba(255,255,255,.07)} }
     .autofilled { animation:fieldPop .65s ease forwards; }
 
     .copy-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
@@ -645,6 +646,7 @@
     <span class="filter-active-count" id="filterCount"></span>
     <span class="filter-active-dot" id="filterDot"></span>
   </button>
+  <button class="toolbar-btn export" onclick="exportCSV()"><i class="bi bi-filetype-csv"></i> <span class="btn-label">Export CSV</span></button>
   <button class="toolbar-btn" onclick="clearAllFilters()"><i class="bi bi-x-circle"></i> <span class="btn-label">Clear</span></button>
 </div>
 
@@ -975,7 +977,6 @@
           <div class="form-group" style="margin-bottom:0">
             <label class="form-label">Cover Image</label>
             <div style="display:flex;flex-direction:column;gap:8px">
-              <!-- File upload -->
               <div id="addCoverDropZone" style="border:2px dashed rgba(159,193,225,.25);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative" onclick="document.getElementById('addCoverFile').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor='rgba(159,193,225,.25)'" ondrop="handleCoverDrop(event,'add')">
                 <input type="file" name="cover_image_file" id="addCoverFile" accept="image/*" style="display:none" onchange="handleCoverFile(this,'add')">
                 <div id="addCoverPreviewWrap" style="display:none;position:relative;display:none">
@@ -984,7 +985,6 @@
                 </div>
                 <div id="addCoverPlaceholder" style="color:rgba(255,255,255,.35);font-size:.8rem"><i class="bi bi-cloud-upload" style="font-size:1.3rem;display:block;margin-bottom:5px;color:rgba(159,193,225,.5)"></i>Click or drag & drop a cover image<br><span style="font-size:.7rem;opacity:.6">PNG, JPG, WEBP, GIF — max 5 MB</span></div>
               </div>
-              <!-- OR URL -->
               <div style="display:flex;align-items:center;gap:8px">
                 <div style="flex:1;height:1px;background:rgba(255,255,255,.08)"></div>
                 <span style="font-size:.72rem;color:rgba(255,255,255,.3);flex-shrink:0">or paste a URL</span>
@@ -1382,6 +1382,61 @@ function esc(s) {
 function showToast(msg, type='') {
   const t=document.createElement('div'); t.className=`toast-msg ${type}`; t.innerHTML=msg;
   document.getElementById('toastWrap').appendChild(t); setTimeout(()=>t.remove(),3800);
+}
+
+/* ══ EXPORT CSV ══ */
+function exportCSV() {
+  const cols = [
+    { label: 'ID',             key: b => b.id ?? '' },
+    { label: 'Title',          key: b => b.title ?? '' },
+    { label: 'Subtitle',       key: b => b.subtitle ?? '' },
+    { label: 'Author',         key: b => b.author ?? '' },
+    { label: 'Publisher',      key: b => b.publisher ?? '' },
+    { label: 'ISBN',           key: b => b.isbn ?? '' },
+    { label: 'Edition',        key: b => b.edition ?? '' },
+    { label: 'Category',       key: b => b.category ?? '' },
+    { label: 'Genre/Class',    key: b => b.genre || b.class || '' },
+    { label: 'Language',       key: b => b.language ?? '' },
+    { label: 'Published Date', key: b => b.published_date ?? '' },
+    { label: 'Page Count',     key: b => b.page_count ?? '' },
+    { label: 'Call Number',    key: b => b.call_number ?? '' },
+    { label: 'Shelf Location', key: b => b.shelf_location ?? '' },
+    { label: 'Total Copies',   key: b => b.total_copies ?? '' },
+    { label: 'Available',      key: b => b.available_copies ?? '' },
+    { label: 'Damaged',        key: b => b.damaged_copies ?? '' },
+    { label: 'Lost',           key: b => b.lost_copies ?? '' },
+    { label: 'Status',         key: b => b.status ?? '' },
+    { label: 'Borrowable',     key: b => b.is_borrowable ? 'Yes' : 'No' },
+    { label: 'Copyright',      key: b => b.copy_right ?? '' },
+    { label: 'Date Received',  key: b => b.date_received ?? '' },
+    { label: 'Source of Fund', key: b => b.source_of_fund ?? '' },
+    { label: 'Cost Price',     key: b => b.cost_price ?? '' },
+    { label: 'Date Added',     key: b => b.date_added ?? '' },
+    { label: 'Description',    key: b => b.description ?? '' },
+  ];
+
+  const escape = val => {
+    const s = String(val).replace(/"/g, '""');
+    return /[",\n\r]/.test(s) ? `"${s}"` : s;
+  };
+
+  const header = cols.map(c => escape(c.label)).join(',');
+  const rows   = filtered.map(b => cols.map(c => escape(c.key(b))).join(','));
+  const csv    = [header, ...rows].join('\r\n');
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const now  = new Date();
+  const ts   = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  a.href     = url;
+  a.download = `books_export_${ts}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Exported ${filtered.length} book${filtered.length !== 1 ? 's' : ''} to CSV`, 'success');
 }
 
 /* FILTER MODAL */
@@ -1963,7 +2018,6 @@ function handleCoverFile(input, ctx) {
     previewImg.src = e.target.result;
     previewWrap.style.display = 'block';
     placeholder.style.display = 'none';
-    // Clear URL field since file takes priority
     if (ctx === 'add') {
       document.getElementById('addThumbnail').value = '';
       document.getElementById('addThumbnailHidden').value = '';
@@ -1996,7 +2050,6 @@ function clearCover(ctx) {
 }
 
 function onAddCoverUrlInput(val) {
-  // If typing a URL, clear any file upload
   if (val.trim()) {
     document.getElementById('addCoverFile').value = '';
     document.getElementById('addCoverPreviewWrap').style.display = 'none';
@@ -2005,13 +2058,10 @@ function onAddCoverUrlInput(val) {
   document.getElementById('addThumbnailHidden').value = val.trim();
 }
 
-// Show existing cover when edit modal opens
 const _origOpenEditModal = openEditModal;
 openEditModal = function(id) {
   _origOpenEditModal(id);
-  // Reset file input
   clearCover('edit');
-  // Show current thumbnail in drop zone if it exists
   const b = allBooks.find(x => x.id === id);
   if (b && b.thumbnail_url) {
     const previewWrap = document.getElementById('editCoverPreviewWrap');
@@ -2023,7 +2073,6 @@ openEditModal = function(id) {
   }
 };
 
-// When add modal resets, clear cover
 const _origResetAddForm = resetAddForm;
 resetAddForm = function() {
   _origResetAddForm();

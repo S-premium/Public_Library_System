@@ -142,8 +142,8 @@
 
     .pin-badge { display:inline-flex; align-items:center; gap:4px; font-size:.67rem; font-weight:700; color:var(--warn); margin-left:6px; }
     .ann-title { font-size:.95rem; font-weight:700; margin:0 0 7px; line-height:1.35; color:#fff; }
-    .ann-body  { font-size:.83rem; color:rgba(255,255,255,.6); line-height:1.65; margin:0 0 12px; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
-    .ann-card.expanded .ann-body { -webkit-line-clamp:unset; }
+    .ann-body  { font-size:.83rem; color:rgba(255,255,255,.6); line-height:1.65; margin:0 0 12px; display:-webkit-box; -webkit-line-clamp:4; line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+    .ann-card.expanded .ann-body { -webkit-line-clamp:unset; line-clamp:unset; }
     .read-more { background:none; border:none; color:var(--accent); font-size:.76rem; font-weight:600; cursor:pointer; padding:0; font-family:'DM Sans',sans-serif; margin-bottom:10px; display:block; }
     .read-more:hover { text-decoration:underline; }
 
@@ -190,6 +190,27 @@
     .char-count { font-size:.7rem; color:rgba(255,255,255,.3); text-align:right; margin-top:3px; }
     .char-count.near { color:var(--warn); }
     .char-count.over { color:var(--danger); }
+
+    /* ── USER SEARCH (exact match to admin) ── */
+    .user-search-wrap { position:relative; }
+    .user-search-input { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:9px; color:#fff; padding:9px 13px 9px 36px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
+    .user-search-input:focus { background:rgba(255,255,255,.10); border-color:var(--accent); box-shadow:0 0 0 3px rgba(159,193,225,.1); }
+    .user-search-input::placeholder { color:rgba(255,255,255,.25); }
+    .user-search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.4); font-size:.88rem; pointer-events:none; }
+    .user-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#1e2d3d; border:1px solid rgba(159,193,225,.2); border-radius:10px; z-index:999; max-height:200px; overflow-y:auto; display:none; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+    .user-dropdown.open { display:block; }
+    .user-dropdown-item { padding:9px 14px; font-size:.84rem; cursor:pointer; display:flex; align-items:center; gap:8px; transition:.15s; border-bottom:1px solid rgba(255,255,255,.05); }
+    .user-dropdown-item:last-child { border-bottom:none; }
+    .user-dropdown-item:hover { background:rgba(159,193,225,.1); }
+    .user-dropdown-item .u-name  { font-weight:600; color:#fff; }
+    .user-dropdown-item .u-email { font-size:.74rem; color:rgba(255,255,255,.4); }
+    .user-selected-badge { display:none; align-items:center; gap:8px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.25); border-radius:8px; padding:7px 12px; margin-top:6px; font-size:.82rem; }
+    .user-selected-badge.show { display:flex; }
+    .user-selected-badge .badge-name  { color:var(--accent); font-weight:600; flex:1; }
+    .user-selected-badge .badge-clear { background:transparent; border:none; color:rgba(255,255,255,.4); cursor:pointer; font-size:.85rem; padding:0; transition:.15s; }
+    .user-selected-badge .badge-clear:hover { color:var(--danger); }
+    .broadcast-note { font-size:.75rem; color:rgba(255,255,255,.35); margin-top:5px; display:flex; align-items:center; gap:5px; }
+
     .preview-box  { background:rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.1); border-radius:9px; padding:13px 15px; font-size:.82rem; color:rgba(255,255,255,.45); min-height:50px; white-space:pre-wrap; }
 
     .btn-submit-modal {
@@ -228,8 +249,9 @@
   </style>
 </head>
 <body>
-{% include 'librarian_template/topbar_template.html' %} 
+{% include 'librarian_template/topbar_template.html' %}
 {% include 'librarian_template/sidebar_template.html' %}
+
   <!-- MAIN -->
   <div class="page-wrap">
     <div class="page-header">
@@ -293,6 +315,7 @@
         </div>
         <div class="modal-body">
           <input type="hidden" id="editId">
+          <input type="hidden" id="targetUserId">
           <div class="mb-3">
             <label class="form-label">Title <span style="color:var(--danger)">*</span></label>
             <input type="text" class="form-control" id="annTitle" placeholder="e.g. Library Holiday Schedule" maxlength="120">
@@ -320,6 +343,21 @@
             <label class="form-label">Message <span style="color:var(--danger)">*</span></label>
             <textarea class="form-control" id="annBody" placeholder="Write your announcement here…" maxlength="1000"></textarea>
             <div class="char-count" id="bodyCount">0 / 1000</div>
+          </div>
+          <!-- ── SEND TO (matches admin exactly) ── -->
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-person-fill me-1" style="color:var(--accent)"></i>Send To</label>
+            <div class="user-search-wrap">
+              <i class="bi bi-search user-search-icon"></i>
+              <input type="text" class="user-search-input" id="userSearchInput" placeholder="Search user by name… (leave empty to send to all)">
+              <div class="user-dropdown" id="userDropdown"></div>
+            </div>
+            <div class="user-selected-badge" id="userSelectedBadge">
+              <i class="bi bi-person-check-fill" style="color:var(--accent)"></i>
+              <span class="badge-name" id="userSelectedName"></span>
+              <button class="badge-clear" id="clearUserBtn" title="Remove — send to all"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="broadcast-note" id="broadcastNote"><i class="bi bi-broadcast"></i>No user selected — this will be sent to all members</div>
           </div>
           <div>
             <label class="form-label">Preview</label>
@@ -352,6 +390,7 @@
       </div>
     </div>
   </div>
+
 {% include 'librarian_template/footer_template.html' %}
   <div class="toast-wrap" id="toastWrap"></div>
 
@@ -421,8 +460,8 @@
         return mC && mS;
       });
 
-      const pinned   = flt.filter(a=>a.pinned);
-      const unpinned = flt.filter(a=>!a.pinned);
+      const pinned    = flt.filter(a=>a.pinned);
+      const unpinned  = flt.filter(a=>!a.pinned);
       const pinnedSec = document.getElementById('pinnedSection');
 
       if (pinned.length) {
@@ -451,13 +490,14 @@
 
     function resetForm() {
       ['editId','annTitle','annBody'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('annCategory').value          = 'general';
-      document.getElementById('annPin').value               = '0';
-      document.getElementById('titleCount').textContent     = '0 / 120';
-      document.getElementById('bodyCount').textContent      = '0 / 1000';
-      document.getElementById('previewBox').textContent     = 'Your message will appear here…';
+      document.getElementById('annCategory').value           = 'general';
+      document.getElementById('annPin').value                = '0';
+      document.getElementById('titleCount').textContent      = '0 / 120';
+      document.getElementById('bodyCount').textContent       = '0 / 1000';
+      document.getElementById('previewBox').textContent      = 'Your message will appear here…';
       document.getElementById('modalTitleLabel').textContent = 'New Announcement';
-      document.getElementById('submitLabel').textContent    = 'Post';
+      document.getElementById('submitLabel').textContent     = 'Post';
+      setSelectedUser(null, '');
     }
 
     document.getElementById('openPostModal').addEventListener('click', ()=>{ resetForm(); postModal.show(); });
@@ -506,7 +546,7 @@
           if(idx>-1) Object.assign(announcements[idx],{title,body,category,pinned});
           showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement updated!', 'success');
         } else {
-          const res = await apiCreate({title,body,category,pinned});
+          const res = await apiCreate({title,body,category,pinned,target_user_id:selectedUserId||null});
           if(!res.success) throw new Error();
           announcements.unshift(res.announcement);
           showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement posted!', 'success');
@@ -559,7 +599,105 @@
     menuToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
     document.addEventListener('click',e=>{ if(!menuToggle.contains(e.target)&&!navLinks.contains(e.target)) navLinks.classList.remove('open'); });
 
-    (async()=>{ try { announcements=await apiGetAnnouncements(); } catch { announcements=[]; } renderAll(); })();
+    /* ── USER SEARCH (identical logic to admin) ── */
+    let selectedUserId   = null;
+    let userSearchTimeout = null;
+
+    const userSearchInput   = document.getElementById('userSearchInput');
+    const userDropdown      = document.getElementById('userDropdown');
+    const userSelectedBadge = document.getElementById('userSelectedBadge');
+    const userSelectedName  = document.getElementById('userSelectedName');
+    const broadcastNote     = document.getElementById('broadcastNote');
+
+    function setSelectedUser(id, name) {
+      selectedUserId = id;
+      document.getElementById('targetUserId').value = id || '';
+      userSelectedName.textContent = name;
+      userSelectedBadge.classList.toggle('show', !!id);
+      broadcastNote.style.display  = id ? 'none' : 'flex';
+      userSearchInput.value        = '';
+      userDropdown.classList.remove('open');
+      userDropdown.innerHTML       = '';
+    }
+
+    document.getElementById('clearUserBtn').addEventListener('click', () => setSelectedUser(null, ''));
+
+    function buildDropdownItem(user) {
+      const item = document.createElement('div');
+      item.className = 'user-dropdown-item';
+
+      const icon = document.createElement('i');
+      icon.className = 'bi bi-person-circle';
+      icon.style.cssText = 'color:var(--accent);font-size:1rem';
+
+      const info    = document.createElement('div');
+      const nameEl  = document.createElement('div');
+      nameEl.className   = 'u-name';
+      nameEl.textContent = user.firstname + ' ' + user.lastname;
+
+      const emailEl = document.createElement('div');
+      emailEl.className   = 'u-email';
+      emailEl.textContent = user.username || '';
+
+      info.appendChild(nameEl);
+      info.appendChild(emailEl);
+      item.appendChild(icon);
+      item.appendChild(info);
+
+      item.addEventListener('click', () => {
+        setSelectedUser(user.id, user.firstname + ' ' + user.lastname);
+      });
+      return item;
+    }
+
+    userSearchInput.addEventListener('input', function() {
+      clearTimeout(userSearchTimeout);
+      const q = this.value.trim();
+      if (!q) { userDropdown.classList.remove('open'); userDropdown.innerHTML=''; return; }
+
+      userSearchTimeout = setTimeout(async () => {
+        try {
+          const res   = await fetch('/api/users/search?q=' + encodeURIComponent(q));
+          const data  = await res.json();
+          const users = data.users || [];
+
+          userDropdown.innerHTML = '';
+          if (!users.length) {
+            const empty = document.createElement('div');
+            empty.className = 'user-dropdown-item';
+            const noResult = document.createElement('span');
+            noResult.className   = 'u-name';
+            noResult.style.color = 'rgba(255,255,255,.4)';
+            noResult.textContent = 'No users found';
+            empty.appendChild(noResult);
+            userDropdown.appendChild(empty);
+          } else {
+            users.forEach(u => userDropdown.appendChild(buildDropdownItem(u)));
+          }
+          userDropdown.classList.add('open');
+        } catch(e) {
+          console.error('User search error:', e);
+          userDropdown.classList.remove('open');
+        }
+      }, 280);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!userSearchInput.contains(e.target) && !userDropdown.contains(e.target)) {
+        userDropdown.classList.remove('open');
+      }
+    });
+
+    /* ── INIT ── */
+    (async () => {
+      try {
+        announcements = await apiGetAnnouncements();
+      } catch(e) {
+        showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Failed to load announcements.', 'error');
+        announcements = [];
+      }
+      renderAll();
+    })();
   </script>
 </body>
 </html>

@@ -741,17 +741,12 @@ def api_users_search():
         return jsonify({'error': 'Unauthorized'}), 401
     if session.get('role') not in ('admin', 'librarian'):
         return jsonify({'error': 'Unauthorized'}), 401
-    
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT COUNT(*) FROM users")
-        count = cur.fetchone()
-        cur.execute("SELECT id, role FROM users LIMIT 5")
-        rows = cur.fetchall()
-        cur.close()
-        return jsonify({'count': count[0], 'sample': [{'id': r[0], 'role': r[1]} for r in rows]})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+
+    q = request.args.get('q', '').strip()
+    if not q:
+        return jsonify({'users': []}), 200
+
+    return jsonify({'users': search_users(q)})
 
 
 # =====================================================================
@@ -1186,6 +1181,13 @@ def library_cards_page():
         flash("Unauthorized access", "danger")
         return redirect('/')
     return render_template("admins/library_cards.html")
+
+@admin_bp.route('/records_returns')
+def library_records_page():
+    if not is_logged_in() or require_role('admin', 'librarian'):
+        flash("Unauthorized access", "danger")
+        return redirect('/')
+    return render_template("admins/records_returns.html")
 
 # =====================================================================
 # MEMBER SEARCH FOR LIBRARY CARD

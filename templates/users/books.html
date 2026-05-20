@@ -108,6 +108,11 @@
     .filter-clear-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 13px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:rgba(255,255,255,.65); }
     .filter-clear-btn:hover { background:rgba(255,255,255,.12); color:#fff; }
 
+    /* ── HELP ICON BUTTON ── */
+    .help-btn { display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:10px; border:1px solid rgba(159,193,225,.25); background:rgba(159,193,225,.08); color:var(--accent); cursor:pointer; transition:.18s; flex-shrink:0; }
+    .help-btn:hover { background:rgba(159,193,225,.2); border-color:rgba(159,193,225,.5); color:#fff; transform:scale(1.05); }
+    .help-btn i { font-size:1.05rem; }
+
     /* Active filter chip strip */
     #activeFilterChips { display:none; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
     #activeFilterChips .fac { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:.74rem; font-weight:600; background:rgba(159,193,225,.1); color:var(--accent); border:1px solid rgba(159,193,225,.22); cursor:pointer; transition:.15s; }
@@ -134,7 +139,10 @@
     .book-card:nth-child(6n+6) .book-cover-fallback { background:linear-gradient(135deg,rgba(77,192,192,.2),rgba(30,63,63,.5)); }
     .book-cover-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(20,30,40,.85) 0%,transparent 55%); pointer-events:none; }
     .book-category-tag { position:absolute; bottom:8px; left:8px; background:rgba(0,0,0,.55); color:rgba(255,255,255,.75); font-size:.6rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:20px; backdrop-filter:blur(4px); }
-    .btn-bookmark { position:absolute; top:10px; left:10px; z-index:10; background:rgba(0,0,0,.45); border:none; border-radius:8px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.25s; backdrop-filter:blur(4px); }
+
+    /* ── COVER TOP ROW: bookmark left, borrow pill right ── */
+    .cover-top-row { position:absolute; top:10px; left:10px; right:10px; z-index:10; display:flex; align-items:center; justify-content:space-between; }
+    .btn-bookmark { background:rgba(0,0,0,.45); border:none; border-radius:8px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.25s; backdrop-filter:blur(4px); }
     .btn-bookmark i { font-size:.95rem; color:rgba(255,255,255,.65); transition:.25s; pointer-events:none; }
     .btn-bookmark:hover { background:rgba(245,200,66,.25); transform:scale(1.1); }
     .btn-bookmark:hover i { color:var(--gold); }
@@ -142,6 +150,13 @@
     .btn-bookmark.bookmarked i { color:var(--gold); text-shadow:0 0 8px var(--gold-glow); }
     @keyframes bookmarkPop { 0%{transform:scale(1)} 40%{transform:scale(1.35)} 70%{transform:scale(.9)} 100%{transform:scale(1)} }
     .btn-bookmark.pop { animation:bookmarkPop .35s ease forwards; }
+
+    /* ── BORROW PILL (on cover, top-right) ── */
+    .cover-borrow-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:20px; font-size:.6rem; font-weight:700; letter-spacing:.03em; backdrop-filter:blur(6px); white-space:nowrap; }
+    .cover-borrow-pill.borrowable { background:rgba(72,199,142,.22); border:1px solid rgba(72,199,142,.45); color:#6decc0; }
+    .cover-borrow-pill.reference  { background:rgba(255,99,99,.18);  border:1px solid rgba(255,99,99,.35);  color:#ff9090; }
+    .cover-borrow-pill i { font-size:.7rem; }
+
     .book-card-body { padding:14px 16px 16px; display:flex; flex-direction:column; flex:1; }
     .book-title { font-size:.88rem; font-weight:700; color:#fff; margin-bottom:4px; line-height:1.35; display:-webkit-box; line-clamp:2; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .book-author { font-size:.75rem; color:var(--tl); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -149,6 +164,7 @@
     .book-actions { display:flex; gap:7px; margin-top:auto; }
     .btn-details { flex:1; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:5px; }
     .btn-details:hover { background:rgba(159,193,225,.22); border-color:var(--accent); }
+
     .btn-borrow { flex:1; background:var(--accent); border:none; color:#0d1a24; border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:5px; }
     .btn-borrow:hover { background:#b8d4ec; transform:translateY(-1px); }
     .btn-borrow-disabled { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.25); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:600; cursor:not-allowed; display:flex; align-items:center; justify-content:center; gap:5px; }
@@ -342,7 +358,7 @@
 
     /* ── INVENTORY COPY CARDS ── */
     .inv-copy-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
-    .inv-copy-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; transition:.15s; }
+    .inv-copy-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; transition:.15px; }
     .inv-copy-card:hover { background:rgba(255,255,255,.07); }
     .inv-copy-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
     .inv-copy-icon.total { background:rgba(159,193,225,.15); color:var(--accent); }
@@ -509,6 +525,11 @@
         <i class="bi bi-x-circle"></i> Clear
       </button>
 
+      <!-- ── HELP / HOW TO BORROW ICON ── -->
+      <button class="help-btn" onclick="openBorrowSteps()" title="How to borrow a book">
+        <i class="bi bi-patch-question"></i>
+      </button>
+
       <span class="results-lbl" id="resultsLbl">Loading…</span>
     </div>
 
@@ -602,7 +623,7 @@
 
         <!-- INVENTORY PANEL -->
         <div class="modal-tab-panel" id="panelInventory">
-          <!-- Shelf location (moved from Details) -->
+          <!-- Shelf location -->
           <div class="shelf-highlight" id="invShelfHighlight">
             <div class="shelf-highlight-icon"><i class="bi bi-geo-alt-fill"></i></div>
             <div>
@@ -911,7 +932,7 @@
     document.getElementById('borrowStepsModal').addEventListener('click', e => { if(e.target===document.getElementById('borrowStepsModal'))closeBorrowSteps(); });
 
     /* ── BORROW HANDLER ── */
-    function handleBorrow(event) { event.stopPropagation(); const missing=checkProfileComplete(); if(missing.length>0){openIncomplete(missing);}else{openBorrowSteps();} }
+    function handleBorrow(event) { event.stopPropagation(); openBorrowSteps(); }
 
     /* ── CONSTANTS & STATE ── */
     const BOOKS_PER_PAGE=10, MAX_FAV=5;
@@ -1224,12 +1245,42 @@
       renderPagination();
     }
 
-    function buildBookCard(book,isNew) {
-      const dateStr=book.date_added?new Date(book.date_added).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}):'—';
-      const isFav=favorites.includes(book.id); const thumb=book.thumbnail_url||'';
-      const coverHTML=thumb?`<img class="book-cover-img" src="${esc(thumb)}" alt="${esc(book.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-fallback" style="display:none;position:absolute;inset:0;"><i class="bi bi-book book-cover-icon"></i></div>`:`<div class="book-cover-fallback"><i class="bi bi-book book-cover-icon"></i></div>`;
-      const borrowBtn=isBorrowable(book)?`<button class="btn-borrow" onclick="handleBorrow(event)"><i class="bi bi-bookmark-plus-fill"></i> Borrow</button>`:``;
-      return `<div class="book-card" data-id="${book.id}">${isNew?'<div class="ribbon-new">New</div>':''}<div class="book-cover">${coverHTML}<div class="book-cover-overlay"></div><button class="btn-bookmark ${isFav?'bookmarked':''}" onclick="toggleFavorite(event,${book.id})" title="${isFav?'Remove from favorites':'Add to favorites'}"><i class="bi ${isFav?'bi-bookmark-star-fill':'bi-bookmark-star'}"></i></button>${book.category?`<span class="book-category-tag">${esc(book.category)}</span>`:''}</div><div class="book-card-body"><p class="book-title">${esc(book.title)}</p><p class="book-author"><i class="bi bi-person-fill me-1" style="opacity:.5;font-size:.68rem;"></i>${esc(book.author)}</p><p class="book-meta">Added ${dateStr}</p><div class="book-actions"><button class="btn-details" onclick="openDetail(${book.id})"><i class="bi bi-eye-fill"></i> Details</button>${borrowBtn}</div></div></div>`;
+    /* ── BOOK CARD BUILDER (updated) ── */
+    function buildBookCard(book, isNew) {
+      const dateStr = book.date_added ? new Date(book.date_added).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}) : '—';
+      const isFav = favorites.includes(book.id);
+      const thumb = book.thumbnail_url || '';
+      const coverHTML = thumb
+        ? `<img class="book-cover-img" src="${esc(thumb)}" alt="${esc(book.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-fallback" style="display:none;position:absolute;inset:0;"><i class="bi bi-book book-cover-icon"></i></div>`
+        : `<div class="book-cover-fallback"><i class="bi bi-book book-cover-icon"></i></div>`;
+
+      /* ── Borrow pill rendered on the cover, top-right ── */
+      const borrowPill = isBorrowable(book)
+        ? `<span class="cover-borrow-pill borrowable"><i class="bi bi-bookmark-check-fill"></i>Borrowable</span>`
+        : `<span class="cover-borrow-pill reference"><i class="bi bi-bookmark-x-fill"></i>Reference</span>`;
+
+      return `<div class="book-card" data-id="${book.id}">
+        ${isNew ? '<div class="ribbon-new">New</div>' : ''}
+        <div class="book-cover">
+          ${coverHTML}
+          <div class="book-cover-overlay"></div>
+          <div class="cover-top-row">
+            <button class="btn-bookmark ${isFav ? 'bookmarked' : ''}" onclick="toggleFavorite(event,${book.id})" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">
+              <i class="bi ${isFav ? 'bi-bookmark-star-fill' : 'bi-bookmark-star'}"></i>
+            </button>
+            ${borrowPill}
+          </div>
+          ${book.category ? `<span class="book-category-tag">${esc(book.category)}</span>` : ''}
+        </div>
+        <div class="book-card-body">
+          <p class="book-title">${esc(book.title)}</p>
+          <p class="book-author"><i class="bi bi-person-fill me-1" style="opacity:.5;font-size:.68rem;"></i>${esc(book.author)}</p>
+          <p class="book-meta">Added ${dateStr}</p>
+          <div class="book-actions">
+            <button class="btn-details" onclick="openDetail(${book.id})"><i class="bi bi-eye-fill"></i> Details</button>
+          </div>
+        </div>
+      </div>`;
     }
 
     function renderPagination() { const total=filteredBooks.length,pages=Math.ceil(total/BOOKS_PER_PAGE);const bar=document.getElementById('pagBar');if(pages<=1){bar.style.display='none';return;}bar.style.display='flex';const s=(currentPage-1)*BOOKS_PER_PAGE+1;const e=Math.min(currentPage*BOOKS_PER_PAGE,total);document.getElementById('pagInfo').textContent=`Showing ${s}–${e} of ${total}`;let lo=Math.max(1,currentPage-2),hi=Math.min(pages,currentPage+2);let html=`<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;if(lo>1)html+=`<button class="pag-btn" onclick="goPage(1)">1</button>${lo>2?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}`;for(let p=lo;p<=hi;p++)html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;if(hi<pages)html+=`${hi<pages-1?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}<button class="pag-btn" onclick="goPage(${pages})">${pages}</button>`;html+=`<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;document.getElementById('pagBtns').innerHTML=html; }
@@ -1314,7 +1365,7 @@
         descText.innerHTML = '<span class="no-desc">No description available for this book.</span>';
       }
 
-      /* Details tab — bibliographic, publication, classification (no shelf here) */
+      /* Details tab */
       document.getElementById('detailGridBiblio').innerHTML =
         detailCell('bi-upc-scan',    'ISBN',        book.isbn) +
         detailCell('bi-person-fill', 'Author',      book.author) +
@@ -1340,21 +1391,17 @@
         detailCell('bi-bank',       'Source of Fund',  book.source_of_fund) +
         detailCell('bi-globe',      'API Source',      book.api_source);
 
-      /* Inventory tab — shelf location */
+      /* Inventory tab */
       const shelf = book.shelf_location || '';
       const invShelf = document.getElementById('invShelfValue');
       if (invShelf) {
         invShelf.textContent = shelf || 'Not assigned';
         invShelf.className   = 'shelf-highlight-value' + (shelf ? '' : ' empty');
       }
-
-      /* Inventory tab — total & available copy counts */
       const totalEl     = document.getElementById('invTotalCopies');
       const availableEl = document.getElementById('invAvailableCopies');
       if (totalEl)     totalEl.textContent     = book.total_copies     != null ? String(book.total_copies)     : '0';
       if (availableEl) availableEl.textContent = book.available_copies != null ? String(book.available_copies) : '0';
-
-      /* Inventory tab — status */
       document.getElementById('invStatusGrid').innerHTML =
         detailCell('bi-circle-half', 'Status', book.status || 'Available', true);
 
