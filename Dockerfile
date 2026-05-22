@@ -2,7 +2,7 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-cache-dir \
+RUN apt-get update && apt-get install -y \
     build-essential \
     libssl-dev \
     libffi-dev \
@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY package.json package-lock.json* ./
-RUN npm install --no-cache-dir
+RUN npm install --no-cache
 
 COPY . .
 
