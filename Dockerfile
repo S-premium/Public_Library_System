@@ -2,7 +2,7 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-cache-dir --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-cache-dir \
     build-essential \
     libssl-dev \
     libffi-dev \
