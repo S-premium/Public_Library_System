@@ -18,3 +18,4 @@ Werkzeug==3.1.4
 fpdf2==2.8.7
 pikepdf==10.5.1
 gunicorn==20.1.0
+qrcode==8.2
