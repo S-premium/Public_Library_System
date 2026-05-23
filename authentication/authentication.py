@@ -301,38 +301,39 @@ def verify_pin_reset_token(token: str, expiration: int = 3600):
 # =====================================================================
 
 def _send_pin_expiry_email_for_user(user_id: int):
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "SELECT email_display, firstname FROM users WHERE id=%s", (user_id,)
-        )
-        row = cur.fetchone()
-        if not row:
+    # Called via enqueue() — runs in a background thread, needs app context.
+    with app.app_context():
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "SELECT email_display, firstname FROM users WHERE id=%s", (user_id,)
+            )
+            row = cur.fetchone()
+            if not row:
+                cur.close()
+                return
+
+            email_enc, firstname_enc = row
+            token        = generate_pin_reset_token(user_id)
+            token_expiry = datetime.now() + timedelta(hours=1)
+
+            cur.execute("""
+                UPDATE users
+                SET pin_reset_token=%s, pin_reset_token_expiry=%s
+                WHERE id=%s
+            """, (token, token_expiry, user_id))
+            mysql.connection.commit()
             cur.close()
-            return
 
-        email_enc, firstname_enc = row
-        token        = generate_pin_reset_token(user_id)
-        token_expiry = datetime.now() + timedelta(hours=1)
+            from helpers import safe_decrypt_email, safe_decrypt_pii
+            email     = safe_decrypt_email(email_enc)
+            firstname = safe_decrypt_pii(firstname_enc)
 
-        cur.execute("""
-            UPDATE users
-            SET pin_reset_token=%s, pin_reset_token_expiry=%s
-            WHERE id=%s
-        """, (token, token_expiry, user_id))
-        mysql.connection.commit()
-        cur.close()
+            reset_link = url_for('auth_bp.reset_pin_form', token=token, _external=True)
+            enqueue(send_pin_expiry_email, email, firstname, reset_link)
 
-        from helpers import safe_decrypt_email, safe_decrypt_pii
-        email     = safe_decrypt_email(email_enc)
-        firstname = safe_decrypt_pii(firstname_enc)
-
-        reset_link = url_for('auth_bp.reset_pin_form', token=token, _external=True)
-        # Fire email in background — don't block the login flow
-        enqueue(send_pin_expiry_email, email, firstname, reset_link)
-
-    except Exception as e:
-        print(f"[PIN Expiry Email] Error: {e}")
+        except Exception as e:
+            print(f"[PIN Expiry Email] Error: {e}")
 
 
 # =====================================================================
@@ -378,22 +379,24 @@ def _check_pin_after_auth(user_id: int):
 # =====================================================================
 
 def cleanup_expired_otps():
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            UPDATE users
-            SET otp_code = NULL, otp_expiry = NULL
-            WHERE otp_expiry IS NOT NULL AND otp_expiry < %s
-        """, (datetime.now(),))
-        mysql.connection.commit()
-        cur.close()
-        print(f"[OTP Cleanup] Done at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    except Exception as e:
-        print(f"[OTP Cleanup] Error: {e}")
+    # APScheduler runs in its own thread with no Flask app context — push one.
+    with app.app_context():
         try:
-            mysql.connection.rollback()
-        except Exception:
-            pass
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE users
+                SET otp_code = NULL, otp_expiry = NULL
+                WHERE otp_expiry IS NOT NULL AND otp_expiry < %s
+            """, (datetime.now(),))
+            mysql.connection.commit()
+            cur.close()
+            print(f"[OTP Cleanup] Done at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        except Exception as e:
+            print(f"[OTP Cleanup] Error: {e}")
+            try:
+                mysql.connection.rollback()
+            except Exception:
+                pass
 
 
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
@@ -415,16 +418,17 @@ def update_last_seen():
 
 def _do_update_last_seen(user_id: int):
     """Background worker: update last_seen + status without blocking HTTP."""
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "UPDATE users SET last_seen=%s, status=%s WHERE id=%s",
-            (datetime.now(), "active", user_id),
-        )
-        mysql.connection.commit()
-        cur.close()
-    except Exception:
-        pass
+    with app.app_context():
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "UPDATE users SET last_seen=%s, status=%s WHERE id=%s",
+                (datetime.now(), "active", user_id),
+            )
+            mysql.connection.commit()
+            cur.close()
+        except Exception:
+            pass
 
 
 # =====================================================================
