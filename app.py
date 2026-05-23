@@ -10,6 +10,7 @@ Entry point.  Only contains:
 from conn import app, mysql
 import os
 from backup.scheduler import start_backup_scheduler
+from task_queue import enqueue   # ensure workers start at boot
 
 app.debug = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
 
@@ -18,6 +19,18 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
 
 from errors import register_error_handlers
 register_error_handlers(app)
+
+# ── Queue health endpoint (admin only) ────────────────────────────────────────
+from flask import jsonify, session as flask_session
+from task_queue.queue_worker import get_stats, task_queue as _tq
+
+@app.route('/api/queue/stats')
+def queue_stats():
+    if flask_session.get('role') != 'admin':
+        return jsonify({'error': 'Forbidden'}), 403
+    stats = get_stats()
+    stats['pending'] = _tq.qsize()
+    return jsonify(stats)
 
 from landing         import landing_bp
 from authentication  import auth_bp

@@ -49,6 +49,7 @@ from email_config import (
     send_registration_decision_email,
     send_pin_expiry_email,
 )
+from task_queue import enqueue   # ← background task queue
 
 bcrypt = Bcrypt(app)
 
@@ -327,7 +328,8 @@ def _send_pin_expiry_email_for_user(user_id: int):
         firstname = safe_decrypt_pii(firstname_enc)
 
         reset_link = url_for('auth_bp.reset_pin_form', token=token, _external=True)
-        send_pin_expiry_email(email, firstname, reset_link)
+        # Fire email in background — don't block the login flow
+        enqueue(send_pin_expiry_email, email, firstname, reset_link)
 
     except Exception as e:
         print(f"[PIN Expiry Email] Error: {e}")
@@ -407,16 +409,22 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
 @app.before_request
 def update_last_seen():
     if "user_id" in session:
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(
-                "UPDATE users SET last_seen=%s, status=%s WHERE id=%s",
-                (datetime.now(), "active", session["user_id"]),
-            )
-            mysql.connection.commit()
-            cur.close()
-        except Exception:
-            pass
+        # Run in background — don't block the current request
+        enqueue(_do_update_last_seen, session["user_id"])
+
+
+def _do_update_last_seen(user_id: int):
+    """Background worker: update last_seen + status without blocking HTTP."""
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "UPDATE users SET last_seen=%s, status=%s WHERE id=%s",
+            (datetime.now(), "active", user_id),
+        )
+        mysql.connection.commit()
+        cur.close()
+    except Exception:
+        pass
 
 
 # =====================================================================
@@ -565,14 +573,12 @@ def verify_captcha():
         mysql.connection.commit()
         cur.close()
 
-        if send_otp_email(email, otp):
-            session["otp_user"]  = user_id
-            session["otp_email"] = email
-            flash("OTP sent to your email!", "success")
-            return render_template('admins/login.html', show_otp_modal=True)
-        else:
-            flash("Failed to send OTP. Please try again.", "danger")
-            return redirect('/login')
+        # Enqueue email in background — response returns immediately
+        enqueue(send_otp_email, email, otp)
+        session["otp_user"]  = user_id
+        session["otp_email"] = email
+        flash("OTP sent to your email!", "success")
+        return render_template('admins/login.html', show_otp_modal=True)
 
     # OTP disabled — check PIN or go straight to dashboard
     pin_response = _check_pin_after_auth(user_id)
@@ -739,11 +745,11 @@ def resend_otp():
     mysql.connection.commit()
     cur.close()
 
-    if send_otp_email(email, otp):
-        session["otp_user"]  = user_id
-        session["otp_email"] = email
-        return jsonify({'success': True})
-    return jsonify({'success': False, 'message': 'Failed to send email.'}), 500
+    # Enqueue email — respond immediately
+    enqueue(send_otp_email, email, otp)
+    session["otp_user"]  = user_id
+    session["otp_email"] = email
+    return jsonify({'success': True})
 
 
 # =====================================================================
@@ -973,11 +979,8 @@ def signup():
     mysql.connection.commit()
     cur.close()
 
-    # ── 9. Notify admins (non-fatal) ───────────────────────────────────
-    try:
-        notify_admins_new_registration(firstname, lastname, email)
-    except Exception as exc:
-        app.logger.warning(f"[Signup] Admin notification failed: {exc}")
+    # ── 9. Notify admins in background (non-fatal) ─────────────────────
+    enqueue(notify_admins_new_registration, firstname, lastname, email)
 
     return render_template('admins/login.html', show_pending_modal=True)
 
@@ -1019,11 +1022,9 @@ def forgot_password():
 
     reset_link = url_for('auth_bp.reset_password_form', token=token, _external=True)
 
-    if send_reset_email(raw_email, reset_link):
-        flash("If that email is registered, a reset link has been sent.", "info")
-    else:
-        flash("Failed to send reset email. Please try again.", "danger")
-
+    # Enqueue email — respond immediately regardless
+    enqueue(send_reset_email, raw_email, reset_link)
+    flash("If that email is registered, a reset link has been sent.", "info")
     return redirect('/login')
 
 
@@ -1202,13 +1203,12 @@ def forgot_pin_verify_password():
     cur.close()
 
     email = safe_decrypt_email(row[1])
-    if send_otp_email(email, otp):
-        session['fp_otp_user'] = user_id
-        at   = email.find('@')
-        hint = email[:2] + '***' + email[at:] if at > 2 else email
-        return jsonify({'success': True, 'email_hint': hint})
-    else:
-        return jsonify({'success': False, 'message': 'Failed to send OTP email. Try again.'}), 500
+    # Enqueue email — return response immediately
+    enqueue(send_otp_email, email, otp)
+    session['fp_otp_user'] = user_id
+    at   = email.find('@')
+    hint = email[:2] + '***' + email[at:] if at > 2 else email
+    return jsonify({'success': True, 'email_hint': hint})
 
 
 @auth_bp.route('/forgot_pin/verify_otp', methods=['POST'])
