@@ -4,7 +4,5 @@ from .email_config import (
     notify_admins_new_registration,
     send_registration_decision_email,
     send_pin_expiry_email,
-    EMAIL_ADDRESS,
-    EMAIL_PASSWORD,
     DISABLE_EMAIL,
 )
