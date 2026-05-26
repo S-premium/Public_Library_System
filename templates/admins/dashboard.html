@@ -37,8 +37,8 @@
     }
 
     /* ── PAGE ── */
-    .page-wrap { padding: 80px 32px 60px; max-width: 1440px; margin: 0 auto; }
-    @media (max-width:768px) { .page-wrap { padding: 76px 14px 48px; } }
+    .page-wrap { padding: 76px 32px 60px; max-width: 1440px; margin: 0 auto; }
+    @media (max-width:992px) { .page-wrap { padding: 72px 14px 48px; } }
 
     /* ── HEADER ── */
     .dash-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:22px; }
@@ -106,7 +106,7 @@
     .cb-red    { background:rgba(224,84,84,.13);   color:var(--c-red);    border:1px solid rgba(224,84,84,.2); }
     .cb-muted  { background:rgba(255,255,255,.06); color:rgba(255,255,255,.4); border:1px solid rgba(255,255,255,.1); }
 
-    /* ── CANVAS WRAP (key fix) ── */
+    /* ── CANVAS WRAP ── */
     .canvas-wrap { position:relative; width:100%; flex-shrink:0; }
     .canvas-wrap.h-190 { height:190px; }
     .canvas-wrap.h-220 { height:220px; }
@@ -120,16 +120,21 @@
     .mini-val { font-size:1.1rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
     .mini-lbl { font-size:.6rem; color:rgba(255,255,255,.38); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
 
-    /* ── HEALTH BARS (inventory summary) ── */
-    .health-list { display:flex; flex-direction:column; gap:12px; margin-top:4px; }
-    .health-item {}
-    .health-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
-    .health-label { font-size:.75rem; font-weight:600; display:flex; align-items:center; gap:6px; }
-    .health-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .health-num { font-size:.82rem; font-weight:700; font-variant-numeric:tabular-nums; }
-    .health-track { width:100%; height:8px; background:rgba(255,255,255,.08); border-radius:99px; overflow:hidden; }
-    .health-fill { height:100%; border-radius:99px; transition:width .9s cubic-bezier(.22,1,.36,1); }
-    .health-pct { font-size:.65rem; color:rgba(255,255,255,.35); margin-top:3px; text-align:right; }
+    /* ── HEALTH METER (Collection Condition) ── */
+    .hm-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+    .hm-stat { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:10px 8px; text-align:center; }
+    .hm-stat-n { font-size:1.2rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
+    .hm-stat-l { font-size:.6rem; color:rgba(218,232,245,.38); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+    .stacked-bar { width:100%; height:34px; border-radius:10px; overflow:hidden; display:flex; margin-bottom:14px; }
+    .sb-seg { height:100%; transition:width 1s cubic-bezier(.22,1,.36,1); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; color:rgba(255,255,255,.85); white-space:nowrap; overflow:hidden; }
+    .hm-rows { display:flex; flex-direction:column; gap:11px; }
+    .hm-row-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
+    .hm-row-label { font-size:.75rem; font-weight:600; color:rgba(218,232,245,.75); display:flex; align-items:center; gap:7px; }
+    .hm-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .hm-row-num { font-size:.82rem; font-weight:700; font-variant-numeric:tabular-nums; }
+    .hm-track { width:100%; height:8px; background:rgba(255,255,255,.07); border-radius:99px; overflow:hidden; }
+    .hm-fill { height:100%; border-radius:99px; width:0; transition:width 1s cubic-bezier(.22,1,.36,1); }
+    .hm-pct { font-size:.62rem; color:rgba(218,232,245,.3); text-align:right; margin-top:3px; }
 
     /* ── TOP BOOKS TABLE ── */
     .books-table { width:100%; border-collapse:collapse; margin-top:4px; }
@@ -147,9 +152,9 @@
     /* ── ALERTS PANEL ── */
     .alert-list { display:flex; flex-direction:column; gap:8px; margin-top:4px; }
     .alert-item { display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:10px 12px; }
-    .alert-item.al-warn  { border-color:rgba(245,166,35,.25); background:rgba(245,166,35,.06); }
-    .alert-item.al-danger { border-color:rgba(224,84,84,.25); background:rgba(224,84,84,.06); }
-    .alert-item.al-info  { border-color:rgba(91,155,213,.25); background:rgba(91,155,213,.06); }
+    .alert-item.al-warn   { border-color:rgba(245,166,35,.25);  background:rgba(245,166,35,.06); }
+    .alert-item.al-danger { border-color:rgba(224,84,84,.25);   background:rgba(224,84,84,.06); }
+    .alert-item.al-info   { border-color:rgba(91,155,213,.25);  background:rgba(91,155,213,.06); }
     .alert-icon { font-size:1rem; margin-top:1px; flex-shrink:0; }
     .alert-text { font-size:.78rem; line-height:1.45; }
     .alert-text strong { display:block; font-weight:700; margin-bottom:2px; }
@@ -163,13 +168,14 @@
     .stat-card:nth-child(3){animation-delay:.12s} .stat-card:nth-child(4){animation-delay:.16s}
     .stat-card:nth-child(5){animation-delay:.20s} .stat-card:nth-child(6){animation-delay:.24s}
     .stat-card:nth-child(7){animation-delay:.28s}
+
+    .last-updated { font-size:.7rem; color:rgba(218,232,245,.3); margin-top:20px; text-align:right; }
   </style>
 </head>
 <body>
 {% include 'admin_template/topbar_template.html' %}
 {% include 'admin_template/sidebar_template.html' %}
 
-<!-- DASHBOARD -->
 <div class="page-wrap">
 
   <!-- Header -->
@@ -218,28 +224,53 @@
     </div>
   </div>
 
-  <!-- ── USER ANALYTICS ── -->
+  <!-- USER ANALYTICS -->
   <div class="section-label"><i class="bi bi-bar-chart-line me-1"></i> User Analytics</div>
 
   <div class="analytics-grid">
 
-    <!-- Role Doughnut -->
+    <!-- Role Doughnut (Enhanced) -->
     <div class="chart-card">
       <div class="cc-head">
         <div class="cc-title">
           <div class="cc-icon" style="background:rgba(155,120,232,.15);color:var(--c-purple)"><i class="bi bi-pie-chart-fill"></i></div>
           Users by Role
         </div>
-        <span class="cc-badge cb-purple">Roles</span>
+        <span class="cc-badge cb-purple" id="roleTotalBadge">— total</span>
       </div>
-      <div class="canvas-wrap h-190">
-        <div class="chart-loader" id="loader-role"><div class="spinner-ring"></div><span>Loading…</span></div>
-        <canvas id="usersRoleChart"></canvas>
+
+      <!-- Donut with center label -->
+      <div style="position:relative;width:100%;height:190px;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;text-align:center;pointer-events:none;z-index:2;">
+          <div style="font-size:1.6rem;font-weight:700;color:#fff;line-height:1;" id="donut-center-n">—</div>
+          <div style="font-size:.65rem;color:rgba(218,232,245,.4);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;">total users</div>
+        </div>
+        <div style="position:relative;width:190px;height:190px;flex-shrink:0;">
+          <div class="chart-loader" id="loader-role"><div class="spinner-ring"></div><span>Loading…</span></div>
+          <canvas id="usersRoleChart"></canvas>
+        </div>
       </div>
-      <div class="mini-row">
-        <div class="mini-cell"><div class="mini-val" id="ms-admin" style="color:var(--c-orange)">—</div><div class="mini-lbl">Admins</div></div>
-        <div class="mini-cell"><div class="mini-val" id="ms-lib"   style="color:var(--c-blue)">—</div><div class="mini-lbl">Librarians</div></div>
-        <div class="mini-cell"><div class="mini-val" id="ms-user"  style="color:var(--c-green)">—</div><div class="mini-lbl">Users</div></div>
+
+      <!-- Custom legend -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:rgba(218,232,245,.7);">
+            <span style="width:10px;height:10px;border-radius:3px;background:var(--c-orange);display:inline-block;flex-shrink:0;"></span>Admins
+          </div>
+          <div><span style="font-size:.82rem;font-weight:700;color:#fff;" id="leg-admin">—</span><span style="font-size:.68rem;color:rgba(218,232,245,.35);margin-left:4px;" id="leg-admin-pct"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:rgba(218,232,245,.7);">
+            <span style="width:10px;height:10px;border-radius:3px;background:var(--c-blue);display:inline-block;flex-shrink:0;"></span>Librarians
+          </div>
+          <div><span style="font-size:.82rem;font-weight:700;color:#fff;" id="leg-lib">—</span><span style="font-size:.68rem;color:rgba(218,232,245,.35);margin-left:4px;" id="leg-lib-pct"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:rgba(218,232,245,.7);">
+            <span style="width:10px;height:10px;border-radius:3px;background:var(--c-green);display:inline-block;flex-shrink:0;"></span>Members
+          </div>
+          <div><span style="font-size:.82rem;font-weight:700;color:#fff;" id="leg-user">—</span><span style="font-size:.68rem;color:rgba(218,232,245,.35);margin-left:4px;" id="leg-user-pct"></span></div>
+        </div>
       </div>
     </div>
 
@@ -263,7 +294,7 @@
       </div>
     </div>
 
-    <!-- Books Added (last 7 days — server always returns 7) -->
+    <!-- Books Added -->
     <div class="chart-card">
       <div class="cc-head">
         <div class="cc-title">
@@ -280,54 +311,74 @@
 
   </div>
 
-  <!-- ── INVENTORY OVERVIEW ── -->
+  <!-- INVENTORY OVERVIEW -->
   <div class="section-label"><i class="bi bi-archive me-1"></i> Inventory Overview</div>
 
   <div class="inventory-grid">
 
-    <!-- Condition Split Doughnut + health bars -->
+    <!-- Collection Condition — Health Meter -->
     <div class="chart-card">
       <div class="cc-head">
         <div class="cc-title">
-          <div class="cc-icon" style="background:rgba(247,201,72,.15);color:var(--c-gold)"><i class="bi bi-pie-chart-fill"></i></div>
+          <div class="cc-icon" style="background:rgba(247,201,72,.15);color:var(--c-gold)"><i class="bi bi-heart-pulse-fill"></i></div>
           Collection Condition
         </div>
         <span class="cc-badge cb-gold" id="invTotalBadge">— copies total</span>
       </div>
-      <div class="canvas-wrap h-190">
-        <div class="chart-loader" id="loader-inv2"><div class="spinner-ring"></div><span>Loading…</span></div>
-        <canvas id="inventoryDonut"></canvas>
+
+      <!-- Summary stat chips -->
+      <div class="hm-summary">
+        <div class="hm-stat">
+          <div class="hm-stat-n" style="color:var(--c-teal)" id="hm-avail-n">—</div>
+          <div class="hm-stat-l">Available</div>
+        </div>
+        <div class="hm-stat">
+          <div class="hm-stat-n" style="color:var(--c-orange)" id="hm-dmg-n">—</div>
+          <div class="hm-stat-l">Damaged</div>
+        </div>
+        <div class="hm-stat">
+          <div class="hm-stat-n" style="color:var(--c-red)" id="hm-lost-n">—</div>
+          <div class="hm-stat-l">Lost</div>
+        </div>
       </div>
-      <!-- Health bars -->
-      <div class="health-list" id="healthList" style="margin-top:14px">
-        <div class="health-item">
-          <div class="health-row">
-            <span class="health-label"><span class="health-dot" style="background:var(--c-teal)"></span>Available</span>
-            <span class="health-num" id="hb-avail-n" style="color:var(--c-teal)">—</span>
+
+      <!-- Stacked bar -->
+      <div class="stacked-bar">
+        <div class="sb-seg" id="sb-avail" style="width:0;background:var(--c-teal);"></div>
+        <div class="sb-seg" id="sb-dmg"   style="width:0;background:var(--c-orange);"></div>
+        <div class="sb-seg" id="sb-lost"  style="width:0;background:var(--c-red);"></div>
+      </div>
+
+      <!-- Individual progress bars -->
+      <div class="hm-rows">
+        <div>
+          <div class="hm-row-top">
+            <span class="hm-row-label"><span class="hm-dot" style="background:var(--c-teal)"></span>Available</span>
+            <span class="hm-row-num" style="color:var(--c-teal)" id="hb-avail-n">—</span>
           </div>
-          <div class="health-track"><div class="health-fill" id="hb-avail" style="width:0;background:var(--c-teal)"></div></div>
-          <div class="health-pct" id="hb-avail-p">—</div>
+          <div class="hm-track"><div class="hm-fill" id="hb-avail" style="background:var(--c-teal);"></div></div>
+          <div class="hm-pct" id="hb-avail-p">—</div>
         </div>
-        <div class="health-item">
-          <div class="health-row">
-            <span class="health-label"><span class="health-dot" style="background:var(--c-orange)"></span>Damaged</span>
-            <span class="health-num" id="hb-dmg-n" style="color:var(--c-orange)">—</span>
+        <div>
+          <div class="hm-row-top">
+            <span class="hm-row-label"><span class="hm-dot" style="background:var(--c-orange)"></span>Damaged</span>
+            <span class="hm-row-num" style="color:var(--c-orange)" id="hb-dmg-n">—</span>
           </div>
-          <div class="health-track"><div class="health-fill" id="hb-dmg" style="width:0;background:var(--c-orange)"></div></div>
-          <div class="health-pct" id="hb-dmg-p">—</div>
+          <div class="hm-track"><div class="hm-fill" id="hb-dmg" style="background:var(--c-orange);"></div></div>
+          <div class="hm-pct" id="hb-dmg-p">—</div>
         </div>
-        <div class="health-item">
-          <div class="health-row">
-            <span class="health-label"><span class="health-dot" style="background:var(--c-red)"></span>Lost</span>
-            <span class="health-num" id="hb-lost-n" style="color:var(--c-red)">—</span>
+        <div>
+          <div class="hm-row-top">
+            <span class="hm-row-label"><span class="hm-dot" style="background:var(--c-red)"></span>Lost</span>
+            <span class="hm-row-num" style="color:var(--c-red)" id="hb-lost-n">—</span>
           </div>
-          <div class="health-track"><div class="health-fill" id="hb-lost" style="width:0;background:var(--c-red)"></div></div>
-          <div class="health-pct" id="hb-lost-p">—</div>
+          <div class="hm-track"><div class="hm-fill" id="hb-lost" style="background:var(--c-red);"></div></div>
+          <div class="hm-pct" id="hb-lost-p">—</div>
         </div>
       </div>
     </div>
 
-    <!-- Low Stock / Alerts -->
+    <!-- Alerts & Attention -->
     <div class="chart-card">
       <div class="cc-head">
         <div class="cc-title">
@@ -341,7 +392,7 @@
       </div>
     </div>
 
-    <!-- Top 5 Available Books table -->
+    <!-- Book Availability Snapshot -->
     <div class="chart-card" style="grid-column:1 / -1;">
       <div class="cc-head">
         <div class="cc-title">
@@ -381,15 +432,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-/* ── Mobile nav ── */
-const menuToggle = document.getElementById('menuToggle');
-const navLinks   = document.getElementById('navLinks');
-menuToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
-document.addEventListener('click', e => {
-  if (!menuToggle.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
-});
-
-/* ── Chart.js globals ── */
 Chart.defaults.color                            = 'rgba(218,232,245,0.6)';
 Chart.defaults.font.family                      = 'DM Sans';
 Chart.defaults.font.size                        = 11;
@@ -405,7 +447,6 @@ const GRID = 'rgba(255,255,255,0.05)';
 const TICK = { color:'rgba(218,232,245,0.45)', font:{ family:'DM Sans', size:10 } };
 const charts = {};
 
-/* ── Helpers ── */
 function showLoader(id) {
   const el = document.getElementById('loader-' + id);
   if (el) { el.style.display='flex'; el.innerHTML='<div class="spinner-ring"></div><span>Loading…</span>'; }
@@ -425,7 +466,6 @@ function anim(el, target) {
 }
 function kill(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
 
-/* ══════════════════════ LOAD ══════════════════════ */
 async function loadDashboard() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
@@ -446,8 +486,6 @@ async function loadDashboard() {
     buildRole(d.roles);
     buildStatus(d.status);
     buildBooks(d.books_per_day);
-
-    /* Alerts: locked accounts */
     buildAlerts(d);
 
     document.getElementById('lastUpdated').textContent =
@@ -464,25 +502,51 @@ async function loadDashboard() {
   await loadInventory();
 }
 
-/* ── Role doughnut ── */
+/* ── Enhanced Role Doughnut ── */
 function buildRole(roles) {
   hideLoader('role');
-  document.getElementById('ms-admin').textContent = roles.data[0];
-  document.getElementById('ms-lib').textContent   = roles.data[1];
-  document.getElementById('ms-user').textContent  = roles.data[2];
+  const total = roles.data.reduce((a, b) => a + b, 0);
+
+  document.getElementById('roleTotalBadge').textContent = total.toLocaleString() + ' total';
+  document.getElementById('donut-center-n').textContent = total.toLocaleString();
+
+  const labels = roles.labels;
+  roles.data.forEach((val, i) => {
+    const pct = total > 0 ? Math.round(val / total * 100) + '%' : '0%';
+    if (i === 0) { document.getElementById('leg-admin').textContent = val; document.getElementById('leg-admin-pct').textContent = pct; }
+    if (i === 1) { document.getElementById('leg-lib').textContent   = val; document.getElementById('leg-lib-pct').textContent   = pct; }
+    if (i === 2) { document.getElementById('leg-user').textContent  = val; document.getElementById('leg-user-pct').textContent  = pct; }
+  });
+
   kill('role');
   charts.role = new Chart(document.getElementById('usersRoleChart'), {
     type: 'doughnut',
     data: {
-      labels: roles.labels,
-      datasets: [{ data: roles.data,
-        backgroundColor: ['rgba(245,166,35,.85)','rgba(91,155,213,.85)','rgba(62,207,142,.85)'],
-        borderColor: '#1e2d3d', borderWidth: 3, hoverOffset: 7, hoverBorderWidth: 0 }]
+      labels: labels,
+      datasets: [{
+        data: roles.data,
+        backgroundColor: ['rgba(245,166,35,.9)','rgba(91,155,213,.9)','rgba(62,207,142,.9)'],
+        borderColor: '#2f3f4d',
+        borderWidth: 4,
+        hoverOffset: 12,
+        hoverBorderWidth: 0
+      }]
     },
     options: {
-      cutout: '62%', maintainAspectRatio: false,
-      animation: { duration: 800, easing: 'easeOutQuart' },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.parsed}` } } }
+      cutout: '68%',
+      maintainAspectRatio: false,
+      animation: { duration: 900, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => {
+              const pct = total > 0 ? Math.round(c.parsed / total * 100) : 0;
+              return ` ${c.label}: ${c.parsed} (${pct}%)`;
+            }
+          }
+        }
+      }
     }
   });
 }
@@ -500,12 +564,17 @@ function buildStatus(status) {
     type: 'bar',
     data: {
       labels: ['Active','Offline'],
-      datasets: [{ data: [status.active, status.offline],
-        backgroundColor: ['rgba(62,207,142,.8)','rgba(245,166,35,.8)'],
-        borderRadius: 8, borderSkipped: false, barPercentage: .52 }]
+      datasets: [{
+        data: [status.active, status.offline],
+        backgroundColor: ['rgba(62,207,142,.85)','rgba(245,166,35,.85)'],
+        borderRadius: 8,
+        borderSkipped: false,
+        barPercentage: .52
+      }]
     },
     options: {
-      indexAxis: 'y', maintainAspectRatio: false,
+      indexAxis: 'y',
+      maintainAspectRatio: false,
       animation: { duration: 800, easing: 'easeOutQuart' },
       scales: {
         x: { ticks: TICK, grid: { color: GRID }, beginAtZero: true },
@@ -528,11 +597,21 @@ function buildBooks(bpd) {
     type: 'line',
     data: {
       labels: bpd.labels,
-      datasets: [{ label:'Books Added', data: bpd.data,
-        borderColor: '#5b9bd5', backgroundColor: grad,
-        fill: true, tension: 0.42,
-        pointBackgroundColor: '#5b9bd5', pointBorderColor: '#1e2d3d',
-        pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7 }]
+      datasets: [{
+        label: 'Books Added',
+        data: bpd.data,
+        borderColor: '#5b9bd5',
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.42,
+        borderWidth: 2.5,
+        pointBackgroundColor: '#5b9bd5',
+        pointBorderColor: '#2f3f4d',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        pointHoverBackgroundColor: '#fff'
+      }]
     },
     options: {
       maintainAspectRatio: false,
@@ -546,7 +625,7 @@ function buildBooks(bpd) {
   });
 }
 
-/* ── Alerts from dashboard stats ── */
+/* ── Alerts ── */
 function buildAlerts(d) {
   hideLoader('alerts');
   const alerts = [];
@@ -587,9 +666,8 @@ function buildAlerts(d) {
     </div>`).join('');
 }
 
-/* ══════════════════════ INVENTORY ══════════════════════ */
+/* ── Inventory (Health Meter) ── */
 async function loadInventory() {
-  showLoader('inv2');
   document.getElementById('loader-snap').style.display = 'block';
   document.getElementById('booksTableWrap').style.display = 'none';
 
@@ -599,7 +677,6 @@ async function loadInventory() {
     const data  = await res.json();
     const books = data.books || [];
 
-    /* ── Aggregate totals across ALL books ── */
     let tA = 0, tD = 0, tL = 0, tTotal = 0;
     books.forEach(b => {
       tA     += b.available_copies || 0;
@@ -612,7 +689,12 @@ async function loadInventory() {
     anim(document.getElementById('totalAvailable'), tA);
     document.getElementById('invTotalBadge').textContent = tTotal.toLocaleString() + ' copies total';
 
-    /* Health bars */
+    /* Summary chips */
+    document.getElementById('hm-avail-n').textContent = tA.toLocaleString();
+    document.getElementById('hm-dmg-n').textContent   = tD.toLocaleString();
+    document.getElementById('hm-lost-n').textContent  = tL.toLocaleString();
+
+    /* Individual bars */
     document.getElementById('hb-avail-n').textContent = tA.toLocaleString();
     document.getElementById('hb-dmg-n').textContent   = tD.toLocaleString();
     document.getElementById('hb-lost-n').textContent  = tL.toLocaleString();
@@ -625,32 +707,25 @@ async function loadInventory() {
     document.getElementById('hb-dmg-p').textContent   = pD + '% of collection';
     document.getElementById('hb-lost-p').textContent  = pL + '% of collection';
 
-    /* Animate bars after a tick so CSS transition fires */
     setTimeout(() => {
+      document.getElementById('sb-avail').style.width = pA + '%';
+      document.getElementById('sb-dmg').style.width   = pD + '%';
+      document.getElementById('sb-lost').style.width  = pL + '%';
       document.getElementById('hb-avail').style.width = pA + '%';
       document.getElementById('hb-dmg').style.width   = pD + '%';
       document.getElementById('hb-lost').style.width  = pL + '%';
-    }, 80);
 
-    /* Donut */
-    hideLoader('inv2');
-    kill('inv2');
-    charts.inv2 = new Chart(document.getElementById('inventoryDonut'), {
-      type: 'line',
-      data: {
-        labels: ['Available','Damaged','Lost'],
-        datasets: [{ data: [tA, tD, tL],
-          backgroundColor: ['rgba(45,212,191,.85)','rgba(245,166,35,.85)','rgba(224,84,84,.85)'],
-          borderColor: '#1e2d3d', borderWidth: 3, hoverOffset: 8, hoverBorderWidth: 0 }]
-      },
-      options: {
-        cutout: '62%', maintainAspectRatio: false,
-        animation: { duration: 900, easing: 'easeOutQuart' },
-        plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label: c=>` ${c.label}: ${c.parsed.toLocaleString()} copies` } } }
-      }
-    });
+      /* Label stacked bar segments only if wide enough */
+      const showLabel = (id, pct, text) => {
+        const el = document.getElementById(id);
+        el.textContent = pct >= 8 ? text : '';
+      };
+      showLabel('sb-avail', pA, pA + '%');
+      showLabel('sb-dmg',   pD, pD + '%');
+      showLabel('sb-lost',  pL, pL + '%');
+    }, 120);
 
-    /* ── Alerts from inventory ── */
+    /* Inventory alerts */
     const invAlerts = document.getElementById('alertList');
     const lowStock  = books.filter(b => b.available_copies === 0 && b.total_copies > 0);
     const damaged   = books.filter(b => b.damaged_copies > 0);
@@ -673,10 +748,8 @@ async function loadInventory() {
         body: `Across ${lost.length} title${lost.length>1?'s':''}. Consider reporting to management.` });
     }
 
-    /* Merge into existing alert list */
     if (extraAlerts.length > 0) {
-      const currentHtml = invAlerts.innerHTML;
-      const noAlertDiv  = invAlerts.querySelector('.no-alerts');
+      const noAlertDiv = invAlerts.querySelector('.no-alerts');
       if (noAlertDiv) invAlerts.innerHTML = '';
       invAlerts.innerHTML += extraAlerts.map(a => `
         <div class="alert-item ${a.cls}">
@@ -684,22 +757,21 @@ async function loadInventory() {
           <div class="alert-text"><strong>${a.title}</strong>${a.body}</div>
         </div>`).join('');
 
-      /* Update badge count */
       const currentCount = parseInt(document.getElementById('alertCountBadge').textContent) || 0;
       const newCount     = currentCount + extraAlerts.length;
       document.getElementById('alertCountBadge').textContent = newCount + ' issue' + (newCount !== 1 ? 's' : '');
       document.getElementById('alertCountBadge').style.cssText = '';
     }
 
-    /* ── Availability Snapshot table (top 10 by total_copies desc) ── */
-    const sorted  = [...books].sort((a,b) => b.total_copies - a.total_copies).slice(0, 10);
-    const tbody   = document.getElementById('booksTableBody');
+    /* Availability Snapshot table */
+    const sorted = [...books].sort((a,b) => b.total_copies - a.total_copies).slice(0, 10);
+    const tbody  = document.getElementById('booksTableBody');
     tbody.innerHTML = sorted.map((b, i) => {
       const avail = b.available_copies || 0;
       const total = b.total_copies     || 0;
       let badgeCls = 'ab-ok', badgeTxt = 'In Stock';
-      if (avail === 0)              { badgeCls = 'ab-out'; badgeTxt = 'Out of Stock'; }
-      else if (avail <= 2)          { badgeCls = 'ab-low'; badgeTxt = 'Low Stock'; }
+      if (avail === 0)     { badgeCls = 'ab-out'; badgeTxt = 'Out of Stock'; }
+      else if (avail <= 2) { badgeCls = 'ab-low'; badgeTxt = 'Low Stock'; }
       return `<tr>
         <td style="color:rgba(255,255,255,.3);font-size:.7rem">${i+1}</td>
         <td class="book-title-cell" title="${b.title||''}">${b.title||'—'}</td>
@@ -715,8 +787,8 @@ async function loadInventory() {
     document.getElementById('booksTableWrap').style.display = 'block';
 
   } catch {
-    const el = document.getElementById('loader-inv2');
-    if (el) { el.style.display='flex'; el.innerHTML='<i class="bi bi-exclamation-triangle-fill" style="color:var(--c-red);font-size:1.3rem"></i><span style="color:var(--c-red)">Failed to load inventory</span>'; }
+    document.getElementById('loader-snap').innerHTML =
+      '<div class="chart-loader"><i class="bi bi-exclamation-triangle-fill" style="color:var(--c-red);font-size:1.3rem"></i><span style="color:var(--c-red)">Failed to load inventory</span></div>';
   }
 }
 
