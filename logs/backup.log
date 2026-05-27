@@ -66663,3 +66663,669 @@
 2026-05-26 19:56:46,582 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-26 19:57:46 +08)" executed successfully
 2026-05-26 19:57:46,591 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-26 19:58:46 +08)" (scheduled at 2026-05-26 19:57:46.574281+08:00)
 2026-05-26 19:57:46,595 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-26 19:58:46 +08)" executed successfully
+2026-05-27 18:45:43,220 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-27 18:45:44,376 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-27 18:45:44,667 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.8.39:5000
+2026-05-27 18:45:44,667 [INFO] [33mPress CTRL+C to quit[0m
+2026-05-27 18:45:44,670 [INFO]  * Restarting with stat
+2026-05-27 18:45:45,423 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-27 18:45:45,465 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-27 18:45:45,468 [INFO] Added job "run_backup" to job store "default"
+2026-05-27 18:45:45,468 [INFO] Scheduler started
+2026-05-27 18:45:45,468 [INFO] Backup scheduler running — daily at 2:00 AM.
+2026-05-27 18:45:45,644 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-27 18:45:45,645 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-27 18:45:45,645 [INFO] Scheduler started
+2026-05-27 18:45:46,207 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-27 18:45:46,940 [WARNING]  * Debugger is active!
+2026-05-27 18:45:46,948 [INFO]  * Debugger PIN: 101-973-226
+2026-05-27 18:45:49,023 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET / HTTP/1.1" 200 -
+2026-05-27 18:45:49,216 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,221 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,256 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,259 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,279 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,355 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,422 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,428 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,452 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,453 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,466 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,468 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:45:49,515 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:45:49,515 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:45:49,571 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:45:49,591 [INFO] 127.0.0.1 - - [27/May/2026 18:45:49] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:45:53,771 [INFO] 127.0.0.1 - - [27/May/2026 18:45:53] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,120 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET / HTTP/1.1" 200 -
+2026-05-27 18:46:41,191 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,193 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,215 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,218 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,241 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,248 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,255 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,291 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,289 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,416 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,433 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,435 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:46:41,437 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:46:41,461 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:46:41,467 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:46:41,489 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:46:41,575 [INFO] 127.0.0.1 - - [27/May/2026 18:46:41] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:46:42,603 [INFO] 127.0.0.1 - - [27/May/2026 18:46:42] "GET /login HTTP/1.1" 200 -
+2026-05-27 18:46:42,655 [INFO] 127.0.0.1 - - [27/May/2026 18:46:42] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:46:45,650 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:46:45 +08)" (scheduled at 2026-05-27 18:46:45.644585+08:00)
+2026-05-27 18:46:49,717 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:47:45 +08)" executed successfully
+2026-05-27 18:46:50,261 [INFO] 127.0.0.1 - - [27/May/2026 18:46:50] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:46:50,340 [INFO] 127.0.0.1 - - [27/May/2026 18:46:50] "GET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2026-05-27 18:46:50,368 [INFO] 127.0.0.1 - - [27/May/2026 18:46:50] "GET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2026-05-27 18:46:50,467 [INFO] 127.0.0.1 - - [27/May/2026 18:46:50] "GET /login?__debugger__=yes&cmd=resource&f=console.png&s=iIN3VLLLbJNXQfwmEqCm HTTP/1.1" 200 -
+2026-05-27 18:46:50,488 [INFO] 127.0.0.1 - - [27/May/2026 18:46:50] "GET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2026-05-27 18:47:10,834 [INFO] 127.0.0.1 - - [27/May/2026 18:47:10] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:47:10,905 [INFO] 127.0.0.1 - - [27/May/2026 18:47:10] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:47:10,910 [INFO] 127.0.0.1 - - [27/May/2026 18:47:10] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:47:11,019 [INFO] 127.0.0.1 - - [27/May/2026 18:47:11] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=iIN3VLLLbJNXQfwmEqCm HTTP/1.1[0m" 304 -
+2026-05-27 18:47:11,059 [INFO] 127.0.0.1 - - [27/May/2026 18:47:11] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:47:19,355 [INFO] 127.0.0.1 - - [27/May/2026 18:47:19] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:47:19,425 [INFO] 127.0.0.1 - - [27/May/2026 18:47:19] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:47:19,430 [INFO] 127.0.0.1 - - [27/May/2026 18:47:19] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:47:19,537 [INFO] 127.0.0.1 - - [27/May/2026 18:47:19] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=iIN3VLLLbJNXQfwmEqCm HTTP/1.1[0m" 304 -
+2026-05-27 18:47:19,581 [INFO] 127.0.0.1 - - [27/May/2026 18:47:19] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:47:20,429 [INFO] 127.0.0.1 - - [27/May/2026 18:47:20] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:47:20,503 [INFO] 127.0.0.1 - - [27/May/2026 18:47:20] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:47:20,515 [INFO] 127.0.0.1 - - [27/May/2026 18:47:20] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:47:20,588 [INFO] 127.0.0.1 - - [27/May/2026 18:47:20] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=iIN3VLLLbJNXQfwmEqCm HTTP/1.1[0m" 304 -
+2026-05-27 18:47:20,653 [INFO] 127.0.0.1 - - [27/May/2026 18:47:20] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:47:23,464 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET / HTTP/1.1" 200 -
+2026-05-27 18:47:23,676 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,680 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,842 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,851 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,888 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,919 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,931 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,932 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,938 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,947 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,958 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:47:23,991 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:47:23,999 [INFO] 127.0.0.1 - - [27/May/2026 18:47:23] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:47:24,005 [INFO] 127.0.0.1 - - [27/May/2026 18:47:24] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:47:24,030 [INFO] 127.0.0.1 - - [27/May/2026 18:47:24] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:47:24,058 [INFO] 127.0.0.1 - - [27/May/2026 18:47:24] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:47:25,684 [INFO] 127.0.0.1 - - [27/May/2026 18:47:25] "GET /login HTTP/1.1" 200 -
+2026-05-27 18:47:25,744 [INFO] 127.0.0.1 - - [27/May/2026 18:47:25] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:47:32,961 [INFO] 127.0.0.1 - - [27/May/2026 18:47:32] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:47:33,017 [INFO] 127.0.0.1 - - [27/May/2026 18:47:33] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:47:33,025 [INFO] 127.0.0.1 - - [27/May/2026 18:47:33] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:47:33,100 [INFO] 127.0.0.1 - - [27/May/2026 18:47:33] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=iIN3VLLLbJNXQfwmEqCm HTTP/1.1[0m" 304 -
+2026-05-27 18:47:33,116 [INFO] 127.0.0.1 - - [27/May/2026 18:47:33] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:47:45,650 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:48:45 +08)" (scheduled at 2026-05-27 18:47:45.644585+08:00)
+2026-05-27 18:47:45,653 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:48:45 +08)" executed successfully
+2026-05-27 18:47:51,315 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-27 18:47:51,949 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-27 18:47:52,096 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.8.39:5000
+2026-05-27 18:47:52,096 [INFO] [33mPress CTRL+C to quit[0m
+2026-05-27 18:47:52,098 [INFO]  * Restarting with stat
+2026-05-27 18:47:52,619 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-27 18:47:52,629 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-27 18:47:52,632 [INFO] Added job "run_backup" to job store "default"
+2026-05-27 18:47:52,633 [INFO] Scheduler started
+2026-05-27 18:47:52,634 [INFO] Backup scheduler running — daily at 2:00 AM.
+2026-05-27 18:47:52,858 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-27 18:47:52,859 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-27 18:47:52,859 [INFO] Scheduler started
+2026-05-27 18:47:53,359 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-27 18:47:53,523 [WARNING]  * Debugger is active!
+2026-05-27 18:47:53,527 [INFO]  * Debugger PIN: 101-973-226
+2026-05-27 18:47:57,648 [INFO] 127.0.0.1 - - [27/May/2026 18:47:57] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:47:57,792 [INFO] 127.0.0.1 - - [27/May/2026 18:47:57] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:47:57,796 [INFO] 127.0.0.1 - - [27/May/2026 18:47:57] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:47:57,845 [INFO] 127.0.0.1 - - [27/May/2026 18:47:57] "GET /login?__debugger__=yes&cmd=resource&f=console.png&s=y5iRKsGPFDjV45XRBIRT HTTP/1.1" 200 -
+2026-05-27 18:47:57,875 [INFO] 127.0.0.1 - - [27/May/2026 18:47:57] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:48:45,433 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET / HTTP/1.1" 200 -
+2026-05-27 18:48:45,610 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,611 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,679 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,680 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,689 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,699 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,707 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,713 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,720 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,724 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,729 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:48:45,804 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:45,811 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:45,819 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:45,825 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:45,892 [INFO] 127.0.0.1 - - [27/May/2026 18:48:45] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,638 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET / HTTP/1.1" 200 -
+2026-05-27 18:48:47,690 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,693 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,696 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,698 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,700 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,728 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,736 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,738 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,743 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,753 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,762 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,793 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:47,794 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:47,808 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:47,818 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:47,826 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:47,945 [INFO] 127.0.0.1 - - [27/May/2026 18:48:47] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,795 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET / HTTP/1.1" 200 -
+2026-05-27 18:48:49,855 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,859 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,864 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,872 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,873 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,876 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,905 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,914 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,930 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,931 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,934 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:48:49,938 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:49,973 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:49,986 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:49,990 [INFO] 127.0.0.1 - - [27/May/2026 18:48:49] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:50,013 [INFO] 127.0.0.1 - - [27/May/2026 18:48:50] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:52,087 [INFO] 127.0.0.1 - - [27/May/2026 18:48:52] "GET /login HTTP/1.1" 200 -
+2026-05-27 18:48:52,120 [INFO] 127.0.0.1 - - [27/May/2026 18:48:52] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:52,872 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:48:52 +08)" (scheduled at 2026-05-27 18:48:52.858497+08:00)
+2026-05-27 18:48:52,876 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:49:52 +08)" executed successfully
+2026-05-27 18:48:55,656 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET / HTTP/1.1" 200 -
+2026-05-27 18:48:55,851 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,852 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,932 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,933 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,943 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,949 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,954 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,958 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,976 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 18:48:55,976 [INFO] 127.0.0.1 - - [27/May/2026 18:48:55] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 18:48:56,032 [INFO] 127.0.0.1 - - [27/May/2026 18:48:56] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 18:48:56,058 [INFO] 127.0.0.1 - - [27/May/2026 18:48:56] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:56,060 [INFO] 127.0.0.1 - - [27/May/2026 18:48:56] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:56,062 [INFO] 127.0.0.1 - - [27/May/2026 18:48:56] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:56,065 [INFO] 127.0.0.1 - - [27/May/2026 18:48:56] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 18:48:56,067 [INFO] 127.0.0.1 - - [27/May/2026 18:48:56] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:48:57,659 [INFO] 127.0.0.1 - - [27/May/2026 18:48:57] "GET /login HTTP/1.1" 200 -
+2026-05-27 18:48:57,729 [INFO] 127.0.0.1 - - [27/May/2026 18:48:57] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:49:07,690 [INFO] 127.0.0.1 - - [27/May/2026 18:49:07] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:49:07,729 [INFO] 127.0.0.1 - - [27/May/2026 18:49:07] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:49:07,736 [INFO] 127.0.0.1 - - [27/May/2026 18:49:07] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:49:07,782 [INFO] 127.0.0.1 - - [27/May/2026 18:49:07] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=y5iRKsGPFDjV45XRBIRT HTTP/1.1[0m" 304 -
+2026-05-27 18:49:07,804 [INFO] 127.0.0.1 - - [27/May/2026 18:49:07] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:49:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:50:52 +08)" (scheduled at 2026-05-27 18:49:52.858497+08:00)
+2026-05-27 18:49:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:50:52 +08)" executed successfully
+2026-05-27 18:50:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:51:52 +08)" (scheduled at 2026-05-27 18:50:52.858497+08:00)
+2026-05-27 18:50:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:51:52 +08)" executed successfully
+2026-05-27 18:51:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:52:52 +08)" (scheduled at 2026-05-27 18:51:52.858497+08:00)
+2026-05-27 18:51:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:52:52 +08)" executed successfully
+2026-05-27 18:51:58,627 [INFO] 127.0.0.1 - - [27/May/2026 18:51:58] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:51:58,671 [INFO] 127.0.0.1 - - [27/May/2026 18:51:58] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:51:58,674 [INFO] 127.0.0.1 - - [27/May/2026 18:51:58] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:51:58,708 [INFO] 127.0.0.1 - - [27/May/2026 18:51:58] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=y5iRKsGPFDjV45XRBIRT HTTP/1.1[0m" 304 -
+2026-05-27 18:51:58,731 [INFO] 127.0.0.1 - - [27/May/2026 18:51:58] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:51:59,341 [INFO] 127.0.0.1 - - [27/May/2026 18:51:59] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 18:51:59,385 [INFO] 127.0.0.1 - - [27/May/2026 18:51:59] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 18:51:59,387 [INFO] 127.0.0.1 - - [27/May/2026 18:51:59] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 18:51:59,424 [INFO] 127.0.0.1 - - [27/May/2026 18:51:59] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=y5iRKsGPFDjV45XRBIRT HTTP/1.1[0m" 304 -
+2026-05-27 18:51:59,451 [INFO] 127.0.0.1 - - [27/May/2026 18:51:59] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 18:52:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:53:52 +08)" (scheduled at 2026-05-27 18:52:52.858497+08:00)
+2026-05-27 18:52:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:53:52 +08)" executed successfully
+2026-05-27 18:53:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:54:52 +08)" (scheduled at 2026-05-27 18:53:52.858497+08:00)
+2026-05-27 18:53:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:54:52 +08)" executed successfully
+2026-05-27 18:54:52,875 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:55:52 +08)" (scheduled at 2026-05-27 18:54:52.858497+08:00)
+2026-05-27 18:54:52,880 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:55:52 +08)" executed successfully
+2026-05-27 18:55:52,863 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:56:52 +08)" (scheduled at 2026-05-27 18:55:52.858497+08:00)
+2026-05-27 18:55:52,868 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:56:52 +08)" executed successfully
+2026-05-27 18:56:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:57:52 +08)" (scheduled at 2026-05-27 18:56:52.858497+08:00)
+2026-05-27 18:56:52,863 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:57:52 +08)" executed successfully
+2026-05-27 18:57:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:58:52 +08)" (scheduled at 2026-05-27 18:57:52.858497+08:00)
+2026-05-27 18:57:52,868 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:58:52 +08)" executed successfully
+2026-05-27 18:58:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:59:52 +08)" (scheduled at 2026-05-27 18:58:52.858497+08:00)
+2026-05-27 18:58:52,889 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 18:59:52 +08)" executed successfully
+2026-05-27 18:59:17,105 [INFO] 127.0.0.1 - - [27/May/2026 18:59:17] "POST /login HTTP/1.1" 200 -
+2026-05-27 18:59:17,146 [INFO] 127.0.0.1 - - [27/May/2026 18:59:17] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:59:17,357 [INFO] 127.0.0.1 - - [27/May/2026 18:59:17] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:59:26,195 [INFO] 127.0.0.1 - - [27/May/2026 18:59:26] "POST /verify_captcha HTTP/1.1" 200 -
+2026-05-27 18:59:26,232 [INFO] 127.0.0.1 - - [27/May/2026 18:59:26] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:59:43,781 [INFO] 127.0.0.1 - - [27/May/2026 18:59:43] "[32mPOST /verify_otp HTTP/1.1[0m" 302 -
+2026-05-27 18:59:43,790 [INFO] 127.0.0.1 - - [27/May/2026 18:59:43] "[32mGET /home HTTP/1.1[0m" 302 -
+2026-05-27 18:59:44,013 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 18:59:44,063 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 18:59:44,064 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 18:59:44,240 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 18:59:44,251 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 18:59:44,251 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 18:59:44,264 [INFO] 127.0.0.1 - - [27/May/2026 18:59:44] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 18:59:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:00:52 +08)" (scheduled at 2026-05-27 18:59:52.858497+08:00)
+2026-05-27 18:59:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:00:52 +08)" executed successfully
+2026-05-27 19:00:52,870 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:01:52 +08)" (scheduled at 2026-05-27 19:00:52.858497+08:00)
+2026-05-27 19:00:52,875 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:01:52 +08)" executed successfully
+2026-05-27 19:01:05,436 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 19:01:05,482 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:05,484 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:05,601 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:01:05,616 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:05,619 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 19:01:05,633 [INFO] 127.0.0.1 - - [27/May/2026 19:01:05] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:06,209 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "GET /dashboard HTTP/1.1" 200 -
+2026-05-27 19:01:06,252 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:06,256 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:06,335 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "GET /dashboard/stats HTTP/1.1" 200 -
+2026-05-27 19:01:06,354 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:01:06,360 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:06,446 [INFO] 127.0.0.1 - - [27/May/2026 19:01:06] "GET /api/inventory HTTP/1.1" 200 -
+2026-05-27 19:01:11,949 [INFO] 127.0.0.1 - - [27/May/2026 19:01:11] "GET /admin/announcements HTTP/1.1" 200 -
+2026-05-27 19:01:11,995 [INFO] 127.0.0.1 - - [27/May/2026 19:01:11] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:11,997 [INFO] 127.0.0.1 - - [27/May/2026 19:01:11] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:12,034 [INFO] 127.0.0.1 - - [27/May/2026 19:01:12] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:01:12,040 [INFO] 127.0.0.1 - - [27/May/2026 19:01:12] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:17,449 [INFO] 127.0.0.1 - - [27/May/2026 19:01:17] "GET /admin_management HTTP/1.1" 200 -
+2026-05-27 19:01:17,508 [INFO] 127.0.0.1 - - [27/May/2026 19:01:17] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:17,514 [INFO] 127.0.0.1 - - [27/May/2026 19:01:17] "[33mGET /static/js/admin/admin_management.js HTTP/1.1[0m" 404 -
+2026-05-27 19:01:17,514 [INFO] 127.0.0.1 - - [27/May/2026 19:01:17] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:17,689 [INFO] 127.0.0.1 - - [27/May/2026 19:01:17] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:01:17,692 [INFO] 127.0.0.1 - - [27/May/2026 19:01:17] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:20,583 [INFO] 127.0.0.1 - - [27/May/2026 19:01:20] "GET /librarian_management HTTP/1.1" 200 -
+2026-05-27 19:01:20,623 [INFO] 127.0.0.1 - - [27/May/2026 19:01:20] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:20,636 [INFO] 127.0.0.1 - - [27/May/2026 19:01:20] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:20,640 [INFO] 127.0.0.1 - - [27/May/2026 19:01:20] "[33mGET /static/js/admin/admin_management.js HTTP/1.1[0m" 404 -
+2026-05-27 19:01:20,680 [INFO] 127.0.0.1 - - [27/May/2026 19:01:20] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:01:20,681 [INFO] 127.0.0.1 - - [27/May/2026 19:01:20] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:22,924 [INFO] 127.0.0.1 - - [27/May/2026 19:01:22] "GET /user_management HTTP/1.1" 200 -
+2026-05-27 19:01:22,965 [INFO] 127.0.0.1 - - [27/May/2026 19:01:22] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:22,970 [INFO] 127.0.0.1 - - [27/May/2026 19:01:22] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:22,973 [INFO] 127.0.0.1 - - [27/May/2026 19:01:22] "[33mGET /static/js/admin/admin_management.js HTTP/1.1[0m" 404 -
+2026-05-27 19:01:23,066 [INFO] 127.0.0.1 - - [27/May/2026 19:01:23] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:01:23,066 [INFO] 127.0.0.1 - - [27/May/2026 19:01:23] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:01:49,427 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "[32mGET /admin/event HTTP/1.1[0m" 302 -
+2026-05-27 19:01:49,436 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET / HTTP/1.1" 200 -
+2026-05-27 19:01:49,489 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,490 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,493 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,496 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,498 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,511 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,515 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,523 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,526 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,530 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,537 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 19:01:49,555 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 19:01:49,557 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 19:01:49,560 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 19:01:49,563 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 19:01:49,568 [INFO] 127.0.0.1 - - [27/May/2026 19:01:49] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:01:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:02:52 +08)" (scheduled at 2026-05-27 19:01:52.858497+08:00)
+2026-05-27 19:01:53,642 [INFO] 127.0.0.1 - - [27/May/2026 19:01:53] "[32mGET /user_management HTTP/1.1[0m" 302 -
+2026-05-27 19:01:53,649 [INFO] 127.0.0.1 - - [27/May/2026 19:01:53] "GET / HTTP/1.1" 200 -
+2026-05-27 19:01:56,946 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:02:52 +08)" executed successfully
+2026-05-27 19:01:56,998 [INFO] 127.0.0.1 - - [27/May/2026 19:01:56] "GET /login HTTP/1.1" 200 -
+2026-05-27 19:01:57,031 [INFO] 127.0.0.1 - - [27/May/2026 19:01:57] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:02:09,678 [INFO] 127.0.0.1 - - [27/May/2026 19:02:09] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 19:02:09,718 [INFO] 127.0.0.1 - - [27/May/2026 19:02:09] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 19:02:09,720 [INFO] 127.0.0.1 - - [27/May/2026 19:02:09] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 19:02:09,777 [INFO] 127.0.0.1 - - [27/May/2026 19:02:09] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=y5iRKsGPFDjV45XRBIRT HTTP/1.1[0m" 304 -
+2026-05-27 19:02:09,803 [INFO] 127.0.0.1 - - [27/May/2026 19:02:09] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 19:02:28,698 [INFO] 127.0.0.1 - - [27/May/2026 19:02:28] "GET /login HTTP/1.1" 200 -
+2026-05-27 19:02:28,758 [INFO] 127.0.0.1 - - [27/May/2026 19:02:28] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:02:32,089 [INFO] 127.0.0.1 - - [27/May/2026 19:02:32] "GET /login HTTP/1.1" 200 -
+2026-05-27 19:02:32,120 [INFO] 127.0.0.1 - - [27/May/2026 19:02:32] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:02:32,186 [INFO] 127.0.0.1 - - [27/May/2026 19:02:32] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:02:41,855 [INFO] 127.0.0.1 - - [27/May/2026 19:02:41] "[35m[1mPOST /login HTTP/1.1[0m" 500 -
+2026-05-27 19:02:41,891 [INFO] 127.0.0.1 - - [27/May/2026 19:02:41] "[36mGET /login?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2026-05-27 19:02:41,894 [INFO] 127.0.0.1 - - [27/May/2026 19:02:41] "[36mGET /login?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2026-05-27 19:02:41,939 [INFO] 127.0.0.1 - - [27/May/2026 19:02:41] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png&s=y5iRKsGPFDjV45XRBIRT HTTP/1.1[0m" 304 -
+2026-05-27 19:02:41,962 [INFO] 127.0.0.1 - - [27/May/2026 19:02:41] "[36mGET /login?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2026-05-27 19:02:52,870 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:03:52 +08)" (scheduled at 2026-05-27 19:02:52.858497+08:00)
+2026-05-27 19:02:52,883 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:03:52 +08)" executed successfully
+2026-05-27 19:03:00,844 [INFO] 127.0.0.1 - - [27/May/2026 19:03:00] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-05-27 19:03:00,857 [INFO] 127.0.0.1 - - [27/May/2026 19:03:00] "[32mGET /home HTTP/1.1[0m" 302 -
+2026-05-27 19:03:00,870 [INFO] 127.0.0.1 - - [27/May/2026 19:03:00] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 19:03:00,923 [INFO] 127.0.0.1 - - [27/May/2026 19:03:00] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:00,924 [INFO] 127.0.0.1 - - [27/May/2026 19:03:00] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:01,140 [INFO] 127.0.0.1 - - [27/May/2026 19:03:01] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:01,168 [INFO] 127.0.0.1 - - [27/May/2026 19:03:01] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:01,174 [INFO] 127.0.0.1 - - [27/May/2026 19:03:01] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 19:03:01,191 [INFO] 127.0.0.1 - - [27/May/2026 19:03:01] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:07,315 [INFO] 127.0.0.1 - - [27/May/2026 19:03:07] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:07,353 [INFO] 127.0.0.1 - - [27/May/2026 19:03:07] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:07,363 [INFO] 127.0.0.1 - - [27/May/2026 19:03:07] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:13,641 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 19:03:13,684 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:13,689 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:13,714 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:13,715 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:13,724 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 19:03:13,730 [INFO] 127.0.0.1 - - [27/May/2026 19:03:13] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:18,112 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "GET /admin/event HTTP/1.1" 200 -
+2026-05-27 19:03:18,154 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:18,157 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:18,423 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:18,429 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:18,443 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "GET /api/events HTTP/1.1" 200 -
+2026-05-27 19:03:18,549 [INFO] 127.0.0.1 - - [27/May/2026 19:03:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-27 19:03:19,943 [INFO] 127.0.0.1 - - [27/May/2026 19:03:19] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:19,984 [INFO] 127.0.0.1 - - [27/May/2026 19:03:19] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:19,998 [INFO] 127.0.0.1 - - [27/May/2026 19:03:19] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:36,967 [INFO] 127.0.0.1 - - [27/May/2026 19:03:36] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 19:03:37,018 [INFO] 127.0.0.1 - - [27/May/2026 19:03:37] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:37,020 [INFO] 127.0.0.1 - - [27/May/2026 19:03:37] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:37,144 [INFO] 127.0.0.1 - - [27/May/2026 19:03:37] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:37,150 [INFO] 127.0.0.1 - - [27/May/2026 19:03:37] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:37,158 [INFO] 127.0.0.1 - - [27/May/2026 19:03:37] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 19:03:37,164 [INFO] 127.0.0.1 - - [27/May/2026 19:03:37] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:41,481 [INFO] 127.0.0.1 - - [27/May/2026 19:03:41] "GET /admin/event HTTP/1.1" 200 -
+2026-05-27 19:03:41,536 [INFO] 127.0.0.1 - - [27/May/2026 19:03:41] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:41,540 [INFO] 127.0.0.1 - - [27/May/2026 19:03:41] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:41,652 [INFO] 127.0.0.1 - - [27/May/2026 19:03:41] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:41,670 [INFO] 127.0.0.1 - - [27/May/2026 19:03:41] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:41,674 [INFO] 127.0.0.1 - - [27/May/2026 19:03:41] "GET /api/events HTTP/1.1" 200 -
+2026-05-27 19:03:51,674 [INFO] 127.0.0.1 - - [27/May/2026 19:03:51] "GET /admin/event HTTP/1.1" 200 -
+2026-05-27 19:03:51,731 [INFO] 127.0.0.1 - - [27/May/2026 19:03:51] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:51,732 [INFO] 127.0.0.1 - - [27/May/2026 19:03:51] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:51,910 [INFO] 127.0.0.1 - - [27/May/2026 19:03:51] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:51,929 [INFO] 127.0.0.1 - - [27/May/2026 19:03:51] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:51,932 [INFO] 127.0.0.1 - - [27/May/2026 19:03:51] "GET /api/events HTTP/1.1" 200 -
+2026-05-27 19:03:52,872 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:04:52 +08)" (scheduled at 2026-05-27 19:03:52.858497+08:00)
+2026-05-27 19:03:52,876 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:04:52 +08)" executed successfully
+2026-05-27 19:03:53,736 [INFO] 127.0.0.1 - - [27/May/2026 19:03:53] "GET /book_management HTTP/1.1" 200 -
+2026-05-27 19:03:53,794 [INFO] 127.0.0.1 - - [27/May/2026 19:03:53] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:53,796 [INFO] 127.0.0.1 - - [27/May/2026 19:03:53] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:54,050 [INFO] 127.0.0.1 - - [27/May/2026 19:03:54] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:03:54,062 [INFO] 127.0.0.1 - - [27/May/2026 19:03:54] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:59,261 [INFO] 127.0.0.1 - - [27/May/2026 19:03:59] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:03:59,324 [INFO] 127.0.0.1 - - [27/May/2026 19:03:59] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:03:59,333 [INFO] 127.0.0.1 - - [27/May/2026 19:03:59] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:04:28,902 [INFO] 127.0.0.1 - - [27/May/2026 19:04:28] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:04:52,864 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:05:52 +08)" (scheduled at 2026-05-27 19:04:52.858497+08:00)
+2026-05-27 19:04:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:05:52 +08)" executed successfully
+2026-05-27 19:05:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:06:52 +08)" (scheduled at 2026-05-27 19:05:52.858497+08:00)
+2026-05-27 19:05:52,874 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:06:52 +08)" executed successfully
+2026-05-27 19:05:57,639 [INFO] 127.0.0.1 - - [27/May/2026 19:05:57] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:05:58,613 [INFO] 127.0.0.1 - - [27/May/2026 19:05:58] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:05:58,691 [INFO] 127.0.0.1 - - [27/May/2026 19:05:58] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:05:58,693 [INFO] 127.0.0.1 - - [27/May/2026 19:05:58] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:05:58,872 [INFO] 127.0.0.1 - - [27/May/2026 19:05:58] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:05:58,876 [INFO] 127.0.0.1 - - [27/May/2026 19:05:58] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:05:58,903 [INFO] 127.0.0.1 - - [27/May/2026 19:05:58] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:15,468 [INFO] 127.0.0.1 - - [27/May/2026 19:06:15] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:15,529 [INFO] 127.0.0.1 - - [27/May/2026 19:06:15] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:15,698 [INFO] 127.0.0.1 - - [27/May/2026 19:06:15] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:06:15,706 [INFO] 127.0.0.1 - - [27/May/2026 19:06:15] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:15,725 [INFO] 127.0.0.1 - - [27/May/2026 19:06:15] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:21,036 [INFO] 127.0.0.1 - - [27/May/2026 19:06:21] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:21,104 [INFO] 127.0.0.1 - - [27/May/2026 19:06:21] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:21,155 [INFO] 127.0.0.1 - - [27/May/2026 19:06:21] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:21,247 [INFO] 127.0.0.1 - - [27/May/2026 19:06:21] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:40,702 [INFO] 127.0.0.1 - - [27/May/2026 19:06:40] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:41,690 [INFO] 127.0.0.1 - - [27/May/2026 19:06:41] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:41,726 [INFO] 127.0.0.1 - - [27/May/2026 19:06:41] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:41,728 [INFO] 127.0.0.1 - - [27/May/2026 19:06:41] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:41,769 [INFO] 127.0.0.1 - - [27/May/2026 19:06:41] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:06:41,811 [INFO] 127.0.0.1 - - [27/May/2026 19:06:41] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:06:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:07:52 +08)" (scheduled at 2026-05-27 19:06:52.858497+08:00)
+2026-05-27 19:06:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:07:52 +08)" executed successfully
+2026-05-27 19:07:07,595 [INFO] 127.0.0.1 - - [27/May/2026 19:07:07] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:07:08,541 [INFO] 127.0.0.1 - - [27/May/2026 19:07:08] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:07:08,608 [INFO] 127.0.0.1 - - [27/May/2026 19:07:08] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:07:08,614 [INFO] 127.0.0.1 - - [27/May/2026 19:07:08] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:07:08,717 [INFO] 127.0.0.1 - - [27/May/2026 19:07:08] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:07:20,561 [INFO] 127.0.0.1 - - [27/May/2026 19:07:20] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:07:20,603 [INFO] 127.0.0.1 - - [27/May/2026 19:07:20] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:07:20,603 [INFO] 127.0.0.1 - - [27/May/2026 19:07:20] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:07:20,733 [INFO] 127.0.0.1 - - [27/May/2026 19:07:20] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:07:20,738 [INFO] 127.0.0.1 - - [27/May/2026 19:07:20] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:07:20,768 [INFO] 127.0.0.1 - - [27/May/2026 19:07:20] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:07:52,873 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:08:52 +08)" (scheduled at 2026-05-27 19:07:52.858497+08:00)
+2026-05-27 19:07:52,876 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:08:52 +08)" executed successfully
+2026-05-27 19:08:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:09:52 +08)" (scheduled at 2026-05-27 19:08:52.858497+08:00)
+2026-05-27 19:08:52,872 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:09:52 +08)" executed successfully
+2026-05-27 19:09:52,863 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:10:52 +08)" (scheduled at 2026-05-27 19:09:52.858497+08:00)
+2026-05-27 19:09:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:10:52 +08)" executed successfully
+2026-05-27 19:10:52,863 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:11:52 +08)" (scheduled at 2026-05-27 19:10:52.858497+08:00)
+2026-05-27 19:10:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:11:52 +08)" executed successfully
+2026-05-27 19:11:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:12:52 +08)" (scheduled at 2026-05-27 19:11:52.858497+08:00)
+2026-05-27 19:11:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:12:52 +08)" executed successfully
+2026-05-27 19:12:52,868 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:13:52 +08)" (scheduled at 2026-05-27 19:12:52.858497+08:00)
+2026-05-27 19:12:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:13:52 +08)" executed successfully
+2026-05-27 19:13:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:14:52 +08)" (scheduled at 2026-05-27 19:13:52.858497+08:00)
+2026-05-27 19:13:52,868 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:14:52 +08)" executed successfully
+2026-05-27 19:14:52,874 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:15:52 +08)" (scheduled at 2026-05-27 19:14:52.858497+08:00)
+2026-05-27 19:14:52,879 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:15:52 +08)" executed successfully
+2026-05-27 19:15:52,868 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:16:52 +08)" (scheduled at 2026-05-27 19:15:52.858497+08:00)
+2026-05-27 19:15:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:16:52 +08)" executed successfully
+2026-05-27 19:16:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:17:52 +08)" (scheduled at 2026-05-27 19:16:52.858497+08:00)
+2026-05-27 19:16:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:17:52 +08)" executed successfully
+2026-05-27 19:17:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:18:52 +08)" (scheduled at 2026-05-27 19:17:52.858497+08:00)
+2026-05-27 19:17:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:18:52 +08)" executed successfully
+2026-05-27 19:18:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:19:52 +08)" (scheduled at 2026-05-27 19:18:52.858497+08:00)
+2026-05-27 19:18:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:19:52 +08)" executed successfully
+2026-05-27 19:19:52,876 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:20:52 +08)" (scheduled at 2026-05-27 19:19:52.858497+08:00)
+2026-05-27 19:19:52,880 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:20:52 +08)" executed successfully
+2026-05-27 19:20:52,859 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:21:52 +08)" (scheduled at 2026-05-27 19:20:52.858497+08:00)
+2026-05-27 19:20:52,862 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:21:52 +08)" executed successfully
+2026-05-27 19:21:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:22:52 +08)" (scheduled at 2026-05-27 19:21:52.858497+08:00)
+2026-05-27 19:21:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:22:52 +08)" executed successfully
+2026-05-27 19:22:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:23:52 +08)" (scheduled at 2026-05-27 19:22:52.858497+08:00)
+2026-05-27 19:22:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:23:52 +08)" executed successfully
+2026-05-27 19:23:11,141 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET / HTTP/1.1" 200 -
+2026-05-27 19:23:11,482 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,490 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,541 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,541 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,560 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,572 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,574 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,581 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,584 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,593 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,602 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-27 19:23:11,623 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-27 19:23:11,630 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-27 19:23:11,630 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-27 19:23:11,630 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-27 19:23:11,635 [INFO] 127.0.0.1 - - [27/May/2026 19:23:11] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:23:12,648 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "[32mGET /login HTTP/1.1[0m" 302 -
+2026-05-27 19:23:12,656 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "[32mGET /home HTTP/1.1[0m" 302 -
+2026-05-27 19:23:12,666 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 19:23:12,704 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:23:12,705 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:23:12,740 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:23:12,745 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:23:12,753 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 19:23:12,759 [INFO] 127.0.0.1 - - [27/May/2026 19:23:12] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:23:16,958 [INFO] 127.0.0.1 - - [27/May/2026 19:23:16] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:23:16,994 [INFO] 127.0.0.1 - - [27/May/2026 19:23:16] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:23:16,999 [INFO] 127.0.0.1 - - [27/May/2026 19:23:16] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:23:17,035 [INFO] 127.0.0.1 - - [27/May/2026 19:23:17] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:23:17,039 [INFO] 127.0.0.1 - - [27/May/2026 19:23:17] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:23:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:24:52 +08)" (scheduled at 2026-05-27 19:23:52.858497+08:00)
+2026-05-27 19:23:52,872 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:24:52 +08)" executed successfully
+2026-05-27 19:24:52,880 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:25:52 +08)" (scheduled at 2026-05-27 19:24:52.858497+08:00)
+2026-05-27 19:24:52,883 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:25:52 +08)" executed successfully
+2026-05-27 19:25:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:26:52 +08)" (scheduled at 2026-05-27 19:25:52.858497+08:00)
+2026-05-27 19:25:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:26:52 +08)" executed successfully
+2026-05-27 19:26:52,864 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:27:52 +08)" (scheduled at 2026-05-27 19:26:52.858497+08:00)
+2026-05-27 19:26:52,866 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:27:52 +08)" executed successfully
+2026-05-27 19:27:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:28:52 +08)" (scheduled at 2026-05-27 19:27:52.858497+08:00)
+2026-05-27 19:27:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:28:52 +08)" executed successfully
+2026-05-27 19:28:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:29:52 +08)" (scheduled at 2026-05-27 19:28:52.858497+08:00)
+2026-05-27 19:28:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:29:52 +08)" executed successfully
+2026-05-27 19:29:52,875 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:30:52 +08)" (scheduled at 2026-05-27 19:29:52.858497+08:00)
+2026-05-27 19:29:52,879 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:30:52 +08)" executed successfully
+2026-05-27 19:30:12,299 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "GET /admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:30:12,336 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:12,338 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:12,486 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:30:12,490 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:30:12,499 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:30:12,521 [INFO] 127.0.0.1 - - [27/May/2026 19:30:12] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:30,640 [INFO] 127.0.0.1 - - [27/May/2026 19:30:30] "GET /dashboard HTTP/1.1" 200 -
+2026-05-27 19:30:30,693 [INFO] 127.0.0.1 - - [27/May/2026 19:30:30] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:30,694 [INFO] 127.0.0.1 - - [27/May/2026 19:30:30] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:30,863 [INFO] 127.0.0.1 - - [27/May/2026 19:30:30] "GET /dashboard/stats HTTP/1.1" 200 -
+2026-05-27 19:30:30,892 [INFO] 127.0.0.1 - - [27/May/2026 19:30:30] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:30:30,900 [INFO] 127.0.0.1 - - [27/May/2026 19:30:30] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:30:31,050 [INFO] 127.0.0.1 - - [27/May/2026 19:30:31] "GET /api/inventory HTTP/1.1" 200 -
+2026-05-27 19:30:46,973 [INFO] 127.0.0.1 - - [27/May/2026 19:30:46] "GET /admin/home HTTP/1.1" 200 -
+2026-05-27 19:30:47,017 [INFO] 127.0.0.1 - - [27/May/2026 19:30:47] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:47,019 [INFO] 127.0.0.1 - - [27/May/2026 19:30:47] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-27 19:30:47,130 [INFO] 127.0.0.1 - - [27/May/2026 19:30:47] "[33mGET /api/admin/profile HTTP/1.1[0m" 404 -
+2026-05-27 19:30:47,136 [INFO] 127.0.0.1 - - [27/May/2026 19:30:47] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:30:47,138 [INFO] 127.0.0.1 - - [27/May/2026 19:30:47] "GET /api/inventory/summary HTTP/1.1" 200 -
+2026-05-27 19:30:47,146 [INFO] 127.0.0.1 - - [27/May/2026 19:30:47] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-05-27 19:30:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:31:52 +08)" (scheduled at 2026-05-27 19:30:52.858497+08:00)
+2026-05-27 19:30:52,874 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:31:52 +08)" executed successfully
+2026-05-27 19:31:52,874 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:32:52 +08)" (scheduled at 2026-05-27 19:31:52.858497+08:00)
+2026-05-27 19:31:52,878 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:32:52 +08)" executed successfully
+2026-05-27 19:32:52,859 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:33:52 +08)" (scheduled at 2026-05-27 19:32:52.858497+08:00)
+2026-05-27 19:32:52,861 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:33:52 +08)" executed successfully
+2026-05-27 19:33:52,875 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:34:52 +08)" (scheduled at 2026-05-27 19:33:52.858497+08:00)
+2026-05-27 19:33:52,878 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:34:52 +08)" executed successfully
+2026-05-27 19:34:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:35:52 +08)" (scheduled at 2026-05-27 19:34:52.858497+08:00)
+2026-05-27 19:34:52,872 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:35:52 +08)" executed successfully
+2026-05-27 19:35:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:36:52 +08)" (scheduled at 2026-05-27 19:35:52.858497+08:00)
+2026-05-27 19:35:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:36:52 +08)" executed successfully
+2026-05-27 19:36:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:37:52 +08)" (scheduled at 2026-05-27 19:36:52.858497+08:00)
+2026-05-27 19:36:52,874 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:37:52 +08)" executed successfully
+2026-05-27 19:37:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:38:52 +08)" (scheduled at 2026-05-27 19:37:52.858497+08:00)
+2026-05-27 19:37:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:38:52 +08)" executed successfully
+2026-05-27 19:38:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:39:52 +08)" (scheduled at 2026-05-27 19:38:52.858497+08:00)
+2026-05-27 19:38:52,873 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:39:52 +08)" executed successfully
+2026-05-27 19:39:52,859 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:40:52 +08)" (scheduled at 2026-05-27 19:39:52.858497+08:00)
+2026-05-27 19:39:52,885 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:40:52 +08)" executed successfully
+2026-05-27 19:40:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:41:52 +08)" (scheduled at 2026-05-27 19:40:52.858497+08:00)
+2026-05-27 19:40:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:41:52 +08)" executed successfully
+2026-05-27 19:41:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:42:52 +08)" (scheduled at 2026-05-27 19:41:52.858497+08:00)
+2026-05-27 19:41:52,868 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:42:52 +08)" executed successfully
+2026-05-27 19:42:52,864 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:43:52 +08)" (scheduled at 2026-05-27 19:42:52.858497+08:00)
+2026-05-27 19:42:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:43:52 +08)" executed successfully
+2026-05-27 19:43:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:44:52 +08)" (scheduled at 2026-05-27 19:43:52.858497+08:00)
+2026-05-27 19:43:52,874 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:44:52 +08)" executed successfully
+2026-05-27 19:44:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:45:52 +08)" (scheduled at 2026-05-27 19:44:52.858497+08:00)
+2026-05-27 19:44:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:45:52 +08)" executed successfully
+2026-05-27 19:45:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:46:52 +08)" (scheduled at 2026-05-27 19:45:52.858497+08:00)
+2026-05-27 19:45:52,874 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:46:52 +08)" executed successfully
+2026-05-27 19:46:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:47:52 +08)" (scheduled at 2026-05-27 19:46:52.858497+08:00)
+2026-05-27 19:46:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:47:52 +08)" executed successfully
+2026-05-27 19:47:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:48:52 +08)" (scheduled at 2026-05-27 19:47:52.858497+08:00)
+2026-05-27 19:47:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:48:52 +08)" executed successfully
+2026-05-27 19:48:52,868 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:49:52 +08)" (scheduled at 2026-05-27 19:48:52.858497+08:00)
+2026-05-27 19:48:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:49:52 +08)" executed successfully
+2026-05-27 19:49:52,879 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:50:52 +08)" (scheduled at 2026-05-27 19:49:52.858497+08:00)
+2026-05-27 19:49:52,882 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:50:52 +08)" executed successfully
+2026-05-27 19:50:52,873 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:51:52 +08)" (scheduled at 2026-05-27 19:50:52.858497+08:00)
+2026-05-27 19:50:52,876 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:51:52 +08)" executed successfully
+2026-05-27 19:51:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:52:52 +08)" (scheduled at 2026-05-27 19:51:52.858497+08:00)
+2026-05-27 19:51:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:52:52 +08)" executed successfully
+2026-05-27 19:52:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:53:52 +08)" (scheduled at 2026-05-27 19:52:52.858497+08:00)
+2026-05-27 19:52:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:53:52 +08)" executed successfully
+2026-05-27 19:53:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:54:52 +08)" (scheduled at 2026-05-27 19:53:52.858497+08:00)
+2026-05-27 19:53:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:54:52 +08)" executed successfully
+2026-05-27 19:54:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:55:52 +08)" (scheduled at 2026-05-27 19:54:52.858497+08:00)
+2026-05-27 19:54:52,875 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:55:52 +08)" executed successfully
+2026-05-27 19:55:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:56:52 +08)" (scheduled at 2026-05-27 19:55:52.858497+08:00)
+2026-05-27 19:55:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:56:52 +08)" executed successfully
+2026-05-27 19:56:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:57:52 +08)" (scheduled at 2026-05-27 19:56:52.858497+08:00)
+2026-05-27 19:56:52,875 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:57:52 +08)" executed successfully
+2026-05-27 19:57:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:58:52 +08)" (scheduled at 2026-05-27 19:57:52.858497+08:00)
+2026-05-27 19:57:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:58:52 +08)" executed successfully
+2026-05-27 19:58:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:59:52 +08)" (scheduled at 2026-05-27 19:58:52.858497+08:00)
+2026-05-27 19:58:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 19:59:52 +08)" executed successfully
+2026-05-27 19:59:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:00:52 +08)" (scheduled at 2026-05-27 19:59:52.858497+08:00)
+2026-05-27 19:59:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:00:52 +08)" executed successfully
+2026-05-27 20:00:52,864 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:01:52 +08)" (scheduled at 2026-05-27 20:00:52.858497+08:00)
+2026-05-27 20:00:52,869 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:01:52 +08)" executed successfully
+2026-05-27 20:01:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:02:52 +08)" (scheduled at 2026-05-27 20:01:52.858497+08:00)
+2026-05-27 20:01:52,863 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:02:52 +08)" executed successfully
+2026-05-27 20:02:52,864 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:03:52 +08)" (scheduled at 2026-05-27 20:02:52.858497+08:00)
+2026-05-27 20:02:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:03:52 +08)" executed successfully
+2026-05-27 20:03:52,868 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:04:52 +08)" (scheduled at 2026-05-27 20:03:52.858497+08:00)
+2026-05-27 20:03:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:04:52 +08)" executed successfully
+2026-05-27 20:04:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:05:52 +08)" (scheduled at 2026-05-27 20:04:52.858497+08:00)
+2026-05-27 20:04:52,863 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:05:52 +08)" executed successfully
+2026-05-27 20:05:52,858 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:06:52 +08)" (scheduled at 2026-05-27 20:05:52.858497+08:00)
+2026-05-27 20:05:52,863 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:06:52 +08)" executed successfully
+2026-05-27 20:06:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:07:52 +08)" (scheduled at 2026-05-27 20:06:52.858497+08:00)
+2026-05-27 20:06:52,862 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:07:52 +08)" executed successfully
+2026-05-27 20:07:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:08:52 +08)" (scheduled at 2026-05-27 20:07:52.858497+08:00)
+2026-05-27 20:07:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:08:52 +08)" executed successfully
+2026-05-27 20:08:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:09:52 +08)" (scheduled at 2026-05-27 20:08:52.858497+08:00)
+2026-05-27 20:08:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:09:52 +08)" executed successfully
+2026-05-27 20:09:52,863 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:10:52 +08)" (scheduled at 2026-05-27 20:09:52.858497+08:00)
+2026-05-27 20:09:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:10:52 +08)" executed successfully
+2026-05-27 20:10:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:11:52 +08)" (scheduled at 2026-05-27 20:10:52.858497+08:00)
+2026-05-27 20:10:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:11:52 +08)" executed successfully
+2026-05-27 20:11:52,863 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:12:52 +08)" (scheduled at 2026-05-27 20:11:52.858497+08:00)
+2026-05-27 20:11:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:12:52 +08)" executed successfully
+2026-05-27 20:12:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:13:52 +08)" (scheduled at 2026-05-27 20:12:52.858497+08:00)
+2026-05-27 20:12:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:13:52 +08)" executed successfully
+2026-05-27 20:13:52,859 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:14:52 +08)" (scheduled at 2026-05-27 20:13:52.858497+08:00)
+2026-05-27 20:13:52,862 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:14:52 +08)" executed successfully
+2026-05-27 20:14:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:15:52 +08)" (scheduled at 2026-05-27 20:14:52.858497+08:00)
+2026-05-27 20:14:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:15:52 +08)" executed successfully
+2026-05-27 20:15:52,864 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:16:52 +08)" (scheduled at 2026-05-27 20:15:52.858497+08:00)
+2026-05-27 20:15:52,866 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:16:52 +08)" executed successfully
+2026-05-27 20:16:52,868 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:17:52 +08)" (scheduled at 2026-05-27 20:16:52.858497+08:00)
+2026-05-27 20:16:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:17:52 +08)" executed successfully
+2026-05-27 20:17:52,861 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:18:52 +08)" (scheduled at 2026-05-27 20:17:52.858497+08:00)
+2026-05-27 20:17:52,863 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:18:52 +08)" executed successfully
+2026-05-27 20:18:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:19:52 +08)" (scheduled at 2026-05-27 20:18:52.858497+08:00)
+2026-05-27 20:18:52,865 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:19:52 +08)" executed successfully
+2026-05-27 20:19:52,867 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:20:52 +08)" (scheduled at 2026-05-27 20:19:52.858497+08:00)
+2026-05-27 20:19:52,870 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:20:52 +08)" executed successfully
+2026-05-27 20:20:52,871 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:21:52 +08)" (scheduled at 2026-05-27 20:20:52.858497+08:00)
+2026-05-27 20:20:52,873 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:21:52 +08)" executed successfully
+2026-05-27 20:21:52,860 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:22:52 +08)" (scheduled at 2026-05-27 20:21:52.858497+08:00)
+2026-05-27 20:21:52,862 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:22:52 +08)" executed successfully
+2026-05-27 20:22:52,863 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:23:52 +08)" (scheduled at 2026-05-27 20:22:52.858497+08:00)
+2026-05-27 20:22:52,867 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:23:52 +08)" executed successfully
+2026-05-27 20:23:52,866 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:24:52 +08)" (scheduled at 2026-05-27 20:23:52.858497+08:00)
+2026-05-27 20:23:52,868 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:24:52 +08)" executed successfully
+2026-05-27 20:24:52,869 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:25:52 +08)" (scheduled at 2026-05-27 20:24:52.858497+08:00)
+2026-05-27 20:24:52,871 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:25:52 +08)" executed successfully
+2026-05-27 20:25:52,874 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:26:52 +08)" (scheduled at 2026-05-27 20:25:52.858497+08:00)
+2026-05-27 20:25:52,876 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:26:52 +08)" executed successfully
+2026-05-27 20:26:52,862 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:27:52 +08)" (scheduled at 2026-05-27 20:26:52.858497+08:00)
+2026-05-27 20:26:52,864 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:27:52 +08)" executed successfully
+2026-05-27 20:27:52,865 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:28:52 +08)" (scheduled at 2026-05-27 20:27:52.858497+08:00)
+2026-05-27 20:27:56,932 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-27 20:28:52 +08)" executed successfully
+2026-05-27 20:28:19,767 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-27 20:28:20,372 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-27 20:28:20,531 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.8.39:5000
+2026-05-27 20:28:20,531 [INFO] [33mPress CTRL+C to quit[0m
+2026-05-27 20:28:20,533 [INFO]  * Restarting with stat
+2026-05-27 20:28:20,972 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-27 20:28:20,986 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-27 20:28:20,988 [INFO] Added job "run_backup" to job store "default"
+2026-05-27 20:28:20,988 [INFO] Scheduler started
+2026-05-27 20:28:20,989 [INFO] Backup scheduler running — daily at 2:00 AM.
+2026-05-27 20:28:21,109 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-27 20:28:21,110 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-27 20:28:21,110 [INFO] Scheduler started
+2026-05-27 20:28:21,442 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-27 20:28:21,560 [WARNING]  * Debugger is active!
+2026-05-27 20:28:21,565 [INFO]  * Debugger PIN: 101-973-226
