@@ -750,6 +750,20 @@
       <!-- ════ LOGIN FORM ════ -->
       <div id="loginForm" class="form-content" style="display:none;">
         <h3><i class="fas fa-right-to-bracket me-2" style="color:var(--accent)"></i>Sign In</h3>
+
+        {% set reason = request.args.get('reason') %}
+        {% if reason == 'maintenance' %}
+        <div style="background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.84rem;color:#ffb74d;display:flex;align-items:center;gap:10px;">
+          <i class="bi bi-cone-striped" style="flex-shrink:0;"></i>
+          You have been logged out — the system is currently under maintenance.
+        </div>
+        {% elif reason == 'lockdown' %}
+        <div style="background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.84rem;color:#ff9090;display:flex;align-items:center;gap:10px;">
+          <i class="bi bi-shield-lock-fill" style="flex-shrink:0;"></i>
+          You have been logged out — the system is currently under emergency lockdown.
+        </div>
+        {% endif %}
+
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}

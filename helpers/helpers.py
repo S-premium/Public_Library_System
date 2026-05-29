@@ -837,3 +837,83 @@ def save_search_history(user_id: int, query: str) -> None:
         cur.close()
     except Exception:
         pass
+
+# =====================================================================
+# SYSTEM SETTINGS  (maintenance mode & lockdown)
+# =====================================================================
+ 
+_settings_cache: dict = {}   # simple in-process cache
+ 
+ 
+def get_system_settings(cursor=None) -> dict:
+    """
+    Return the current system settings row as a dict.
+    Uses a very short in-process cache (refreshed on every save) so the
+    before_request hook doesn't hammer the DB on every single request.
+    """
+    global _settings_cache
+    if _settings_cache:
+        return _settings_cache
+ 
+    own_cursor = cursor is None
+    if own_cursor:
+        cursor = mysql.connection.cursor()
+ 
+    try:
+        cursor.execute("""
+            SELECT maintenance_enabled, maintenance_message,
+                   bypass_role, lockdown_enabled
+            FROM system_settings WHERE id = 1
+        """)
+        row = cursor.fetchone()
+    except Exception:
+        row = None
+    finally:
+        if own_cursor:
+            cursor.close()
+ 
+    if row:
+        _settings_cache = {
+            'maintenance_enabled': bool(row[0]),
+            'maintenance_message': row[1] or "The library system is currently under scheduled maintenance. We'll be back shortly. Thank you for your patience.",
+            'bypass_role':         row[2] or 'admin',
+            'lockdown_enabled':    bool(row[3]),
+        }
+    else:
+        _settings_cache = {
+            'maintenance_enabled': False,
+            'maintenance_message': "The library system is currently under scheduled maintenance. We'll be back shortly. Thank you for your patience.",
+            'bypass_role':         'admin',
+            'lockdown_enabled':    False,
+        }
+ 
+    return _settings_cache
+ 
+ 
+def set_system_settings(maintenance_enabled: bool,
+                        maintenance_message: str,
+                        bypass_role: str,
+                        lockdown_enabled: bool) -> None:
+    """Persist settings to DB and bust the in-process cache."""
+    global _settings_cache
+ 
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE system_settings
+        SET maintenance_enabled = %s,
+            maintenance_message = %s,
+            bypass_role         = %s,
+            lockdown_enabled    = %s,
+            updated_at          = NOW()
+        WHERE id = 1
+    """, (
+        int(maintenance_enabled),
+        maintenance_message.strip() or "The library system is currently under scheduled maintenance.",
+        bypass_role if bypass_role in ('admin', 'admin_librarian') else 'admin',
+        int(lockdown_enabled),
+    ))
+    mysql.connection.commit()
+    cur.close()
+ 
+    # Bust cache so next request re-reads from DB
+    _settings_cache = {}

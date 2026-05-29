@@ -97,7 +97,12 @@ def admin_inventory():
         return redirect('/')
     return render_template("admins/inventory_status.html")
 
-
+@admin_bp.route('/system-settings')
+def system_settings():
+    if not is_logged_in() or require_role('admin'):
+        flash("Unauthorized access", "danger")
+        return redirect('/')
+    return render_template("admins/system_settings.html")
 # =====================================================================
 # DASHBOARD STATS
 # =====================================================================
@@ -1699,4 +1704,41 @@ def api_delete_library_card(card_id):
         return jsonify({'success': True}), 200
     except Exception as e:
         mysql.connection.rollback()
+        return jsonify({'error': str(e)}), 500
+
+# =====================================================================
+# GET  /api/admin/system-settings
+# POST /api/admin/system-settings
+# =====================================================================
+ 
+@admin_bp.route('/api/admin/system-settings', methods=['GET'])
+def api_get_system_settings():
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    from helpers import get_system_settings
+    return jsonify(get_system_settings()), 200
+ 
+ 
+@admin_bp.route('/api/admin/system-settings', methods=['POST'])
+def api_save_system_settings():
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'error': 'Unauthorized'}), 401
+ 
+    data = request.get_json(silent=True) or {}
+ 
+    maintenance_enabled = bool(data.get('maintenance_enabled', False))
+    maintenance_message = str(data.get('maintenance_message', '')).strip()
+    bypass_role         = str(data.get('bypass_role', 'admin')).strip()
+    lockdown_enabled    = bool(data.get('lockdown_enabled', False))
+ 
+    try:
+        from helpers import set_system_settings
+        set_system_settings(
+            maintenance_enabled=maintenance_enabled,
+            maintenance_message=maintenance_message,
+            bypass_role=bypass_role,
+            lockdown_enabled=lockdown_enabled,
+        )
+        return jsonify({'success': True}), 200
+    except Exception as e:
         return jsonify({'error': str(e)}), 500

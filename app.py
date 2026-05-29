@@ -66,5 +66,93 @@ if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
+# =====================================================================
+# MAINTENANCE / LOCKDOWN GATE
+# =====================================================================
+
+from flask import render_template as _render_template
+
+# Paths that are ALWAYS accessible (never blocked)
+_ALWAYS_ALLOWED = (
+    '/login', '/logout', '/maintenance',
+    '/verify_captcha', '/verify_otp', '/verify_pin',
+    '/resend_otp', '/api/check_email', '/signup',
+    '/forgot_password', '/reset_password', '/reset-pin',
+    '/download/apk', '/api/admin/system-settings',
+)
+
+
+@app.before_request
+def check_system_mode():
+    from flask import request, session, redirect
+    from helpers import get_system_settings
+
+    path = request.path
+
+    # Always allow static files
+    if path.startswith('/static') or path.startswith('/favicon'):
+        return None
+
+    # Always allow the maintenance page itself (avoid redirect loop)
+    if path == '/maintenance':
+        return None
+
+    # Always allow auth endpoints so admins can log in / out
+    if path in _ALWAYS_ALLOWED:
+        return None
+
+    try:
+        settings = get_system_settings()
+    except Exception:
+        return None   # DB not ready yet — don't block
+
+    role = session.get('role', '')
+
+    # ── LOCKDOWN takes priority ───────────────────────────────────────
+    if settings['lockdown_enabled']:
+        if role == 'admin':
+            return None   # admins always pass
+
+        # Logged-in non-admin → force logout then redirect to login
+        if role in ('librarian', 'user'):
+            session.clear()
+            return redirect('/login?reason=lockdown')
+
+        # Unauthenticated visitors → show lockdown page
+        return _render_template(
+            'maintenance.html',
+            mode='lockdown',
+            message='The system is temporarily locked for security reasons. Please try again later or contact an administrator.',
+        ), 503
+
+    # ── MAINTENANCE MODE ─────────────────────────────────────────────
+    if settings['maintenance_enabled']:
+        bypass = settings['bypass_role']   # 'admin' or 'admin_librarian'
+
+        if role == 'admin':
+            return None
+        if role == 'librarian' and bypass == 'admin_librarian':
+            return None
+
+        # Librarian is logged in but bypass is admin-only → force logout
+        if role == 'librarian' and bypass == 'admin':
+            session.clear()
+            return redirect('/login?reason=maintenance')
+
+        # Member/user is logged in → force logout
+        if role == 'user':
+            session.clear()
+            return redirect('/login?reason=maintenance')
+
+        # Unauthenticated visitors → show maintenance page
+        return _render_template(
+            'maintenance.html',
+            mode='maintenance',
+            message=settings['maintenance_message'],
+        ), 503
+
+    return None
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=app.debug)

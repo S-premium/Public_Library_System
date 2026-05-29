@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/static/images/logo.png">
+  <title>System Settings | Iloilo Public Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --accent:  #9fc1e1;
+      --accent2: #48c78e;
+      --bg1:     #1e2d3d;
+      --bg2:     #2f3f4d;
+      --bg3:     #42586b;
+      --card:    rgba(255,255,255,0.06);
+      --card-b:  rgba(255,255,255,0.10);
+      --tl:      #dae8f5;
+      --danger:  #ff6363;
+      --warn:    #ff9800;
+      --mono:    'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+      background-attachment: fixed;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+      background: rgba(30,45,61,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(159,193,225,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
+    }
+    .brand-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; }
+    .brand-img-placeholder { width:34px; height:34px; border-radius:8px; background:rgba(159,193,225,.2); display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--accent); flex-shrink:0; }
+    .brand-text { font-weight:700; font-size:1.1rem; letter-spacing:-.02em; }
+    .nav-links { display:flex; gap:4px; align-items:center; }
+    .nav-links a { color:rgba(255,255,255,.65); text-decoration:none; font-weight:500; font-size:.88rem; padding:6px 12px; border-radius:8px; transition:.18s; }
+    .nav-links a:hover { background:rgba(255,255,255,.08); color:#fff; }
+    .nav-links a.active { background:rgba(159,193,225,.15); color:var(--accent); }
+    .menu-toggle { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; }
+    @media (max-width:992px) { .topbar { padding:0 16px; } .nav-links { display:none; } .menu-toggle { display:block; } }
+    @media (max-width:480px) { .brand-text { display:none; } }
+
+    .page-wrapper {
+      padding-top: 80px; padding-bottom: 60px;
+      max-width: 960px; margin: 0 auto;
+      padding-left: 24px; padding-right: 24px;
+    }
+    .page-header { margin-bottom: 32px; }
+    .page-header-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(159,193,225,.1); border: 1px solid rgba(159,193,225,.2);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: .7rem; font-weight: 700; color: var(--accent);
+      letter-spacing: .06em; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .page-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; letter-spacing: -.03em; margin-bottom: 6px; }
+    .page-subtitle { font-size: .875rem; color: rgba(218,232,245,.6); line-height: 1.6; }
+
+    .emergency-banner {
+      background: rgba(255,50,50,.12);
+      border: 1px solid rgba(255,80,80,.35);
+      border-radius: 14px; padding: 14px 18px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+      animation: emergPulse 2s infinite;
+    }
+    .emergency-banner.hidden { display: none !important; }
+    @keyframes emergPulse { 0%,100%{border-color:rgba(255,80,80,.35)}50%{border-color:rgba(255,80,80,.7)} }
+    .emerg-icon { font-size: 1.2rem; color: #ff6363; flex-shrink: 0; }
+    .emerg-text { font-size: .84rem; font-weight: 600; color: rgba(255,150,150,.9); }
+    .emerg-sub  { font-size: .76rem; color: rgba(255,120,120,.6); margin-top: 2px; }
+
+    /* TABS */
+    .settings-tabs {
+      display: flex; gap: 4px; margin-bottom: 28px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px; padding: 5px; flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1; min-width: 100px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 14px; border-radius: 10px;
+      background: transparent; border: none; color: rgba(255,255,255,.5);
+      font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 600;
+      cursor: pointer; transition: .2s; white-space: nowrap;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.8); }
+    .tab-btn.active { background: rgba(159,193,225,.15); color: var(--accent); }
+    .tab-btn .tab-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--danger); flex-shrink: 0; display: none;
+      animation: heroBlink 1.8s infinite;
+    }
+    .tab-btn .tab-dot.show { display: block; }
+    @keyframes heroBlink { 0%,100%{opacity:1}50%{opacity:.2} }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* CARDS */
+    .settings-card {
+      background: var(--card); border: 1px solid rgba(255,255,255,.09);
+      border-radius: 18px; overflow: hidden; margin-bottom: 16px;
+      backdrop-filter: blur(8px); transition: .25s;
+    }
+    .settings-card:hover { border-color: rgba(255,255,255,.14); }
+    .sc-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .sc-header-left { display: flex; align-items: center; gap: 14px; }
+    .sc-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+    .sc-icon-blue  { background: rgba(159,193,225,.13); color: var(--accent); }
+    .sc-icon-green { background: rgba(72,199,142,.13); color: #48c78e; }
+    .sc-icon-red   { background: rgba(255,99,99,.13); color: #ff7070; }
+    .sc-icon-warn  { background: rgba(255,152,0,.13); color: #ffb74d; }
+    .sc-icon-purple{ background: rgba(160,130,220,.13); color: #b09ee0; }
+    .sc-title { font-size: .96rem; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .sc-desc  { font-size: .78rem; color: rgba(218,232,245,.5); line-height: 1.5; }
+    .sc-body { padding: 22px 24px; }
+
+    /* TOGGLE */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .toggle-row:first-child { padding-top: 0; }
+    .toggle-info { flex: 1; }
+    .toggle-label { font-size: .875rem; font-weight: 600; color: rgba(255,255,255,.85); margin-bottom: 3px; }
+    .toggle-sub   { font-size: .76rem; color: rgba(218,232,245,.45); line-height: 1.5; }
+    .toggle-switch { position: relative; width: 52px; height: 28px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; cursor: pointer;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.15);
+      border-radius: 28px; transition: .3s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 20px; height: 20px; border-radius: 50%;
+      left: 3px; top: 3px;
+      background: rgba(255,255,255,.5);
+      transition: .3s; box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    }
+    .toggle-switch input:checked + .toggle-slider { background: rgba(72,199,142,.3); border-color: rgba(72,199,142,.5); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); background: #48c78e; }
+    .toggle-switch.danger input:checked + .toggle-slider { background: rgba(255,80,80,.3); border-color: rgba(255,80,80,.5); }
+    .toggle-switch.danger input:checked + .toggle-slider::before { background: #ff6363; }
+
+    /* STATUS BADGE */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px; border-radius: 20px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    }
+    .status-badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-off    { background: rgba(255,255,255,.07); color: rgba(255,255,255,.4); }
+    .badge-off .status-badge-dot { background: rgba(255,255,255,.3); }
+    .badge-on     { background: rgba(72,199,142,.12); color: #48c78e; border: 1px solid rgba(72,199,142,.25); }
+    .badge-on .status-badge-dot { background: #48c78e; animation: heroBlink 2s infinite; }
+    .badge-danger { background: rgba(255,80,80,.12); color: #ff7070; border: 1px solid rgba(255,80,80,.25); }
+    .badge-danger .status-badge-dot { background: #ff6363; animation: heroBlink 1.4s infinite; }
+    .badge-warn   { background: rgba(255,152,0,.12); color: #ffb74d; border: 1px solid rgba(255,152,0,.25); }
+    .badge-warn .status-badge-dot { background: #ffb74d; animation: heroBlink 2s infinite; }
+
+    /* TEXTAREA */
+    .settings-textarea {
+      width: 100%; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 10px; color: #fff;
+      padding: 12px 14px; font-size: .875rem; font-family: 'DM Sans', sans-serif;
+      line-height: 1.6; resize: vertical; min-height: 90px;
+      outline: none; transition: .2s;
+    }
+    .settings-textarea:focus { border-color: var(--accent); background: rgba(255,255,255,.09); }
+    .settings-textarea::placeholder { color: rgba(255,255,255,.3); }
+
+    /* RADIO */
+    .radio-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.04);
+      cursor: pointer; transition: .2s;
+    }
+    .radio-card:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); }
+    .radio-card.selected { background: rgba(159,193,225,.08); border-color: rgba(159,193,225,.3); }
+    .radio-card input[type=radio] { display: none; }
+    .radio-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(255,255,255,.25); position: relative; transition: .2s; }
+    .radio-card.selected .radio-dot { border-color: var(--accent); }
+    .radio-card.selected .radio-dot::after { content: ''; position: absolute; top: 3px; left: 3px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .radio-text .rt-label { font-size: .875rem; font-weight: 600; color: rgba(255,255,255,.85); }
+    .radio-text .rt-sub   { font-size: .75rem; color: rgba(218,232,245,.45); margin-top: 2px; }
+
+    /* BUTTONS */
+    .btn-save {
+      background: var(--accent); color: #0d1a24;
+      border: none; border-radius: 11px; padding: 11px 24px;
+      font-size: .875rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-save:hover { background: #b8d4ec; transform: translateY(-1px); }
+    .btn-danger-action {
+      background: rgba(255,80,80,.15); color: #ff8888;
+      border: 1px solid rgba(255,80,80,.3); border-radius: 11px; padding: 10px 20px;
+      font-size: .875rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-danger-action:hover { background: rgba(255,80,80,.28); border-color: rgba(255,80,80,.55); color: #ffaaaa; }
+    .btn-ghost-action {
+      background: rgba(255,255,255,.06); color: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.12); border-radius: 11px; padding: 10px 20px;
+      font-size: .875rem; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-ghost-action:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .btn-purple-action {
+      background: rgba(160,130,220,.15); color: #c4b0f0;
+      border: 1px solid rgba(160,130,220,.3); border-radius: 11px; padding: 10px 20px;
+      font-size: .875rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-purple-action:hover { background: rgba(160,130,220,.28); color: #ddd0ff; }
+
+    /* INFO BOXES */
+    .info-box { background: rgba(159,193,225,.07); border: 1px solid rgba(159,193,225,.18); border-radius: 11px; padding: 14px 16px; font-size: .8rem; color: rgba(218,232,245,.65); line-height: 1.65; display: flex; gap: 10px; align-items: flex-start; }
+    .info-box i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+    .warn-box { background: rgba(255,152,0,.07); border: 1px solid rgba(255,152,0,.2); border-radius: 11px; padding: 14px 16px; font-size: .8rem; color: rgba(255,200,100,.75); line-height: 1.65; display: flex; gap: 10px; align-items: flex-start; }
+    .warn-box i { color: #ffb74d; flex-shrink: 0; margin-top: 1px; }
+    .danger-box { background: rgba(255,80,80,.07); border: 1px solid rgba(255,80,80,.22); border-radius: 11px; padding: 14px 16px; font-size: .8rem; color: rgba(255,150,150,.8); line-height: 1.65; display: flex; gap: 10px; align-items: flex-start; }
+    .danger-box i { color: #ff6363; flex-shrink: 0; margin-top: 1px; }
+
+    .sc-divider { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 18px 0; }
+    .actions-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 4px; }
+    .section-label-sm { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: rgba(159,193,225,.5); margin-bottom: 10px; }
+    .char-counter { font-size: .72rem; color: rgba(255,255,255,.3); text-align: right; margin-top: 6px; }
+
+    /* BACKUP LOG TABLE */
+    .log-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,.08); }
+    .log-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .log-table thead th {
+      padding: 11px 14px; text-align: left;
+      font-size: .67rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: rgba(159,193,225,.5);
+      background: rgba(255,255,255,.04);
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      white-space: nowrap;
+    }
+    .log-table tbody td { padding: 12px 14px; color: rgba(255,255,255,.72); border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+    .log-table tbody tr:last-child td { border-bottom: none; }
+    .log-table tbody tr:hover td { background: rgba(255,255,255,.03); }
+    .log-type-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 8px; font-size: .68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .log-type-auto   { background: rgba(159,193,225,.12); color: var(--accent); }
+    .log-type-manual { background: rgba(160,130,220,.12); color: #b09ee0; }
+    .log-status-ok   { background: rgba(72,199,142,.12); color: #48c78e; border: 1px solid rgba(72,199,142,.2); }
+    .log-status-fail { background: rgba(255,80,80,.12); color: #ff8888; border: 1px solid rgba(255,80,80,.2); }
+    .log-size { font-family: 'DM Mono', monospace; font-size: .78rem; color: rgba(218,232,245,.45); }
+    .log-empty { text-align: center; padding: 40px 0; color: rgba(218,232,245,.3); font-size: .84rem; }
+    .log-empty i { font-size: 2rem; display: block; margin-bottom: 10px; opacity: .3; }
+
+    /* BACKUP SCHEDULE CHIPS */
+    .sched-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sched-chip {
+      padding: 7px 16px; border-radius: 10px; font-size: .8rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.5); cursor: pointer; transition: .18s;
+    }
+    .sched-chip.active { background: rgba(159,193,225,.15); border-color: rgba(159,193,225,.35); color: var(--accent); }
+    .sched-chip:hover:not(.active) { background: rgba(255,255,255,.09); color: rgba(255,255,255,.8); }
+
+    /* PROGRESS BAR */
+    .backup-progress-wrap { display: none; margin-bottom: 16px; }
+    .backup-progress-wrap.show { display: block; }
+    .backup-bar-track { background: rgba(255,255,255,.08); border-radius: 8px; height: 8px; overflow: hidden; margin: 10px 0 6px; }
+    .backup-bar-fill  { height: 100%; background: linear-gradient(90deg, #48c78e, #9fc1e1); border-radius: 8px; width: 0%; transition: width .4s; }
+    .backup-bar-label { font-size: .75rem; color: rgba(218,232,245,.5); }
+
+    /* TOAST */
+    .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:9px; }
+    .toast-msg { background:#1e2d3d; border:1px solid rgba(159,193,225,.22); border-radius:11px; padding:12px 16px; font-size:.84rem; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex; align-items:center; gap:9px; animation:toastIn .3s ease; max-width:320px; }
+    .toast-msg.success { border-color:rgba(72,199,142,.4); }
+    .toast-msg.danger  { border-color:rgba(255,99,99,.4); }
+    @keyframes toastIn { from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1} }
+
+    /* CONFIRM MODAL */
+    .confirm-overlay { display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 16px; }
+    .confirm-overlay.show { display: flex; }
+    .confirm-modal { background: linear-gradient(150deg, #1e2d3d, #273848); border: 1px solid rgba(159,193,225,.18); border-radius: 20px; width: 100%; max-width: 420px; padding: 28px 28px 24px; box-shadow: 0 24px 72px rgba(0,0,0,.55); animation: modalIn .25s cubic-bezier(.16,.84,.44,1); }
+    @keyframes modalIn { from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none} }
+    .confirm-icon { width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px; }
+    .confirm-icon-red { background:rgba(255,80,80,.15);color:#ff7070; }
+    .confirm-title { font-size:1rem;font-weight:700;margin-bottom:8px; }
+    .confirm-body  { font-size:.84rem;color:rgba(218,232,245,.6);line-height:1.65;margin-bottom:22px; }
+    .confirm-btns  { display:flex;gap:10px;justify-content:flex-end; }
+
+    /* BYPASS OPTIONS — subtle inset panel */
+    .bypass-panel {
+      background: rgba(159,193,225,.04);
+      border: 1px solid rgba(159,193,225,.12);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-top: 18px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:768px) {
+      .page-wrapper { padding-left:16px;padding-right:16px;padding-top:74px; }
+      .sc-header { padding:16px 18px 14px; }
+      .sc-body { padding:16px 18px; }
+      .settings-tabs { gap:3px; }
+      .tab-btn { font-size:.78rem;padding:9px 8px;min-width:80px; }
+    }
+    @media (max-width:480px) {
+      .settings-tabs { padding:4px; }
+      .tab-btn { font-size:.72rem;padding:8px 6px;gap:4px;min-width:70px; }
+      .sc-header { flex-direction:column;align-items:flex-start;gap:10px; }
+      .confirm-btns { flex-direction:column; }
+      .confirm-btns button { width:100%;justify-content:center; }
+      .actions-row { flex-direction:column;align-items:stretch; }
+      .actions-row button { justify-content:center; }
+      .toast-wrap { left:10px;right:10px;bottom:16px; }
+      .log-table thead th:nth-child(4),
+      .log-table tbody td:nth-child(4) { display:none; }
+    }
+    @media (max-width:360px) {
+      .page-title { font-size:1.3rem; }
+      .tab-btn span { display:none; }
+      .tab-btn { min-width:44px;flex:0 0 auto; }
+      .settings-tabs { overflow-x:auto;flex-wrap:nowrap; }
+    }
+  </style>
+</head>
+<body>
+{% include 'admin_template/topbar_template.html' %}
+{% include 'admin_template/sidebar_template.html' %}
+
+  <!-- EMERGENCY BANNER -->
+  <div class="emergency-banner hidden" id="emergencyBanner">
+    <i class="bi bi-shield-exclamation emerg-icon"></i>
+    <div>
+      <div class="emerg-text">Emergency Lockdown is ACTIVE</div>
+      <div class="emerg-sub">All non-admin sessions are terminated. Login for non-admins is blocked.</div>
+    </div>
+  </div>
+
+  <div class="page-wrapper">
+
+    <div class="page-header">
+      <div class="page-header-badge"><i class="bi bi-gear-fill me-1"></i> Admin Panel</div>
+      <h1 class="page-title">System Settings</h1>
+      <p class="page-subtitle">Manage maintenance mode, access restrictions, emergency lockdown, and backup logs.</p>
+    </div>
+
+    <!-- TABS (3 tabs now) -->
+    <div class="settings-tabs" role="tablist">
+      <button class="tab-btn active" role="tab" onclick="switchTab('maintenance',this)">
+        <i class="bi bi-wrench-adjustable"></i><span>Maintenance</span>
+        <span class="tab-dot" id="tabDotMaint"></span>
+      </button>
+      <button class="tab-btn" role="tab" onclick="switchTab('lockdown',this)">
+        <i class="bi bi-lock-fill"></i><span>Emergency</span>
+        <span class="tab-dot" id="tabDotLock"></span>
+      </button>
+      <button class="tab-btn" role="tab" onclick="switchTab('backup',this)">
+        <i class="bi bi-archive-fill"></i><span>Backup</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════
+         TAB 1: MAINTENANCE
+    ═══════════════════════ -->
+    <div class="tab-panel active" id="tab-maintenance">
+      <div class="settings-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-icon sc-icon-blue"><i class="bi bi-wrench-adjustable"></i></div>
+            <div>
+              <div class="sc-title">Maintenance Mode</div>
+              <div class="sc-desc">Temporarily restrict access while the system is being updated.</div>
+            </div>
+          </div>
+          <span class="status-badge badge-off" id="maintBadge"><span class="status-badge-dot"></span> Inactive</span>
+        </div>
+        <div class="sc-body">
+
+          <!-- Master toggle -->
+          <div class="toggle-row" style="padding-top:0;">
+            <div class="toggle-info">
+              <div class="toggle-label">Enable Maintenance Mode</div>
+              <div class="toggle-sub">When active, non-authorized users will see a maintenance page and cannot access the system.</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="maintToggle" onchange="onMaintChange()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="sc-divider"></div>
+
+          <!-- Message + preview -->
+          <div id="maintOptions">
+            <div class="section-label-sm">Maintenance Page Message</div>
+            <textarea class="settings-textarea" id="maintMessage" maxlength="300"
+              placeholder="e.g. The library system is currently under maintenance."
+              oninput="updateCharCount(this,'maintCharCount')"
+            >The library system is currently under scheduled maintenance. We'll be back shortly. Thank you for your patience.</textarea>
+            <div class="char-counter"><span id="maintCharCount">109</span> / 300</div>
+
+            <div style="margin-top:18px;">
+              <div class="section-label-sm">Preview</div>
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,152,0,.15);display:flex;align-items:center;justify-content:center;color:#ffb74d;font-size:1rem;"><i class="bi bi-cone-striped"></i></div>
+                  <div>
+                    <div style="font-size:.84rem;font-weight:700;color:#fff;">System Under Maintenance</div>
+                    <div style="font-size:.73rem;color:rgba(218,232,245,.45);">Shown to non-authorized users</div>
+                  </div>
+                </div>
+                <div style="font-size:.8rem;color:rgba(218,232,245,.55);line-height:1.65;border-top:1px solid rgba(255,255,255,.06);padding-top:10px;" id="maintPreviewText">The library system is currently under scheduled maintenance. We'll be back shortly. Thank you for your patience.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sc-divider"></div>
+
+          <!-- ── ACCESS / BYPASS (moved here) ── -->
+          <div class="section-label-sm" style="margin-bottom:6px;">Access &amp; Bypass Permissions</div>
+          <p style="font-size:.78rem;color:rgba(218,232,245,.45);margin-bottom:14px;line-height:1.6;">Choose which roles can bypass maintenance mode and still access the system.</p>
+
+          <div class="bypass-panel">
+            <div class="radio-group" id="bypassGroup">
+              <label class="radio-card selected" onclick="selectBypass(this,'admin')">
+                <input type="radio" name="bypass" value="admin" checked>
+                <div class="radio-dot"></div>
+                <div class="radio-text">
+                  <div class="rt-label"><i class="bi bi-shield-fill-check me-2" style="color:#ff9800;font-size:.85rem;"></i>Admin Only</div>
+                  <div class="rt-sub">Only administrators can access the system during maintenance.</div>
+                </div>
+              </label>
+              <label class="radio-card" onclick="selectBypass(this,'admin_librarian')">
+                <input type="radio" name="bypass" value="admin_librarian">
+                <div class="radio-dot"></div>
+                <div class="radio-text">
+                  <div class="rt-label"><i class="bi bi-people-fill me-2" style="color:#48c78e;font-size:.85rem;"></i>Admin + Librarian</div>
+                  <div class="rt-sub">Administrators and librarians can both access during maintenance.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="section-label-sm" style="margin-top:18px;">Role Access Summary</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:4px;">
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;">
+              <div style="font-size:.72rem;font-weight:700;color:rgba(255,152,0,.7);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;"><i class="bi bi-shield-fill me-1"></i>Admin</div>
+              <span class="status-badge badge-on"><span class="status-badge-dot"></span> Always Access</span>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;">
+              <div style="font-size:.72rem;font-weight:700;color:rgba(159,193,225,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;"><i class="bi bi-person-badge me-1"></i>Librarian</div>
+              <span class="status-badge" id="librarianBadge" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);"><span class="status-badge-dot" style="background:rgba(255,255,255,.3);"></span> Depends on bypass</span>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;">
+              <div style="font-size:.72rem;font-weight:700;color:rgba(159,193,225,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;"><i class="bi bi-person me-1"></i>Member</div>
+              <span class="status-badge badge-danger" id="memberBadge"><span class="status-badge-dot"></span> Blocked</span>
+            </div>
+          </div>
+
+          <div class="sc-divider"></div>
+
+          <div class="info-box">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>Admins always retain full dashboard access during maintenance. Emergency lockdown overrides all settings and blocks every non-admin user.</div>
+          </div>
+
+          <div class="actions-row" style="margin-top:16px;">
+            <button class="btn-save" onclick="saveMaintenance()"><i class="bi bi-floppy-fill"></i> Save Changes</button>
+            <button class="btn-ghost-action" onclick="resetMaintenance()"><i class="bi bi-arrow-counterclockwise"></i> Reset to Default</button>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- end tab-maintenance -->
+
+    <!-- ═══════════════════════
+         TAB 2: EMERGENCY
+    ═══════════════════════ -->
+    <div class="tab-panel" id="tab-lockdown">
+      <div class="settings-card" style="border-color:rgba(255,80,80,.15);">
+        <div class="sc-header" style="border-bottom-color:rgba(255,80,80,.1);">
+          <div class="sc-header-left">
+            <div class="sc-icon sc-icon-red"><i class="bi bi-shield-exclamation"></i></div>
+            <div>
+              <div class="sc-title">Emergency Lockdown Mode</div>
+              <div class="sc-desc">Immediately terminate all non-admin sessions and block login access.</div>
+            </div>
+          </div>
+          <span class="status-badge badge-off" id="lockBadge"><span class="status-badge-dot"></span> Inactive</span>
+        </div>
+        <div class="sc-body">
+          <div class="danger-box" style="margin-bottom:18px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div><strong>Critical Action:</strong> Enabling lockdown will immediately log out ALL active non-admin sessions and prevent any non-admin user from logging in. This overrides maintenance mode and access restriction settings.</div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Activate Emergency Lockdown</div>
+              <div class="toggle-sub">When enabled, all librarians and members are immediately logged out and cannot log back in until this is disabled.</div>
+            </div>
+            <label class="toggle-switch danger">
+              <input type="checkbox" id="lockToggle" onchange="onLockChange()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="sc-divider"></div>
+          <div class="section-label-sm">Lockdown Effects</div>
+          <div style="display:grid;gap:8px;margin-bottom:18px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.12);border-radius:10px;">
+              <i class="bi bi-person-x-fill" style="color:#ff7070;font-size:1rem;flex-shrink:0;"></i>
+              <div style="font-size:.8rem;color:rgba(255,150,150,.8);">All non-admin active sessions are <strong>immediately terminated</strong></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.12);border-radius:10px;">
+              <i class="bi bi-door-closed-fill" style="color:#ff7070;font-size:1rem;flex-shrink:0;"></i>
+              <div style="font-size:.8rem;color:rgba(255,150,150,.8);">Login page shows: <em>"System is temporarily locked for security reasons"</em></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.12);border-radius:10px;">
+              <i class="bi bi-arrow-up-circle-fill" style="color:#ff7070;font-size:1rem;flex-shrink:0;"></i>
+              <div style="font-size:.8rem;color:rgba(255,150,150,.8);">Overrides maintenance mode — maintenance settings are ignored while lockdown is active</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(72,199,142,.06);border:1px solid rgba(72,199,142,.15);border-radius:10px;">
+              <i class="bi bi-shield-check" style="color:#48c78e;font-size:1rem;flex-shrink:0;"></i>
+              <div style="font-size:.8rem;color:rgba(100,210,160,.8);">Admin accounts retain full access to all system functions</div>
+            </div>
+          </div>
+          <div class="warn-box">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <div>Use this feature only in genuine security emergencies. Disable it as soon as the situation is resolved to restore normal access.</div>
+          </div>
+          <div class="actions-row" style="margin-top:16px;">
+            <button class="btn-danger-action" id="lockActionBtn" onclick="confirmLockdown()">
+              <i class="bi bi-lock-fill"></i> Activate Lockdown
+            </button>
+            <button class="btn-ghost-action" onclick="switchTab('backup', document.querySelectorAll('.tab-btn')[2])">
+              <i class="bi bi-journal-text"></i> View Backup Log
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lockdown History -->
+      <div class="settings-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-icon sc-icon-warn"><i class="bi bi-clock-history"></i></div>
+            <div>
+              <div class="sc-title">Recent Lockdown Events</div>
+              <div class="sc-desc">History of emergency lockdown activations and deactivations.</div>
+            </div>
+          </div>
+        </div>
+        <div class="sc-body">
+          <div id="lockHistory">
+            <div class="log-empty"><i class="bi bi-shield-check"></i>No lockdown events recorded</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end tab-lockdown -->
+
+    <!-- ═══════════════════════
+         TAB 3: BACKUP LOGS
+    ═══════════════════════ -->
+    <div class="tab-panel" id="tab-backup">
+
+      <!-- Backup Now card -->
+      <div class="settings-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-icon sc-icon-purple"><i class="bi bi-archive-fill"></i></div>
+            <div>
+              <div class="sc-title">System Backup</div>
+              <div class="sc-desc">Create a manual backup of the database and system files.</div>
+            </div>
+          </div>
+          <span class="status-badge" id="backupStatusBadge" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);"><span class="status-badge-dot" style="background:rgba(255,255,255,.3);"></span> Idle</span>
+        </div>
+        <div class="sc-body">
+          <div class="section-label-sm">Backup Scope</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;">
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;cursor:pointer;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
+              <input type="checkbox" id="bkpDatabase" checked style="accent-color:#9fc1e1;width:15px;height:15px;flex-shrink:0;">
+              <div>
+                <div style="font-size:.84rem;font-weight:600;color:rgba(255,255,255,.8);">Database</div>
+                <div style="font-size:.72rem;color:rgba(218,232,245,.4);">All tables & records</div>
+              </div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;cursor:pointer;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
+              <input type="checkbox" id="bkpUploads" checked style="accent-color:#9fc1e1;width:15px;height:15px;flex-shrink:0;">
+              <div>
+                <div style="font-size:.84rem;font-weight:600;color:rgba(255,255,255,.8);">Uploads</div>
+                <div style="font-size:.72rem;color:rgba(218,232,245,.4);">Book covers, photos</div>
+              </div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;cursor:pointer;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
+              <input type="checkbox" id="bkpSystemFiles" style="accent-color:#9fc1e1;width:15px;height:15px;flex-shrink:0;">
+              <div>
+                <div style="font-size:.84rem;font-weight:600;color:rgba(255,255,255,.8);">System Files</div>
+                <div style="font-size:.72rem;color:rgba(218,232,245,.4);">Config & static assets</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="backup-progress-wrap" id="backupProgress">
+            <div style="font-size:.8rem;color:rgba(218,232,245,.6);margin-bottom:4px;" id="backupProgressLabel">Preparing backup…</div>
+            <div class="backup-bar-track"><div class="backup-bar-fill" id="backupBarFill"></div></div>
+            <div class="backup-bar-label" id="backupBarPct">0%</div>
+          </div>
+
+          <div class="actions-row" style="margin-top:4px;">
+            <button class="btn-purple-action" id="backupNowBtn" onclick="runBackup()">
+              <i class="bi bi-cloud-arrow-up-fill"></i> Backup Now
+            </button>
+            <button class="btn-ghost-action" onclick="clearBackupLogs()">
+              <i class="bi bi-trash3"></i> Clear Log History
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule card -->
+      <div class="settings-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-icon sc-icon-blue"><i class="bi bi-calendar-event"></i></div>
+            <div>
+              <div class="sc-title">Automatic Backup Schedule</div>
+              <div class="sc-desc">Set how often the system creates automatic backups.</div>
+            </div>
+          </div>
+          <span class="status-badge badge-on" id="schedBadge"><span class="status-badge-dot"></span> Weekly</span>
+        </div>
+        <div class="sc-body">
+          <div class="section-label-sm">Frequency</div>
+          <div class="sched-chips" id="schedChips" style="margin-bottom:20px;">
+            <button class="sched-chip" onclick="selectSched(this,'hourly')">Every Hour</button>
+            <button class="sched-chip" onclick="selectSched(this,'daily')">Daily</button>
+            <button class="sched-chip active" onclick="selectSched(this,'weekly')">Weekly</button>
+            <button class="sched-chip" onclick="selectSched(this,'monthly')">Monthly</button>
+            <button class="sched-chip" onclick="selectSched(this,'off')">Off</button>
+          </div>
+          <div class="toggle-row" style="padding-top:0;">
+            <div class="toggle-info">
+              <div class="toggle-label">Notify admin after each backup</div>
+              <div class="toggle-sub">Send a system notification when an automatic backup completes.</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="backupNotify" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="sc-divider"></div>
+          <div class="info-box">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>Automatic backups run in the background and do not interrupt system usage. Backup files are stored in <code style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--accent);">/backups/</code> on the server.</div>
+          </div>
+          <div class="actions-row" style="margin-top:16px;">
+            <button class="btn-save" onclick="saveSchedule()"><i class="bi bi-floppy-fill"></i> Save Schedule</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backup Log Table -->
+      <div class="settings-card">
+        <div class="sc-header">
+          <div class="sc-header-left">
+            <div class="sc-icon sc-icon-warn"><i class="bi bi-journal-code"></i></div>
+            <div>
+              <div class="sc-title">Backup Log</div>
+              <div class="sc-desc">History of all backup operations — manual and automatic.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:.72rem;color:rgba(218,232,245,.4);" id="logCountLabel">0 entries</span>
+            <button onclick="refreshLogs()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);border-radius:8px;padding:5px 10px;font-size:.75rem;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;transition:.18s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.5)'">
+              <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+          </div>
+        </div>
+        <div class="sc-body" style="padding-top:0;padding-bottom:0;">
+          <div class="log-table-wrap">
+            <table class="log-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Type</th>
+                  <th>Scope</th>
+                  <th>Size</th>
+                  <th>Status</th>
+                  <th>Initiated By</th>
+                </tr>
+              </thead>
+              <tbody id="backupLogBody">
+                <tr><td colspan="6"><div class="log-empty"><i class="bi bi-archive"></i>No backup logs yet. Run your first backup above.</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end tab-backup -->
+
+  </div><!-- end page-wrapper -->
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-modal">
+      <div class="confirm-icon confirm-icon-red" id="confirmIcon"><i class="bi bi-shield-exclamation"></i></div>
+      <div class="confirm-title" id="confirmTitle">Activate Emergency Lockdown?</div>
+      <div class="confirm-body" id="confirmBody">
+        This will immediately log out all librarians and members. They will not be able to log back in until lockdown is disabled. Admin access is unaffected.<br><br>Are you sure you want to proceed?
+      </div>
+      <div class="confirm-btns">
+        <button class="btn-ghost-action" onclick="closeConfirm()"><i class="bi bi-x-lg"></i> Cancel</button>
+        <button class="btn-danger-action" id="confirmOkBtn" onclick="executeLockdown()"><i class="bi bi-lock-fill"></i> Yes, Activate</button>
+      </div>
+    </div>
+  </div>
+
+{% include 'admin_template/footer_template.html' %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ─── STATE ─── */
+const state = {
+  maintenance: false,
+  bypass: 'admin',
+  lockdown: false,
+  lockHistory: [],
+  backupLogs: [],
+  schedule: 'weekly',
+};
+ 
+/* ─── LOAD SETTINGS FROM SERVER ON PAGE LOAD ─── */
+async function loadSettings() {
+  try {
+    const res  = await fetch('/api/admin/system-settings');
+    const data = await res.json();
+ 
+    // Maintenance
+    state.maintenance = data.maintenance_enabled;
+    document.getElementById('maintToggle').checked = state.maintenance;
+    onMaintChange(true);   // update badge without saving
+ 
+    // Message
+    const msg = data.maintenance_message || '';
+    document.getElementById('maintMessage').value = msg;
+    document.getElementById('maintCharCount').textContent = msg.length;
+    document.getElementById('maintPreviewText').textContent = msg || '(no message set)';
+ 
+    // Bypass
+    state.bypass = data.bypass_role || 'admin';
+    document.querySelectorAll('#bypassGroup .radio-card').forEach(c => c.classList.remove('selected'));
+    const target = document.querySelector(`#bypassGroup .radio-card input[value="${state.bypass}"]`);
+    if (target) target.closest('.radio-card').classList.add('selected');
+    updateLibrarianBadge(state.bypass);
+ 
+    // Lockdown
+    state.lockdown = data.lockdown_enabled;
+    document.getElementById('lockToggle').checked = state.lockdown;
+    syncLockdownUI(state.lockdown, false);   // update UI, no toast
+ 
+  } catch (e) {
+    showToast('danger','<i class="bi bi-exclamation-circle" style="color:#ff7070"></i> Could not load settings from server.');
+  }
+}
+ 
+/* ─── TABS ─── */
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+ 
+/* ─── MAINTENANCE ─── */
+function onMaintChange(silent) {
+  const on    = document.getElementById('maintToggle').checked;
+  state.maintenance = on;
+  const badge = document.getElementById('maintBadge');
+  if (on) { badge.className='status-badge badge-warn'; badge.innerHTML='<span class="status-badge-dot"></span> Active'; }
+  else     { badge.className='status-badge badge-off';  badge.innerHTML='<span class="status-badge-dot"></span> Inactive'; }
+  document.getElementById('tabDotMaint').classList.toggle('show', on);
+}
+ 
+function updateCharCount(el, id) {
+  document.getElementById(id).textContent = el.value.length;
+  document.getElementById('maintPreviewText').textContent = el.value || '(no message set)';
+}
+ 
+async function saveMaintenance() {
+  try {
+    const res = await fetch('/api/admin/system-settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        maintenance_enabled: document.getElementById('maintToggle').checked,
+        maintenance_message: document.getElementById('maintMessage').value,
+        bypass_role:         state.bypass,
+        lockdown_enabled:    state.lockdown,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Maintenance settings saved.');
+    } else {
+      showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> ' + (data.error || 'Save failed.'));
+    }
+  } catch (e) {
+    showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> Network error.');
+  }
+}
+ 
+async function resetMaintenance() {
+  const d = "The library system is currently under scheduled maintenance. We'll be back shortly. Thank you for your patience.";
+  document.getElementById('maintMessage').value = d;
+  document.getElementById('maintCharCount').textContent = d.length;
+  document.getElementById('maintPreviewText').textContent = d;
+  document.getElementById('maintToggle').checked = false;
+  state.maintenance = false;
+  document.getElementById('maintBadge').className='status-badge badge-off';
+  document.getElementById('maintBadge').innerHTML='<span class="status-badge-dot"></span> Inactive';
+  document.getElementById('tabDotMaint').classList.remove('show');
+ 
+  // Reset bypass to admin-only
+  document.querySelectorAll('#bypassGroup .radio-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('#bypassGroup .radio-card').classList.add('selected');
+  state.bypass = 'admin';
+  updateLibrarianBadge('admin');
+ 
+  await saveMaintenance();
+  showToast('','<i class="bi bi-arrow-counterclockwise" style="color:#9fc1e1"></i> Reset to defaults.');
+}
+ 
+/* ─── ACCESS CONTROL ─── */
+function selectBypass(card, value) {
+  document.querySelectorAll('#bypassGroup .radio-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.bypass = value;
+  updateLibrarianBadge(value);
+}
+ 
+function updateLibrarianBadge(value) {
+  const libBadge = document.getElementById('librarianBadge');
+  if (value === 'admin_librarian') {
+    libBadge.className = 'status-badge badge-on';
+    libBadge.innerHTML = '<span class="status-badge-dot"></span> Allowed';
+  } else {
+    libBadge.className = 'status-badge badge-danger';
+    libBadge.innerHTML = '<span class="status-badge-dot"></span> Blocked';
+  }
+}
+ 
+/* ─── LOCKDOWN ─── */
+function onLockChange() {
+  document.getElementById('lockToggle').checked = state.lockdown;  // revert — use button
+}
+ 
+function confirmLockdown() {
+  document.getElementById('confirmIcon').className = 'confirm-icon confirm-icon-red';
+  document.getElementById('confirmIcon').innerHTML = '<i class="bi bi-shield-exclamation"></i>';
+  document.getElementById('confirmTitle').textContent = 'Activate Emergency Lockdown?';
+  document.getElementById('confirmBody').innerHTML =
+    'This will immediately log out all librarians and members. They will not be able to log back in until lockdown is disabled. Admin access is unaffected.<br><br>Are you sure you want to proceed?';
+  const okBtn = document.getElementById('confirmOkBtn');
+  okBtn.className = 'btn-danger-action';
+  okBtn.innerHTML = '<i class="bi bi-lock-fill"></i> Yes, Activate';
+  okBtn.onclick   = executeLockdown;
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+ 
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('show'); }
+ 
+async function executeLockdown() {
+  const will = !state.lockdown;
+  closeConfirm();
+ 
+  try {
+    const res = await fetch('/api/admin/system-settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        maintenance_enabled: state.maintenance,
+        maintenance_message: document.getElementById('maintMessage').value,
+        bypass_role:         state.bypass,
+        lockdown_enabled:    will,
+      }),
+    });
+    const data = await res.json();
+    if (!data.success) {
+      showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> ' + (data.error || 'Failed to update lockdown.'));
+      return;
+    }
+  } catch (e) {
+    showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> Network error.');
+    return;
+  }
+ 
+  state.lockdown = will;
+  document.getElementById('lockToggle').checked = will;
+  syncLockdownUI(will, true);
+  addLockEvent(will ? 'Activated' : 'Deactivated');
+}
+ 
+function syncLockdownUI(active, withToast) {
+  const badge     = document.getElementById('lockBadge');
+  const actionBtn = document.getElementById('lockActionBtn');
+ 
+  if (active) {
+    badge.className = 'status-badge badge-danger';
+    badge.innerHTML = '<span class="status-badge-dot"></span> ACTIVE';
+    document.getElementById('emergencyBanner').classList.remove('hidden');
+    actionBtn.innerHTML = '<i class="bi bi-unlock-fill"></i> Deactivate Lockdown';
+    actionBtn.onclick   = confirmDeactivate;
+    if (withToast) showToast('danger','<i class="bi bi-shield-exclamation" style="color:#ff7070"></i> Emergency lockdown activated.');
+  } else {
+    badge.className = 'status-badge badge-off';
+    badge.innerHTML = '<span class="status-badge-dot"></span> Inactive';
+    document.getElementById('emergencyBanner').classList.add('hidden');
+    actionBtn.innerHTML = '<i class="bi bi-lock-fill"></i> Activate Lockdown';
+    actionBtn.onclick   = confirmLockdown;
+    if (withToast) showToast('success','<i class="bi bi-shield-check" style="color:#48c78e"></i> Lockdown deactivated. Normal access restored.');
+  }
+  document.getElementById('tabDotLock').classList.toggle('show', active);
+}
+ 
+function confirmDeactivate() {
+  const iconEl = document.getElementById('confirmIcon');
+  iconEl.className = 'confirm-icon';
+  iconEl.style.cssText = 'width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px;background:rgba(72,199,142,.15);color:#48c78e;';
+  iconEl.innerHTML = '<i class="bi bi-unlock-fill"></i>';
+  document.getElementById('confirmTitle').textContent = 'Deactivate Emergency Lockdown?';
+  document.getElementById('confirmBody').textContent  = 'This will restore normal login access for librarians and members. Are you sure?';
+  const okBtn = document.getElementById('confirmOkBtn');
+  okBtn.className = 'btn-save';
+  okBtn.innerHTML = '<i class="bi bi-unlock-fill"></i> Yes, Deactivate';
+  okBtn.onclick   = executeLockdown;
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+ 
+function addLockEvent(type) {
+  const label = new Date().toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'});
+  state.lockHistory.unshift({type, time:label});
+  const el = document.getElementById('lockHistory');
+  el.innerHTML = state.lockHistory.map(ev=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+      <div style="width:32px;height:32px;border-radius:9px;background:${ev.type==='Activated'?'rgba(255,80,80,.12)':'rgba(72,199,142,.12)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="bi bi-${ev.type==='Activated'?'lock-fill':'unlock-fill'}" style="color:${ev.type==='Activated'?'#ff7070':'#48c78e'};font-size:.85rem;"></i>
+      </div>
+      <div style="flex:1;"><div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);">Lockdown ${ev.type}</div><div style="font-size:.73rem;color:rgba(218,232,245,.4);">${ev.time} · by Admin</div></div>
+      <span class="status-badge ${ev.type==='Activated'?'badge-danger':'badge-on'}" style="font-size:.62rem;"><span class="status-badge-dot"></span> ${ev.type}</span>
+    </div>
+  `).join('') + '<div style="padding-top:8px;"></div>';
+}
+ 
+/* ─── BACKUP ─── */
+let backupRunning = false;
+ 
+function runBackup() {
+  if (backupRunning) return;
+  const db  = document.getElementById('bkpDatabase').checked;
+  const upl = document.getElementById('bkpUploads').checked;
+  const sf  = document.getElementById('bkpSystemFiles').checked;
+  if (!db && !upl && !sf) {
+    showToast('danger','<i class="bi bi-exclamation-circle" style="color:#ff7070"></i> Select at least one backup scope.');
+    return;
+  }
+  backupRunning = true;
+  const btn = document.getElementById('backupNowBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Backing up…';
+ 
+  const badge = document.getElementById('backupStatusBadge');
+  badge.className = 'status-badge badge-warn';
+  badge.innerHTML = '<span class="status-badge-dot"></span> Running';
+ 
+  const prog = document.getElementById('backupProgress');
+  prog.classList.add('show');
+  const fill = document.getElementById('backupBarFill');
+  const pct  = document.getElementById('backupBarPct');
+  const lbl  = document.getElementById('backupProgressLabel');
+  fill.style.width = '0%'; pct.textContent = '0%';
+ 
+  const steps = ['Preparing backup…','Connecting to database…','Compressing files…','Packaging system files…','Finalizing…'];
+  let step = 0, progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 20 + 8;
+    if (progress > 100) progress = 100;
+    fill.style.width = progress + '%';
+    pct.textContent  = Math.round(progress) + '%';
+    lbl.textContent  = steps[Math.min(step++, steps.length - 1)];
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        backupRunning = false;
+        btn.disabled  = false;
+        btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Backup Now';
+        prog.classList.remove('show');
+        badge.className = 'status-badge badge-on';
+        badge.innerHTML = '<span class="status-badge-dot"></span> Last: just now';
+        const scope = [db?'Database':'', upl?'Uploads':'', sf?'System Files':''].filter(Boolean).join(', ');
+        const size  = (Math.random() * 80 + 20).toFixed(1) + ' MB';
+        addBackupLog('Manual', scope, size, 'Success', 'Admin');
+        showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Backup completed successfully.');
+      }, 500);
+    }
+  }, 350);
+}
+ 
+function addBackupLog(type, scope, size, status, by) {
+  const ts = new Date().toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'});
+  state.backupLogs.unshift({type, scope, size, status, by, ts});
+  renderBackupLog();
+}
+ 
+function renderBackupLog() {
+  const body = document.getElementById('backupLogBody');
+  document.getElementById('logCountLabel').textContent =
+    state.backupLogs.length + ' entr' + (state.backupLogs.length === 1 ? 'y' : 'ies');
+  if (!state.backupLogs.length) {
+    body.innerHTML = '<tr><td colspan="6"><div class="log-empty"><i class="bi bi-archive"></i>No backup logs yet. Run your first backup above.</div></td></tr>';
+    return;
+  }
+  body.innerHTML = state.backupLogs.map(l => `
+    <tr>
+      <td style="font-family:'DM Mono',monospace;font-size:.76rem;color:rgba(218,232,245,.55);">${l.ts}</td>
+      <td><span class="log-type-badge ${l.type==='Manual'?'log-type-manual':'log-type-auto'}">${l.type}</span></td>
+      <td style="color:rgba(218,232,245,.65);">${l.scope}</td>
+      <td class="log-size">${l.size}</td>
+      <td><span class="status-badge ${l.status==='Success'?'log-status-ok':'log-status-fail'}" style="font-size:.65rem;"><span class="status-badge-dot"></span>${l.status}</span></td>
+      <td style="color:rgba(218,232,245,.55);">${l.by}</td>
+    </tr>
+  `).join('');
+}
+ 
+function clearBackupLogs() {
+  if (!state.backupLogs.length) {
+    showToast('','<i class="bi bi-info-circle" style="color:#9fc1e1"></i> No logs to clear.');
+    return;
+  }
+  state.backupLogs = [];
+  renderBackupLog();
+  showToast('','<i class="bi bi-trash3" style="color:#9fc1e1"></i> Backup log history cleared.');
+}
+ 
+function refreshLogs() {
+  renderBackupLog();
+  showToast('','<i class="bi bi-arrow-clockwise" style="color:#9fc1e1"></i> Log refreshed.');
+}
+ 
+function selectSched(chip, val) {
+  document.querySelectorAll('.sched-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  state.schedule = val;
+  const badge  = document.getElementById('schedBadge');
+  const labels = {hourly:'Hourly', daily:'Daily', weekly:'Weekly', monthly:'Monthly', off:'Off'};
+  if (val === 'off') {
+    badge.className = 'status-badge badge-off';
+    badge.innerHTML = '<span class="status-badge-dot"></span> Disabled';
+  } else {
+    badge.className = 'status-badge badge-on';
+    badge.innerHTML = `<span class="status-badge-dot"></span> ${labels[val]}`;
+  }
+}
+ 
+function saveSchedule() {
+  showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Backup schedule saved.');
+}
+ 
+/* ─── TOAST ─── */
+function showToast(type, html) {
+  const wrap = document.getElementById('toastWrap');
+  const div  = document.createElement('div');
+  div.className = 'toast-msg' + (type ? ' ' + type : '');
+  div.innerHTML = html;
+  wrap.appendChild(div);
+  setTimeout(() => {
+    div.style.opacity   = '0';
+    div.style.transform = 'translateX(110%)';
+    div.style.transition = '.4s';
+    setTimeout(() => div.remove(), 400);
+  }, 3500);
+}
+ 
+/* ─── ESC / OVERLAY CLOSE ─── */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
+document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+ 
+/* ─── INIT ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings();      // ← fetch from server on page load
+  renderBackupLog();
+});
+  </script>
+</body>
+</html>
