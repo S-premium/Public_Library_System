@@ -125,7 +125,7 @@
       display: flex;
       align-items: center;
       overflow: hidden;
-      padding-top: 60px; /* topbar height */
+      padding-top: 60px;
     }
     #hero-canvas {
       position: absolute;
@@ -136,7 +136,6 @@
     }
     #hero-canvas:active { cursor: grabbing; }
 
-    /* subtle vignette so text stays readable */
     .hero-vignette {
       position: absolute;
       inset: 0;
@@ -154,7 +153,9 @@
       max-width: 600px;
       pointer-events: none;
     }
-    .hero-content .hero-eyebrow {
+
+    /* ── Hero content entrance animations ── */
+    .hero-eyebrow {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(159,193,225,.12);
       border: 1px solid rgba(159,193,225,.22);
@@ -163,21 +164,29 @@
       letter-spacing: .07em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 22px;
       pointer-events: none;
+      opacity: 0;
+      animation: hero-up .65s cubic-bezier(.22,.68,0,1.2) .1s both;
     }
     .hero-content h1 {
       font-size: clamp(2rem, 4.5vw, 3.2rem);
       font-weight: 700; letter-spacing: -.03em;
       line-height: 1.12; margin-bottom: 16px;
+      opacity: 0;
+      animation: hero-up .65s cubic-bezier(.22,.68,0,1.2) .25s both;
     }
     .hero-content h1 span { color: var(--accent); }
     .hero-content p {
       font-size: 1rem; color: var(--tl);
       margin-bottom: 32px; line-height: 1.7;
       max-width: 440px;
+      opacity: 0;
+      animation: hero-up .65s cubic-bezier(.22,.68,0,1.2) .38s both;
     }
     .hero-btns {
       display: flex; gap: 12px; flex-wrap: wrap;
       pointer-events: all;
+      opacity: 0;
+      animation: hero-up .65s cubic-bezier(.22,.68,0,1.2) .50s both;
     }
     .btn-explore {
       display: inline-flex; align-items: center; gap: 8px;
@@ -197,7 +206,6 @@
     }
     .btn-outline:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); color: #fff; }
 
-    /* drag hint badge */
     .hero-hint {
       position: absolute; bottom: 28px; right: 40px; z-index: 4;
       display: inline-flex; align-items: center; gap: 7px;
@@ -207,6 +215,13 @@
       font-size: .72rem; font-weight: 600;
       color: rgba(159,193,225,.7); pointer-events: none;
       letter-spacing: .03em;
+      opacity: 0;
+      animation: hero-up .65s cubic-bezier(.22,.68,0,1.2) .65s both;
+    }
+
+    @keyframes hero-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 768px) {
@@ -215,7 +230,65 @@
       .hero-hint { right: 16px; bottom: 16px; }
     }
 
-    /* ── REST OF PAGE (unchanged) ── */
+    /* ══════════════════════════════
+       SCROLL REVEAL SYSTEM
+    ══════════════════════════════ */
+    @keyframes sr-up    { from{opacity:0;transform:translateY(44px)}       to{opacity:1;transform:translateY(0)} }
+    @keyframes sr-down  { from{opacity:0;transform:translateY(-32px)}      to{opacity:1;transform:translateY(0)} }
+    @keyframes sr-left  { from{opacity:0;transform:translateX(-52px)}      to{opacity:1;transform:translateX(0)} }
+    @keyframes sr-right { from{opacity:0;transform:translateX(52px)}       to{opacity:1;transform:translateX(0)} }
+    @keyframes sr-zoom  { from{opacity:0;transform:scale(.82)}             to{opacity:1;transform:scale(1)} }
+    @keyframes sr-flip  { from{opacity:0;transform:perspective(700px) rotateX(-22deg) translateY(28px)} to{opacity:1;transform:perspective(700px) rotateX(0) translateY(0)} }
+    @keyframes sr-slide { from{opacity:0;transform:translateY(60px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes sr-stag  { from{opacity:0;transform:translateX(-18px)}      to{opacity:1;transform:translateX(0)} }
+    @keyframes sr-pop   { from{opacity:0;transform:scale(.75) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+    /* Hidden base state */
+    [data-sr]                       { opacity:0; will-change:transform,opacity; }
+    [data-sr-group] [data-sr-child] { opacity:0; }
+
+    /* Triggered states */
+    [data-sr].vis { animation-fill-mode:both; }
+    [data-sr="up"].vis    { animation:sr-up    .72s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="down"].vis  { animation:sr-down  .72s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="left"].vis  { animation:sr-left  .70s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="right"].vis { animation:sr-right .70s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="zoom"].vis  { animation:sr-zoom  .65s cubic-bezier(.34,1.36,.64,1) both; }
+    [data-sr="flip"].vis  { animation:sr-flip  .72s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="slide"].vis { animation:sr-slide .78s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr="pop"].vis   { animation:sr-pop   .65s cubic-bezier(.34,1.56,.64,1) both; }
+
+    /* Stagger group children */
+    [data-sr-group].vis [data-sr-child] { animation:sr-stag .55s cubic-bezier(.22,.68,0,1.2) both; }
+    [data-sr-group].vis [data-sr-child]:nth-child(1)  { animation-delay:.04s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(2)  { animation-delay:.11s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(3)  { animation-delay:.18s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(4)  { animation-delay:.25s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(5)  { animation-delay:.32s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(6)  { animation-delay:.39s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(7)  { animation-delay:.46s; }
+    [data-sr-group].vis [data-sr-child]:nth-child(8)  { animation-delay:.53s; }
+
+    /* Custom delay modifiers */
+    [data-sr-delay="100"].vis { animation-delay:.1s !important; }
+    [data-sr-delay="200"].vis { animation-delay:.2s !important; }
+    [data-sr-delay="300"].vis { animation-delay:.3s !important; }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      [data-sr].vis,
+      [data-sr-group].vis [data-sr-child] {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .hero-eyebrow, .hero-content h1, .hero-content p, .hero-btns, .hero-hint {
+        animation: none !important;
+        opacity: 1 !important;
+      }
+    }
+
+    /* ── SECTIONS ── */
     .offerings-section { padding:100px 40px; background:rgba(0,0,0,.08); }
     .offerings-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1200px; margin:0 auto; }
     .offerings-left .section-eyebrow { display:inline-flex; align-items:center; gap:8px; background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.2); border-radius:20px; padding:5px 14px; font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent2); margin-bottom:20px; }
@@ -351,7 +424,7 @@
 </head>
 <body>
 
-  <!-- TOPBAR (unchanged) -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <a href="#" class="brand-logo">
       <img src="/static/images/logo.png" alt="Logo" class="brand-img">
@@ -392,7 +465,7 @@
     </div>
   </header>
 
-  <!-- MEMBERSHIP MODAL (unchanged) -->
+  <!-- MEMBERSHIP MODAL -->
   <div class="member-modal-overlay" id="memberModalOverlay">
     <div class="member-modal-box" id="memberModalBox">
       <div class="panel-a" id="panelA">
@@ -437,13 +510,10 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       HERO — INTERACTIVE 3D
-  ══════════════════════════════════════ -->
+  <!-- ══ HERO ══ -->
   <section class="hero">
     <canvas id="hero-canvas"></canvas>
     <div class="hero-vignette"></div>
-
     <div class="hero-content">
       <div class="hero-eyebrow"><i class="bi bi-building-fill"></i> Iloilo City Public Library</div>
       <h1>Welcome to the<br><span>Heart of Knowledge</span></h1>
@@ -453,30 +523,29 @@
         <a href="#features" class="btn-outline"><i class="bi bi-compass"></i> Our Features</a>
       </div>
     </div>
-
     <div class="hero-hint">
       <i class="bi bi-arrows-move"></i> Drag to orbit &nbsp;·&nbsp; Scroll to zoom
     </div>
   </section>
 
-  <!-- LIBRARY OFFERINGS -->
+  <!-- ══ LIBRARY OFFERINGS ══ -->
   <section class="offerings-section" id="offerings">
     <div class="offerings-inner">
       <div class="offerings-left">
-        <div class="section-eyebrow"><i class="bi bi-collection-fill"></i> What's Inside</div>
-        <h2>Library <span>Offerings</span></h2>
-        <ul class="offerings-list">
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Free Study or Working Space with Free WiFi</strong><span>The library provides a conducive environment for learning and work, complete with free WiFi for connectivity.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Archives with Historical Materials on the Iloilo Province</strong><span>Delve into the past with the library's extensive collection of historical materials, offering insights into the rich heritage of the Iloilo Province.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Filipiniana Collection</strong><span>Explore a curated collection of books about the Philippines, encompassing various aspects of the nation's culture, history, and literature.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Rizaliana Collection</strong><span>Immerse yourself in materials dedicated to Jose Rizal, a collection that pays homage to the national hero's legacy.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Children's Corner</strong><span>Nurturing the love for reading from a young age, the library features a dedicated Children's Corner with age-appropriate books and engaging spaces.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Theses and Dissertations</strong><span>Catering to academic pursuits, the library houses a comprehensive collection of theses and dissertations.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>General Collection</strong><span>Dive into a diverse array of books covering various subjects, including fiction, ensuring there's something for every curious mind.</span></div></li>
-          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Magazines and Newspapers</strong><span>Stay informed with the latest news and insights through the library's collection of magazines.</span></div></li>
+        <div class="section-eyebrow" data-sr="left"><i class="bi bi-collection-fill"></i> What's Inside</div>
+        <h2 data-sr="left" data-sr-delay="100">Library <span>Offerings</span></h2>
+        <ul class="offerings-list" data-sr-group>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Free Study or Working Space with Free WiFi</strong><span>The library provides a conducive environment for learning and work, complete with free WiFi for connectivity.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Archives with Historical Materials on the Iloilo Province</strong><span>Delve into the past with the library's extensive collection of historical materials, offering insights into the rich heritage of the Iloilo Province.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Filipiniana Collection</strong><span>Explore a curated collection of books about the Philippines, encompassing various aspects of the nation's culture, history, and literature.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Rizaliana Collection</strong><span>Immerse yourself in materials dedicated to Jose Rizal, a collection that pays homage to the national hero's legacy.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Children's Corner</strong><span>Nurturing the love for reading from a young age, the library features a dedicated Children's Corner with age-appropriate books and engaging spaces.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Theses and Dissertations</strong><span>Catering to academic pursuits, the library houses a comprehensive collection of theses and dissertations.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>General Collection</strong><span>Dive into a diverse array of books covering various subjects, including fiction, ensuring there's something for every curious mind.</span></div></li>
+          <li data-sr-child><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Magazines and Newspapers</strong><span>Stay informed with the latest news and insights through the library's collection of magazines.</span></div></li>
         </ul>
       </div>
-      <div class="offerings-collage">
+      <div class="offerings-collage" data-sr="right">
         <div class="col-img col-wide"><img src="/static/images/library1.png" alt="Library collection" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&q=80'"></div>
         <div class="col-img col-tall"><img src="/static/images/library2.png" alt="Book shelves" onerror="this.src='https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&q=80'"></div>
         <div class="col-img"><img src="/static/images/library3.png" alt="Reading area" onerror="this.src='https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80'"></div>
@@ -493,62 +562,89 @@
     </div>
   </section>
 
-  <!-- FEATURES -->
+  <!-- ══ FEATURES ══ -->
   <section class="features-section" id="features">
-    <div class="section-head"><h2>What We <span>Offer</span></h2><p>Everything you need — all in one place.</p></div>
-    <div class="features-grid">
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-search"></i></div><h4>Book Catalog &amp; Search</h4><p>Browse thousands of titles across all categories — from Philippine literature to science, technology, and more.</p></div>
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-bookmark-check-fill"></i></div><h4>Book Borrowing<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Check out books for home reading. Track your borrowed titles and due dates from your member profile.</p></div>
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-building-fill"></i></div><h4>Local History Archive<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Explore Iloilo's rich heritage through curated documents, photographs, and rare historical texts.</p></div>
-      <div class="feat-card"><div class="feat-icon"><i class="bi bi-calendar-event-fill"></i></div><h4>Events &amp; Programs<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Join storytelling sessions, author talks, literacy workshops, and community events throughout the year.</p></div>
+    <div class="section-head" data-sr="flip">
+      <h2>What We <span>Offer</span></h2>
+      <p>Everything you need — all in one place.</p>
+    </div>
+    <div class="features-grid" data-sr-group>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-search"></i></div><h4>Book Catalog &amp; Search</h4><p>Browse thousands of titles across all categories — from Philippine literature to science, technology, and more.</p></div>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-bookmark-check-fill"></i></div><h4>Book Borrowing<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Check out books for home reading. Track your borrowed titles and due dates from your member profile.</p></div>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-building-fill"></i></div><h4>Local History Archive<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Explore Iloilo's rich heritage through curated documents, photographs, and rare historical texts.</p></div>
+      <div class="feat-card" data-sr-child><div class="feat-icon"><i class="bi bi-calendar-event-fill"></i></div><h4>Events &amp; Programs<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Join storytelling sessions, author talks, literacy workshops, and community events throughout the year.</p></div>
     </div>
   </section>
 
-  <!-- VISION & MISSION -->
+  <!-- ══ VISION & MISSION ══ -->
   <section class="vm-section" id="Vission_and_Mission">
-    <div class="section-head"><h2>Our Vision <span>&amp; Mission</span></h2><p>The values that guide everything we do.</p></div>
-    <div class="vm-mandate">
+    <div class="section-head" data-sr="zoom">
+      <h2>Our Vision <span>&amp; Mission</span></h2>
+      <p>The values that guide everything we do.</p>
+    </div>
+    <div class="vm-mandate" data-sr="slide">
       <h4><i class="bi bi-stars me-2"></i>Mandate</h4>
       <p>Republic Act No. 7743, June 17, 1994 — An act providing for the establishment of congressional, city and municipal libraries and barangay reading centers throughout the Philippines, appropriating the necessary funds therefor and for other purposes.</p>
     </div>
-    <div class="vm-grid">
-      <div class="vm-card"><h4><i class="bi bi-eye-fill me-2"></i>Vision</h4><p>The Iloilo City Public Library empowers Ilonggos through lifelong learning and cultural preservation, cultivating information-literate and skilled citizens who actively contribute to a livable, sustainable, and well-governed Iloilo with a robust and inclusive economy.</p></div>
-      <div class="vm-card"><h4><i class="bi bi-bullseye me-2"></i>Mission</h4><p>Provides inclusive and responsive services that empower the Ilonggo community through equitable access to information and resources, preserving our cultural heritage and fostering the development of a livable, sustainable, and resilient city.</p></div>
+    <div class="vm-grid" data-sr-group>
+      <div class="vm-card" data-sr-child><h4><i class="bi bi-eye-fill me-2"></i>Vision</h4><p>The Iloilo City Public Library empowers Ilonggos through lifelong learning and cultural preservation, cultivating information-literate and skilled citizens who actively contribute to a livable, sustainable, and well-governed Iloilo with a robust and inclusive economy.</p></div>
+      <div class="vm-card" data-sr-child><h4><i class="bi bi-bullseye me-2"></i>Mission</h4><p>Provides inclusive and responsive services that empower the Ilonggo community through equitable access to information and resources, preserving our cultural heritage and fostering the development of a livable, sustainable, and resilient city.</p></div>
     </div>
   </section>
 
-  <!-- SERVICES & RESOURCES -->
+  <!-- ══ SERVICES & RESOURCES ══ -->
   <section class="services-section" id="services">
     <div class="services-inner">
-      <div class="section-head" style="margin-bottom:56px;"><h2>Services <span>&amp; Resources</span></h2><p>What we provide for our community.</p></div>
+      <div class="section-head" style="margin-bottom:56px;" data-sr="flip">
+        <h2>Services <span>&amp; Resources</span></h2>
+        <p>What we provide for our community.</p>
+      </div>
       <div class="services-row">
-        <div class="services-text"><h3>Readers' <span>Services</span></h3><ul class="services-checklist"><li>Free study and work space with WiFi</li><li>Book Collections: Reference, Filipiniana, General Collection, Rare Books, Children's Corner, Fiction, and Periodicals</li><li>Regular outreach to schools and libraries through literacy programs and book donations</li></ul></div>
-        <div class="services-img"><img src="/static/images/readers1.jpg" alt="Readers' Services" onerror="this.src='https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80'"></div>
+        <div class="services-text" data-sr="left">
+          <h3>Readers' <span>Services</span></h3>
+          <ul class="services-checklist">
+            <li>Free study and work space with WiFi</li>
+            <li>Book Collections: Reference, Filipiniana, General Collection, Rare Books, Children's Corner, Fiction, and Periodicals</li>
+            <li>Regular outreach to schools and libraries through literacy programs and book donations</li>
+          </ul>
+        </div>
+        <div class="services-img" data-sr="right">
+          <img src="/static/images/readers1.jpg" alt="Readers' Services" onerror="this.src='https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80'">
+        </div>
       </div>
       <div class="services-row reverse">
-        <div class="services-text"><h3><span>Archives</span></h3><ul class="services-checklist"><li>Inventory and disposal of records for Iloilo Provincial Government Offices and district hospitals</li><li>Digitization and preservation</li><li>Safekeeping of historical and cultural resources of Iloilo Province</li></ul></div>
-        <div class="services-img"><img src="/static/images/readers2.jpg" alt="Archives" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80'"></div>
+        <div class="services-text" data-sr="right">
+          <h3><span>Archives</span></h3>
+          <ul class="services-checklist">
+            <li>Inventory and disposal of records for Iloilo Provincial Government Offices and district hospitals</li>
+            <li>Digitization and preservation</li>
+            <li>Safekeeping of historical and cultural resources of Iloilo Province</li>
+          </ul>
+        </div>
+        <div class="services-img" data-sr="left">
+          <img src="/static/images/readers2.jpg" alt="Archives" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80'">
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER CTA -->
-  <div class="footer-cta">
+  <!-- ══ FOOTER CTA ══ -->
+  <div class="footer-cta" data-sr="up">
     <div class="footer-cta-text"><h3>Ready to Start Exploring?</h3><p>Become a library member today and unlock access to thousands of books, historical archives, events, and free study spaces — open to everyone in the Iloilo community.</p></div>
     <div class="footer-cta-actions"><a href="/browse" class="footer-cta-btn-primary"><i class="bi bi-book-half"></i> Browse Catalog</a><a href="/no_user_about" class="footer-cta-btn-ghost"><i class="bi bi-info-circle"></i> Learn More</a></div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- ══ FOOTER ══ -->
   <footer class="footer-main">
-    <div class="footer-grid">
-      <div class="footer-brand-col">
+    <div class="footer-grid" data-sr-group>
+      <div class="footer-brand-col" data-sr-child>
         <div class="footer-logo-row"><img src="/static/images/logo.png" alt="Logo" onerror="this.style.display='none'"><div><div class="brand-label">Iloilo City Public Library</div><span class="brand-sub">Dr. Graciano Lopez Jaena LRC &amp; Museum</span></div></div>
         <p class="footer-tagline">Empowering the Iloilo community through access to knowledge, cultural heritage, and lifelong learning.</p>
         <div class="footer-socials"><a href="https://www.facebook.com/iloilocitypubliclibrary" class="footer-social-btn" title="Facebook"><i class="bi bi-facebook"></i></a><a href="mailto:iloilocitypubliclibrary@gmail.com" class="footer-social-btn" title="Email Us"><i class="bi bi-envelope-fill"></i></a></div>
       </div>
-      <div><div class="footer-col-title">Quick Links</div><ul class="footer-links"><li><a href="#"><i class="bi bi-house-door-fill"></i> Home</a></li><li><a href="/browse"><i class="bi bi-search"></i> Browse Catalog</a></li><li><a href="#features"><i class="bi bi-grid-fill"></i> Features</a></li><li><a href="#Vission_and_Mission"><i class="bi bi-eye-fill"></i> Vision &amp; Mission</a></li><li><a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a></li><li><a href="/login"><i class="bi bi-box-arrow-in-right"></i> Member Login</a></li></ul></div>
-      <div><div class="footer-col-title">Services</div><ul class="footer-links"><li><span class="footer-link-static"><i class="bi bi-wifi"></i> Free WiFi &amp; Study Space</span></li><li><span class="footer-link-static"><i class="bi bi-archive-fill"></i> Iloilo Archives</span></li><li><span class="footer-link-static"><i class="bi bi-collection-fill"></i> General Collection</span></li><li><span class="footer-link-static"><i class="bi bi-book-fill"></i> Reference Collection</span></li><li><span class="footer-link-static"><i class="bi bi-people-fill"></i> Literacy Outreach Programs</span></li></ul></div>
-      <div class="footer-contact-col"><div class="footer-col-title">Get in Touch</div>
+      <div data-sr-child><div class="footer-col-title">Quick Links</div><ul class="footer-links"><li><a href="#"><i class="bi bi-house-door-fill"></i> Home</a></li><li><a href="/browse"><i class="bi bi-search"></i> Browse Catalog</a></li><li><a href="#features"><i class="bi bi-grid-fill"></i> Features</a></li><li><a href="#Vission_and_Mission"><i class="bi bi-eye-fill"></i> Vision &amp; Mission</a></li><li><a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a></li><li><a href="/login"><i class="bi bi-box-arrow-in-right"></i> Member Login</a></li></ul></div>
+      <div data-sr-child><div class="footer-col-title">Services</div><ul class="footer-links"><li><span class="footer-link-static"><i class="bi bi-wifi"></i> Free WiFi &amp; Study Space</span></li><li><span class="footer-link-static"><i class="bi bi-archive-fill"></i> Iloilo Archives</span></li><li><span class="footer-link-static"><i class="bi bi-collection-fill"></i> General Collection</span></li><li><span class="footer-link-static"><i class="bi bi-book-fill"></i> Reference Collection</span></li><li><span class="footer-link-static"><i class="bi bi-people-fill"></i> Literacy Outreach Programs</span></li></ul></div>
+      <div class="footer-contact-col" data-sr-child><div class="footer-col-title">Get in Touch</div>
         <div>
           <div class="footer-contact-row"><i class="bi bi-geo-alt-fill"></i><div><span class="fc-label">Address</span><span class="fc-val">Arguelles-Fajardo Street, Jaro,<br>Iloilo City, Philippines, 5000</span></div></div>
           <div class="footer-contact-row"><i class="bi bi-telephone-fill"></i><div><span class="fc-label">Telephone</span><a href="tel:+6333354078" class="fc-val">(033) 335-4078</a></div></div>
@@ -557,7 +653,7 @@
         </div>
       </div>
     </div>
-    <div class="footer-partners-belt"><span class="partners-label-txt">In partnership with</span><div class="partners-divider"></div><div class="partners-logos-row"><img src="/static/images/partner_logo.png" alt="Partner 1" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+1'"><img src="/static/images/partner_logo.png" alt="Partner 2" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+2'"><img src="/static/images/partner_logo.png" alt="Partner 3" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+3'"><img src="/static/images/partner_logo.png" alt="Partner 4" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+4'"><img src="/static/images/partner_logo.png" alt="Partner 5" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+5'"></div></div>
+    <div class="footer-partners-belt" data-sr="up"><span class="partners-label-txt">In partnership with</span><div class="partners-divider"></div><div class="partners-logos-row"><img src="/static/images/partner_logo.png" alt="Partner 1" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+1'"><img src="/static/images/partner_logo.png" alt="Partner 2" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+2'"><img src="/static/images/partner_logo.png" alt="Partner 3" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+3'"><img src="/static/images/partner_logo.png" alt="Partner 4" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+4'"><img src="/static/images/partner_logo.png" alt="Partner 5" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+5'"></div></div>
     <div class="footer-bottom">
       <div class="footer-bottom-left">&copy; <strong id="footerYear"></strong> <strong>Iloilo City Public Library</strong> — Dr. Graciano Lopez Jaena Learning Resource Center &amp; Museum. All rights reserved.</div>
       <div class="footer-bottom-right"><a onclick="document.getElementById('privacyModal').style.display='flex';return false;">Privacy Policy</a><div class="footer-bottom-sep"></div><a onclick="document.getElementById('termsModal').style.display='flex';return false;">Terms of Use</a><div class="footer-bottom-sep"></div><a href="/no_user_about">About</a><div class="footer-bottom-sep"></div><span class="footer-ph-badge"><i class="bi bi-geo-fill"></i> Iloilo, Philippines</span></div>
@@ -596,160 +692,80 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMemberModal();closeNav();document.getElementById('privacyModal').style.display='none';document.getElementById('termsModal').style.display='none';}});
   document.getElementById('footerYear').textContent=new Date().getFullYear();
 
-  /* ══════════════════════════════════════════
-     3D HERO — Three.js
-  ══════════════════════════════════════════ */
+  /* ══ 3D HERO ══ */
   (function(){
-    const heroSection = document.querySelector('.hero');
-    const canvas = document.getElementById('hero-canvas');
-
-    function getSize(){ return { w: heroSection.clientWidth, h: heroSection.clientHeight }; }
-    let { w, h } = getSize();
-
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.setClearColor(0x1e2d3d, 1);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
-
-    // Lights — warm library palette
-    scene.add(new THREE.AmbientLight(0x3a5068, 1.4));
-    const sun = new THREE.DirectionalLight(0xc8e0f5, 0.9);
-    sun.position.set(6, 12, 8); sun.castShadow = true; scene.add(sun);
-    const warm1 = new THREE.PointLight(0xffcc77, 3.5, 10);
-    warm1.position.set(-1.4, 3.0, 0.8); scene.add(warm1);
-    const warm2 = new THREE.PointLight(0xff9944, 2.2, 8);
-    warm2.position.set(2.2, 2.6, -0.4); scene.add(warm2);
-    const cool  = new THREE.PointLight(0x9fc1e1, 1.0, 16);
-    cool.position.set(-5, 7, -3); scene.add(cool);
-
-    function lmat(col){ return new THREE.MeshLambertMaterial({ color: col }); }
-
-    // Floor
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(22,0.15,22), lmat(0x243344));
-    floor.position.y = -0.08; floor.receiveShadow = true; scene.add(floor);
-
-    // Rug — Iloilo blue/teal tones
-    const rug = new THREE.Mesh(new THREE.BoxGeometry(6.5,0.04,4.5), lmat(0x1e4d6b));
+    const heroSection=document.querySelector('.hero');
+    const canvas=document.getElementById('hero-canvas');
+    function getSize(){ return {w:heroSection.clientWidth,h:heroSection.clientHeight}; }
+    let {w,h}=getSize();
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+    renderer.setSize(w,h); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    renderer.setClearColor(0x1e2d3d,1);
+    const scene=new THREE.Scene();
+    const camera=new THREE.PerspectiveCamera(42,w/h,0.1,100);
+    scene.add(new THREE.AmbientLight(0x3a5068,1.4));
+    const sun=new THREE.DirectionalLight(0xc8e0f5,0.9); sun.position.set(6,12,8); sun.castShadow=true; scene.add(sun);
+    const warm1=new THREE.PointLight(0xffcc77,3.5,10); warm1.position.set(-1.4,3.0,0.8); scene.add(warm1);
+    const warm2=new THREE.PointLight(0xff9944,2.2,8); warm2.position.set(2.2,2.6,-0.4); scene.add(warm2);
+    const cool=new THREE.PointLight(0x9fc1e1,1.0,16); cool.position.set(-5,7,-3); scene.add(cool);
+    function lmat(col){ return new THREE.MeshLambertMaterial({color:col}); }
+    const floor=new THREE.Mesh(new THREE.BoxGeometry(22,0.15,22),lmat(0x243344));
+    floor.position.y=-0.08; floor.receiveShadow=true; scene.add(floor);
+    const rug=new THREE.Mesh(new THREE.BoxGeometry(6.5,0.04,4.5),lmat(0x1e4d6b));
     rug.position.set(0,0.01,1); scene.add(rug);
-
-    // Bookshelf builder
-    function makeShelf(x, z, ry){
-      const g = new THREE.Group();
-      g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(4.4,3.6,0.28), lmat(0x4a2e10)), {castShadow:true,receiveShadow:true}));
-      const sm = lmat(0x5a3818);
-      for(let s=0;s<3;s++){
-        const sh=new THREE.Mesh(new THREE.BoxGeometry(4.2,0.1,0.32),sm);
-        sh.position.set(0,-0.9+s*0.9,0.05); g.add(sh);
-      }
+    function makeShelf(x,z,ry){
+      const g=new THREE.Group();
+      g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(4.4,3.6,0.28),lmat(0x4a2e10)),{castShadow:true,receiveShadow:true}));
+      const sm=lmat(0x5a3818);
+      for(let s=0;s<3;s++){const sh=new THREE.Mesh(new THREE.BoxGeometry(4.2,0.1,0.32),sm);sh.position.set(0,-0.9+s*0.9,0.05);g.add(sh);}
       const bc=[0x8b1a1a,0x1a5c8b,0x2d7a2d,0xb8860b,0x6b2d8b,0xc4622d,0x2d6b8b,0x8b6914,0xa0522d,0x4682b4,0x8b4513,0x228b22,0xcd853f,0x6a5acd,0x9fc1e1,0x2f6f8f,0x7a3535,0x3a7a5a];
-      for(let s=0;s<3;s++){
-        let bx=-1.8;
-        for(let b=0;b<13;b++){
-          const bw=0.17+Math.random()*0.11, bh=0.52+Math.random()*0.28;
-          const bk=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,0.23), lmat(bc[(s*13+b)%bc.length]));
-          bk.position.set(bx+bw/2, -0.9+s*0.9+0.05+bh/2, 0.05);
-          bk.rotation.z=(Math.random()-.5)*0.07; bk.castShadow=true;
-          g.add(bk); bx+=bw+0.01; if(bx>1.85)break;
-        }
-      }
+      for(let s=0;s<3;s++){let bx=-1.8;for(let b=0;b<13;b++){const bw=0.17+Math.random()*0.11,bh=0.52+Math.random()*0.28;const bk=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,0.23),lmat(bc[(s*13+b)%bc.length]));bk.position.set(bx+bw/2,-0.9+s*0.9+0.05+bh/2,0.05);bk.rotation.z=(Math.random()-.5)*0.07;bk.castShadow=true;g.add(bk);bx+=bw+0.01;if(bx>1.85)break;}}
       g.position.set(x,1.8,z); g.rotation.y=ry; scene.add(g); return g;
     }
-    makeShelf(-4.2, 0,  Math.PI/2);
-    makeShelf( 4.2, 0, -Math.PI/2);
-    makeShelf(   0,-4.8, 0);
-
-    // Reading table
-    const tbl=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.12,1.6), lmat(0x6b3d18));
+    makeShelf(-4.2,0,Math.PI/2); makeShelf(4.2,0,-Math.PI/2); makeShelf(0,-4.8,0);
+    const tbl=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.12,1.6),lmat(0x6b3d18));
     tbl.position.set(0,0.88,1.9); tbl.castShadow=tbl.receiveShadow=true; scene.add(tbl);
-    [-1.4,1.4].forEach(lx=>{
-      const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.88,8), lmat(0x5a3010));
-      leg.position.set(lx,0.44,1.9); leg.castShadow=true; scene.add(leg);
-    });
-
-    // Desk lamps
+    [-1.4,1.4].forEach(lx=>{const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.88,8),lmat(0x5a3010));leg.position.set(lx,0.44,1.9);leg.castShadow=true;scene.add(leg);});
     function deskLamp(x,z){
-      const base=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.20,0.07,12), lmat(0x8b6914));
-      const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.72,8), lmat(0x7a5c10));
-      pole.position.y=0.39;
-      const shade=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.32,12,1,true), lmat(0xc89830));
-      shade.position.y=0.8;
-      const g=new THREE.Group(); g.add(base,pole,shade);
-      g.position.set(x,0.95,z); scene.add(g);
+      const base=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.20,0.07,12),lmat(0x8b6914));
+      const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.72,8),lmat(0x7a5c10)); pole.position.y=0.39;
+      const shade=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.32,12,1,true),lmat(0xc89830)); shade.position.y=0.8;
+      const g=new THREE.Group(); g.add(base,pole,shade); g.position.set(x,0.95,z); scene.add(g);
     }
     deskLamp(-0.9,1.7); deskLamp(0.9,1.7);
-
-    // Open book on table
-    const bBase=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.025,0.65), lmat(0x4a3018));
+    const bBase=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.025,0.65),lmat(0x4a3018));
     bBase.position.set(0,0.9,1.95); scene.add(bBase);
-    [[-0.22,0.07],[ 0.22,-0.07]].forEach(([bx,rz])=>{
-      const p=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.006,0.60), lmat(0xfaf5e8));
-      p.position.set(bx,0.915,1.95); p.rotation.z=rz; scene.add(p);
-    });
-
-    // Globe + stand
-    const globe=new THREE.Mesh(new THREE.SphereGeometry(0.34,16,16), lmat(0x2255aa));
+    [[-0.22,0.07],[0.22,-0.07]].forEach(([bx,rz])=>{const p=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.006,0.60),lmat(0xfaf5e8));p.position.set(bx,0.915,1.95);p.rotation.z=rz;scene.add(p);});
+    const globe=new THREE.Mesh(new THREE.SphereGeometry(0.34,16,16),lmat(0x2255aa));
     globe.position.set(-2.6,1.25,1.3); globe.castShadow=true; scene.add(globe);
-    const gStand=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.13,0.5,10), lmat(0x6b4010));
+    const gStand=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.13,0.5,10),lmat(0x6b4010));
     gStand.position.set(-2.6,0.75,1.3); scene.add(gStand);
-
-    // Plants
     function plant(x,z){
-      const pot=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.15,0.3,10), lmat(0xb05020));
+      const pot=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.15,0.3,10),lmat(0xb05020));
       pot.position.set(x,0.16,z); scene.add(pot);
-      for(let i=0;i<6;i++){
-        const lf=new THREE.Mesh(new THREE.SphereGeometry(0.13+Math.random()*0.09,8,8), lmat(0x2a7a2a));
-        lf.position.set(x+(Math.random()-.5)*0.24, 0.58+Math.random()*0.32, z+(Math.random()-.5)*0.24);
-        scene.add(lf);
-      }
+      for(let i=0;i<6;i++){const lf=new THREE.Mesh(new THREE.SphereGeometry(0.13+Math.random()*0.09,8,8),lmat(0x2a7a2a));lf.position.set(x+(Math.random()-.5)*0.24,0.58+Math.random()*0.32,z+(Math.random()-.5)*0.24);scene.add(lf);}
     }
     plant(-3.4,3.1); plant(3.4,3.1);
-
-    // Floating books — library accent colours
     const floaters=[];
     const fbCols=[0x9fc1e1,0x48c78e,0xb8860b,0x8b1a1a,0x6b2d8b];
     for(let i=0;i<5;i++){
       const a=i*(Math.PI*2/5);
-      const fb=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.33,0.07), lmat(fbCols[i]));
-      fb.userData={bx:Math.cos(a)*2.3, bz:Math.sin(a)*2.3, by:2.55+i*0.28, a, sp:0.007+i*0.003};
+      const fb=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.33,0.07),lmat(fbCols[i]));
+      fb.userData={bx:Math.cos(a)*2.3,bz:Math.sin(a)*2.3,by:2.55+i*0.28,a,sp:0.007+i*0.003};
       fb.position.set(fb.userData.bx,fb.userData.by,fb.userData.bz);
       fb.castShadow=true; scene.add(fb); floaters.push(fb);
     }
-
-    // Orbit state
-    let isDrag=false, px=0, py=0;
-    let theta=0.18, phi=0.52, radius=13;
+    let isDrag=false,px=0,py=0,theta=0.18,phi=0.52,radius=13;
     const target=new THREE.Vector3(0,1.3,0);
-
     canvas.addEventListener('mousedown',e=>{isDrag=true;px=e.clientX;py=e.clientY;});
     window.addEventListener('mouseup',()=>isDrag=false);
-    window.addEventListener('mousemove',e=>{
-      if(!isDrag)return;
-      theta-=(e.clientX-px)*0.005;
-      phi=Math.max(0.18,Math.min(1.25,phi+(e.clientY-py)*0.005));
-      px=e.clientX; py=e.clientY;
-    });
+    window.addEventListener('mousemove',e=>{if(!isDrag)return;theta-=(e.clientX-px)*0.005;phi=Math.max(0.18,Math.min(1.25,phi+(e.clientY-py)*0.005));px=e.clientX;py=e.clientY;});
     canvas.addEventListener('touchstart',e=>{isDrag=true;px=e.touches[0].clientX;py=e.touches[0].clientY;},{passive:true});
     window.addEventListener('touchend',()=>isDrag=false);
-    window.addEventListener('touchmove',e=>{
-      if(!isDrag)return;
-      theta-=(e.touches[0].clientX-px)*0.006;
-      phi=Math.max(0.18,Math.min(1.25,phi+(e.touches[0].clientY-py)*0.006));
-      px=e.touches[0].clientX; py=e.touches[0].clientY;
-    },{passive:true});
+    window.addEventListener('touchmove',e=>{if(!isDrag)return;theta-=(e.touches[0].clientX-px)*0.006;phi=Math.max(0.18,Math.min(1.25,phi+(e.touches[0].clientY-py)*0.006));px=e.touches[0].clientX;py=e.touches[0].clientY;},{passive:true});
     canvas.addEventListener('wheel',e=>{radius=Math.max(7,Math.min(22,radius+e.deltaY*0.02));},{passive:true});
-
-    // Resize
-    window.addEventListener('resize',()=>{
-      const s=getSize();
-      renderer.setSize(s.w,s.h);
-      camera.aspect=s.w/s.h; camera.updateProjectionMatrix();
-    });
-
+    window.addEventListener('resize',()=>{const s=getSize();renderer.setSize(s.w,s.h);camera.aspect=s.w/s.h;camera.updateProjectionMatrix();});
     let t=0;
     (function animate(){
       requestAnimationFrame(animate); t+=0.01;
@@ -758,7 +774,7 @@
       camera.position.y=target.y+radius*Math.cos(phi);
       camera.position.z=target.z+radius*Math.sin(phi)*Math.cos(theta);
       camera.lookAt(target);
-      floaters.forEach((fb,i)=>{
+      floaters.forEach((fb)=>{
         fb.position.y=fb.userData.by+Math.sin(t*1.1+fb.userData.a*2)*0.2;
         fb.rotation.y=t*0.45+fb.userData.a;
         fb.rotation.z=Math.sin(t*0.7+fb.userData.a)*0.14;
@@ -769,6 +785,20 @@
       renderer.render(scene,camera);
     })();
   })();
+
+  /* ══ SCROLL REVEAL — IntersectionObserver ══ */
+  (function(){
+    const io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(!e.isIntersecting) return;
+        e.target.classList.add('vis');
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('[data-sr]').forEach(el => io.observe(el));
+    document.querySelectorAll('[data-sr-group]').forEach(el => io.observe(el));
+  }());
   </script>
 </body>
 </html>
