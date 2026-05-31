@@ -40,76 +40,62 @@
     .btn-login:hover { background:#b8d4ec; color:#0d1a24; transform:translateY(-1px); }
     .menu-toggle { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; padding:6px 8px; border-radius:8px; transition:.18s; }
     .menu-toggle:hover { background:rgba(255,255,255,.08); }
-
-    /* ── MOBILE NAV ── */
     .nav-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(3px); z-index:1099; opacity:0; transition:opacity .28s; }
     .nav-overlay.show { display:block; opacity:1; }
     .nav-close-row { display:none; }
-
     @media (max-width:992px) {
       .topbar { padding:0 14px; gap:8px; }
       .menu-toggle { display:flex; align-items:center; justify-content:center; }
       .btn-login.d-lg-block { display:none !important; }
-      .nav-links { position:fixed; top:0; left:0; width:min(280px,85vw); height:100dvh; height:100vh; background:rgba(22,36,50,0.99); backdrop-filter:blur(20px); flex-direction:column; align-items:stretch; padding:0 0 24px; gap:0; overflow-y:auto; transform:translateX(-110%); transition:transform .28s cubic-bezier(.4,0,.2,1); z-index:1200; border-right:1px solid rgba(159,193,225,.1); box-shadow:8px 0 32px rgba(0,0,0,.55); }
+      .nav-links { position:fixed; top:0; left:0; width:min(280px,85vw); height:100dvh; background:rgba(22,36,50,0.99); backdrop-filter:blur(20px); flex-direction:column; align-items:stretch; padding:0 0 24px; gap:0; overflow-y:auto; transform:translateX(-110%); transition:transform .28s cubic-bezier(.4,0,.2,1); z-index:1200; border-right:1px solid rgba(159,193,225,.1); box-shadow:8px 0 32px rgba(0,0,0,.55); }
       .nav-links.open { transform:translateX(0); }
       .nav-links a { padding:13px 16px; font-size:.95rem; border-radius:10px; color:rgba(255,255,255,.75); display:flex; align-items:center; gap:10px; margin:1px 8px; }
-      .nav-links a:hover { background:rgba(159,193,225,.1); color:#fff; }
-      .nav-links a.active { background:rgba(159,193,225,.15); color:var(--accent); }
       .nav-close-row { display:flex; align-items:center; justify-content:space-between; padding:0 14px; height:60px; min-height:60px; border-bottom:1px solid rgba(159,193,225,.1); background:rgba(159,193,225,.04); flex-shrink:0; margin-bottom:8px; }
       .nav-close-row .drawer-brand { font-size:.85rem; font-weight:700; color:var(--accent); }
       .nav-close-row button { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.7); width:34px; height:34px; border-radius:9px; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.18s; }
-      .nav-close-row button:hover { background:rgba(255,255,255,.14); color:#fff; }
     }
     @media (max-width:480px) { .brand-text { display:none; } }
 
-    /* ══════════════════════════════════════
-       MEMBERSHIP REQUIRED MODAL
-    ══════════════════════════════════════ */
+    /* ── MEMBERSHIP MODAL ── */
     .member-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(6px); z-index:2000; align-items:center; justify-content:center; padding:20px; }
     .member-modal-overlay.show { display:flex; }
     .member-modal-box { background:#1b2a35; border:1px solid rgba(159,193,225,.2); border-radius:22px; width:100%; max-width:420px; box-shadow:0 24px 72px rgba(0,0,0,.6); overflow:hidden; animation:modalPop .32s cubic-bezier(.34,1.56,.64,1); }
     @keyframes modalPop { from{transform:scale(.88);opacity:0} to{transform:scale(1);opacity:1} }
     .panel-a, .panel-b { padding:36px 32px 28px; }
     .panel-b { display:none; padding:0; }
-    .modal-icon-wrap { width:68px; height:68px; border-radius:18px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent); margin:0 auto 20px; box-shadow:0 0 28px rgba(159,193,225,.12); }
-    .modal-icon-wrap.warn { background:rgba(255,215,0,.08); border-color:rgba(255,215,0,.25); color:#FFD700; box-shadow:0 0 28px rgba(255,215,0,.1); }
+    .modal-icon-wrap { width:68px; height:68px; border-radius:18px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent); margin:0 auto 20px; }
+    .modal-icon-wrap.warn { background:rgba(255,215,0,.08); border-color:rgba(255,215,0,.25); color:#FFD700; }
     .panel-a h4 { font-size:1.1rem; font-weight:700; color:#fff; text-align:center; margin-bottom:10px; }
     .panel-a p  { font-size:.84rem; color:rgba(255,255,255,.52); text-align:center; line-height:1.7; margin-bottom:24px; }
     .modal-actions { display:flex; flex-direction:column; gap:10px; }
     .btn-modal-primary { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:#0d1a24; border:none; border-radius:12px; padding:12px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:700; cursor:pointer; transition:.2s; text-decoration:none; }
-    .btn-modal-primary:hover { background:#b8d4ec; transform:translateY(-1px); color:#0d1a24; }
+    .btn-modal-primary:hover { background:#b8d4ec; color:#0d1a24; }
     .btn-modal-secondary { display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(255,255,255,.06); color:rgba(255,255,255,.75); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:11px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:600; cursor:pointer; transition:.2s; }
-    .btn-modal-secondary:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.25); color:#fff; }
     .btn-modal-ghost { display:flex; align-items:center; justify-content:center; gap:8px; background:transparent; color:rgba(255,255,255,.38); border:none; border-radius:12px; padding:10px 20px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; transition:.2s; }
-    .btn-modal-ghost:hover { color:rgba(255,255,255,.7); }
     .steps-header { display:flex; align-items:center; gap:12px; padding:20px 24px 16px; border-bottom:1px solid rgba(255,255,255,.07); }
     .steps-back-btn { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.65); width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:.9rem; cursor:pointer; transition:.18s; flex-shrink:0; }
-    .steps-back-btn:hover { background:rgba(255,255,255,.13); color:#fff; }
     .steps-header-text h5 { font-size:.9rem; font-weight:700; color:#fff; margin:0 0 2px; }
     .steps-header-text span { font-size:.72rem; color:rgba(255,255,255,.35); }
     .steps-progress-wrap { padding:16px 24px 0; }
     .steps-progress-track { height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
     .steps-progress-fill { height:100%; background:linear-gradient(90deg, var(--accent), #6aafde); border-radius:4px; transition:width .4s cubic-bezier(.4,0,.2,1); }
-    .steps-progress-label { display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:.67rem; color:rgba(255,255,255,.28); font-weight:600; letter-spacing:.04em; }
+    .steps-progress-label { display:flex; justify-content:space-between; margin-top:6px; font-size:.67rem; color:rgba(255,255,255,.28); font-weight:600; }
     .steps-body { padding:20px 24px 10px; min-height:180px; }
     .step-slide { display:none; animation:stepIn .3s cubic-bezier(.4,0,.2,1); }
     .step-slide.active { display:block; }
     @keyframes stepIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:none} }
-    .step-num-badge { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22); color:var(--accent); font-size:.78rem; font-weight:700; margin-bottom:12px; flex-shrink:0; }
-    .step-title { font-size:.95rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.35; }
-    .step-desc { font-size:.82rem; color:rgba(255,255,255,.5); line-height:1.75; }
+    .step-num-badge { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22); color:var(--accent); font-size:.78rem; font-weight:700; margin-bottom:12px; }
+    .step-title { font-size:.95rem; font-weight:700; color:#fff; margin-bottom:8px; }
+    .step-desc  { font-size:.82rem; color:rgba(255,255,255,.5); line-height:1.75; }
     .step-requirements { margin-top:12px; padding:12px 14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); border-radius:11px; list-style:none; }
     .step-requirements li { font-size:.79rem; color:rgba(255,255,255,.55); padding:5px 0; display:flex; align-items:flex-start; gap:8px; line-height:1.55; }
     .step-requirements li::before { content:''; width:14px; height:14px; border-radius:4px; flex-shrink:0; margin-top:1px; background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.28); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='%2348c78e' d='M11.5 3L5.5 9 2.5 6l-.9.9L5.5 11l7-7z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:center; background-size:9px; }
     .steps-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 24px 20px; border-top:1px solid rgba(255,255,255,.06); gap:10px; }
     .btn-step-prev, .btn-step-next { display:flex; align-items:center; gap:7px; border-radius:10px; padding:10px 18px; font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700; cursor:pointer; transition:.2s; border:none; }
     .btn-step-prev { background:rgba(255,255,255,.06); color:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.1); }
-    .btn-step-prev:hover { background:rgba(255,255,255,.1); color:#fff; }
     .btn-step-prev:disabled { opacity:.35; cursor:not-allowed; }
     .btn-step-next { background:var(--accent); color:#0d1a24; margin-left:auto; }
-    .btn-step-next:hover { background:#b8d4ec; transform:translateY(-1px); }
     .btn-step-finish { display:none; align-items:center; gap:7px; background:var(--accent2); color:#0d1a24; border:none; border-radius:10px; padding:10px 18px; font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700; cursor:pointer; transition:.2s; margin-left:auto; }
-    .btn-step-finish:hover { background:#5dd4a0; transform:translateY(-1px); }
     .step-dots { display:flex; gap:5px; align-items:center; }
     .step-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.18); transition:.3s; }
     .step-dot.active { background:var(--accent); width:18px; border-radius:4px; }
@@ -122,43 +108,116 @@
     .page-header h1 span { color:var(--accent); }
     .page-header p { color:var(--tl); font-size:.88rem; }
 
-    /* ── OFFLINE BANNER ── */
-    .offline-banner { display:none; align-items:center; gap:10px; background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); border-radius:12px; padding:10px 16px; margin-bottom:16px; font-size:.83rem; color:#fbbf24; font-weight:600; }
-    .offline-banner.show { display:flex; }
-    .offline-banner i { font-size:1rem; flex-shrink:0; }
-    .offline-banner span { flex:1; }
-
     /* ── TOOLBAR ── */
-    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:8px; }
     .search-box { position:relative; flex:1; min-width:240px; max-width:480px; }
     .search-box i.si { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--tl); pointer-events:none; z-index:1; }
     .search-input { width:100%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 14px 9px 38px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; transition:.2s; }
     .search-input::placeholder { color:rgba(255,255,255,.4); }
     .search-input:focus { border-color:var(--accent); background:rgba(255,255,255,.11); }
     .search-input.dropdown-open { border-radius:10px 10px 0 0; }
-    .filter-sel { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:9px 13px; font-size:.88rem; font-family:'DM Sans',sans-serif; cursor:pointer; outline:none; transition:.2s; }
-    .filter-sel option { background:#253545; }
-    .filter-sel:focus { border-color:var(--accent); }
-    .results-lbl { font-size:.82rem; color:var(--tl); margin-left:auto; white-space:nowrap; }
-    /* ── AVAILABILITY FILTER BUTTONS ── */
-    .avail-btn { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:9px; color:rgba(255,255,255,.6); padding:8px 13px; font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:600; cursor:pointer; transition:.18s; display:flex; align-items:center; gap:5px; white-space:nowrap; }
-    .avail-btn:hover { background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.22); }
-    .avail-btn.active { background:rgba(159,193,225,.18); border-color:rgba(159,193,225,.45); color:var(--accent); }
-    .avail-btn#availBorrowable.active    { background:rgba(72,199,142,.14); border-color:rgba(72,199,142,.45); color:var(--accent2); }
-    .avail-btn#availNotBorrowable.active { background:rgba(255,99,99,.1);   border-color:rgba(255,99,99,.4);   color:var(--danger); }
-
-    /* ── SEARCH DROPDOWN ── */
     .search-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:#1c2c3a; border:1px solid rgba(159,193,225,.25); border-top:none; border-radius:0 0 14px 14px; z-index:600; box-shadow:0 14px 40px rgba(0,0,0,.4); overflow:hidden; max-height:320px; overflow-y:auto; }
     .search-dropdown.show { display:block; }
-    .search-dropdown::-webkit-scrollbar { width:3px; }
-    .search-dropdown::-webkit-scrollbar-thumb { background:rgba(159,193,225,.2); border-radius:3px; }
     .suggestion-item { display:flex; align-items:center; gap:12px; padding:9px 14px; cursor:pointer; transition:.15s; border-bottom:1px solid rgba(255,255,255,.04); }
     .suggestion-item:hover { background:rgba(159,193,225,.1); }
-    .suggestion-item:last-child { border-bottom:none; }
     .sug-icon { width:30px; height:30px; background:rgba(159,193,225,.12); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:.85rem; color:var(--accent); flex-shrink:0; }
     .sug-title { font-size:.85rem; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .sug-author { font-size:.72rem; color:rgba(255,255,255,.45); }
     .dd-empty { padding:14px 16px; text-align:center; color:rgba(255,255,255,.35); font-size:.82rem; }
+
+    /* ── FILTER BUTTON ── */
+    .filter-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(159,193,225,.25); background:rgba(159,193,225,.08); color:var(--accent); white-space:nowrap; position:relative; }
+    .filter-btn:hover { background:rgba(159,193,225,.16); border-color:rgba(159,193,225,.4); }
+    .filter-active-dot { position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; background:var(--accent2); border:2px solid #1e2d3d; display:none; }
+    .filter-active-dot.show { display:block; }
+    .filter-clear-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 13px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:rgba(255,255,255,.65); }
+    .filter-clear-btn:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .results-lbl { font-size:.82rem; color:var(--tl); margin-left:auto; white-space:nowrap; }
+
+    /* Active filter chips */
+    #activeFilterChips { display:none; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+    #activeFilterChips .fac { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:.74rem; font-weight:600; background:rgba(159,193,225,.1); color:var(--accent); border:1px solid rgba(159,193,225,.22); cursor:pointer; transition:.15s; }
+    #activeFilterChips .fac:hover { background:rgba(159,193,225,.2); }
+    #activeFilterChips .fac i { font-size:.65rem; opacity:.6; }
+
+    /* ── ADVANCED FILTER MODAL ── */
+    #filterModal { position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(8px); z-index:2500; display:flex; align-items:center; justify-content:center; padding:16px; opacity:0; pointer-events:none; transition:opacity .2s; }
+    #filterModal.open { opacity:1; pointer-events:all; }
+    .filter-modal-box { background:linear-gradient(150deg,#1e2d3d,#273848); border:1px solid rgba(159,193,225,.2); border-radius:20px; width:100%; max-width:640px; height:calc(100dvh - 32px); max-height:580px; display:flex; flex-direction:column; box-shadow:0 28px 70px rgba(0,0,0,.6); transform:translateY(18px) scale(.98); transition:transform .28s cubic-bezier(.22,1,.36,1); overflow:hidden; }
+    #filterModal.open .filter-modal-box { transform:translateY(0) scale(1); }
+    @media (max-width:480px) { #filterModal { padding:0; align-items:flex-end; } .filter-modal-box { border-radius:20px 20px 0 0; max-height:90dvh; height:auto; } }
+    .filter-modal-head { padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .fm-head-left { display:flex; align-items:center; gap:11px; }
+    .fm-head-icon { width:36px; height:36px; border-radius:11px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.22); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:.95rem; flex-shrink:0; }
+    .fm-title { font-size:.95rem; font-weight:700; color:#fff; }
+    .fm-sub   { font-size:.72rem; color:rgba(255,255,255,.38); margin-top:1px; }
+    .fm-close { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:10px; color:rgba(255,255,255,.5); font-size:1rem; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.18s; flex-shrink:0; }
+    .fm-close:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .fm-rail-wrap { display:grid; grid-template-columns:130px 1fr; flex:1; min-height:0; overflow:hidden; }
+    @media (max-width:400px) { .fm-rail-wrap { grid-template-columns:96px 1fr; } }
+    .fm-rail-nav { background:rgba(0,0,0,.22); border-right:1px solid rgba(255,255,255,.06); padding:6px 0; overflow-y:auto; }
+    .fm-rail-item { padding:9px 12px; font-size:.78rem; color:rgba(255,255,255,.42); cursor:pointer; display:flex; align-items:center; gap:7px; border-left:2px solid transparent; transition:.15s; user-select:none; }
+    .fm-rail-item i { font-size:.75rem; flex-shrink:0; opacity:.7; }
+    .fm-rail-item:hover { color:rgba(255,255,255,.75); background:rgba(255,255,255,.03); }
+    .fm-rail-item.active { color:var(--accent); background:rgba(159,193,225,.07); border-left-color:var(--accent); }
+    .fm-rail-item.active i { opacity:1; }
+    .fm-rail-badge { margin-left:auto; font-size:.62rem; font-weight:700; padding:1px 5px; border-radius:20px; background:rgba(72,199,142,.18); color:var(--accent2); border:1px solid rgba(72,199,142,.28); flex-shrink:0; }
+    @media (max-width:400px) { .fm-rail-item { padding:9px 8px; gap:0; } .fm-rail-item span { display:none; } .fm-rail-item i { opacity:1; } }
+    .fm-rail-content { padding:16px; overflow-y:auto; }
+    .fm-rail-content::-webkit-scrollbar { width:4px; }
+    .fm-rail-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:4px; }
+    .fm-pane { display:none; animation:fmPaneIn .2s ease; }
+    .fm-pane.active { display:block; }
+    @keyframes fmPaneIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:none} }
+    .fm-pane-label { font-size:.68rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .fm-pane-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+    .fm-pane-hint { font-size:.62rem; font-weight:600; letter-spacing:.05em; color:rgba(255,255,255,.22); text-transform:lowercase; font-style:italic; }
+    .fm-search-wrap { position:relative; margin-bottom:10px; }
+    .fm-search-wrap i { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.3); font-size:.8rem; pointer-events:none; }
+    .fm-search-inp { width:100%; padding:7px 10px 7px 28px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:9px; color:#fff; font-size:.82rem; font-family:'DM Sans',sans-serif; outline:none; transition:.15s; }
+    .fm-search-inp:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.09); }
+    .fm-search-inp::placeholder { color:rgba(255,255,255,.26); }
+    .fm-tag-cloud { display:flex; flex-wrap:wrap; gap:6px; }
+    .fm-tc { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; font-size:.78rem; cursor:pointer; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05); color:rgba(255,255,255,.48); transition:.15s; user-select:none; }
+    .fm-tc:hover { border-color:rgba(255,255,255,.2); color:#fff; background:rgba(255,255,255,.08); }
+    .fm-tc.on { background:rgba(159,193,225,.14); color:var(--accent); border-color:rgba(159,193,225,.38); }
+    .fm-tc.sz-lg { font-size:.83rem; padding:6px 12px; }
+    .fm-tc.sz-sm { font-size:.72rem; padding:4px 8px; }
+    .fm-tc-count { font-size:.66rem; font-weight:700; opacity:.55; background:rgba(255,255,255,.08); border-radius:20px; padding:1px 5px; min-width:20px; text-align:center; }
+    .fm-tc.on .fm-tc-count { opacity:.85; background:rgba(255,255,255,.12); }
+    .fm-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; cursor:pointer; transition:.15s; gap:8px; margin-bottom:8px; }
+    .fm-toggle-row:hover { background:rgba(255,255,255,.07); }
+    .fm-toggle-row.on { background:rgba(159,193,225,.07); border-color:rgba(159,193,225,.3); }
+    .fm-toggle-label { font-size:.82rem; color:rgba(255,255,255,.6); font-weight:500; }
+    .fm-toggle-sub   { font-size:.7rem; color:rgba(255,255,255,.3); margin-top:1px; }
+    .fm-borrow-count { font-size:.7rem; font-weight:700; color:rgba(255,255,255,.3); background:rgba(255,255,255,.07); border-radius:20px; padding:1px 7px; white-space:nowrap; }
+    .fm-date-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+    .fm-date-lbl  { font-size:.72rem; color:rgba(255,255,255,.35); margin-bottom:4px; }
+    .fm-date-inp  { width:100%; padding:8px 10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08); border-radius:9px; color:#fff; font-size:.82rem; font-family:'DM Sans',sans-serif; outline:none; transition:.15s; }
+    .fm-date-inp:focus { border-color:rgba(159,193,225,.4); background:rgba(255,255,255,.10); }
+    .fm-shortcut-row { display:flex; flex-wrap:wrap; gap:5px; }
+    .fm-shortcut { display:inline-flex; align-items:center; padding:5px 10px; border-radius:8px; font-size:.76rem; cursor:pointer; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05); color:rgba(255,255,255,.45); transition:.15s; user-select:none; }
+    .fm-shortcut:hover { border-color:rgba(255,255,255,.2); color:#fff; }
+    .fm-shortcut.on { background:rgba(159,193,225,.13); color:var(--accent); border-color:rgba(159,193,225,.35); }
+    .fm-chip-bar { display:flex; flex-wrap:wrap; gap:5px; padding:8px 20px; border-top:1px solid rgba(255,255,255,.06); min-height:40px; align-items:center; background:rgba(0,0,0,.15); flex-shrink:0; }
+    .fm-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:.72rem; background:rgba(159,193,225,.1); color:var(--accent); border:1px solid rgba(159,193,225,.22); }
+    .fm-chip-x { opacity:.55; cursor:pointer; margin-left:2px; font-size:.7rem; }
+    .fm-chip-x:hover { opacity:1; }
+    .fm-no-active { font-size:.76rem; color:rgba(255,255,255,.22); font-style:italic; }
+    .filter-modal-foot { padding:12px 20px; border-top:1px solid rgba(255,255,255,.07); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; flex-wrap:wrap; }
+    .fm-match-count { font-size:.78rem; color:rgba(255,255,255,.4); }
+    .fm-match-count strong { color:var(--accent2); font-weight:700; }
+    .fm-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; font-size:.82rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:.18s; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#fff; }
+    .fm-btn:hover { background:rgba(255,255,255,.12); }
+    .fm-btn.primary { background:var(--accent); color:#0d1a24; border-color:transparent; }
+    .fm-btn.primary:hover { background:#b8d4ec; }
+    /* toggle switch */
+    .toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; cursor:pointer; inset:0; background:rgba(255,255,255,.12); border-radius:24px; transition:.3s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+    .toggle-switch input:checked + .toggle-slider { background:var(--accent2); }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
 
     /* ── BOOK CARDS ── */
     .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:20px; margin-bottom:32px; }
@@ -180,9 +239,10 @@
     .book-card:hover .book-cover-img { transform:scale(1.05); }
     .book-cover-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(20,30,40,.85) 0%,transparent 55%); pointer-events:none; }
     .book-category-tag { position:absolute; bottom:8px; left:8px; background:rgba(0,0,0,.55); color:rgba(255,255,255,.75); font-size:.6rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:20px; backdrop-filter:blur(4px); }
-    .lock-cover-btn { position:absolute; top:10px; left:10px; z-index:10; background:rgba(0,0,0,.45); border:none; border-radius:8px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.25s; backdrop-filter:blur(4px); }
-    .lock-cover-btn i { font-size:.9rem; color:#FFD700; filter:drop-shadow(0 0 4px rgba(255,215,0,.5)); pointer-events:none; }
-    .lock-cover-btn:hover { background:rgba(255,215,0,.2); transform:scale(1.1); }
+    .cover-top-row { position:absolute; top:10px; left:10px; right:10px; z-index:10; display:flex; align-items:center; justify-content:flex-end; }
+    .cover-borrow-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 9px; border-radius:20px; font-size:.6rem; font-weight:700; backdrop-filter:blur(6px); white-space:nowrap; }
+    .cover-borrow-pill.borrowable { background:rgba(72,199,142,.22); border:1px solid rgba(72,199,142,.45); color:#6decc0; }
+    .cover-borrow-pill.reference  { background:rgba(255,99,99,.18); border:1px solid rgba(255,99,99,.35); color:#ff9090; }
     .book-card-body { padding:14px 16px 16px; display:flex; flex-direction:column; flex:1; }
     .book-title { font-size:.88rem; font-weight:700; color:#fff; margin-bottom:4px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .book-author { font-size:.75rem; color:var(--tl); margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -191,7 +251,7 @@
     .btn-details { flex:1; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:5px; }
     .btn-details:hover { background:rgba(159,193,225,.22); border-color:var(--accent); }
     .btn-borrow { flex:1; background:rgba(245,200,66,.1); border:1px solid rgba(245,200,66,.25); color:var(--gold); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer; transition:.18s; display:flex; align-items:center; justify-content:center; gap:5px; }
-    .btn-borrow:hover { background:rgba(245,200,66,.2); border-color:var(--gold); transform:translateY(-1px); }
+    .btn-borrow:hover { background:rgba(245,200,66,.2); transform:translateY(-1px); }
     .btn-borrow-disabled { flex:1; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.25); border-radius:8px; padding:7px 0; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:600; cursor:not-allowed; display:flex; align-items:center; justify-content:center; gap:5px; }
 
     /* ── SKELETON ── */
@@ -220,7 +280,7 @@
     /* ── BOOK DETAIL MODAL ── */
     .overlay { position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(8px); z-index:3000; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .3s; }
     .overlay.open { opacity:1; pointer-events:all; }
-    .m-box { background:#18273a; border:1px solid rgba(159,193,225,.15); border-radius:22px; width:100%; max-width:680px; max-height:92vh; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.7); transform:translateY(22px) scale(.97); transition:transform .3s cubic-bezier(.16,.84,.44,1),opacity .3s; display:flex; flex-direction:column; }
+    .m-box { background:#18273a; border:1px solid rgba(159,193,225,.15); border-radius:22px; width:100%; max-width:680px; max-height:92vh; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.7); transform:translateY(22px) scale(.97); transition:transform .3s cubic-bezier(.16,.84,.44,1); display:flex; flex-direction:column; }
     .overlay.open .m-box { transform:translateY(0) scale(1); }
     .modal-hero { position:relative; height:180px; overflow:hidden; flex-shrink:0; }
     .modal-hero-bg { position:absolute; inset:-20px; background-size:cover; background-position:center; filter:blur(28px) brightness(.45) saturate(1.4); transform:scale(1.1); }
@@ -229,13 +289,14 @@
     .modal-cover-wrap { width:90px; height:126px; flex-shrink:0; border-radius:10px; overflow:hidden; border:2px solid rgba(255,255,255,.18); box-shadow:0 8px 24px rgba(0,0,0,.5); background:linear-gradient(135deg,rgba(159,193,225,.2),rgba(47,63,77,.5)); display:flex; align-items:center; justify-content:center; }
     .modal-cover-img { width:100%; height:100%; object-fit:cover; display:block; }
     .modal-cover-icon { font-size:2.2rem; color:rgba(159,193,225,.45); }
-    .modal-hero-text { flex:1; min-width:0; }
     .modal-hero-text h2 { font-size:1.15rem; font-weight:700; color:#fff; line-height:1.35; margin-bottom:5px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     .modal-hero-author { font-size:.82rem; color:var(--accent); font-weight:600; margin-bottom:8px; }
     .modal-hero-pills { display:flex; flex-wrap:wrap; gap:5px; }
     .modal-pill { font-size:.65rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
     .modal-pill.cat   { background:rgba(159,193,225,.18); color:var(--accent); border:1px solid rgba(159,193,225,.3); }
     .modal-pill.genre { background:rgba(72,199,142,.14); color:var(--accent2); border:1px solid rgba(72,199,142,.3); }
+    .modal-pill.borrow-yes { background:rgba(72,199,142,.15); color:#48c78e; border:1px solid rgba(72,199,142,.3); }
+    .modal-pill.borrow-no  { background:rgba(255,99,99,.1); color:#ff8080; border:1px solid rgba(255,99,99,.25); }
     .m-close-btn { position:absolute; top:14px; right:14px; z-index:10; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.65); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.9rem; cursor:pointer; transition:.18s; backdrop-filter:blur(4px); }
     .m-close-btn:hover { background:rgba(255,255,255,.15); color:#fff; }
     .modal-body-scroll { overflow-y:auto; flex:1; padding:20px 24px 24px; }
@@ -255,9 +316,7 @@
     .btn-modal-borrow:hover { background:rgba(245,200,66,.22); transform:translateY(-1px); }
     .btn-modal-borrow-disabled { flex:1; background:rgba(255,255,255,.04); color:rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:10px 24px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:.88rem; cursor:not-allowed; display:flex; align-items:center; justify-content:center; gap:7px; }
 
-    /* ════════════════════════════════════════
-       FOOTER
-    ════════════════════════════════════════ */
+    /* FOOTER */
     .footer-cta { background:linear-gradient(100deg,rgba(159,193,225,.1) 0%,rgba(72,199,142,.06) 100%); border-top:1px solid rgba(159,193,225,.13); padding:52px 60px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
     .footer-cta-text h3 { font-size:1.4rem; font-weight:700; letter-spacing:-.025em; color:#fff; margin-bottom:6px; }
     .footer-cta-text p { font-size:.875rem; color:var(--tl); line-height:1.65; max-width:480px; margin:0; }
@@ -267,70 +326,23 @@
     .footer-cta-btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:rgba(255,255,255,.72); border:1px solid rgba(255,255,255,.16); border-radius:11px; padding:10px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:600; cursor:pointer; text-decoration:none; transition:.2s; white-space:nowrap; }
     .footer-cta-btn-ghost:hover { border-color:rgba(255,255,255,.42); color:#fff; background:rgba(255,255,255,.06); }
     .footer-main { background:rgba(0,0,0,.3); border-top:1px solid rgba(255,255,255,.06); padding:60px 60px 0; }
-    .footer-grid { display:grid; grid-template-columns:1.9fr 1fr 1fr 1.35fr; gap:48px; padding-bottom:52px; border-bottom:1px solid rgba(255,255,255,.07); }
-    .footer-brand-col .footer-logo-row { display:flex; align-items:center; gap:11px; margin-bottom:14px; }
-    .footer-logo-row img { width:40px; height:40px; border-radius:10px; object-fit:cover; }
-    .footer-logo-row .brand-label { font-size:.92rem; font-weight:700; color:#fff; letter-spacing:-.015em; line-height:1.25; }
-    .footer-logo-row .brand-sub { font-size:.64rem; color:var(--accent); font-weight:600; letter-spacing:.04em; text-transform:uppercase; margin-top:2px; display:block; }
-    .footer-tagline { font-size:.8rem; color:rgba(255,255,255,.42); line-height:1.75; margin-bottom:20px; max-width:255px; }
-    .footer-socials { display:flex; gap:8px; flex-wrap:wrap; }
-    .footer-social-btn { width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); color:rgba(255,255,255,.5); display:flex; align-items:center; justify-content:center; font-size:.9rem; text-decoration:none; transition:.2s; }
-    .footer-social-btn:hover { background:rgba(159,193,225,.14); border-color:rgba(159,193,225,.28); color:var(--accent); transform:translateY(-3px); }
-    .footer-col-title { font-size:.65rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,.06); }
-    .footer-links { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:1px; }
-    .footer-links a { font-size:.825rem; color:rgba(255,255,255,.48); text-decoration:none; display:flex; align-items:center; gap:8px; padding:6px 0; border-radius:6px; transition:.18s; font-weight:500; }
-    .footer-links a i { font-size:.72rem; color:rgba(159,193,225,.4); flex-shrink:0; transition:.18s; width:14px; text-align:center; }
-    .footer-links a:hover { color:rgba(255,255,255,.88); padding-left:5px; }
-    .footer-links a:hover i { color:var(--accent); }
-    .footer-contact-row { display:flex; align-items:flex-start; gap:11px; padding:10px 12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.05); border-radius:11px; margin-bottom:8px; transition:.2s; }
-    .footer-contact-row:hover { background:rgba(159,193,225,.06); border-color:rgba(159,193,225,.12); }
-    .footer-contact-row i { font-size:.82rem; color:var(--accent); margin-top:3px; flex-shrink:0; opacity:.75; }
-    .footer-contact-row .fc-label { font-size:.6rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:rgba(255,255,255,.28); display:block; margin-bottom:2px; }
-    .footer-contact-row .fc-val { font-size:.78rem; color:rgba(255,255,255,.68); font-weight:500; line-height:1.5; display:block; }
-    .footer-contact-row a.fc-val { text-decoration:none; transition:color .18s; }
-    .footer-contact-row a.fc-val:hover { color:var(--accent); }
-    .footer-partners-belt { padding:26px 0; border-bottom:1px solid rgba(255,255,255,.06); display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
-    .partners-label-txt { font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.22); white-space:nowrap; flex-shrink:0; }
-    .partners-divider { width:1px; height:26px; background:rgba(255,255,255,.08); flex-shrink:0; }
-    .partners-logos-row { display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
-    .partners-logos-row img { height:30px; width:auto; object-fit:contain; opacity:.3; filter:grayscale(1) brightness(2.5); transition:.25s; cursor:default; }
-    .partners-logos-row img:hover { opacity:.8; filter:grayscale(0) brightness(1); transform:scale(1.07); }
     .footer-bottom { padding:20px 0 24px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
     .footer-bottom-left { font-size:.76rem; color:rgba(255,255,255,.25); line-height:1.6; }
     .footer-bottom-left strong { color:rgba(255,255,255,.4); font-weight:600; }
-    .footer-bottom-right { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-    .footer-bottom-right a { font-size:.74rem; color:rgba(255,255,255,.27); text-decoration:none; transition:.18s; cursor:pointer; }
-    .footer-bottom-right a:hover { color:rgba(255,255,255,.65); }
-    .footer-bottom-sep { width:3px; height:3px; border-radius:50%; background:rgba(255,255,255,.15); }
     .footer-ph-badge { display:inline-flex; align-items:center; gap:5px; font-size:.7rem; font-weight:600; color:rgba(255,255,255,.22); background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:20px; padding:3px 10px; }
     .footer-ph-badge i { font-size:.65rem; color:var(--accent); opacity:.6; }
-    .footer-link-static { font-size:.825rem; color:rgba(255,255,255,.38); display:flex; align-items:center; gap:8px; padding:6px 0; font-weight:500; cursor:default; user-select:none; }
-    .footer-link-static i { font-size:.72rem; color:rgba(159,193,225,.28); flex-shrink:0; width:14px; text-align:center; }
 
-    /* Legal modals */
-    .legal-modal-overlay { display:none; position:fixed; inset:0; z-index:4000; background:rgba(0,0,0,.72); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:20px; }
-    .legal-modal { background:#1b2a35; border:1px solid rgba(159,193,225,.18); border-radius:20px; width:100%; max-width:640px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 24px 72px rgba(0,0,0,.6); animation:modalIn .25s cubic-bezier(.16,.84,.44,1); }
-    @keyframes modalIn { from{opacity:0;transform:translateY(18px) scale(.97)} to{opacity:1;transform:none} }
-    .legal-modal-header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px 16px; border-bottom:1px solid rgba(255,255,255,.07); flex-shrink:0; }
-    .legal-modal-header h4 { font-size:.92rem; font-weight:700; color:var(--accent); letter-spacing:.06em; text-transform:uppercase; display:flex; align-items:center; gap:8px; margin:0; }
-    .legal-modal-close { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.55); width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:.95rem; cursor:pointer; transition:.18s; flex-shrink:0; }
-    .legal-modal-close:hover { background:rgba(255,100,100,.1); border-color:rgba(255,100,100,.25); color:#ff7070; }
-    .legal-modal-body { padding:22px 24px 26px; overflow-y:auto; flex:1; font-size:.84rem; color:rgba(255,255,255,.58); line-height:1.8; }
-    .legal-modal-body::-webkit-scrollbar { width:4px; }
-    .legal-modal-body::-webkit-scrollbar-thumb { background:rgba(159,193,225,.2); border-radius:4px; }
-    .legal-modal-body h5 { font-size:.82rem; font-weight:700; color:rgba(255,255,255,.85); margin:18px 0 6px; letter-spacing:.03em; }
-    .legal-modal-body h5:first-child { margin-top:0; }
-    .legal-modal-body p { margin-bottom:10px; }
-    .legal-modal-body ul { padding-left:18px; margin-bottom:10px; }
-    .legal-modal-body ul li { margin-bottom:5px; }
-    .legal-modal-footer { padding:14px 24px; border-top:1px solid rgba(255,255,255,.07); display:flex; justify-content:flex-end; flex-shrink:0; }
-    .legal-modal-btn { background:rgba(159,193,225,.15); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:10px; padding:9px 20px; font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:700; cursor:pointer; transition:.2s; }
-    .legal-modal-btn:hover { background:rgba(159,193,225,.25); color:#fff; }
-
-    @media (max-width:1100px) { .footer-grid { grid-template-columns:1.5fr 1fr 1fr; } .footer-contact-col { grid-column:1/-1; } }
-    @media (max-width:860px) { .footer-cta { padding:40px 24px; } .footer-main { padding:48px 24px 0; } .footer-grid { grid-template-columns:1fr 1fr; gap:36px; } .footer-brand-col { grid-column:1/-1; } .footer-contact-col { grid-column:1/-1; } }
-    @media (max-width:768px) { .books-grid,.skeleton-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; } .modal-details-grid { grid-template-columns:1fr; } .modal-hero { height:160px; } .modal-cover-wrap { width:74px; height:104px; } .modal-hero-text h2 { font-size:1rem; } }
-    @media (max-width:560px) { .footer-grid { grid-template-columns:1fr; } .footer-cta-text h3 { font-size:1.15rem; } .footer-bottom { flex-direction:column; align-items:flex-start; } }
+    @media (max-width:768px) {
+      .page-wrap { padding:80px 20px 60px; }
+      .books-grid,.skeleton-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
+      .modal-details-grid { grid-template-columns:1fr; }
+      .footer-cta { padding:40px 24px; }
+      .footer-main { padding:48px 24px 0; }
+    }
+    @media (max-width:560px) {
+      .footer-cta-text h3 { font-size:1.15rem; }
+      .footer-bottom { flex-direction:column; align-items:flex-start; }
+    }
   </style>
 </head>
 <body>
@@ -341,13 +353,11 @@
       <img src="/static/images/logo.png" alt="Logo" class="brand-img">
       <span class="brand-text">Iloilo City Public Library</span>
     </a>
-
     <div class="nav-overlay" id="navOverlay"></div>
-
     <nav class="nav-links" id="navLinks">
       <div class="nav-close-row">
         <span class="drawer-brand"><i class="bi bi-building-fill me-1"></i>Library</span>
-        <button id="navCloseBtn" title="Close menu"><i class="bi bi-x-lg"></i></button>
+        <button id="navCloseBtn"><i class="bi bi-x-lg"></i></button>
       </div>
       <a href="/"><i class="bi bi-house-door-fill"></i> Home</a>
       <a href="/#offerings"><i class="bi bi-grid-fill"></i> Library Offerings</a>
@@ -357,26 +367,17 @@
       <a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a>
       <a href="/login" class="btn-login d-lg-none mt-2"><i class="bi bi-box-arrow-in-right"></i> Login</a>
     </nav>
-
     <div class="top-actions">
-      <button onclick="showMemberModal()" title="Events Calendar (Members only)" style="background:transparent;border:none;color:rgba(255,255,255,.4);font-size:1.15rem;cursor:pointer;padding:7px 9px;border-radius:8px;transition:.18s;display:flex;align-items:center;justify-content:center;position:relative;">
-        <i class="bi bi-calendar3"></i>
-        <i class="bi bi-lock-fill" style="position:absolute;bottom:3px;right:3px;font-size:.45rem;color:#FFD700;"></i>
-      </button>
-      <button onclick="showMemberModal()" title="Notifications (Members only)" style="background:transparent;border:none;color:rgba(255,255,255,.4);font-size:1.15rem;cursor:pointer;padding:7px 9px;border-radius:8px;transition:.18s;display:flex;align-items:center;justify-content:center;position:relative;">
+      <button onclick="showMemberModal()" title="Members only" style="background:transparent;border:none;color:rgba(255,255,255,.4);font-size:1.15rem;cursor:pointer;padding:7px 9px;border-radius:8px;position:relative;">
         <i class="bi bi-bell-fill"></i>
         <i class="bi bi-lock-fill" style="position:absolute;bottom:3px;right:3px;font-size:.45rem;color:#FFD700;"></i>
       </button>
-      <button onclick="showMemberModal()" title="Profile (Members only)" style="width:34px;height:34px;border-radius:50%;background:rgba(159,193,225,.15);border:2px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);font-size:.78rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.18s;position:relative;">
-        <i class="bi bi-person-fill"></i>
-        <i class="bi bi-lock-fill" style="position:absolute;bottom:-2px;right:-2px;font-size:.45rem;color:#FFD700;background:#1e2d3d;border-radius:50%;padding:1px;"></i>
-      </button>
       <a href="/login" class="btn-login d-none d-lg-flex"><i class="bi bi-box-arrow-in-right"></i> Login</a>
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><i class="bi bi-list"></i></button>
+      <button class="menu-toggle" id="menuToggle"><i class="bi bi-list"></i></button>
     </div>
   </header>
 
-  <!-- MEMBERSHIP REQUIRED MODAL -->
+  <!-- MEMBERSHIP MODAL -->
   <div class="member-modal-overlay" id="memberModalOverlay">
     <div class="member-modal-box">
       <div class="panel-a" id="panelA">
@@ -391,7 +392,7 @@
       </div>
       <div class="panel-b" id="panelB">
         <div class="steps-header">
-          <button class="steps-back-btn" onclick="showMainPanel()" title="Back"><i class="bi bi-arrow-left"></i></button>
+          <button class="steps-back-btn" onclick="showMainPanel()"><i class="bi bi-arrow-left"></i></button>
           <div class="steps-header-text"><h5>How to Become a Member</h5><span>Follow these steps to get your library card</span></div>
         </div>
         <div class="steps-progress-wrap">
@@ -425,41 +426,32 @@
       <p>Discover your next great read from our collection</p>
     </div>
 
-    <!-- OFFLINE BANNER -->
-    <div class="offline-banner" id="offlineBanner">
-      <i class="bi bi-wifi-off"></i>
-      <span>You're offline — showing your last synced library catalog</span>
-    </div>
-
     <!-- TOOLBAR -->
     <div class="toolbar">
       <div class="search-box" id="searchBox">
         <i class="bi bi-search si"></i>
         <input type="text" id="searchInput" class="search-input"
-              placeholder="Search by title, author, or ISBN…"
-              autocomplete="off"
-              onfocus="onSearchFocus()"
-              oninput="onSearchInput(this.value)"
-              onkeydown="onSearchKeydown(event)">
+               placeholder="Search by title, author, or ISBN…"
+               autocomplete="off"
+               onfocus="onSearchFocus()"
+               oninput="onSearchInput(this.value)"
+               onkeydown="onSearchKeydown(event)">
         <div class="search-dropdown" id="searchDropdown"></div>
       </div>
-      <select class="filter-sel" id="categoryFilter" onchange="applyFilter()">
-        <option value="">All Categories</option>
-      </select>
-      <!-- AVAILABILITY FILTER -->
-      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
-        <button class="avail-btn active" id="availAll"        onclick="setAvailFilter('all')">
-          <i class="bi bi-grid-fill" style="font-size:.72rem;"></i> All
-        </button>
-        <button class="avail-btn" id="availBorrowable"    onclick="setAvailFilter('borrowable')">
-          <i class="bi bi-bookmark-plus-fill" style="font-size:.72rem;"></i> Borrowable
-        </button>
-        <button class="avail-btn" id="availNotBorrowable" onclick="setAvailFilter('not-borrowable')">
-          <i class="bi bi-bookmark-x-fill" style="font-size:.72rem;"></i> Not Borrowable
-        </button>
-      </div>
+
+      <button class="filter-btn" onclick="openFilterModal()">
+        <i class="bi bi-sliders2"></i> Filters
+        <span class="filter-active-dot" id="filterDot"></span>
+      </button>
+      <button class="filter-clear-btn" id="filterClearBtn" onclick="clearAllFilters()" style="display:none">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+
       <span class="results-lbl" id="resultsLbl">Loading…</span>
     </div>
+
+    <!-- ACTIVE FILTER CHIPS -->
+    <div id="activeFilterChips"></div>
 
     <!-- SKELETONS -->
     <div class="skeleton-grid" id="skeletonGrid">
@@ -470,10 +462,7 @@
           <div class="skel" style="width:80%;height:13px;margin-bottom:7px;"></div>
           <div class="skel" style="width:55%;height:10px;margin-bottom:5px;"></div>
           <div class="skel" style="width:40%;height:9px;margin-bottom:18px;"></div>
-          <div style="display:flex;gap:7px;">
-            <div class="skel" style="flex:1;height:30px;border-radius:8px;"></div>
-            <div class="skel" style="flex:1;height:30px;border-radius:8px;"></div>
-          </div>
+          <div style="display:flex;gap:7px;"><div class="skel" style="flex:1;height:30px;border-radius:8px;"></div><div class="skel" style="flex:1;height:30px;border-radius:8px;"></div></div>
         </div>
       </div>
       {% endfor %}
@@ -492,6 +481,123 @@
     <div class="pag-bar" id="pagBar" style="display:none;">
       <span class="pag-info" id="pagInfo"></span>
       <div class="pag-btns" id="pagBtns"></div>
+    </div>
+  </div>
+
+  <!-- ══ ADVANCED FILTER MODAL ══ -->
+  <div id="filterModal">
+    <div class="filter-modal-box">
+      <div class="filter-modal-head">
+        <div class="fm-head-left">
+          <div class="fm-head-icon"><i class="bi bi-sliders2"></i></div>
+          <div>
+            <div class="fm-title">Advanced Filters</div>
+            <div class="fm-sub">Refine your book collection</div>
+          </div>
+        </div>
+        <button class="fm-close" onclick="closeFilterModal()"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="fm-rail-wrap">
+        <div class="fm-rail-nav">
+          <div class="fm-rail-item active" data-pane="cat" onclick="fmSwitchPane('cat',this)">
+            <i class="bi bi-tag-fill"></i><span>Category</span>
+            <span class="fm-rail-badge" id="frb-cat" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="genre" onclick="fmSwitchPane('genre',this)">
+            <i class="bi bi-grid-fill"></i><span>Genre</span>
+            <span class="fm-rail-badge" id="frb-genre" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="borrow" onclick="fmSwitchPane('borrow',this)">
+            <i class="bi bi-bookmark-fill"></i><span>Borrowing</span>
+            <span class="fm-rail-badge" id="frb-borrow" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="lang" onclick="fmSwitchPane('lang',this)">
+            <i class="bi bi-globe2"></i><span>Language</span>
+            <span class="fm-rail-badge" id="frb-lang" style="display:none">0</span>
+          </div>
+          <div class="fm-rail-item" data-pane="date" onclick="fmSwitchPane('date',this)">
+            <i class="bi bi-calendar3"></i><span>Date Added</span>
+            <span class="fm-rail-badge" id="frb-date" style="display:none">0</span>
+          </div>
+        </div>
+
+        <div class="fm-rail-content">
+          <!-- CATEGORY -->
+          <div class="fm-pane active" id="fm-pane-cat">
+            <div class="fm-pane-label">Category <span class="fm-pane-hint">multi-select</span></div>
+            <div class="fm-search-wrap">
+              <i class="bi bi-search"></i>
+              <input class="fm-search-inp" placeholder="Search category…" oninput="fmFilterCloud('fm-cat-cloud',this.value)">
+            </div>
+            <div class="fm-tag-cloud" id="fm-cat-cloud"></div>
+          </div>
+          <!-- GENRE -->
+          <div class="fm-pane" id="fm-pane-genre">
+            <div class="fm-pane-label">Genre / Class <span class="fm-pane-hint">multi-select</span></div>
+            <div class="fm-tag-cloud" id="fm-genre-cloud"></div>
+          </div>
+          <!-- BORROWING -->
+          <div class="fm-pane" id="fm-pane-borrow">
+            <div class="fm-pane-label">Borrowing Policy</div>
+            <div>
+              <div class="fm-toggle-row on" id="fm-brow-all" onclick="fmSelectBorrow('all')">
+                <div style="flex:1;min-width:0"><div class="fm-toggle-label">All books</div><div class="fm-toggle-sub">Show regardless of borrow setting</div></div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span class="fm-borrow-count" id="fm-bc-all">—</span>
+                  <label class="toggle-switch" onclick="event.stopPropagation()"><input type="radio" name="fmBorrow" id="fmBorrowAll" checked onchange="fmSelectBorrow('all')"><span class="toggle-slider"></span></label>
+                </div>
+              </div>
+              <div class="fm-toggle-row" id="fm-brow-yes" onclick="fmSelectBorrow('yes')">
+                <div style="flex:1;min-width:0"><div class="fm-toggle-label"><i class="bi bi-bookmark-check-fill" style="color:var(--accent2);margin-right:5px"></i>Borrowable only</div><div class="fm-toggle-sub">Books available to take home</div></div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span class="fm-borrow-count" id="fm-bc-yes">—</span>
+                  <label class="toggle-switch" onclick="event.stopPropagation()"><input type="radio" name="fmBorrow" id="fmBorrowYes" onchange="fmSelectBorrow('yes')"><span class="toggle-slider"></span></label>
+                </div>
+              </div>
+              <div class="fm-toggle-row" id="fm-brow-no" onclick="fmSelectBorrow('no')">
+                <div style="flex:1;min-width:0"><div class="fm-toggle-label"><i class="bi bi-bookmark-x" style="color:var(--danger);margin-right:5px"></i>Reference only</div><div class="fm-toggle-sub">Not available for borrowing</div></div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                  <span class="fm-borrow-count" id="fm-bc-no">—</span>
+                  <label class="toggle-switch" onclick="event.stopPropagation()"><input type="radio" name="fmBorrow" id="fmBorrowNo" onchange="fmSelectBorrow('no')"><span class="toggle-slider"></span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- LANGUAGE -->
+          <div class="fm-pane" id="fm-pane-lang">
+            <div class="fm-pane-label">Language <span class="fm-pane-hint">multi-select</span></div>
+            <div class="fm-tag-cloud" id="fm-lang-cloud"></div>
+          </div>
+          <!-- DATE -->
+          <div class="fm-pane" id="fm-pane-date">
+            <div class="fm-pane-label">Date Added</div>
+            <div class="fm-date-grid">
+              <div><div class="fm-date-lbl">From</div><input type="date" class="fm-date-inp" id="fmDateFrom" oninput="fmUpdateDate()"></div>
+              <div><div class="fm-date-lbl">To</div><input type="date" class="fm-date-inp" id="fmDateTo" oninput="fmUpdateDate()"></div>
+            </div>
+            <div class="fm-date-lbl" style="margin-bottom:7px">Quick select</div>
+            <div class="fm-shortcut-row">
+              <div class="fm-shortcut" onclick="fmDateShortcut('today',this)">Today</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('week',this)">This week</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('month',this)">This month</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('quarter',this)">This quarter</div>
+              <div class="fm-shortcut" onclick="fmDateShortcut('year',this)">This year</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fm-chip-bar" id="fmChipBar">
+        <span class="fm-no-active" id="fmNoActive">No filters active</span>
+      </div>
+      <div class="filter-modal-foot">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="fm-match-count" id="fmMatchCount"><strong>—</strong> books match</span>
+          <button class="fm-btn" onclick="fmResetAll()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        </div>
+        <button class="fm-btn primary" onclick="fmApply()"><i class="bi bi-check-lg"></i> Apply Filters</button>
+      </div>
     </div>
   </div>
 
@@ -528,7 +634,7 @@
     </div>
   </div>
 
-  <!-- PRE-FOOTER CTA -->
+  <!-- FOOTER CTA -->
   <div class="footer-cta">
     <div class="footer-cta-text">
       <h3>Ready to Start Exploring?</h3>
@@ -540,256 +646,199 @@
     </div>
   </div>
 
-  <!-- MAIN FOOTER -->
   <footer class="footer-main">
-    <div class="footer-grid">
-      <div class="footer-brand-col">
-        <div class="footer-logo-row">
-          <img src="/static/images/logo.png" alt="Iloilo City Public Library Logo" onerror="this.style.display='none'">
-          <div>
-            <div class="brand-label">Iloilo City Public Library</div>
-            <span class="brand-sub">Dr. Graciano Lopez Jaena LRC &amp; Museum</span>
-          </div>
-        </div>
-        <p class="footer-tagline">Empowering the Iloilo community through access to knowledge, cultural heritage, and lifelong learning.</p>
-        <div class="footer-socials">
-          <a href="https://www.facebook.com/iloilocitypubliclibrary" class="footer-social-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
-          <a href="mailto:iloilocitypubliclibrary@gmail.com" class="footer-social-btn" title="Email Us"><i class="bi bi-envelope-fill"></i></a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-col-title">Quick Links</div>
-        <ul class="footer-links">
-          <li><a href="/"><i class="bi bi-house-door-fill"></i> Home</a></li>
-          <li><a href="/browse"><i class="bi bi-search"></i> Browse Catalog</a></li>
-          <li><a href="/#features"><i class="bi bi-grid-fill"></i> Features</a></li>
-          <li><a href="/#Vission_and_Mission"><i class="bi bi-eye-fill"></i> Vision &amp; Mission</a></li>
-          <li><a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a></li>
-          <li><a href="/login"><i class="bi bi-box-arrow-in-right"></i> Member Login</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Services</div>
-        <ul class="footer-links">
-          <li><span class="footer-link-static"><i class="bi bi-wifi"></i> Free WiFi &amp; Study Space</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-archive-fill"></i> Iloilo Archives</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-collection-fill"></i> General Collection</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-book-fill"></i> Reference Collection</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-people-fill"></i> Literacy Outreach Programs</span></li>
-        </ul>
-      </div>
-      <div class="footer-contact-col">
-        <div class="footer-col-title">Get in Touch</div>
-        <div>
-          <div class="footer-contact-row"><i class="bi bi-geo-alt-fill"></i><div><span class="fc-label">Address</span><span class="fc-val">Arguelles-Fajardo Street, Jaro,<br>Iloilo City, Philippines, 5000</span></div></div>
-          <div class="footer-contact-row"><i class="bi bi-telephone-fill"></i><div><span class="fc-label">Telephone</span><a href="tel:+6333354078" class="fc-val">(033) 335-4078</a></div></div>
-          <div class="footer-contact-row"><i class="bi bi-envelope-fill"></i><div><span class="fc-label">Email</span><a href="mailto:iloilocitypubliclibrary@gmail.com" class="fc-val">iloilocitypubliclibrary@gmail.com</a></div></div>
-          <div class="footer-contact-row"><i class="bi bi-clock-fill"></i><div><span class="fc-label">Library Hours</span><span class="fc-val">Mon – Sat &nbsp;·&nbsp; 8:00 AM – 8:00 PM<br><span style="font-size:.72rem;color:rgba(255,255,255,.32);">Closed on Sundays &amp; public holidays</span></span></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="footer-partners-belt">
-      <span class="partners-label-txt">In partnership with</span>
-      <div class="partners-divider"></div>
-      <div class="partners-logos-row">
-        <img src="/static/images/partner_logo.png" alt="Partner 1" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+1'">
-        <img src="/static/images/partner_logo.png" alt="Partner 2" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+2'">
-        <img src="/static/images/partner_logo.png" alt="Partner 3" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+3'">
-        <img src="/static/images/partner_logo.png" alt="Partner 4" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+4'">
-        <img src="/static/images/partner_logo.png" alt="Partner 5" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+5'">
-      </div>
-    </div>
     <div class="footer-bottom">
       <div class="footer-bottom-left">&copy; <strong id="footerYear"></strong> <strong>Iloilo City Public Library</strong> — Dr. Graciano Lopez Jaena Learning Resource Center &amp; Museum. All rights reserved.</div>
-      <div class="footer-bottom-right">
-        <a onclick="document.getElementById('privacyModal').style.display='flex';return false;">Privacy Policy</a>
-        <div class="footer-bottom-sep"></div>
-        <a onclick="document.getElementById('termsModal').style.display='flex';return false;">Terms of Use</a>
-        <div class="footer-bottom-sep"></div>
-        <a href="/no_user_about">About</a>
-        <div class="footer-bottom-sep"></div>
-        <span class="footer-ph-badge"><i class="bi bi-geo-fill"></i> Iloilo, Philippines</span>
-      </div>
+      <span class="footer-ph-badge"><i class="bi bi-geo-fill"></i> Iloilo, Philippines</span>
     </div>
   </footer>
-
-  <!-- PRIVACY POLICY MODAL -->
-  <div class="legal-modal-overlay" id="privacyModal" onclick="if(event.target===this)this.style.display='none'">
-    <div class="legal-modal">
-      <div class="legal-modal-header"><h4><i class="bi bi-shield-check-fill"></i> Privacy Policy</h4><button class="legal-modal-close" onclick="document.getElementById('privacyModal').style.display='none'" title="Close"><i class="bi bi-x-lg"></i></button></div>
-      <div class="legal-modal-body">
-        <h5>1. Introduction</h5><p>The Iloilo City Public Library is committed to protecting the privacy and personal information of all library members and visitors.</p>
-        <h5>2. Information We Collect</h5><ul><li>Full name, address, and contact details</li><li>Membership and borrowing records</li><li>Transaction history for borrowed and returned materials</li><li>Event registrations and program participation records</li></ul>
-        <h5>3. How We Use Your Information</h5><ul><li>Managing your library membership account</li><li>Processing book loans, renewals, and returns</li><li>Sending notifications about due dates, events, and announcements</li><li>Improving library services and programs for the community</li></ul>
-        <h5>4. Data Sharing</h5><p>The library does not sell, trade, or share your personal information with third parties, except as required by law in compliance with the Data Privacy Act of 2012 (RA 10173).</p>
-        <h5>5. Data Security</h5><p>We implement appropriate technical and organizational measures to protect your personal data.</p>
-        <h5>6. Your Rights</h5><p>Under the Data Privacy Act of 2012, you have the right to access, correct, and request deletion of your personal data.</p>
-        <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
-      </div>
-      <div class="legal-modal-footer"><button class="legal-modal-btn" onclick="document.getElementById('privacyModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button></div>
-    </div>
-  </div>
-
-  <!-- TERMS OF USE MODAL -->
-  <div class="legal-modal-overlay" id="termsModal" onclick="if(event.target===this)this.style.display='none'">
-    <div class="legal-modal">
-      <div class="legal-modal-header"><h4><i class="bi bi-file-earmark-text-fill"></i> Terms of Use</h4><button class="legal-modal-close" onclick="document.getElementById('termsModal').style.display='none'" title="Close"><i class="bi bi-x-lg"></i></button></div>
-      <div class="legal-modal-body">
-        <h5>1. Acceptance of Terms</h5><p>By accessing and using the library's facilities, services, and online systems, you agree to these Terms of Use.</p>
-        <h5>2. Library Membership</h5><ul><li>Membership is open to all residents and stakeholders of Iloilo City and Province.</li><li>Members are responsible for keeping their account information accurate.</li><li>Membership cards are non-transferable.</li></ul>
-        <h5>3. Borrowing Policies</h5><ul><li>Members may borrow materials for designated loan periods.</li><li>Borrowed materials must be returned on or before their due dates.</li><li>Lost or damaged materials must be replaced or paid for.</li></ul>
-        <h5>4. Library Premises and Conduct</h5><ul><li>All patrons are expected to maintain a quiet and respectful environment.</li><li>Food and beverages are not permitted in reading areas.</li></ul>
-        <h5>5. Online System Use</h5><ul><li>The library's online catalog and member portal are for authorized members only.</li><li>Unauthorized access is strictly prohibited.</li></ul>
-        <h5>6. Free WiFi and Computers</h5><p>Provided for educational and informational purposes only. Use for illegal activities is strictly prohibited.</p>
-        <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
-      </div>
-      <div class="legal-modal-footer"><button class="legal-modal-btn" onclick="document.getElementById('termsModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button></div>
-    </div>
-  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     /* ── MOBILE NAV ── */
-    const menuToggle  = document.getElementById('menuToggle');
-    const navLinks    = document.getElementById('navLinks');
-    const navOverlay  = document.getElementById('navOverlay');
-    const navCloseBtn = document.getElementById('navCloseBtn');
-    function openNav()  { navLinks.classList.add('open'); navOverlay.classList.add('show'); document.body.style.overflow='hidden'; }
-    function closeNav() { navLinks.classList.remove('open'); navOverlay.classList.remove('show'); document.body.style.overflow=''; }
-    menuToggle.addEventListener('click', () => navLinks.classList.contains('open') ? closeNav() : openNav());
-    navCloseBtn.addEventListener('click', closeNav);
-    navOverlay.addEventListener('click', closeNav);
-    navLinks.querySelectorAll('a:not(.dropdown-toggle)').forEach(a => a.addEventListener('click', closeNav));
+    const menuToggle=document.getElementById('menuToggle'),navLinks=document.getElementById('navLinks'),navOverlay=document.getElementById('navOverlay'),navCloseBtn=document.getElementById('navCloseBtn');
+    function openNav(){navLinks.classList.add('open');navOverlay.classList.add('show');document.body.style.overflow='hidden';}
+    function closeNav(){navLinks.classList.remove('open');navOverlay.classList.remove('show');document.body.style.overflow='';}
+    menuToggle.addEventListener('click',()=>navLinks.classList.contains('open')?closeNav():openNav());
+    navCloseBtn.addEventListener('click',closeNav);
+    navOverlay.addEventListener('click',closeNav);
 
     /* ── MEMBERSHIP MODAL ── */
-    const memberOverlay = document.getElementById('memberModalOverlay');
-    const panelA = document.getElementById('panelA');
-    const panelB = document.getElementById('panelB');
-    const TOTAL  = 8;
-    let current  = 1;
-    function showMemberModal() { showMainPanel(); memberOverlay.classList.add('show'); document.body.style.overflow='hidden'; }
-    function closeMemberModal() { memberOverlay.classList.remove('show'); document.body.style.overflow=''; }
-    function showMainPanel() { panelA.style.display='block'; panelB.style.display='none'; current=1; }
-    function showStepsPanel() { panelA.style.display='none'; panelB.style.display='block'; current=1; buildDots(); updateStep(); }
-    function buildDots() { const wrap=document.getElementById('stepDots'); wrap.innerHTML=''; for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='step-dot'+(i===1?' active':'');d.id='dot'+i;wrap.appendChild(d);} }
-    function updateStep() {
-      document.querySelectorAll('.step-slide').forEach(s=>s.classList.remove('active'));
-      document.getElementById('step'+current).classList.add('active');
-      const pct=Math.round((current/TOTAL)*100);
-      document.getElementById('stepsProgressFill').style.width=pct+'%';
-      document.getElementById('stepsProgressText').textContent='Step '+current+' of '+TOTAL;
-      document.getElementById('stepsProgressPct').textContent=pct+'%';
-      for(let i=1;i<=TOTAL;i++){const d=document.getElementById('dot'+i);if(!d)continue;d.className='step-dot';if(i<current)d.classList.add('done');else if(i===current)d.classList.add('active');}
-      document.getElementById('btnPrev').disabled=(current===1);
-      const isLast=(current===TOTAL);
-      document.getElementById('btnNext').style.display=isLast?'none':'flex';
-      document.getElementById('btnFinish').style.display=isLast?'flex':'none';
-    }
-    function changeStep(dir){ const next=current+dir; if(next<1||next>TOTAL)return; current=next; updateStep(); }
-    memberOverlay.addEventListener('click', function(e){ if(e.target===this)closeMemberModal(); });
+    const memberOverlay=document.getElementById('memberModalOverlay');
+    const TOTAL=8; let current=1;
+    function showMemberModal(){showMainPanel();memberOverlay.classList.add('show');document.body.style.overflow='hidden';}
+    function closeMemberModal(){memberOverlay.classList.remove('show');document.body.style.overflow='';}
+    function showMainPanel(){document.getElementById('panelA').style.display='block';document.getElementById('panelB').style.display='none';current=1;}
+    function showStepsPanel(){document.getElementById('panelA').style.display='none';document.getElementById('panelB').style.display='block';current=1;buildDots();updateStep();}
+    function buildDots(){const w=document.getElementById('stepDots');w.innerHTML='';for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='step-dot'+(i===1?' active':'');d.id='dot'+i;w.appendChild(d);}}
+    function updateStep(){document.querySelectorAll('.step-slide').forEach(s=>s.classList.remove('active'));document.getElementById('step'+current).classList.add('active');const pct=Math.round((current/TOTAL)*100);document.getElementById('stepsProgressFill').style.width=pct+'%';document.getElementById('stepsProgressText').textContent='Step '+current+' of '+TOTAL;document.getElementById('stepsProgressPct').textContent=pct+'%';for(let i=1;i<=TOTAL;i++){const d=document.getElementById('dot'+i);if(!d)continue;d.className='step-dot';if(i<current)d.classList.add('done');else if(i===current)d.classList.add('active');}document.getElementById('btnPrev').disabled=(current===1);const isLast=(current===TOTAL);document.getElementById('btnNext').style.display=isLast?'none':'flex';document.getElementById('btnFinish').style.display=isLast?'flex':'none';}
+    function changeStep(dir){const next=current+dir;if(next<1||next>TOTAL)return;current=next;updateStep();}
+    memberOverlay.addEventListener('click',e=>{if(e.target===memberOverlay)closeMemberModal();});
 
     /* ── STATE ── */
-    const BOOKS_PER_PAGE = 10;
-    let allBooks = [], filteredBooks = [], currentPage = 1;
-    let availFilter = 'all'; /* FIX: declared at module scope so setAvailFilter() and applyFilter() share the same variable */
+    const BOOKS_PER_PAGE=10;
+    let allBooks=[],filteredBooks=[],currentPage=1;
+    let advFilters={cat:[],genre:[],borrow:'all',lang:[],dateFrom:'',dateTo:''};
 
-    function esc(s) { if(!s)return'—'; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    function escJs(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
-    function isBorrowable(book) { return book.is_borrowable===true||book.is_borrowable===1; }
+    function esc(s){if(!s)return'—';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function escJs(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"');}
+    function escAttr(s){return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+    function isBorrowable(b){return b.is_borrowable===true||b.is_borrowable===1;}
 
     /* ── BOOT ── */
-    async function boot() {
-      const isAndroid = typeof window.Android !== 'undefined';
-      const isOffline = isAndroid && window.Android.isOffline() === 'true';
-
-      if (isOffline) {
-        document.getElementById('offlineBanner').classList.add('show');
-        try {
-          const cached = JSON.parse(window.Android.getCachedBooks());
-          allBooks = cached.books || [];
-          if (!allBooks.length) {
-            showEmpty('No cached books yet. Please connect to Wi-Fi once to sync the catalog.');
-          } else {
-            populateCategoryFilter();
-            applyFilter();
-          }
-        } catch (e) {
-          document.getElementById('skeletonGrid').style.display = 'none';
-          showEmpty('Could not load cached books. Please connect to Wi-Fi.');
-        }
-      } else {
-        try {
-          const r = await fetch('/api/public/books');
-          allBooks = (await r.json()).books || [];
-          populateCategoryFilter();
-          applyFilter();
-        } catch {
-          document.getElementById('skeletonGrid').style.display = 'none';
-          showEmpty('Failed to load books. Please refresh.');
-        }
+    async function boot(){
+      try{
+        const r=await fetch('/api/public/books');
+        if(!r.ok)throw new Error(`HTTP ${r.status}`);
+        const json=await r.json();
+        allBooks=json.books||[];
+        if(!allBooks.length){document.getElementById('skeletonGrid').style.display='none';showEmpty('No books are available yet.');return;}
+        applyFilter();
+      }catch(err){
+        document.getElementById('skeletonGrid').style.display='none';
+        showEmpty('Failed to load books. Please refresh the page.');
       }
     }
 
-    function populateCategoryFilter() {
-      const cats = [...new Set(allBooks.map(b=>b.category).filter(Boolean))].sort();
-      const sel  = document.getElementById('categoryFilter');
-      cats.forEach(c => { const o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); });
+    /* ── FILTER MODAL ── */
+    function openFilterModal(){fmBuildClouds();fmSyncFromState();document.getElementById('filterModal').classList.add('open');document.body.style.overflow='hidden';}
+    function closeFilterModal(){document.getElementById('filterModal').classList.remove('open');document.body.style.overflow='';}
+    document.getElementById('filterModal').addEventListener('click',function(e){if(e.target===this)closeFilterModal();});
+
+    function fmSwitchPane(id,el){
+      document.querySelectorAll('.fm-rail-item').forEach(r=>r.classList.remove('active'));el.classList.add('active');
+      document.querySelectorAll('.fm-pane').forEach(p=>p.classList.remove('active'));document.getElementById('fm-pane-'+id).classList.add('active');
     }
 
-    /* FIX: setAvailFilter now updates the module-level availFilter variable */
-    function setAvailFilter(val) {
-      availFilter = val;
-      document.getElementById('availAll').classList.toggle('active', val === 'all');
-      document.getElementById('availBorrowable').classList.toggle('active', val === 'borrowable');
-      document.getElementById('availNotBorrowable').classList.toggle('active', val === 'not-borrowable');
-      applyFilter();
+    function fmBuildClouds(){
+      if(!allBooks.length)return;
+      const catC={};allBooks.forEach(b=>{if(b.category)catC[b.category]=(catC[b.category]||0)+1;});
+      const catE=Object.entries(catC).sort((a,b)=>b[1]-a[1]);const maxC=catE[0]?.[1]||1;
+      document.getElementById('fm-cat-cloud').innerHTML=catE.length?catE.map(([name,count])=>{const sz=count/maxC>.6?'sz-lg':count/maxC<.25?'sz-sm':'';const on=advFilters.cat.includes(name)?' on':'';return`<div class="fm-tc${on} ${sz}" data-val="${escAttr(name)}" onclick="fmToggleTag(this,'cat')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;}).join(''):'<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No categories found</span>';
+
+      const genC={};allBooks.forEach(b=>{const g=b.class||b.genre;if(g)genC[g]=(genC[g]||0)+1;});
+      const genE=Object.entries(genC).sort((a,b)=>b[1]-a[1]);const maxG=genE[0]?.[1]||1;
+      document.getElementById('fm-genre-cloud').innerHTML=genE.length?genE.map(([name,count])=>{const sz=count/maxG>.6?'sz-lg':count/maxG<.25?'sz-sm':'';const on=advFilters.genre.includes(name)?' on':'';return`<div class="fm-tc${on} ${sz}" data-val="${escAttr(name)}" onclick="fmToggleTag(this,'genre')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;}).join(''):'<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No genre data</span>';
+
+      const langC={};allBooks.forEach(b=>{if(b.language)langC[b.language]=(langC[b.language]||0)+1;});
+      const langE=Object.entries(langC).sort((a,b)=>b[1]-a[1]);const maxL=langE[0]?.[1]||1;
+      document.getElementById('fm-lang-cloud').innerHTML=langE.length?langE.map(([name,count])=>{const sz=count/maxL>.6?'sz-lg':count/maxL<.25?'sz-sm':'';const on=advFilters.lang.includes(name)?' on':'';return`<div class="fm-tc${on} ${sz}" data-val="${escAttr(name)}" onclick="fmToggleTag(this,'lang')">${esc(name)}<span class="fm-tc-count">${count}</span></div>`;}).join(''):'<span style="font-size:.8rem;color:rgba(255,255,255,.25);font-style:italic">No language data</span>';
+
+      document.getElementById('fm-bc-all').textContent=allBooks.length;
+      document.getElementById('fm-bc-yes').textContent=allBooks.filter(b=>isBorrowable(b)).length;
+      document.getElementById('fm-bc-no').textContent=allBooks.filter(b=>!isBorrowable(b)).length;
+      fmUpdateMatchCount();
     }
 
-    /* FIX: removed the local `let availFilter = 'all'` that was shadowing the module-level variable */
-    function applyFilter() {
-      const cat = document.getElementById('categoryFilter').value;
-      const q   = document.getElementById('searchInput').value.trim().toLowerCase();
-      let r = allBooks;
-      if (cat) r = r.filter(b => b.category === cat);
-      if (q)   r = r.filter(b =>
-        (b.title  || '').toLowerCase().includes(q) ||
-        (b.author || '').toLowerCase().includes(q) ||
-        (b.isbn   || '').toLowerCase().includes(q)
-      );
-      if (availFilter === 'borrowable')     r = r.filter(b => isBorrowable(b));
-      if (availFilter === 'not-borrowable') r = r.filter(b => !isBorrowable(b));
-      filteredBooks = [...r].sort((a, b) => new Date(b.date_added) - new Date(a.date_added));
-      currentPage = 1;
-      renderPage();
+    function fmToggleTag(el,group){const val=el.dataset.val;el.classList.toggle('on');if(el.classList.contains('on')){if(!advFilters[group].includes(val))advFilters[group].push(val);}else{advFilters[group]=advFilters[group].filter(v=>v!==val);}fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();}
+
+    function fmSelectBorrow(val){
+      advFilters.borrow=val;
+      ['all','yes','no'].forEach(k=>{document.getElementById('fm-brow-'+k).classList.toggle('on',k===val);const r=document.getElementById('fmBorrow'+k.charAt(0).toUpperCase()+k.slice(1));if(r)r.checked=(k===val);});
+      fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();
     }
 
-    function renderPage() {
-      document.getElementById('skeletonGrid').style.display = 'none';
-      document.getElementById('resultsLbl').textContent = `${filteredBooks.length} book${filteredBooks.length!==1?'s':''}`;
-      const grid=document.getElementById('booksGrid'), empty=document.getElementById('emptyState'), pagBar=document.getElementById('pagBar');
-      if(!filteredBooks.length){ grid.style.display='none'; pagBar.style.display='none'; showEmpty('No books found matching your search.'); return; }
-      empty.classList.remove('show'); grid.style.display='grid';
+    function fmFilterCloud(cloudId,q){document.querySelectorAll('#'+cloudId+' .fm-tc').forEach(tc=>{tc.style.display=(!q||tc.childNodes[0].textContent.toLowerCase().includes(q.toLowerCase()))?'':' none';});}
+
+    function fmDateShortcut(type,el){
+      document.querySelectorAll('.fm-shortcut').forEach(d=>d.classList.remove('on'));el.classList.add('on');
+      const now=new Date(),pad=n=>String(n).padStart(2,'0'),fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      let from=new Date(),to=new Date();
+      if(type==='today'){}
+      else if(type==='week'){from=new Date();from.setDate(now.getDate()-now.getDay());}
+      else if(type==='month'){from=new Date(now.getFullYear(),now.getMonth(),1);}
+      else if(type==='quarter'){const q=Math.floor(now.getMonth()/3);from=new Date(now.getFullYear(),q*3,1);}
+      else if(type==='year'){from=new Date(now.getFullYear(),0,1);}
+      document.getElementById('fmDateFrom').value=fmt(from);document.getElementById('fmDateTo').value=fmt(to);
+      advFilters.dateFrom=fmt(from);advFilters.dateTo=fmt(to);
+      fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();
+    }
+
+    function fmUpdateDate(){advFilters.dateFrom=document.getElementById('fmDateFrom').value;advFilters.dateTo=document.getElementById('fmDateTo').value;document.querySelectorAll('.fm-shortcut').forEach(d=>d.classList.remove('on'));fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();}
+
+    function fmSyncFromState(){
+      fmSelectBorrow(advFilters.borrow);
+      const df=document.getElementById('fmDateFrom'),dt=document.getElementById('fmDateTo');
+      if(df)df.value=advFilters.dateFrom||'';if(dt)dt.value=advFilters.dateTo||'';
+      fmUpdateChips();fmUpdateRailBadges();fmUpdateMatchCount();
+    }
+
+    function fmCountMatches(){return allBooks.filter(b=>{if(advFilters.cat.length&&!advFilters.cat.includes(b.category))return false;if(advFilters.genre.length&&!advFilters.genre.includes(b.class||b.genre))return false;if(advFilters.lang.length&&!advFilters.lang.includes(b.language))return false;if(advFilters.borrow==='yes'&&!isBorrowable(b))return false;if(advFilters.borrow==='no'&&isBorrowable(b))return false;if(advFilters.dateFrom&&b.date_added&&b.date_added<advFilters.dateFrom)return false;if(advFilters.dateTo&&b.date_added&&b.date_added>advFilters.dateTo)return false;return true;}).length;}
+
+    function fmUpdateMatchCount(){const n=fmCountMatches();document.getElementById('fmMatchCount').innerHTML=`<strong>${n}</strong> book${n!==1?'s':''} match`;}
+
+    function fmUpdateRailBadges(){const rb=(id,n)=>{const el=document.getElementById('frb-'+id);if(!el)return;el.textContent=n;el.style.display=n?'':'none';};rb('cat',advFilters.cat.length);rb('genre',advFilters.genre.length);rb('borrow',advFilters.borrow!=='all'?1:0);rb('lang',advFilters.lang.length);rb('date',(advFilters.dateFrom||advFilters.dateTo)?1:0);}
+
+    function fmUpdateChips(){
+      const bar=document.getElementById('fmChipBar');bar.innerHTML='';let any=false;
+      const addChip=(label,clearFn)=>{any=true;const chip=document.createElement('div');chip.className='fm-chip';chip.innerHTML=`${esc(label)}<span class="fm-chip-x">✕</span>`;chip.querySelector('.fm-chip-x').onclick=clearFn;bar.appendChild(chip);};
+      advFilters.cat.forEach(v=>addChip('Cat: '+v,()=>{advFilters.cat=advFilters.cat.filter(x=>x!==v);document.querySelectorAll('#fm-cat-cloud .fm-tc').forEach(el=>{if(el.dataset.val===v)el.classList.remove('on');});fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderActiveChips();}));
+      advFilters.genre.forEach(v=>addChip('Genre: '+v,()=>{advFilters.genre=advFilters.genre.filter(x=>x!==v);document.querySelectorAll('#fm-genre-cloud .fm-tc').forEach(el=>{if(el.dataset.val===v)el.classList.remove('on');});fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderActiveChips();}));
+      if(advFilters.borrow!=='all')addChip(advFilters.borrow==='yes'?'Borrowable':'Reference only',()=>{fmSelectBorrow('all');fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderActiveChips();});
+      advFilters.lang.forEach(v=>addChip('Lang: '+v,()=>{advFilters.lang=advFilters.lang.filter(x=>x!==v);document.querySelectorAll('#fm-lang-cloud .fm-tc').forEach(el=>{if(el.dataset.val===v)el.classList.remove('on');});fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderActiveChips();}));
+      if(advFilters.dateFrom||advFilters.dateTo)addChip('Date: '+(advFilters.dateFrom||'…')+' → '+(advFilters.dateTo||'…'),()=>{advFilters.dateFrom='';advFilters.dateTo='';const df=document.getElementById('fmDateFrom'),dt=document.getElementById('fmDateTo');if(df)df.value='';if(dt)dt.value='';document.querySelectorAll('.fm-shortcut').forEach(d=>d.classList.remove('on'));fmUpdateMatchCount();fmUpdateChips();fmUpdateRailBadges();renderActiveChips();});
+      if(!any)bar.innerHTML='<span class="fm-no-active">No filters active</span>';
+    }
+
+    function fmApply(){closeFilterModal();applyFilter();renderActiveChips();}
+
+    function fmResetAll(){advFilters={cat:[],genre:[],borrow:'all',lang:[],dateFrom:'',dateTo:''};document.querySelectorAll('#filterModal .fm-tc.on').forEach(el=>el.classList.remove('on'));fmSyncFromState();fmUpdateChips();fmUpdateRailBadges();fmUpdateMatchCount();}
+
+    function clearAllFilters(){advFilters={cat:[],genre:[],borrow:'all',lang:[],dateFrom:'',dateTo:''};document.getElementById('searchInput').value='';applyFilter();renderActiveChips();}
+
+    function renderActiveChips(){
+      const strip=document.getElementById('activeFilterChips');strip.innerHTML='';let count=0;
+      const addChip=(label,clearFn)=>{count++;const c=document.createElement('div');c.className='fac';c.innerHTML=`${label} <i class="bi bi-x"></i>`;c.onclick=()=>{clearFn();applyFilter();renderActiveChips();};strip.appendChild(c);};
+      advFilters.cat.forEach(v=>addChip('Category: '+v,()=>{advFilters.cat=advFilters.cat.filter(x=>x!==v);}));
+      advFilters.genre.forEach(v=>addChip('Genre: '+v,()=>{advFilters.genre=advFilters.genre.filter(x=>x!==v);}));
+      advFilters.lang.forEach(v=>addChip('Language: '+v,()=>{advFilters.lang=advFilters.lang.filter(x=>x!==v);}));
+      if(advFilters.borrow!=='all')addChip(advFilters.borrow==='yes'?'Borrowable':'Reference only',()=>{advFilters.borrow='all';});
+      if(advFilters.dateFrom||advFilters.dateTo)addChip('Date: '+(advFilters.dateFrom||'…')+' → '+(advFilters.dateTo||'…'),()=>{advFilters.dateFrom='';advFilters.dateTo='';});
+      strip.style.display=count?'flex':'none';
+      const dot=document.getElementById('filterDot'),clearBtn=document.getElementById('filterClearBtn');
+      if(dot)dot.classList.toggle('show',count>0);if(clearBtn)clearBtn.style.display=count?'':'none';
+    }
+
+    /* ── APPLY FILTER ── */
+    function applyFilter(){
+      const q=document.getElementById('searchInput').value.trim().toLowerCase();
+      let r=allBooks;
+      if(advFilters.cat.length)   r=r.filter(b=>advFilters.cat.includes(b.category));
+      if(advFilters.genre.length) r=r.filter(b=>advFilters.genre.includes(b.class||b.genre));
+      if(advFilters.lang.length)  r=r.filter(b=>advFilters.lang.includes(b.language));
+      if(advFilters.borrow==='yes') r=r.filter(b=>isBorrowable(b));
+      if(advFilters.borrow==='no')  r=r.filter(b=>!isBorrowable(b));
+      if(advFilters.dateFrom) r=r.filter(b=>b.date_added&&b.date_added>=advFilters.dateFrom);
+      if(advFilters.dateTo)   r=r.filter(b=>b.date_added&&b.date_added<=advFilters.dateTo);
+      if(q) r=r.filter(b=>(b.title||'').toLowerCase().includes(q)||(b.author||'').toLowerCase().includes(q)||(b.isbn||'').toLowerCase().includes(q));
+      filteredBooks=[...r].sort((a,b)=>new Date(b.date_added)-new Date(a.date_added));
+      currentPage=1;renderPage();
+    }
+
+    function renderPage(){
+      document.getElementById('skeletonGrid').style.display='none';
+      document.getElementById('resultsLbl').textContent=`${filteredBooks.length} book${filteredBooks.length!==1?'s':''}`;
+      const grid=document.getElementById('booksGrid'),empty=document.getElementById('emptyState'),pagBar=document.getElementById('pagBar');
+      if(!filteredBooks.length){grid.style.display='none';pagBar.style.display='none';showEmpty('No books found matching your search.');return;}
+      empty.classList.remove('show');grid.style.display='grid';
       const newest3=filteredBooks.slice(0,3).map(b=>b.id);
       const start=(currentPage-1)*BOOKS_PER_PAGE;
       grid.innerHTML=filteredBooks.slice(start,start+BOOKS_PER_PAGE).map(b=>buildBookCard(b,newest3.includes(b.id))).join('');
       renderPagination();
     }
 
-    function buildBookCard(book,isNew) {
+    function buildBookCard(book,isNew){
       const dateStr=book.date_added?new Date(book.date_added).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}):'—';
       const thumb=book.thumbnail_url||'';
-      const coverHTML=thumb
-        ?`<img class="book-cover-img" src="${esc(thumb)}" alt="${esc(book.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-fallback" style="display:none;position:absolute;inset:0;"><i class="bi bi-book book-cover-icon"></i></div>`
-        :`<div class="book-cover-fallback"><i class="bi bi-book book-cover-icon"></i></div>`;
-      const borrowBtn=isBorrowable(book)
-        ?`<button class="btn-borrow" onclick="showMemberModal()"><i class="bi bi-bookmark-check-fill" style="font-size:.75rem;"></i> Borrow</button>`
-        :`<button class="btn-borrow-disabled" disabled title="Not available for borrowing"><i class="bi bi-bookmark-x" style="font-size:.75rem;"></i> Unavailable</button>`;
+      const coverHTML=thumb?`<img class="book-cover-img" src="${esc(thumb)}" alt="${esc(book.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="book-cover-fallback" style="display:none;position:absolute;inset:0;"><i class="bi bi-book book-cover-icon"></i></div>`:`<div class="book-cover-fallback"><i class="bi bi-book book-cover-icon"></i></div>`;
+      const borrowPill=isBorrowable(book)?`<span class="cover-borrow-pill borrowable"><i class="bi bi-bookmark-check-fill"></i>Borrowable</span>`:`<span class="cover-borrow-pill reference"><i class="bi bi-bookmark-x-fill"></i>Reference</span>`;
+      const borrowBtn=isBorrowable(book)?`<button class="btn-borrow" onclick="showMemberModal()"><i class="bi bi-bookmark-check-fill" style="font-size:.75rem;"></i> Borrow</button>`:`<button class="btn-borrow-disabled" disabled><i class="bi bi-bookmark-x" style="font-size:.75rem;"></i> Unavailable</button>`;
       return `<div class="book-card" data-id="${book.id}">
         ${isNew?'<div class="ribbon-new">New</div>':''}
         <div class="book-cover">
           ${coverHTML}
           <div class="book-cover-overlay"></div>
-          <button class="lock-cover-btn" onclick="showMemberModal()" title="Login to bookmark"><i class="bi bi-bookmark-star"></i></button>
+          <div class="cover-top-row">${borrowPill}</div>
           ${book.category?`<span class="book-category-tag">${esc(book.category)}</span>`:''}
         </div>
         <div class="book-card-body">
@@ -804,47 +853,25 @@
       </div>`;
     }
 
-    function renderPagination() {
-      const total=filteredBooks.length, pages=Math.ceil(total/BOOKS_PER_PAGE);
-      const bar=document.getElementById('pagBar');
-      if(pages<=1){bar.style.display='none';return;}
-      bar.style.display='flex';
-      const s=(currentPage-1)*BOOKS_PER_PAGE+1, e=Math.min(currentPage*BOOKS_PER_PAGE,total);
-      document.getElementById('pagInfo').textContent=`Showing ${s}–${e} of ${total}`;
-      let lo=Math.max(1,currentPage-2),hi=Math.min(pages,currentPage+2);
-      let html=`<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;
-      if(lo>1) html+=`<button class="pag-btn" onclick="goPage(1)">1</button>${lo>2?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}`;
-      for(let p=lo;p<=hi;p++) html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
-      if(hi<pages) html+=`${hi<pages-1?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}<button class="pag-btn" onclick="goPage(${pages})">${pages}</button>`;
-      html+=`<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;
-      document.getElementById('pagBtns').innerHTML=html;
-    }
-
-    function goPage(p){ const pages=Math.ceil(filteredBooks.length/BOOKS_PER_PAGE); if(p<1||p>pages)return; currentPage=p; renderPage(); window.scrollTo({top:0,behavior:'smooth'}); }
+    function renderPagination(){const total=filteredBooks.length,pages=Math.ceil(total/BOOKS_PER_PAGE);const bar=document.getElementById('pagBar');if(pages<=1){bar.style.display='none';return;}bar.style.display='flex';const s=(currentPage-1)*BOOKS_PER_PAGE+1,e=Math.min(currentPage*BOOKS_PER_PAGE,total);document.getElementById('pagInfo').textContent=`Showing ${s}–${e} of ${total}`;let lo=Math.max(1,currentPage-2),hi=Math.min(pages,currentPage+2);let html=`<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="bi bi-chevron-left"></i></button>`;if(lo>1)html+=`<button class="pag-btn" onclick="goPage(1)">1</button>${lo>2?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}`;for(let p=lo;p<=hi;p++)html+=`<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;if(hi<pages)html+=`${hi<pages-1?'<span class="pag-btn" style="border:none;background:none;cursor:default">…</span>':''}<button class="pag-btn" onclick="goPage(${pages})">${pages}</button>`;html+=`<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="bi bi-chevron-right"></i></button>`;document.getElementById('pagBtns').innerHTML=html;}
+    function goPage(p){const pages=Math.ceil(filteredBooks.length/BOOKS_PER_PAGE);if(p<1||p>pages)return;currentPage=p;renderPage();window.scrollTo({top:0,behavior:'smooth'});}
 
     /* ── SEARCH DROPDOWN ── */
-    const searchInput=document.getElementById('searchInput'), searchDropdown=document.getElementById('searchDropdown');
-    function openDropdown(){ searchDropdown.classList.add('show'); searchInput.classList.add('dropdown-open'); }
-    function closeDropdown(){ searchDropdown.classList.remove('show'); searchInput.classList.remove('dropdown-open'); }
-    function onSearchFocus(){ if(searchInput.value.trim()) renderSuggestions(searchInput.value.trim()); }
-    function onSearchInput(val){ applyFilter(); if(!val.trim()){closeDropdown();return;} renderSuggestions(val.trim()); }
-    function onSearchKeydown(e){ if(e.key==='Escape'){ closeDropdown(); searchInput.blur(); } }
-    function renderSuggestions(q){
-      const ql=q.toLowerCase();
-      function hi(text){const idx=(text||'').toLowerCase().indexOf(ql);if(idx===-1)return esc(text);return esc(text.slice(0,idx))+`<strong style="color:var(--accent)">${esc(text.slice(idx,idx+ql.length))}</strong>`+esc(text.slice(idx+ql.length));}
-      const matches=allBooks.filter(b=>(b.title||'').toLowerCase().includes(ql)||(b.author||'').toLowerCase().includes(ql)||(b.isbn||'').toLowerCase().includes(ql)).slice(0,8);
-      if(!matches.length){searchDropdown.innerHTML=`<div class="dd-empty"><i class="bi bi-search me-2" style="opacity:.4;"></i>No results found</div>`;}
-      else{searchDropdown.innerHTML=matches.map(b=>{const thumbHtml=b.thumbnail_url?`<img src="${esc(b.thumbnail_url)}" style="width:30px;height:42px;object-fit:cover;border-radius:5px;flex-shrink:0;" onerror="this.style.display='none'">`:`<div class="sug-icon"><i class="bi bi-book-half"></i></div>`;return`<div class="suggestion-item" onclick="selectSuggestion('${escJs(b.title)}',${b.id})">${thumbHtml}<div><div class="sug-title">${hi(b.title||'')}</div><div class="sug-author">${esc(b.author)}</div></div></div>`;}).join('');}
-      openDropdown();
-    }
+    const searchInput=document.getElementById('searchInput'),searchDropdown=document.getElementById('searchDropdown');
+    function openDropdown(){searchDropdown.classList.add('show');searchInput.classList.add('dropdown-open');}
+    function closeDropdown(){searchDropdown.classList.remove('show');searchInput.classList.remove('dropdown-open');}
+    function onSearchFocus(){if(searchInput.value.trim())renderSuggestions(searchInput.value.trim());}
+    function onSearchInput(val){applyFilter();if(!val.trim()){closeDropdown();return;}renderSuggestions(val.trim());}
+    function onSearchKeydown(e){if(e.key==='Escape'){closeDropdown();searchInput.blur();}}
+    function renderSuggestions(q){const ql=q.toLowerCase();function hi(text){const idx=(text||'').toLowerCase().indexOf(ql);if(idx===-1)return esc(text);return esc(text.slice(0,idx))+`<strong style="color:var(--accent)">${esc(text.slice(idx,idx+ql.length))}</strong>`+esc(text.slice(idx+ql.length));}const matches=allBooks.filter(b=>(b.title||'').toLowerCase().includes(ql)||(b.author||'').toLowerCase().includes(ql)||(b.isbn||'').toLowerCase().includes(ql)).slice(0,8);if(!matches.length){searchDropdown.innerHTML=`<div class="dd-empty"><i class="bi bi-search me-2" style="opacity:.4;"></i>No results found</div>`;}else{searchDropdown.innerHTML=matches.map(b=>{const thumbHtml=b.thumbnail_url?`<img src="${esc(b.thumbnail_url)}" style="width:30px;height:42px;object-fit:cover;border-radius:5px;flex-shrink:0;" onerror="this.style.display='none'">`:`<div class="sug-icon"><i class="bi bi-book-half"></i></div>`;return`<div class="suggestion-item" onclick="selectSuggestion('${escJs(b.title)}',${b.id})">${thumbHtml}<div><div class="sug-title">${hi(b.title||'')}</div><div class="sug-author">${esc(b.author)}</div></div></div>`;}).join('');}openDropdown();}
     function selectSuggestion(title,id){searchInput.value=title;closeDropdown();applyFilter();setTimeout(()=>{const card=document.querySelector(`.book-card[data-id="${id}"]`);if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.boxShadow='0 0 0 2px var(--accent)';setTimeout(()=>card.style.boxShadow='',2000);}},100);}
     document.addEventListener('click',e=>{if(!document.getElementById('searchBox').contains(e.target))closeDropdown();});
 
-    function showEmpty(msg){ document.getElementById('emptyMsg').textContent=msg; document.getElementById('emptyState').classList.add('show'); document.getElementById('booksGrid').style.display='none'; document.getElementById('skeletonGrid').style.display='none'; }
+    function showEmpty(msg){document.getElementById('skeletonGrid').style.display='none';document.getElementById('emptyMsg').textContent=msg;document.getElementById('emptyState').classList.add('show');document.getElementById('booksGrid').style.display='none';}
 
     /* ── DETAIL MODAL ── */
     function openDetail(id){
-      const book=allBooks.find(b=>b.id===id); if(!book)return;
+      const book=allBooks.find(b=>b.id===id);if(!book)return;
       const thumb=book.thumbnail_url||'';
       document.getElementById('modalHeroBg').style.backgroundImage=thumb?`url('${esc(thumb)}')`:'linear-gradient(135deg,#1e3d56,#0d1a24)';
       const cw=document.getElementById('modalCoverWrap');
@@ -852,36 +879,23 @@
       document.getElementById('modalTitle').textContent=book.title||'—';
       document.getElementById('modalAuthor').textContent=book.author||'—';
       let pills='';
-      if(book.category) pills+=`<span class="modal-pill cat">${esc(book.category)}</span>`;
-      if(book.genre)    pills+=`<span class="modal-pill genre">${esc(book.genre)}</span>`;
+      if(book.category)pills+=`<span class="modal-pill cat">${esc(book.category)}</span>`;
+      if(book.class||book.genre)pills+=`<span class="modal-pill genre">${esc(book.class||book.genre)}</span>`;
+      pills+=isBorrowable(book)?`<span class="modal-pill borrow-yes"><i class="bi bi-bookmark-check-fill"></i> Borrowable</span>`:`<span class="modal-pill borrow-no"><i class="bi bi-bookmark-x-fill"></i> Not Borrowable</span>`;
       document.getElementById('modalPills').innerHTML=pills;
-      function setCell(elId,val){const el=document.getElementById(elId);if(val){el.textContent=val;el.className='modal-detail-value';}else{el.textContent='N/A';el.className='modal-detail-value empty';}}
-      setCell('modalIsbn',book.isbn);
-      setCell('modalPublisher',book.publisher);
-      setCell('modalPubDate',book.published_date);
-      setCell('modalLanguage',book.language?book.language.toUpperCase():null);
-      setCell('modalShelf',book.shelf_location);
+      function setCell(elId,val){const el=document.getElementById(elId);if(val&&val!=='—'){el.textContent=val;el.className='modal-detail-value';}else{el.textContent='N/A';el.className='modal-detail-value empty';}}
+      setCell('modalIsbn',book.isbn);setCell('modalPublisher',book.publisher);setCell('modalPubDate',book.published_date);
+      setCell('modalLanguage',book.language?book.language.toUpperCase():null);setCell('modalShelf',book.shelf_location);
       setCell('modalDate',book.date_added?new Date(book.date_added).toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'}):null);
       const bc=document.getElementById('modalBorrowBtn');
-      if(isBorrowable(book)){bc.innerHTML=`<button class="btn-modal-borrow" onclick="closeOverlay();showMemberModal()" style="width:100%;"><i class="bi bi-lock-fill" style="font-size:.8rem;filter:drop-shadow(0 0 4px rgba(245,200,66,.5));"></i> Login to Borrow</button>`;}
-      else{bc.innerHTML=`<button class="btn-modal-borrow-disabled" disabled style="width:100%;"><i class="bi bi-bookmark-x" style="font-size:.85rem;"></i> Not Available for Borrowing</button>`;}
-      document.getElementById('detailModal').classList.add('open');
-      document.body.style.overflow='hidden';
+      bc.innerHTML=isBorrowable(book)?`<button class="btn-modal-borrow" onclick="closeOverlay();showMemberModal()" style="width:100%;"><i class="bi bi-lock-fill" style="font-size:.8rem;"></i> Login to Borrow</button>`:`<button class="btn-modal-borrow-disabled" disabled style="width:100%;"><i class="bi bi-bookmark-x"></i> Not Available for Borrowing</button>`;
+      document.getElementById('detailModal').classList.add('open');document.body.style.overflow='hidden';
     }
-    function closeOverlay(){ document.getElementById('detailModal').classList.remove('open'); document.body.style.overflow=''; }
+    function closeOverlay(){document.getElementById('detailModal').classList.remove('open');document.body.style.overflow='';}
     document.getElementById('detailModal').addEventListener('click',e=>{if(e.target===document.getElementById('detailModal'))closeOverlay();});
 
-    document.addEventListener('keydown',e=>{
-      if(e.key==='Escape'){
-        closeMemberModal(); closeOverlay(); closeDropdown(); closeNav();
-        document.getElementById('privacyModal').style.display='none';
-        document.getElementById('termsModal').style.display='none';
-      }
-    });
-
-    /* ── FOOTER YEAR ── */
-    document.getElementById('footerYear').textContent = new Date().getFullYear();
-
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMemberModal();closeOverlay();closeDropdown();closeNav();closeFilterModal();}});
+    document.getElementById('footerYear').textContent=new Date().getFullYear();
     boot();
   </script>
 </body>

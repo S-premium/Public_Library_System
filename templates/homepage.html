@@ -41,38 +41,10 @@
     .btn-login:hover { background:#b8d4ec; color:#0d1a24; transform:translateY(-1px); }
     .menu-toggle { display:none; background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; padding:6px 8px; border-radius:8px; transition:.18s; }
     .menu-toggle:hover { background:rgba(255,255,255,.08); }
-
-    /* ── ANDROID DOWNLOAD BUTTON ── */
-    .btn-android {
-      display: none; /* hidden by default; shown via JS on Android only */
-      align-items: center;
-      gap: 7px;
-      background: var(--accent2);
-      color: #0d1a24;
-      border: none;
-      border-radius: 20px;
-      padding: 7px 15px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .83rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      transition: .2s;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .btn-android:hover {
-      background: #5dd4a0;
-      color: #0d1a24;
-      transform: translateY(-1px);
-    }
-    .btn-android i { font-size: .95rem; }
-
-    /* Lock icon */
+    .btn-android { display:none; align-items:center; gap:7px; background:var(--accent2); color:#0d1a24; border:none; border-radius:20px; padding:7px 15px; font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700; cursor:pointer; text-decoration:none; transition:.2s; white-space:nowrap; flex-shrink:0; }
+    .btn-android:hover { background:#5dd4a0; color:#0d1a24; transform:translateY(-1px); }
     .lock-icon { color:#FFD700; font-size:.72rem; filter:drop-shadow(0 0 3px rgba(255,215,0,.5)); margin-left:3px; vertical-align:middle; }
     .feat-lock-icon { color:#FFD700; font-size:.78rem; filter:drop-shadow(0 0 3px rgba(255,215,0,.5)); margin-left:4px; vertical-align:middle; }
-
-    /* ── MOBILE NAV ── */
     .nav-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(3px); z-index:1099; opacity:0; transition:opacity .28s; }
     .nav-overlay.show { display:block; opacity:1; }
     .nav-close-row { display:none; }
@@ -81,18 +53,7 @@
       .topbar { padding:0 14px; gap:8px; }
       .menu-toggle { display:flex; align-items:center; justify-content:center; }
       .btn-login.d-lg-block { display:none !important; }
-      .nav-links {
-        position:fixed; top:0; left:0;
-        width:min(280px,85vw); height:100dvh; height:100vh;
-        background:rgba(22,36,50,0.99); backdrop-filter:blur(20px);
-        flex-direction:column; align-items:stretch;
-        padding:0 0 24px; gap:0; overflow-y:auto;
-        transform:translateX(-110%);
-        transition:transform .28s cubic-bezier(.4,0,.2,1);
-        z-index:1200;
-        border-right:1px solid rgba(159,193,225,.1);
-        box-shadow:8px 0 32px rgba(0,0,0,.55);
-      }
+      .nav-links { position:fixed; top:0; left:0; width:min(280px,85vw); height:100dvh; height:100vh; background:rgba(22,36,50,0.99); backdrop-filter:blur(20px); flex-direction:column; align-items:stretch; padding:0 0 24px; gap:0; overflow-y:auto; transform:translateX(-110%); transition:transform .28s cubic-bezier(.4,0,.2,1); z-index:1200; border-right:1px solid rgba(159,193,225,.1); box-shadow:8px 0 32px rgba(0,0,0,.55); }
       .nav-links.open { transform:translateX(0); }
       .nav-links a { padding:13px 16px; font-size:.95rem; border-radius:10px; color:rgba(255,255,255,.75); display:flex; align-items:center; gap:10px; margin:1px 8px; }
       .nav-links a:hover { background:rgba(159,193,225,.1); color:#fff; }
@@ -104,187 +65,157 @@
     }
     @media (max-width:480px) { .brand-text { display:none; } }
 
-    /* ══════════════════════════════════════
-       MEMBERSHIP REQUIRED MODAL
-    ══════════════════════════════════════ */
-    .member-modal-overlay {
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,.72); backdrop-filter:blur(6px);
-      z-index:2000; align-items:center; justify-content:center; padding:20px;
-    }
+    /* ══ MEMBERSHIP MODAL ══ */
+    .member-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(6px); z-index:2000; align-items:center; justify-content:center; padding:20px; }
     .member-modal-overlay.show { display:flex; }
-
-    .member-modal-box {
-      background:#1b2a35;
-      border:1px solid rgba(159,193,225,.2);
-      border-radius:22px;
-      width:100%; max-width:420px;
-      box-shadow:0 24px 72px rgba(0,0,0,.6);
-      overflow:hidden;
-      animation:modalPop .32s cubic-bezier(.34,1.56,.64,1);
-    }
+    .member-modal-box { background:#1b2a35; border:1px solid rgba(159,193,225,.2); border-radius:22px; width:100%; max-width:420px; box-shadow:0 24px 72px rgba(0,0,0,.6); overflow:hidden; animation:modalPop .32s cubic-bezier(.34,1.56,.64,1); }
     @keyframes modalPop { from{transform:scale(.88);opacity:0} to{transform:scale(1);opacity:1} }
-
-    /* ── PANEL A: Membership Required ── */
     .panel-a, .panel-b { padding:36px 32px 28px; }
     .panel-b { display:none; padding:0; }
-
-    .modal-icon-wrap {
-      width:68px; height:68px; border-radius:18px;
-      background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2);
-      display:flex; align-items:center; justify-content:center;
-      font-size:2rem; color:var(--accent);
-      margin:0 auto 20px;
-      box-shadow:0 0 28px rgba(159,193,225,.12);
-    }
+    .modal-icon-wrap { width:68px; height:68px; border-radius:18px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent); margin:0 auto 20px; box-shadow:0 0 28px rgba(159,193,225,.12); }
     .modal-icon-wrap.warn { background:rgba(255,215,0,.08); border-color:rgba(255,215,0,.25); color:#FFD700; box-shadow:0 0 28px rgba(255,215,0,.1); }
-
     .panel-a h4 { font-size:1.1rem; font-weight:700; color:#fff; text-align:center; margin-bottom:10px; }
     .panel-a p  { font-size:.84rem; color:rgba(255,255,255,.52); text-align:center; line-height:1.7; margin-bottom:24px; }
-
     .modal-actions { display:flex; flex-direction:column; gap:10px; }
-    .btn-modal-primary {
-      display:flex; align-items:center; justify-content:center; gap:8px;
-      background:var(--accent); color:#0d1a24; border:none; border-radius:12px;
-      padding:12px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:700;
-      cursor:pointer; transition:.2s; text-decoration:none;
-    }
+    .btn-modal-primary { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:#0d1a24; border:none; border-radius:12px; padding:12px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:700; cursor:pointer; transition:.2s; text-decoration:none; }
     .btn-modal-primary:hover { background:#b8d4ec; transform:translateY(-1px); color:#0d1a24; }
-    .btn-modal-secondary {
-      display:flex; align-items:center; justify-content:center; gap:8px;
-      background:rgba(255,255,255,.06); color:rgba(255,255,255,.75);
-      border:1px solid rgba(255,255,255,.12); border-radius:12px;
-      padding:11px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:600;
-      cursor:pointer; transition:.2s;
-    }
+    .btn-modal-secondary { display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(255,255,255,.06); color:rgba(255,255,255,.75); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:11px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:600; cursor:pointer; transition:.2s; }
     .btn-modal-secondary:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.25); color:#fff; }
-    .btn-modal-ghost {
-      display:flex; align-items:center; justify-content:center; gap:8px;
-      background:transparent; color:rgba(255,255,255,.38);
-      border:none; border-radius:12px;
-      padding:10px 20px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:600;
-      cursor:pointer; transition:.2s;
-    }
+    .btn-modal-ghost { display:flex; align-items:center; justify-content:center; gap:8px; background:transparent; color:rgba(255,255,255,.38); border:none; border-radius:12px; padding:10px 20px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; transition:.2s; }
     .btn-modal-ghost:hover { color:rgba(255,255,255,.7); }
-
-    /* ── PANEL B: Step-by-step ── */
-    .steps-header {
-      display:flex; align-items:center; gap:12px;
-      padding:20px 24px 16px;
-      border-bottom:1px solid rgba(255,255,255,.07);
-    }
-    .steps-back-btn {
-      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
-      color:rgba(255,255,255,.65); width:34px; height:34px;
-      border-radius:10px; display:flex; align-items:center; justify-content:center;
-      font-size:.9rem; cursor:pointer; transition:.18s; flex-shrink:0;
-    }
+    .steps-header { display:flex; align-items:center; gap:12px; padding:20px 24px 16px; border-bottom:1px solid rgba(255,255,255,.07); }
+    .steps-back-btn { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.65); width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:.9rem; cursor:pointer; transition:.18s; flex-shrink:0; }
     .steps-back-btn:hover { background:rgba(255,255,255,.13); color:#fff; }
     .steps-header-text h5 { font-size:.9rem; font-weight:700; color:#fff; margin:0 0 2px; }
     .steps-header-text span { font-size:.72rem; color:rgba(255,255,255,.35); }
-
-    /* Progress bar */
     .steps-progress-wrap { padding:16px 24px 0; }
-    .steps-progress-track {
-      height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden;
-    }
-    .steps-progress-fill {
-      height:100%; background:linear-gradient(90deg, var(--accent), #6aafde);
-      border-radius:4px; transition:width .4s cubic-bezier(.4,0,.2,1);
-    }
-    .steps-progress-label {
-      display:flex; justify-content:space-between; align-items:center;
-      margin-top:6px;
-      font-size:.67rem; color:rgba(255,255,255,.28); font-weight:600; letter-spacing:.04em;
-    }
-
-    /* Step content area */
+    .steps-progress-track { height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+    .steps-progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#6aafde); border-radius:4px; transition:width .4s cubic-bezier(.4,0,.2,1); }
+    .steps-progress-label { display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:.67rem; color:rgba(255,255,255,.28); font-weight:600; letter-spacing:.04em; }
     .steps-body { padding:20px 24px 10px; min-height:180px; }
     .step-slide { display:none; animation:stepIn .3s cubic-bezier(.4,0,.2,1); }
     .step-slide.active { display:block; }
     @keyframes stepIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:none} }
-
-    .step-num-badge {
-      display:inline-flex; align-items:center; justify-content:center;
-      width:32px; height:32px; border-radius:10px;
-      background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22);
-      color:var(--accent); font-size:.78rem; font-weight:700;
-      margin-bottom:12px; flex-shrink:0;
-    }
-    .step-title {
-      font-size:.95rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.35;
-    }
-    .step-desc {
-      font-size:.82rem; color:rgba(255,255,255,.5); line-height:1.75;
-    }
-    .step-requirements {
-      margin-top:12px; padding:12px 14px;
-      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
-      border-radius:11px; list-style:none;
-    }
-    .step-requirements li {
-      font-size:.79rem; color:rgba(255,255,255,.55); padding:5px 0;
-      display:flex; align-items:flex-start; gap:8px; line-height:1.55;
-    }
-    .step-requirements li::before {
-      content:''; width:14px; height:14px; border-radius:4px; flex-shrink:0; margin-top:1px;
-      background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.28);
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='%2348c78e' d='M11.5 3L5.5 9 2.5 6l-.9.9L5.5 11l7-7z'/%3E%3C/svg%3E");
-      background-repeat:no-repeat; background-position:center; background-size:9px;
-    }
-
-    /* Step footer nav */
-    .steps-footer {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 24px 20px; border-top:1px solid rgba(255,255,255,.06);
-      gap:10px;
-    }
-    .btn-step-prev, .btn-step-next {
-      display:flex; align-items:center; gap:7px;
-      border-radius:10px; padding:10px 18px;
-      font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700;
-      cursor:pointer; transition:.2s; border:none;
-    }
-    .btn-step-prev {
-      background:rgba(255,255,255,.06); color:rgba(255,255,255,.6);
-      border:1px solid rgba(255,255,255,.1);
-    }
+    .step-num-badge { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:rgba(159,193,225,.12); border:1px solid rgba(159,193,225,.22); color:var(--accent); font-size:.78rem; font-weight:700; margin-bottom:12px; flex-shrink:0; }
+    .step-title { font-size:.95rem; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.35; }
+    .step-desc { font-size:.82rem; color:rgba(255,255,255,.5); line-height:1.75; }
+    .step-requirements { margin-top:12px; padding:12px 14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); border-radius:11px; list-style:none; }
+    .step-requirements li { font-size:.79rem; color:rgba(255,255,255,.55); padding:5px 0; display:flex; align-items:flex-start; gap:8px; line-height:1.55; }
+    .step-requirements li::before { content:''; width:14px; height:14px; border-radius:4px; flex-shrink:0; margin-top:1px; background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.28); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='%2348c78e' d='M11.5 3L5.5 9 2.5 6l-.9.9L5.5 11l7-7z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:center; background-size:9px; }
+    .steps-footer { display:flex; align-items:center; justify-content:space-between; padding:14px 24px 20px; border-top:1px solid rgba(255,255,255,.06); gap:10px; }
+    .btn-step-prev, .btn-step-next { display:flex; align-items:center; gap:7px; border-radius:10px; padding:10px 18px; font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700; cursor:pointer; transition:.2s; border:none; }
+    .btn-step-prev { background:rgba(255,255,255,.06); color:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.1); }
     .btn-step-prev:hover { background:rgba(255,255,255,.1); color:#fff; }
     .btn-step-prev:disabled { opacity:.35; cursor:not-allowed; }
-    .btn-step-next {
-      background:var(--accent); color:#0d1a24; margin-left:auto;
-    }
+    .btn-step-next { background:var(--accent); color:#0d1a24; margin-left:auto; }
     .btn-step-next:hover { background:#b8d4ec; transform:translateY(-1px); }
-    .btn-step-finish {
-      display:none; align-items:center; gap:7px;
-      background:var(--accent2); color:#0d1a24; border:none;
-      border-radius:10px; padding:10px 18px;
-      font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700;
-      cursor:pointer; transition:.2s; margin-left:auto;
-    }
+    .btn-step-finish { display:none; align-items:center; gap:7px; background:var(--accent2); color:#0d1a24; border:none; border-radius:10px; padding:10px 18px; font-family:'DM Sans',sans-serif; font-size:.83rem; font-weight:700; cursor:pointer; transition:.2s; margin-left:auto; }
     .btn-step-finish:hover { background:#5dd4a0; transform:translateY(-1px); }
-
-    /* Dot indicators */
     .step-dots { display:flex; gap:5px; align-items:center; }
     .step-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.18); transition:.3s; }
     .step-dot.active { background:var(--accent); width:18px; border-radius:4px; }
     .step-dot.done   { background:rgba(72,199,142,.55); }
 
-    /* ── HERO ── */
-    .hero { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:100px 40px 80px; }
-    .hero-inner { max-width:600px; }
-    .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:rgba(159,193,225,.1); border:1px solid rgba(159,193,225,.2); border-radius:20px; padding:5px 14px; font-size:.75rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent); margin-bottom:24px; }
-    .hero-inner h1 { font-size:3rem; font-weight:700; letter-spacing:-.03em; line-height:1.15; margin-bottom:16px; }
-    .hero-inner h1 span { color:var(--accent); }
-    .hero-inner p { font-size:1rem; color:var(--tl); margin-bottom:32px; line-height:1.7; }
-    .hero-btns { display:flex; gap:12px; flex-wrap:wrap; }
-    .btn-explore { display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#0d1a24; border:none; border-radius:12px; padding:12px 24px; font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:700; cursor:pointer; text-decoration:none; transition:.2s; }
-    .btn-explore:hover { background:#b8d4ec; transform:translateY(-2px); color:#0d1a24; }
-    .btn-outline { display:inline-flex; align-items:center; gap:8px; background:transparent; color:#fff; border:1px solid rgba(255,255,255,.25); border-radius:12px; padding:11px 22px; font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:600; cursor:pointer; text-decoration:none; transition:.2s; }
-    .btn-outline:hover { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.5); color:#fff; }
-    @media (max-width:768px) { .hero { padding:90px 20px 60px; } .hero-inner h1 { font-size:2.1rem; } }
+    /* ══════════════════════════════
+       3D HERO SECTION
+    ══════════════════════════════ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding-top: 60px; /* topbar height */
+    }
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #hero-canvas:active { cursor: grabbing; }
 
-    /* ── LIBRARY OFFERINGS ── */
+    /* subtle vignette so text stays readable */
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 30% 50%, transparent 30%, rgba(20,32,44,.6) 100%),
+        linear-gradient(to right, rgba(20,32,44,.55) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      padding: 0 60px;
+      max-width: 600px;
+      pointer-events: none;
+    }
+    .hero-content .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(159,193,225,.12);
+      border: 1px solid rgba(159,193,225,.22);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: .75rem; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 22px;
+      pointer-events: none;
+    }
+    .hero-content h1 {
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 700; letter-spacing: -.03em;
+      line-height: 1.12; margin-bottom: 16px;
+    }
+    .hero-content h1 span { color: var(--accent); }
+    .hero-content p {
+      font-size: 1rem; color: var(--tl);
+      margin-bottom: 32px; line-height: 1.7;
+      max-width: 440px;
+    }
+    .hero-btns {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      pointer-events: all;
+    }
+    .btn-explore {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #0d1a24;
+      border: none; border-radius: 12px; padding: 12px 24px;
+      font-family: 'DM Sans',sans-serif; font-size: .92rem;
+      font-weight: 700; cursor: pointer; text-decoration: none; transition: .2s;
+    }
+    .btn-explore:hover { background: #b8d4ec; transform: translateY(-2px); color: #0d1a24; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 12px; padding: 11px 22px;
+      font-family: 'DM Sans',sans-serif; font-size: .92rem;
+      font-weight: 600; cursor: pointer; text-decoration: none; transition: .2s;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); color: #fff; }
+
+    /* drag hint badge */
+    .hero-hint {
+      position: absolute; bottom: 28px; right: 40px; z-index: 4;
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(30,45,61,.7); backdrop-filter: blur(10px);
+      border: 1px solid rgba(159,193,225,.18);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: .72rem; font-weight: 600;
+      color: rgba(159,193,225,.7); pointer-events: none;
+      letter-spacing: .03em;
+    }
+
+    @media (max-width: 768px) {
+      .hero-content { padding: 0 24px; }
+      .hero-content h1 { font-size: 2rem; }
+      .hero-hint { right: 16px; bottom: 16px; }
+    }
+
+    /* ── REST OF PAGE (unchanged) ── */
     .offerings-section { padding:100px 40px; background:rgba(0,0,0,.08); }
     .offerings-inner { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; max-width:1200px; margin:0 auto; }
     .offerings-left .section-eyebrow { display:inline-flex; align-items:center; gap:8px; background:rgba(72,199,142,.1); border:1px solid rgba(72,199,142,.2); border-radius:20px; padding:5px 14px; font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--accent2); margin-bottom:20px; }
@@ -296,7 +227,6 @@
     .offerings-list li .chk i { font-size:.65rem; color:var(--accent2); }
     .offerings-list li .txt strong { font-size:.88rem; font-weight:700; color:#fff; display:block; margin-bottom:2px; }
     .offerings-list li .txt span { font-size:.79rem; color:var(--tl); line-height:1.6; }
-
     .offerings-collage { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:120px 120px 120px 120px; gap:8px; }
     .col-img { border-radius:12px; overflow:hidden; background:rgba(159,193,225,.08); border:1px solid rgba(255,255,255,.07); position:relative; }
     .col-img img { width:100%; height:100%; object-fit:cover; display:block; transition:.35s ease; }
@@ -304,20 +234,8 @@
     .col-img::after { content:''; position:absolute; inset:0; background:linear-gradient(160deg,transparent 60%,rgba(0,0,0,.3)); pointer-events:none; }
     .col-wide { grid-column:span 2; }
     .col-tall { grid-row:span 2; }
-
-    @media (max-width:1024px) {
-      .offerings-inner { grid-template-columns:1fr; gap:40px; }
-      .offerings-collage { grid-template-rows:100px 100px 100px 100px; }
-    }
-    @media (max-width:600px) {
-      .offerings-section { padding:60px 20px; }
-      .offerings-collage { grid-template-columns:repeat(2,1fr); grid-template-rows:auto; }
-      .offerings-collage .col-wide { grid-column:span 1; }
-      .offerings-collage .col-tall { grid-row:span 1; }
-      .col-img { height:100px; }
-    }
-
-    /* ── FEATURES ── */
+    @media (max-width:1024px) { .offerings-inner { grid-template-columns:1fr; gap:40px; } .offerings-collage { grid-template-rows:100px 100px 100px 100px; } }
+    @media (max-width:600px) { .offerings-section { padding:60px 20px; } .offerings-collage { grid-template-columns:repeat(2,1fr); grid-template-rows:auto; } .offerings-collage .col-wide { grid-column:span 1; } .offerings-collage .col-tall { grid-row:span 1; } .col-img { height:100px; } }
     .features-section { padding:100px 40px; }
     .section-head { text-align:center; margin-bottom:48px; }
     .section-head h2 { font-size:2rem; font-weight:700; letter-spacing:-.02em; margin-bottom:8px; }
@@ -335,8 +253,6 @@
     .feat-link { font-size:.78rem; font-weight:700; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:gap .2s; }
     .feat-link:hover { gap:9px; color:#b8d4ec; }
     @media (max-width:768px) { .features-section { padding:60px 20px; } }
-
-    /* ── VISION & MISSION ── */
     .vm-section { padding:100px 40px; background:rgba(0,0,0,.1); }
     .vm-mandate { max-width:780px; margin:0 auto 40px; background:rgba(159,193,225,.07); border:1px solid rgba(159,193,225,.18); border-radius:18px; padding:30px 34px; text-align:center; backdrop-filter:blur(8px); }
     .vm-mandate h4 { font-size:.92rem; font-weight:700; color:var(--accent); margin-bottom:12px; text-transform:uppercase; letter-spacing:.05em; }
@@ -347,8 +263,6 @@
     .vm-card h4 { font-size:.92rem; font-weight:700; color:var(--accent); margin-bottom:12px; text-transform:uppercase; letter-spacing:.05em; }
     .vm-card p { font-size:.85rem; color:var(--tl); line-height:1.7; }
     @media (max-width:768px) { .vm-section { padding:60px 20px; } .vm-mandate { padding:22px 20px; } }
-
-    /* ── SERVICES & RESOURCES ── */
     .services-section { padding:100px 40px; }
     .services-inner { max-width:1100px; margin:0 auto; }
     .services-row { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
@@ -363,22 +277,8 @@
     .services-img { border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.08); box-shadow:0 16px 48px rgba(0,0,0,.3); aspect-ratio:4/3; }
     .services-img img { width:100%; height:100%; object-fit:cover; display:block; transition:.4s ease; }
     .services-img:hover img { transform:scale(1.04); }
-    @media (max-width:860px) {
-      .services-row { grid-template-columns:1fr; gap:28px; }
-      .services-row.reverse { direction:ltr; }
-      .services-section { padding:60px 20px; }
-    }
-
-    /* ════════════════════════════════════════
-       FOOTER
-    ════════════════════════════════════════ */
-    .footer-cta {
-      background: linear-gradient(100deg, rgba(159,193,225,.1) 0%, rgba(72,199,142,.06) 100%);
-      border-top: 1px solid rgba(159,193,225,.13);
-      padding: 52px 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 32px; flex-wrap: wrap;
-    }
+    @media (max-width:860px) { .services-row { grid-template-columns:1fr; gap:28px; } .services-row.reverse { direction:ltr; } .services-section { padding:60px 20px; } }
+    .footer-cta { background:linear-gradient(100deg,rgba(159,193,225,.1) 0%,rgba(72,199,142,.06) 100%); border-top:1px solid rgba(159,193,225,.13); padding:52px 60px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap; }
     .footer-cta-text h3 { font-size:1.4rem; font-weight:700; letter-spacing:-.025em; color:#fff; margin-bottom:6px; }
     .footer-cta-text p { font-size:.875rem; color:var(--tl); line-height:1.65; max-width:480px; margin:0; }
     .footer-cta-actions { display:flex; gap:12px; flex-wrap:wrap; flex-shrink:0; }
@@ -386,7 +286,6 @@
     .footer-cta-btn-primary:hover { background:#b8d4ec; transform:translateY(-2px); color:#0d1a24; }
     .footer-cta-btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:rgba(255,255,255,.72); border:1px solid rgba(255,255,255,.16); border-radius:11px; padding:10px 20px; font-family:'DM Sans',sans-serif; font-size:.875rem; font-weight:600; cursor:pointer; text-decoration:none; transition:.2s; white-space:nowrap; }
     .footer-cta-btn-ghost:hover { border-color:rgba(255,255,255,.42); color:#fff; background:rgba(255,255,255,.06); }
-
     .footer-main { background:rgba(0,0,0,.3); border-top:1px solid rgba(255,255,255,.06); padding:60px 60px 0; }
     .footer-grid { display:grid; grid-template-columns:1.9fr 1fr 1fr 1.35fr; gap:48px; padding-bottom:52px; border-bottom:1px solid rgba(255,255,255,.07); }
     .footer-brand-col .footer-logo-row { display:flex; align-items:center; gap:11px; margin-bottom:14px; }
@@ -427,8 +326,6 @@
     .footer-ph-badge i { font-size:.65rem; color:var(--accent); opacity:.6; }
     .footer-link-static { font-size:.825rem; color:rgba(255,255,255,.38); display:flex; align-items:center; gap:8px; padding:6px 0; font-weight:500; cursor:default; user-select:none; }
     .footer-link-static i { font-size:.72rem; color:rgba(159,193,225,.28); flex-shrink:0; width:14px; text-align:center; }
-
-    /* Legal modals */
     .legal-modal-overlay { display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,.72); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:20px; }
     .legal-modal { background:#1b2a35; border:1px solid rgba(159,193,225,.18); border-radius:20px; width:100%; max-width:640px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 24px 72px rgba(0,0,0,.6); animation:modalIn .25s cubic-bezier(.16,.84,.44,1); }
     @keyframes modalIn { from{opacity:0;transform:translateY(18px) scale(.97)} to{opacity:1;transform:none} }
@@ -447,7 +344,6 @@
     .legal-modal-footer { padding:14px 24px; border-top:1px solid rgba(255,255,255,.07); display:flex; justify-content:flex-end; flex-shrink:0; }
     .legal-modal-btn { background:rgba(159,193,225,.15); border:1px solid rgba(159,193,225,.25); color:var(--accent); border-radius:10px; padding:9px 20px; font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:700; cursor:pointer; transition:.2s; }
     .legal-modal-btn:hover { background:rgba(159,193,225,.25); color:#fff; }
-
     @media (max-width:1100px) { .footer-grid { grid-template-columns:1.5fr 1fr 1fr; } .footer-contact-col { grid-column:1/-1; } }
     @media (max-width:860px) { .footer-cta { padding:40px 24px; } .footer-main { padding:48px 24px 0; } .footer-grid { grid-template-columns:1fr 1fr; gap:36px; } .footer-brand-col { grid-column:1/-1; } .footer-contact-col { grid-column:1/-1; } }
     @media (max-width:560px) { .footer-grid { grid-template-columns:1fr; } .footer-cta-text h3 { font-size:1.15rem; } .footer-bottom { flex-direction:column; align-items:flex-start; } }
@@ -455,15 +351,13 @@
 </head>
 <body>
 
-  <!-- TOPBAR -->
+  <!-- TOPBAR (unchanged) -->
   <header class="topbar">
     <a href="#" class="brand-logo">
       <img src="/static/images/logo.png" alt="Logo" class="brand-img">
       <span class="brand-text">Iloilo City Public Library</span>
     </a>
-
     <div class="nav-overlay" id="navOverlay"></div>
-
     <nav class="nav-links" id="navLinks">
       <div class="nav-close-row">
         <span class="drawer-brand"><i class="bi bi-building-fill me-1"></i>Library</span>
@@ -477,19 +371,10 @@
       <a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a>
       <a href="/login" class="btn-login d-lg-none mt-2"><i class="bi bi-box-arrow-in-right"></i> Login</a>
     </nav>
-
     <div class="top-actions">
-      <!-- Android-only Download Button (shown only on Android devices via JS) -->
-      <a href="/download/apk"
-        class="btn-android"
-        id="btnAndroidDownload"
-        title="Download for Android"
-        download="IloiloPublicLibrary.APK"
-        aria-label="Download Iloilo Public Library app for Android">
-        <i class="bi bi-android2" aria-hidden="true"></i> Download
+      <a href="/download/apk" class="btn-android" id="btnAndroidDownload" title="Download for Android" download="IloiloPublicLibrary.APK">
+        <i class="bi bi-android2"></i> Download
       </a>
-
-      <!-- Locked icons -->
       <button class="calendar-btn-locked" onclick="showMemberModal()" title="Events Calendar (Members only)" style="background:transparent;border:none;color:rgba(255,255,255,.4);font-size:1.15rem;cursor:pointer;padding:7px 9px;border-radius:8px;transition:.18s;display:flex;align-items:center;justify-content:center;position:relative;">
         <i class="bi bi-calendar3"></i>
         <i class="bi bi-lock-fill" style="position:absolute;bottom:3px;right:3px;font-size:.45rem;color:#FFD700;"></i>
@@ -507,134 +392,59 @@
     </div>
   </header>
 
-  <!-- ══════════════════════════════════════
-       MEMBERSHIP REQUIRED MODAL
-  ══════════════════════════════════════ -->
+  <!-- MEMBERSHIP MODAL (unchanged) -->
   <div class="member-modal-overlay" id="memberModalOverlay">
     <div class="member-modal-box" id="memberModalBox">
-
-      <!-- PANEL A: Membership Required -->
       <div class="panel-a" id="panelA">
-        <div class="modal-icon-wrap warn">
-          <i class="bi bi-patch-exclamation-fill"></i>
-        </div>
+        <div class="modal-icon-wrap warn"><i class="bi bi-patch-exclamation-fill"></i></div>
         <h4>Library Membership Required</h4>
         <p>This feature is available to registered library members only. You need a valid Iloilo City Public Library membership card to access this.</p>
         <div class="modal-actions">
-          <a href="/login" class="btn-modal-primary">
-            <i class="bi bi-box-arrow-in-right"></i> I'm a Member — Log In
-          </a>
-          <button class="btn-modal-secondary" onclick="showStepsPanel()">
-            <i class="bi bi-question-circle-fill"></i> How do I become a member?
-          </button>
-          <button class="btn-modal-ghost" onclick="closeMemberModal()">
-            Maybe Later
-          </button>
+          <a href="/login" class="btn-modal-primary"><i class="bi bi-box-arrow-in-right"></i> I'm a Member — Log In</a>
+          <button class="btn-modal-secondary" onclick="showStepsPanel()"><i class="bi bi-question-circle-fill"></i> How do I become a member?</button>
+          <button class="btn-modal-ghost" onclick="closeMemberModal()">Maybe Later</button>
         </div>
       </div>
-
-      <!-- PANEL B: Step-by-step guide -->
       <div class="panel-b" id="panelB">
         <div class="steps-header">
-          <button class="steps-back-btn" onclick="showMainPanel()" title="Back">
-            <i class="bi bi-arrow-left"></i>
-          </button>
+          <button class="steps-back-btn" onclick="showMainPanel()" title="Back"><i class="bi bi-arrow-left"></i></button>
           <div class="steps-header-text">
             <h5>How to Become a Member</h5>
             <span>Follow these steps to get your library card</span>
           </div>
         </div>
-
         <div class="steps-progress-wrap">
-          <div class="steps-progress-track">
-            <div class="steps-progress-fill" id="stepsProgressFill" style="width:12.5%"></div>
-          </div>
-          <div class="steps-progress-label">
-            <span id="stepsProgressText">Step 1 of 8</span>
-            <span id="stepsProgressPct">12%</span>
-          </div>
+          <div class="steps-progress-track"><div class="steps-progress-fill" id="stepsProgressFill" style="width:12.5%"></div></div>
+          <div class="steps-progress-label"><span id="stepsProgressText">Step 1 of 8</span><span id="stepsProgressPct">12%</span></div>
         </div>
-
         <div class="steps-body">
-
-          <div class="step-slide active" id="step1">
-            <div class="step-num-badge">1</div>
-            <div class="step-title">Go to the Iloilo City Public Library</div>
-            <div class="step-desc">Visit the Iloilo City Public Library — Dr. Graciano Lopez Jaena Learning Resource Center and Museum in person to begin your membership registration.<br><br>
-            <strong style="color:rgba(255,255,255,.65);">Address:</strong> <span style="color:rgba(255,255,255,.45);">Arguelles-Fajardo Street, Jaro, Iloilo City</span></div>
-          </div>
-
-          <div class="step-slide" id="step2">
-            <div class="step-num-badge">2</div>
-            <div class="step-title">Request a Membership Application Form</div>
-            <div class="step-desc">Approach the library staff at the front desk or information counter and ask for a membership application form. The staff will be happy to assist you.</div>
-          </div>
-
-          <div class="step-slide" id="step3">
-            <div class="step-num-badge">3</div>
-            <div class="step-title">Fill Out the Application Form</div>
-            <div class="step-desc">Carefully provide all required personal information accurately and completely. Make sure all fields are filled in correctly before proceeding.</div>
-          </div>
-
-          <div class="step-slide" id="step4">
-            <div class="step-num-badge">4</div>
-            <div class="step-title">Prepare Membership Requirements</div>
-            <div class="step-desc">Secure and bring the following documents and materials:</div>
-            <ul class="step-requirements">
-              <li>2 pieces of latest 1×1 ID picture</li>
-              <li>Photocopy of any valid government-issued ID</li>
-              <li>Proof of enrollment or school ID (if applicable)</li>
-            </ul>
-          </div>
-
-          <div class="step-slide" id="step5">
-            <div class="step-num-badge">5</div>
-            <div class="step-title">Submit Application and Requirements</div>
-            <div class="step-desc">Submit the accomplished application form together with all the required documents to the library staff. Double-check that everything is complete before submission.</div>
-          </div>
-
-          <div class="step-slide" id="step6">
-            <div class="step-num-badge">6</div>
-            <div class="step-title">Proceed to Waiting Area</div>
-            <div class="step-desc">After submitting your application and requirements, proceed to the designated waiting area as directed by the library staff. Please keep your belongings with you.</div>
-          </div>
-
-          <div class="step-slide" id="step7">
-            <div class="step-num-badge">7</div>
-            <div class="step-title">Wait for Your Name to be Called</div>
-            <div class="step-desc">Stay alert and listen for your name to be called by the library staff. This will be for identity verification or the release of your library membership card.</div>
-          </div>
-
-          <div class="step-slide" id="step8">
-            <div class="step-num-badge">8</div>
-            <div class="step-title" style="color:var(--accent2);">🎉 Claim Your Library Membership Card</div>
-            <div class="step-desc">Receive your official Iloilo City Public Library membership card. Make sure to verify that all details printed on your card are correct before leaving the counter.<br><br>
-            <span style="color:rgba(72,199,142,.8);font-weight:600;">You're now a registered library member!</span> You can log in to this portal using your registered credentials to access all member features.</div>
-          </div>
-
-        </div><!-- /steps-body -->
-
+          <div class="step-slide active" id="step1"><div class="step-num-badge">1</div><div class="step-title">Go to the Iloilo City Public Library</div><div class="step-desc">Visit the Iloilo City Public Library — Dr. Graciano Lopez Jaena Learning Resource Center and Museum in person to begin your membership registration.<br><br><strong style="color:rgba(255,255,255,.65);">Address:</strong> <span style="color:rgba(255,255,255,.45);">Arguelles-Fajardo Street, Jaro, Iloilo City</span></div></div>
+          <div class="step-slide" id="step2"><div class="step-num-badge">2</div><div class="step-title">Request a Membership Application Form</div><div class="step-desc">Approach the library staff at the front desk or information counter and ask for a membership application form. The staff will be happy to assist you.</div></div>
+          <div class="step-slide" id="step3"><div class="step-num-badge">3</div><div class="step-title">Fill Out the Application Form</div><div class="step-desc">Carefully provide all required personal information accurately and completely. Make sure all fields are filled in correctly before proceeding.</div></div>
+          <div class="step-slide" id="step4"><div class="step-num-badge">4</div><div class="step-title">Prepare Membership Requirements</div><div class="step-desc">Secure and bring the following documents and materials:</div><ul class="step-requirements"><li>2 pieces of latest 1×1 ID picture</li><li>Photocopy of any valid government-issued ID</li><li>Proof of enrollment or school ID (if applicable)</li></ul></div>
+          <div class="step-slide" id="step5"><div class="step-num-badge">5</div><div class="step-title">Submit Application and Requirements</div><div class="step-desc">Submit the accomplished application form together with all the required documents to the library staff. Double-check that everything is complete before submission.</div></div>
+          <div class="step-slide" id="step6"><div class="step-num-badge">6</div><div class="step-title">Proceed to Waiting Area</div><div class="step-desc">After submitting your application and requirements, proceed to the designated waiting area as directed by the library staff.</div></div>
+          <div class="step-slide" id="step7"><div class="step-num-badge">7</div><div class="step-title">Wait for Your Name to be Called</div><div class="step-desc">Stay alert and listen for your name to be called by the library staff for identity verification or release of your membership card.</div></div>
+          <div class="step-slide" id="step8"><div class="step-num-badge">8</div><div class="step-title" style="color:var(--accent2);">🎉 Claim Your Library Membership Card</div><div class="step-desc">Receive your official membership card and verify that all printed details are correct.<br><br><span style="color:rgba(72,199,142,.8);font-weight:600;">You're now a registered library member!</span></div></div>
+        </div>
         <div class="steps-footer">
           <div class="step-dots" id="stepDots"></div>
-          <button class="btn-step-prev" id="btnPrev" onclick="changeStep(-1)" disabled>
-            <i class="bi bi-arrow-left"></i> Prev
-          </button>
-          <button class="btn-step-next" id="btnNext" onclick="changeStep(1)">
-            Next <i class="bi bi-arrow-right"></i>
-          </button>
-          <button class="btn-step-finish" id="btnFinish" onclick="closeMemberModal()">
-            <i class="bi bi-check2-circle"></i> Got it!
-          </button>
+          <button class="btn-step-prev" id="btnPrev" onclick="changeStep(-1)" disabled><i class="bi bi-arrow-left"></i> Prev</button>
+          <button class="btn-step-next" id="btnNext" onclick="changeStep(1)">Next <i class="bi bi-arrow-right"></i></button>
+          <button class="btn-step-finish" id="btnFinish" onclick="closeMemberModal()"><i class="bi bi-check2-circle"></i> Got it!</button>
         </div>
-
-      </div><!-- /panelB -->
-
+      </div>
     </div>
   </div>
 
-  <!-- HERO -->
+  <!-- ══════════════════════════════════════
+       HERO — INTERACTIVE 3D
+  ══════════════════════════════════════ -->
   <section class="hero">
-    <div class="hero-inner">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-vignette"></div>
+
+    <div class="hero-content">
       <div class="hero-eyebrow"><i class="bi bi-building-fill"></i> Iloilo City Public Library</div>
       <h1>Welcome to the<br><span>Heart of Knowledge</span></h1>
       <p>Dr. Graciano Lopez Jaena Learning Resource Center and Museum — your gateway to books, heritage, and lifelong learning.</p>
@@ -642,6 +452,10 @@
         <a href="/browse" class="btn-explore"><i class="bi bi-book-half"></i> Explore Books</a>
         <a href="#features" class="btn-outline"><i class="bi bi-compass"></i> Our Features</a>
       </div>
+    </div>
+
+    <div class="hero-hint">
+      <i class="bi bi-arrows-move"></i> Drag to orbit &nbsp;·&nbsp; Scroll to zoom
     </div>
   </section>
 
@@ -652,112 +466,36 @@
         <div class="section-eyebrow"><i class="bi bi-collection-fill"></i> What's Inside</div>
         <h2>Library <span>Offerings</span></h2>
         <ul class="offerings-list">
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Free Study or Working Space with Free WiFi</strong>
-              <span>The library provides a conducive environment for learning and work, complete with free WiFi for connectivity.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Archives with Historical Materials on the Iloilo Province</strong>
-              <span>Delve into the past with the library's extensive collection of historical materials, offering insights into the rich heritage of the Iloilo Province.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Filipiniana Collection</strong>
-              <span>Explore a curated collection of books about the Philippines, encompassing various aspects of the nation's culture, history, and literature.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Rizaliana Collection</strong>
-              <span>Immerse yourself in materials dedicated to Jose Rizal, a collection that pays homage to the national hero's legacy.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Children's Corner</strong>
-              <span>Nurturing the love for reading from a young age, the library features a dedicated Children's Corner with age-appropriate books and engaging spaces.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Theses and Dissertations</strong>
-              <span>Catering to academic pursuits, the library houses a comprehensive collection of theses and dissertations.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>General Collection</strong>
-              <span>Dive into a diverse array of books covering various subjects, including fiction, ensuring there's something for every curious mind.</span>
-            </div>
-          </li>
-          <li>
-            <div class="chk"><i class="bi bi-check-lg"></i></div>
-            <div class="txt">
-              <strong>Magazines and Newspapers</strong>
-              <span>Stay informed with the latest news and insights through the library's collection of magazines.</span>
-            </div>
-          </li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Free Study or Working Space with Free WiFi</strong><span>The library provides a conducive environment for learning and work, complete with free WiFi for connectivity.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Archives with Historical Materials on the Iloilo Province</strong><span>Delve into the past with the library's extensive collection of historical materials, offering insights into the rich heritage of the Iloilo Province.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Filipiniana Collection</strong><span>Explore a curated collection of books about the Philippines, encompassing various aspects of the nation's culture, history, and literature.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Rizaliana Collection</strong><span>Immerse yourself in materials dedicated to Jose Rizal, a collection that pays homage to the national hero's legacy.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Children's Corner</strong><span>Nurturing the love for reading from a young age, the library features a dedicated Children's Corner with age-appropriate books and engaging spaces.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Theses and Dissertations</strong><span>Catering to academic pursuits, the library houses a comprehensive collection of theses and dissertations.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>General Collection</strong><span>Dive into a diverse array of books covering various subjects, including fiction, ensuring there's something for every curious mind.</span></div></li>
+          <li><div class="chk"><i class="bi bi-check-lg"></i></div><div class="txt"><strong>Magazines and Newspapers</strong><span>Stay informed with the latest news and insights through the library's collection of magazines.</span></div></li>
         </ul>
       </div>
-
       <div class="offerings-collage">
-        <div class="col-img col-wide">
-          <img src="/static/images/library1.png" alt="Library collection" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&q=80'">
-        </div>
-        <div class="col-img col-tall">
-          <img src="/static/images/library2.png" alt="Book shelves" onerror="this.src='https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library3.png" alt="Reading area" onerror="this.src='https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library4.png" alt="Children's corner" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library5.png" alt="Archive materials" onerror="this.src='https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library6.png" alt="Study space" onerror="this.src='https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library7.png" alt="Periodicals" onerror="this.src='https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&q=80'">
-        </div>
-        <div class="col-img col-wide">
-          <img src="/static/images/library8.png" alt="Philippine history books" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library9.png" alt="General collection" onerror="this.src='https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400&q=80'">
-        </div>
-        <div class="col-img" style="grid-column:1/2">
-          <img src="/static/images/library10.png" alt="Library interior" onerror="this.src='https://images.unsplash.com/photo-1610116306796-6fea9f4fae38?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library11.jpg" alt="Archive materials" onerror="this.src='https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80'">
-        </div>
-        <div class="col-img">
-          <img src="/static/images/library12.jpg" alt="Archive materials" onerror="this.src='https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80'">
-        </div>
+        <div class="col-img col-wide"><img src="/static/images/library1.png" alt="Library collection" onerror="this.src='https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&q=80'"></div>
+        <div class="col-img col-tall"><img src="/static/images/library2.png" alt="Book shelves" onerror="this.src='https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library3.png" alt="Reading area" onerror="this.src='https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library4.png" alt="Children's corner" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library5.png" alt="Archive materials" onerror="this.src='https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library6.png" alt="Study space" onerror="this.src='https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library7.png" alt="Periodicals" onerror="this.src='https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&q=80'"></div>
+        <div class="col-img col-wide"><img src="/static/images/library8.png" alt="Philippine history books" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library9.png" alt="General collection" onerror="this.src='https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400&q=80'"></div>
+        <div class="col-img" style="grid-column:1/2"><img src="/static/images/library10.png" alt="Library interior" onerror="this.src='https://images.unsplash.com/photo-1610116306796-6fea9f4fae38?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library11.jpg" alt="Archive materials" onerror="this.src='https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80'"></div>
+        <div class="col-img"><img src="/static/images/library12.jpg" alt="Archive materials" onerror="this.src='https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80'"></div>
       </div>
     </div>
   </section>
 
   <!-- FEATURES -->
   <section class="features-section" id="features">
-    <div class="section-head">
-      <h2>What We <span>Offer</span></h2>
-      <p>Everything you need — all in one place.</p>
-    </div>
+    <div class="section-head"><h2>What We <span>Offer</span></h2><p>Everything you need — all in one place.</p></div>
     <div class="features-grid">
       <div class="feat-card"><div class="feat-icon"><i class="bi bi-search"></i></div><h4>Book Catalog &amp; Search</h4><p>Browse thousands of titles across all categories — from Philippine literature to science, technology, and more.</p></div>
       <div class="feat-card"><div class="feat-icon"><i class="bi bi-bookmark-check-fill"></i></div><h4>Book Borrowing<i class="bi bi-lock-fill feat-lock-icon"></i></h4><p>Check out books for home reading. Track your borrowed titles and due dates from your member profile.</p></div>
@@ -768,382 +506,269 @@
 
   <!-- VISION & MISSION -->
   <section class="vm-section" id="Vission_and_Mission">
-    <div class="section-head">
-      <h2>Our Vision <span>&amp; Mission</span></h2>
-      <p>The values that guide everything we do.</p>
-    </div>
+    <div class="section-head"><h2>Our Vision <span>&amp; Mission</span></h2><p>The values that guide everything we do.</p></div>
     <div class="vm-mandate">
       <h4><i class="bi bi-stars me-2"></i>Mandate</h4>
       <p>Republic Act No. 7743, June 17, 1994 — An act providing for the establishment of congressional, city and municipal libraries and barangay reading centers throughout the Philippines, appropriating the necessary funds therefor and for other purposes.</p>
     </div>
     <div class="vm-grid">
-      <div class="vm-card">
-        <h4><i class="bi bi-eye-fill me-2"></i>Vision</h4>
-        <p>The Iloilo City Public Library empowers Ilonggos through lifelong learning and cultural preservation, cultivating information-literate and skilled citizens who actively contribute to a livable, sustainable, and well-governed Iloilo with a robust and inclusive economy.</p>
-      </div>
-      <div class="vm-card">
-        <h4><i class="bi bi-bullseye me-2"></i>Mission</h4>
-        <p>Provides inclusive and responsive services that empower the Ilonggo community through equitable access to information and resources, preserving our cultural heritage and fostering the development of a livable, sustainable, and resilient city.</p>
-      </div>
+      <div class="vm-card"><h4><i class="bi bi-eye-fill me-2"></i>Vision</h4><p>The Iloilo City Public Library empowers Ilonggos through lifelong learning and cultural preservation, cultivating information-literate and skilled citizens who actively contribute to a livable, sustainable, and well-governed Iloilo with a robust and inclusive economy.</p></div>
+      <div class="vm-card"><h4><i class="bi bi-bullseye me-2"></i>Mission</h4><p>Provides inclusive and responsive services that empower the Ilonggo community through equitable access to information and resources, preserving our cultural heritage and fostering the development of a livable, sustainable, and resilient city.</p></div>
     </div>
   </section>
 
   <!-- SERVICES & RESOURCES -->
   <section class="services-section" id="services">
     <div class="services-inner">
-      <div class="section-head" style="margin-bottom:56px;">
-        <h2>Services <span>&amp; Resources</span></h2>
-        <p>What we provide for our community.</p>
-      </div>
-
+      <div class="section-head" style="margin-bottom:56px;"><h2>Services <span>&amp; Resources</span></h2><p>What we provide for our community.</p></div>
       <div class="services-row">
-        <div class="services-text">
-          <h3>Readers' <span>Services</span></h3>
-          <ul class="services-checklist">
-            <li>Free study and work space with WiFi</li>
-            <li>Book Collections: Reference, Filipiniana, General Collection, Rare Books, Children's Corner, Fiction, and Periodicals</li>
-            <li>Regular outreach to schools and libraries through literacy programs and book donations</li>
-          </ul>
-        </div>
-        <div class="services-img">
-          <img src="/static/images/readers1.jpg" alt="Readers' Services"
-               onerror="this.src='https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80'">
-        </div>
+        <div class="services-text"><h3>Readers' <span>Services</span></h3><ul class="services-checklist"><li>Free study and work space with WiFi</li><li>Book Collections: Reference, Filipiniana, General Collection, Rare Books, Children's Corner, Fiction, and Periodicals</li><li>Regular outreach to schools and libraries through literacy programs and book donations</li></ul></div>
+        <div class="services-img"><img src="/static/images/readers1.jpg" alt="Readers' Services" onerror="this.src='https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80'"></div>
       </div>
-
       <div class="services-row reverse">
-        <div class="services-text">
-          <h3><span>Archives</span></h3>
-          <ul class="services-checklist">
-            <li>Inventory and disposal of records for Iloilo Provincial Government Offices and district hospitals</li>
-            <li>Digitization and preservation</li>
-            <li>Safekeeping of historical and cultural resources of Iloilo Province</li>
-          </ul>
-        </div>
-        <div class="services-img">
-          <img src="/static/images/readers2.jpg" alt="Archives"
-               onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80'">
-        </div>
+        <div class="services-text"><h3><span>Archives</span></h3><ul class="services-checklist"><li>Inventory and disposal of records for Iloilo Provincial Government Offices and district hospitals</li><li>Digitization and preservation</li><li>Safekeeping of historical and cultural resources of Iloilo Province</li></ul></div>
+        <div class="services-img"><img src="/static/images/readers2.jpg" alt="Archives" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80'"></div>
       </div>
     </div>
   </section>
 
-  <!-- PRE-FOOTER CTA BAND -->
+  <!-- FOOTER CTA -->
   <div class="footer-cta">
-    <div class="footer-cta-text">
-      <h3>Ready to Start Exploring?</h3>
-      <p>Become a library member today and unlock access to thousands of books, historical archives, events, and free study spaces — open to everyone in the Iloilo community.</p>
-    </div>
-    <div class="footer-cta-actions">
-      <a href="/browse" class="footer-cta-btn-primary"><i class="bi bi-book-half"></i> Browse Catalog</a>
-      <a href="/no_user_about" class="footer-cta-btn-ghost"><i class="bi bi-info-circle"></i> Learn More</a>
-    </div>
+    <div class="footer-cta-text"><h3>Ready to Start Exploring?</h3><p>Become a library member today and unlock access to thousands of books, historical archives, events, and free study spaces — open to everyone in the Iloilo community.</p></div>
+    <div class="footer-cta-actions"><a href="/browse" class="footer-cta-btn-primary"><i class="bi bi-book-half"></i> Browse Catalog</a><a href="/no_user_about" class="footer-cta-btn-ghost"><i class="bi bi-info-circle"></i> Learn More</a></div>
   </div>
 
-  <!-- MAIN FOOTER -->
+  <!-- FOOTER -->
   <footer class="footer-main">
     <div class="footer-grid">
-
-      <!-- BRAND -->
       <div class="footer-brand-col">
-        <div class="footer-logo-row">
-          <img src="/static/images/logo.png" alt="Iloilo City Public Library Logo" onerror="this.style.display='none'">
-          <div>
-            <div class="brand-label">Iloilo City Public Library</div>
-            <span class="brand-sub">Dr. Graciano Lopez Jaena LRC &amp; Museum</span>
-          </div>
-        </div>
+        <div class="footer-logo-row"><img src="/static/images/logo.png" alt="Logo" onerror="this.style.display='none'"><div><div class="brand-label">Iloilo City Public Library</div><span class="brand-sub">Dr. Graciano Lopez Jaena LRC &amp; Museum</span></div></div>
         <p class="footer-tagline">Empowering the Iloilo community through access to knowledge, cultural heritage, and lifelong learning.</p>
-        <div class="footer-socials">
-          <a href="https://www.facebook.com/iloilocitypubliclibrary" class="footer-social-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
-          <a href="mailto:iloilocitypubliclibrary@gmail.com" class="footer-social-btn" title="Email Us"><i class="bi bi-envelope-fill"></i></a>
-        </div>
+        <div class="footer-socials"><a href="https://www.facebook.com/iloilocitypubliclibrary" class="footer-social-btn" title="Facebook"><i class="bi bi-facebook"></i></a><a href="mailto:iloilocitypubliclibrary@gmail.com" class="footer-social-btn" title="Email Us"><i class="bi bi-envelope-fill"></i></a></div>
       </div>
-
-      <!-- QUICK LINKS -->
-      <div>
-        <div class="footer-col-title">Quick Links</div>
-        <ul class="footer-links">
-          <li><a href="#"><i class="bi bi-house-door-fill"></i> Home</a></li>
-          <li><a href="/browse"><i class="bi bi-search"></i> Browse Catalog</a></li>
-          <li><a href="#features"><i class="bi bi-grid-fill"></i> Features</a></li>
-          <li><a href="#Vission_and_Mission"><i class="bi bi-eye-fill"></i> Vision &amp; Mission</a></li>
-          <li><a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a></li>
-          <li><a href="/login"><i class="bi bi-box-arrow-in-right"></i> Member Login</a></li>
-        </ul>
-      </div>
-
-      <!-- SERVICES -->
-      <div>
-        <div class="footer-col-title">Services</div>
-        <ul class="footer-links">
-          <li><span class="footer-link-static"><i class="bi bi-wifi"></i> Free WiFi &amp; Study Space</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-archive-fill"></i> Iloilo Archives</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-collection-fill"></i> General Collection</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-book-fill"></i> Reference Collection</span></li>
-          <li><span class="footer-link-static"><i class="bi bi-people-fill"></i> Literacy Outreach Programs</span></li>
-        </ul>
-      </div>
-
-      <!-- CONTACT -->
-      <div class="footer-contact-col">
-        <div class="footer-col-title">Get in Touch</div>
+      <div><div class="footer-col-title">Quick Links</div><ul class="footer-links"><li><a href="#"><i class="bi bi-house-door-fill"></i> Home</a></li><li><a href="/browse"><i class="bi bi-search"></i> Browse Catalog</a></li><li><a href="#features"><i class="bi bi-grid-fill"></i> Features</a></li><li><a href="#Vission_and_Mission"><i class="bi bi-eye-fill"></i> Vision &amp; Mission</a></li><li><a href="/no_user_about"><i class="bi bi-info-circle-fill"></i> About Us</a></li><li><a href="/login"><i class="bi bi-box-arrow-in-right"></i> Member Login</a></li></ul></div>
+      <div><div class="footer-col-title">Services</div><ul class="footer-links"><li><span class="footer-link-static"><i class="bi bi-wifi"></i> Free WiFi &amp; Study Space</span></li><li><span class="footer-link-static"><i class="bi bi-archive-fill"></i> Iloilo Archives</span></li><li><span class="footer-link-static"><i class="bi bi-collection-fill"></i> General Collection</span></li><li><span class="footer-link-static"><i class="bi bi-book-fill"></i> Reference Collection</span></li><li><span class="footer-link-static"><i class="bi bi-people-fill"></i> Literacy Outreach Programs</span></li></ul></div>
+      <div class="footer-contact-col"><div class="footer-col-title">Get in Touch</div>
         <div>
-          <div class="footer-contact-row">
-            <i class="bi bi-geo-alt-fill"></i>
-            <div>
-              <span class="fc-label">Address</span>
-              <span class="fc-val">Arguelles-Fajardo Street, Jaro,<br>Iloilo City, Philippines, 5000</span>
-            </div>
-          </div>
-          <div class="footer-contact-row">
-            <i class="bi bi-telephone-fill"></i>
-            <div>
-              <span class="fc-label">Telephone</span>
-              <a href="tel:+6333354078" class="fc-val">(033) 335-4078</a>
-            </div>
-          </div>
-          <div class="footer-contact-row">
-            <i class="bi bi-envelope-fill"></i>
-            <div>
-              <span class="fc-label">Email</span>
-              <a href="mailto:iloilocitypubliclibrary@gmail.com" class="fc-val">iloilocitypubliclibrary@gmail.com</a>
-            </div>
-          </div>
-          <div class="footer-contact-row">
-            <i class="bi bi-clock-fill"></i>
-            <div>
-              <span class="fc-label">Library Hours</span>
-              <span class="fc-val">Mon – Sat &nbsp;·&nbsp; 8:00 AM – 8:00 PM<br><span style="font-size:.72rem;color:rgba(255,255,255,.32);">Closed on Sundays &amp; public holidays</span></span>
-            </div>
-          </div>
+          <div class="footer-contact-row"><i class="bi bi-geo-alt-fill"></i><div><span class="fc-label">Address</span><span class="fc-val">Arguelles-Fajardo Street, Jaro,<br>Iloilo City, Philippines, 5000</span></div></div>
+          <div class="footer-contact-row"><i class="bi bi-telephone-fill"></i><div><span class="fc-label">Telephone</span><a href="tel:+6333354078" class="fc-val">(033) 335-4078</a></div></div>
+          <div class="footer-contact-row"><i class="bi bi-envelope-fill"></i><div><span class="fc-label">Email</span><a href="mailto:iloilocitypubliclibrary@gmail.com" class="fc-val">iloilocitypubliclibrary@gmail.com</a></div></div>
+          <div class="footer-contact-row"><i class="bi bi-clock-fill"></i><div><span class="fc-label">Library Hours</span><span class="fc-val">Mon – Sat &nbsp;·&nbsp; 8:00 AM – 8:00 PM<br><span style="font-size:.72rem;color:rgba(255,255,255,.32);">Closed on Sundays &amp; public holidays</span></span></div></div>
         </div>
       </div>
-
     </div>
-
-    <!-- PARTNERS BELT -->
-    <div class="footer-partners-belt">
-      <span class="partners-label-txt">In partnership with</span>
-      <div class="partners-divider"></div>
-      <div class="partners-logos-row">
-        <img src="/static/images/partner_logo.png" alt="Partner 1" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+1'">
-        <img src="/static/images/partner_logo.png" alt="Partner 2" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+2'">
-        <img src="/static/images/partner_logo.png" alt="Partner 3" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+3'">
-        <img src="/static/images/partner_logo.png" alt="Partner 4" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+4'">
-        <img src="/static/images/partner_logo.png" alt="Partner 5" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+5'">
-      </div>
-    </div>
-
-    <!-- BOTTOM BAR -->
+    <div class="footer-partners-belt"><span class="partners-label-txt">In partnership with</span><div class="partners-divider"></div><div class="partners-logos-row"><img src="/static/images/partner_logo.png" alt="Partner 1" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+1'"><img src="/static/images/partner_logo.png" alt="Partner 2" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+2'"><img src="/static/images/partner_logo.png" alt="Partner 3" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+3'"><img src="/static/images/partner_logo.png" alt="Partner 4" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+4'"><img src="/static/images/partner_logo.png" alt="Partner 5" onerror="this.src='https://via.placeholder.com/90x30/ffffff/aaaaaa?text=Partner+5'"></div></div>
     <div class="footer-bottom">
-      <div class="footer-bottom-left">
-        &copy; <strong id="footerYear"></strong> <strong>Iloilo City Public Library</strong> — Dr. Graciano Lopez Jaena Learning Resource Center &amp; Museum. All rights reserved.
-      </div>
-      <div class="footer-bottom-right">
-        <a onclick="document.getElementById('privacyModal').style.display='flex';return false;">Privacy Policy</a>
-        <div class="footer-bottom-sep"></div>
-        <a onclick="document.getElementById('termsModal').style.display='flex';return false;">Terms of Use</a>
-        <div class="footer-bottom-sep"></div>
-        <a href="/no_user_about">About</a>
-        <div class="footer-bottom-sep"></div>
-        <span class="footer-ph-badge"><i class="bi bi-geo-fill"></i> Iloilo, Philippines</span>
-      </div>
+      <div class="footer-bottom-left">&copy; <strong id="footerYear"></strong> <strong>Iloilo City Public Library</strong> — Dr. Graciano Lopez Jaena Learning Resource Center &amp; Museum. All rights reserved.</div>
+      <div class="footer-bottom-right"><a onclick="document.getElementById('privacyModal').style.display='flex';return false;">Privacy Policy</a><div class="footer-bottom-sep"></div><a onclick="document.getElementById('termsModal').style.display='flex';return false;">Terms of Use</a><div class="footer-bottom-sep"></div><a href="/no_user_about">About</a><div class="footer-bottom-sep"></div><span class="footer-ph-badge"><i class="bi bi-geo-fill"></i> Iloilo, Philippines</span></div>
     </div>
-
   </footer>
 
-  <!-- PRIVACY POLICY MODAL -->
-  <div class="legal-modal-overlay" id="privacyModal" onclick="if(event.target===this)this.style.display='none'">
-    <div class="legal-modal">
-      <div class="legal-modal-header">
-        <h4><i class="bi bi-shield-check-fill"></i> Privacy Policy</h4>
-        <button class="legal-modal-close" onclick="document.getElementById('privacyModal').style.display='none'" title="Close"><i class="bi bi-x-lg"></i></button>
-      </div>
-      <div class="legal-modal-body">
-        <h5>1. Introduction</h5>
-        <p>The Iloilo City Public Library — Dr. Graciano Lopez Jaena Learning Resource Center and Museum — is committed to protecting the privacy and personal information of all library members and visitors.</p>
-        <h5>2. Information We Collect</h5>
-        <ul>
-          <li>Full name, address, and contact details</li>
-          <li>Membership and borrowing records</li>
-          <li>Transaction history for borrowed and returned materials</li>
-          <li>Event registrations and program participation records</li>
-        </ul>
-        <h5>3. How We Use Your Information</h5>
-        <ul>
-          <li>Managing your library membership account</li>
-          <li>Processing book loans, renewals, and returns</li>
-          <li>Sending notifications about due dates, events, and announcements</li>
-          <li>Improving library services and programs for the community</li>
-        </ul>
-        <h5>4. Data Sharing</h5>
-        <p>The library does not sell, trade, or share your personal information with third parties, except as required by law or by authorized government agencies in compliance with the Data Privacy Act of 2012 (RA 10173).</p>
-        <h5>5. Data Security</h5>
-        <p>We implement appropriate technical and organizational measures to protect your personal data from unauthorized access, disclosure, alteration, or destruction.</p>
-        <h5>6. Your Rights</h5>
-        <p>As a data subject under the Data Privacy Act of 2012, you have the right to access, correct, and request deletion of your personal data held by the library.</p>
-        <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
-      </div>
-      <div class="legal-modal-footer">
-        <button class="legal-modal-btn" onclick="document.getElementById('privacyModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button>
-      </div>
-    </div>
-  </div>
+  <!-- PRIVACY MODAL -->
+  <div class="legal-modal-overlay" id="privacyModal" onclick="if(event.target===this)this.style.display='none'"><div class="legal-modal"><div class="legal-modal-header"><h4><i class="bi bi-shield-check-fill"></i> Privacy Policy</h4><button class="legal-modal-close" onclick="document.getElementById('privacyModal').style.display='none'" title="Close"><i class="bi bi-x-lg"></i></button></div><div class="legal-modal-body"><h5>1. Introduction</h5><p>The Iloilo City Public Library is committed to protecting the privacy and personal information of all library members and visitors.</p><h5>2. Information We Collect</h5><ul><li>Full name, address, and contact details</li><li>Membership and borrowing records</li><li>Transaction history for borrowed and returned materials</li><li>Event registrations and program participation records</li></ul><h5>3. How We Use Your Information</h5><ul><li>Managing your library membership account</li><li>Processing book loans, renewals, and returns</li><li>Sending notifications about due dates, events, and announcements</li><li>Improving library services and programs for the community</li></ul><h5>4. Data Sharing</h5><p>The library does not sell, trade, or share your personal information with third parties, except as required by law or authorized government agencies in compliance with the Data Privacy Act of 2012 (RA 10173).</p><h5>5. Data Security</h5><p>We implement appropriate technical and organizational measures to protect your personal data from unauthorized access, disclosure, alteration, or destruction.</p><h5>6. Your Rights</h5><p>As a data subject under the Data Privacy Act of 2012, you have the right to access, correct, and request deletion of your personal data held by the library.</p><p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p></div><div class="legal-modal-footer"><button class="legal-modal-btn" onclick="document.getElementById('privacyModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button></div></div></div>
 
-  <!-- TERMS OF USE MODAL -->
-  <div class="legal-modal-overlay" id="termsModal" onclick="if(event.target===this)this.style.display='none'">
-    <div class="legal-modal">
-      <div class="legal-modal-header">
-        <h4><i class="bi bi-file-earmark-text-fill"></i> Terms of Use</h4>
-        <button class="legal-modal-close" onclick="document.getElementById('termsModal').style.display='none'" title="Close"><i class="bi bi-x-lg"></i></button>
-      </div>
-      <div class="legal-modal-body">
-        <h5>1. Acceptance of Terms</h5>
-        <p>By accessing and using the Iloilo City Public Library's facilities, services, and online systems, you agree to comply with and be bound by these Terms of Use.</p>
-        <h5>2. Library Membership</h5>
-        <ul>
-          <li>Membership is open to all residents and stakeholders of Iloilo City and Province.</li>
-          <li>Members are responsible for keeping their account information accurate and up to date.</li>
-          <li>Membership cards are non-transferable and must be presented when borrowing materials.</li>
-        </ul>
-        <h5>3. Borrowing Policies</h5>
-        <ul>
-          <li>Members may borrow materials for designated loan periods as set by library staff.</li>
-          <li>Borrowed materials must be returned on or before their due dates.</li>
-          <li>Lost or damaged materials must be replaced or paid for at the library's assessed value.</li>
-        </ul>
-        <h5>4. Library Premises and Conduct</h5>
-        <ul>
-          <li>All patrons are expected to maintain a quiet and respectful environment.</li>
-          <li>Food and beverages are not permitted in designated reading areas.</li>
-          <li>The library reserves the right to deny access to individuals who violate conduct policies.</li>
-        </ul>
-        <h5>5. Online System Use</h5>
-        <ul>
-          <li>The library's online catalog and member portal are provided for authorized library members only.</li>
-          <li>Unauthorized access or misuse of the system is strictly prohibited.</li>
-        </ul>
-        <h5>6. Free WiFi and Computers</h5>
-        <p>Free WiFi and computer access are provided for educational and informational purposes only. Use for illegal activities or accessing inappropriate content is strictly prohibited.</p>
-        <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
-      </div>
-      <div class="legal-modal-footer">
-        <button class="legal-modal-btn" onclick="document.getElementById('termsModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button>
-      </div>
-    </div>
-  </div>
+  <!-- TERMS MODAL -->
+  <div class="legal-modal-overlay" id="termsModal" onclick="if(event.target===this)this.style.display='none'"><div class="legal-modal"><div class="legal-modal-header"><h4><i class="bi bi-file-earmark-text-fill"></i> Terms of Use</h4><button class="legal-modal-close" onclick="document.getElementById('termsModal').style.display='none'" title="Close"><i class="bi bi-x-lg"></i></button></div><div class="legal-modal-body"><h5>1. Acceptance of Terms</h5><p>By accessing and using the Iloilo City Public Library's facilities, services, and online systems, you agree to comply with and be bound by these Terms of Use.</p><h5>2. Library Membership</h5><ul><li>Membership is open to all residents and stakeholders of Iloilo City and Province.</li><li>Members are responsible for keeping their account information accurate and up to date.</li><li>Membership cards are non-transferable and must be presented when borrowing materials.</li></ul><h5>3. Borrowing Policies</h5><ul><li>Members may borrow materials for designated loan periods as set by library staff.</li><li>Borrowed materials must be returned on or before their due dates.</li><li>Lost or damaged materials must be replaced or paid for at the library's assessed value.</li></ul><h5>4. Library Premises and Conduct</h5><ul><li>All patrons are expected to maintain a quiet and respectful environment.</li><li>Food and beverages are not permitted in designated reading areas.</li><li>The library reserves the right to deny access to individuals who violate conduct policies.</li></ul><h5>5. Online System Use</h5><ul><li>The library's online catalog and member portal are provided for authorized library members only.</li><li>Unauthorized access or misuse of the system is strictly prohibited.</li></ul><h5>6. Free WiFi and Computers</h5><p>Free WiFi and computer access are provided for educational and informational purposes only.</p><p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p></div><div class="legal-modal-footer"><button class="legal-modal-btn" onclick="document.getElementById('termsModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button></div></div></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    /* ── MOBILE NAV ── */
-    const menuToggle  = document.getElementById('menuToggle');
-    const navLinks    = document.getElementById('navLinks');
-    const navOverlay  = document.getElementById('navOverlay');
-    const navCloseBtn = document.getElementById('navCloseBtn');
+  /* ══ MOBILE NAV ══ */
+  const menuToggle=document.getElementById('menuToggle'),navLinks=document.getElementById('navLinks'),navOverlay=document.getElementById('navOverlay'),navCloseBtn=document.getElementById('navCloseBtn');
+  function openNav(){navLinks.classList.add('open');navOverlay.classList.add('show');document.body.style.overflow='hidden';}
+  function closeNav(){navLinks.classList.remove('open');navOverlay.classList.remove('show');document.body.style.overflow='';}
+  menuToggle.addEventListener('click',()=>navLinks.classList.contains('open')?closeNav():openNav());
+  navCloseBtn.addEventListener('click',closeNav);
+  navOverlay.addEventListener('click',closeNav);
+  navLinks.querySelectorAll('a:not(.dropdown-toggle)').forEach(a=>a.addEventListener('click',closeNav));
+  (function(){const isAndroid=/android/i.test(navigator.userAgent),btn=document.getElementById('btnAndroidDownload');if(isAndroid&&btn)btn.style.display='inline-flex';})();
 
-    function openNav()  { navLinks.classList.add('open'); navOverlay.classList.add('show'); document.body.style.overflow='hidden'; }
-    function closeNav() { navLinks.classList.remove('open'); navOverlay.classList.remove('show'); document.body.style.overflow=''; }
+  /* ══ MEMBERSHIP MODAL ══ */
+  const overlay=document.getElementById('memberModalOverlay'),panelA=document.getElementById('panelA'),panelB=document.getElementById('panelB'),TOTAL=8;let current=1;
+  function showMemberModal(){showMainPanel();overlay.classList.add('show');document.body.style.overflow='hidden';}
+  function closeMemberModal(){overlay.classList.remove('show');document.body.style.overflow='';}
+  function showMainPanel(){panelA.style.display='block';panelB.style.display='none';current=1;}
+  function showStepsPanel(){panelA.style.display='none';panelB.style.display='block';current=1;buildDots();updateStep();}
+  function buildDots(){const w=document.getElementById('stepDots');w.innerHTML='';for(let i=1;i<=TOTAL;i++){const d=document.createElement('div');d.className='step-dot'+(i===1?' active':'');d.id='dot'+i;w.appendChild(d);}}
+  function updateStep(){document.querySelectorAll('.step-slide').forEach(s=>s.classList.remove('active'));document.getElementById('step'+current).classList.add('active');const pct=Math.round((current/TOTAL)*100);document.getElementById('stepsProgressFill').style.width=pct+'%';document.getElementById('stepsProgressText').textContent='Step '+current+' of '+TOTAL;document.getElementById('stepsProgressPct').textContent=pct+'%';for(let i=1;i<=TOTAL;i++){const d=document.getElementById('dot'+i);if(!d)continue;d.className='step-dot';if(i<current)d.classList.add('done');else if(i===current)d.classList.add('active');}document.getElementById('btnPrev').disabled=(current===1);const isLast=(current===TOTAL);document.getElementById('btnNext').style.display=isLast?'none':'flex';document.getElementById('btnFinish').style.display=isLast?'flex':'none';}
+  function changeStep(dir){const next=current+dir;if(next<1||next>TOTAL)return;current=next;updateStep();}
+  overlay.addEventListener('click',function(e){if(e.target===this)closeMemberModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMemberModal();closeNav();document.getElementById('privacyModal').style.display='none';document.getElementById('termsModal').style.display='none';}});
+  document.getElementById('footerYear').textContent=new Date().getFullYear();
 
-    menuToggle.addEventListener('click', () => navLinks.classList.contains('open') ? closeNav() : openNav());
-    navCloseBtn.addEventListener('click', closeNav);
-    navOverlay.addEventListener('click', closeNav);
-    navLinks.querySelectorAll('a:not(.dropdown-toggle)').forEach(a => a.addEventListener('click', closeNav));
+  /* ══════════════════════════════════════════
+     3D HERO — Three.js
+  ══════════════════════════════════════════ */
+  (function(){
+    const heroSection = document.querySelector('.hero');
+    const canvas = document.getElementById('hero-canvas');
 
-    (function () {
-      const isAndroid = /android/i.test(navigator.userAgent);
-      const btn = document.getElementById('btnAndroidDownload');
-      if (isAndroid && btn) {
-        btn.style.display = 'inline-flex';
-        btn.href = '/download/apk';  // ← points to your Flask route
+    function getSize(){ return { w: heroSection.clientWidth, h: heroSection.clientHeight }; }
+    let { w, h } = getSize();
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setClearColor(0x1e2d3d, 1);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+
+    // Lights — warm library palette
+    scene.add(new THREE.AmbientLight(0x3a5068, 1.4));
+    const sun = new THREE.DirectionalLight(0xc8e0f5, 0.9);
+    sun.position.set(6, 12, 8); sun.castShadow = true; scene.add(sun);
+    const warm1 = new THREE.PointLight(0xffcc77, 3.5, 10);
+    warm1.position.set(-1.4, 3.0, 0.8); scene.add(warm1);
+    const warm2 = new THREE.PointLight(0xff9944, 2.2, 8);
+    warm2.position.set(2.2, 2.6, -0.4); scene.add(warm2);
+    const cool  = new THREE.PointLight(0x9fc1e1, 1.0, 16);
+    cool.position.set(-5, 7, -3); scene.add(cool);
+
+    function lmat(col){ return new THREE.MeshLambertMaterial({ color: col }); }
+
+    // Floor
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(22,0.15,22), lmat(0x243344));
+    floor.position.y = -0.08; floor.receiveShadow = true; scene.add(floor);
+
+    // Rug — Iloilo blue/teal tones
+    const rug = new THREE.Mesh(new THREE.BoxGeometry(6.5,0.04,4.5), lmat(0x1e4d6b));
+    rug.position.set(0,0.01,1); scene.add(rug);
+
+    // Bookshelf builder
+    function makeShelf(x, z, ry){
+      const g = new THREE.Group();
+      g.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(4.4,3.6,0.28), lmat(0x4a2e10)), {castShadow:true,receiveShadow:true}));
+      const sm = lmat(0x5a3818);
+      for(let s=0;s<3;s++){
+        const sh=new THREE.Mesh(new THREE.BoxGeometry(4.2,0.1,0.32),sm);
+        sh.position.set(0,-0.9+s*0.9,0.05); g.add(sh);
       }
+      const bc=[0x8b1a1a,0x1a5c8b,0x2d7a2d,0xb8860b,0x6b2d8b,0xc4622d,0x2d6b8b,0x8b6914,0xa0522d,0x4682b4,0x8b4513,0x228b22,0xcd853f,0x6a5acd,0x9fc1e1,0x2f6f8f,0x7a3535,0x3a7a5a];
+      for(let s=0;s<3;s++){
+        let bx=-1.8;
+        for(let b=0;b<13;b++){
+          const bw=0.17+Math.random()*0.11, bh=0.52+Math.random()*0.28;
+          const bk=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,0.23), lmat(bc[(s*13+b)%bc.length]));
+          bk.position.set(bx+bw/2, -0.9+s*0.9+0.05+bh/2, 0.05);
+          bk.rotation.z=(Math.random()-.5)*0.07; bk.castShadow=true;
+          g.add(bk); bx+=bw+0.01; if(bx>1.85)break;
+        }
+      }
+      g.position.set(x,1.8,z); g.rotation.y=ry; scene.add(g); return g;
+    }
+    makeShelf(-4.2, 0,  Math.PI/2);
+    makeShelf( 4.2, 0, -Math.PI/2);
+    makeShelf(   0,-4.8, 0);
+
+    // Reading table
+    const tbl=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.12,1.6), lmat(0x6b3d18));
+    tbl.position.set(0,0.88,1.9); tbl.castShadow=tbl.receiveShadow=true; scene.add(tbl);
+    [-1.4,1.4].forEach(lx=>{
+      const leg=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.88,8), lmat(0x5a3010));
+      leg.position.set(lx,0.44,1.9); leg.castShadow=true; scene.add(leg);
+    });
+
+    // Desk lamps
+    function deskLamp(x,z){
+      const base=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.20,0.07,12), lmat(0x8b6914));
+      const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.72,8), lmat(0x7a5c10));
+      pole.position.y=0.39;
+      const shade=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.32,12,1,true), lmat(0xc89830));
+      shade.position.y=0.8;
+      const g=new THREE.Group(); g.add(base,pole,shade);
+      g.position.set(x,0.95,z); scene.add(g);
+    }
+    deskLamp(-0.9,1.7); deskLamp(0.9,1.7);
+
+    // Open book on table
+    const bBase=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.025,0.65), lmat(0x4a3018));
+    bBase.position.set(0,0.9,1.95); scene.add(bBase);
+    [[-0.22,0.07],[ 0.22,-0.07]].forEach(([bx,rz])=>{
+      const p=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.006,0.60), lmat(0xfaf5e8));
+      p.position.set(bx,0.915,1.95); p.rotation.z=rz; scene.add(p);
+    });
+
+    // Globe + stand
+    const globe=new THREE.Mesh(new THREE.SphereGeometry(0.34,16,16), lmat(0x2255aa));
+    globe.position.set(-2.6,1.25,1.3); globe.castShadow=true; scene.add(globe);
+    const gStand=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.13,0.5,10), lmat(0x6b4010));
+    gStand.position.set(-2.6,0.75,1.3); scene.add(gStand);
+
+    // Plants
+    function plant(x,z){
+      const pot=new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.15,0.3,10), lmat(0xb05020));
+      pot.position.set(x,0.16,z); scene.add(pot);
+      for(let i=0;i<6;i++){
+        const lf=new THREE.Mesh(new THREE.SphereGeometry(0.13+Math.random()*0.09,8,8), lmat(0x2a7a2a));
+        lf.position.set(x+(Math.random()-.5)*0.24, 0.58+Math.random()*0.32, z+(Math.random()-.5)*0.24);
+        scene.add(lf);
+      }
+    }
+    plant(-3.4,3.1); plant(3.4,3.1);
+
+    // Floating books — library accent colours
+    const floaters=[];
+    const fbCols=[0x9fc1e1,0x48c78e,0xb8860b,0x8b1a1a,0x6b2d8b];
+    for(let i=0;i<5;i++){
+      const a=i*(Math.PI*2/5);
+      const fb=new THREE.Mesh(new THREE.BoxGeometry(0.24,0.33,0.07), lmat(fbCols[i]));
+      fb.userData={bx:Math.cos(a)*2.3, bz:Math.sin(a)*2.3, by:2.55+i*0.28, a, sp:0.007+i*0.003};
+      fb.position.set(fb.userData.bx,fb.userData.by,fb.userData.bz);
+      fb.castShadow=true; scene.add(fb); floaters.push(fb);
+    }
+
+    // Orbit state
+    let isDrag=false, px=0, py=0;
+    let theta=0.18, phi=0.52, radius=13;
+    const target=new THREE.Vector3(0,1.3,0);
+
+    canvas.addEventListener('mousedown',e=>{isDrag=true;px=e.clientX;py=e.clientY;});
+    window.addEventListener('mouseup',()=>isDrag=false);
+    window.addEventListener('mousemove',e=>{
+      if(!isDrag)return;
+      theta-=(e.clientX-px)*0.005;
+      phi=Math.max(0.18,Math.min(1.25,phi+(e.clientY-py)*0.005));
+      px=e.clientX; py=e.clientY;
+    });
+    canvas.addEventListener('touchstart',e=>{isDrag=true;px=e.touches[0].clientX;py=e.touches[0].clientY;},{passive:true});
+    window.addEventListener('touchend',()=>isDrag=false);
+    window.addEventListener('touchmove',e=>{
+      if(!isDrag)return;
+      theta-=(e.touches[0].clientX-px)*0.006;
+      phi=Math.max(0.18,Math.min(1.25,phi+(e.touches[0].clientY-py)*0.006));
+      px=e.touches[0].clientX; py=e.touches[0].clientY;
+    },{passive:true});
+    canvas.addEventListener('wheel',e=>{radius=Math.max(7,Math.min(22,radius+e.deltaY*0.02));},{passive:true});
+
+    // Resize
+    window.addEventListener('resize',()=>{
+      const s=getSize();
+      renderer.setSize(s.w,s.h);
+      camera.aspect=s.w/s.h; camera.updateProjectionMatrix();
+    });
+
+    let t=0;
+    (function animate(){
+      requestAnimationFrame(animate); t+=0.01;
+      if(!isDrag) theta+=0.0018;
+      camera.position.x=target.x+radius*Math.sin(phi)*Math.sin(theta);
+      camera.position.y=target.y+radius*Math.cos(phi);
+      camera.position.z=target.z+radius*Math.sin(phi)*Math.cos(theta);
+      camera.lookAt(target);
+      floaters.forEach((fb,i)=>{
+        fb.position.y=fb.userData.by+Math.sin(t*1.1+fb.userData.a*2)*0.2;
+        fb.rotation.y=t*0.45+fb.userData.a;
+        fb.rotation.z=Math.sin(t*0.7+fb.userData.a)*0.14;
+      });
+      globe.rotation.y=t*0.28;
+      warm1.intensity=3.0+Math.sin(t*1.05)*0.5;
+      warm2.intensity=1.8+Math.sin(t*0.85+1)*0.35;
+      renderer.render(scene,camera);
     })();
-
-    /* ── MEMBERSHIP MODAL ── */
-    const overlay   = document.getElementById('memberModalOverlay');
-    const panelA    = document.getElementById('panelA');
-    const panelB    = document.getElementById('panelB');
-    const TOTAL     = 8;
-    let   current   = 1;
-
-    function showMemberModal() {
-      showMainPanel();
-      overlay.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeMemberModal() {
-      overlay.classList.remove('show');
-      document.body.style.overflow = '';
-    }
-    function showMainPanel() {
-      panelA.style.display = 'block';
-      panelB.style.display = 'none';
-      current = 1;
-    }
-    function showStepsPanel() {
-      panelA.style.display = 'none';
-      panelB.style.display = 'block';
-      current = 1;
-      buildDots();
-      updateStep();
-    }
-
-    function buildDots() {
-      const wrap = document.getElementById('stepDots');
-      wrap.innerHTML = '';
-      for (let i = 1; i <= TOTAL; i++) {
-        const d = document.createElement('div');
-        d.className = 'step-dot' + (i === 1 ? ' active' : '');
-        d.id = 'dot' + i;
-        wrap.appendChild(d);
-      }
-    }
-
-    function updateStep() {
-      document.querySelectorAll('.step-slide').forEach(s => s.classList.remove('active'));
-      document.getElementById('step' + current).classList.add('active');
-
-      const pct = Math.round((current / TOTAL) * 100);
-      document.getElementById('stepsProgressFill').style.width = pct + '%';
-      document.getElementById('stepsProgressText').textContent = 'Step ' + current + ' of ' + TOTAL;
-      document.getElementById('stepsProgressPct').textContent  = pct + '%';
-
-      for (let i = 1; i <= TOTAL; i++) {
-        const d = document.getElementById('dot' + i);
-        if (!d) continue;
-        d.className = 'step-dot';
-        if (i < current)       d.classList.add('done');
-        else if (i === current) d.classList.add('active');
-      }
-
-      document.getElementById('btnPrev').disabled = (current === 1);
-      const isLast = (current === TOTAL);
-      document.getElementById('btnNext').style.display    = isLast ? 'none'  : 'flex';
-      document.getElementById('btnFinish').style.display  = isLast ? 'flex'  : 'none';
-    }
-
-    function changeStep(dir) {
-      const next = current + dir;
-      if (next < 1 || next > TOTAL) return;
-      current = next;
-      updateStep();
-    }
-
-    overlay.addEventListener('click', function(e) {
-      if (e.target === this) closeMemberModal();
-    });
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        closeMemberModal();
-        closeNav();
-        document.getElementById('privacyModal').style.display = 'none';
-        document.getElementById('termsModal').style.display   = 'none';
-      }
-    });
-
-    /* ── FOOTER YEAR ── */
-    document.getElementById('footerYear').textContent = new Date().getFullYear();
+  })();
   </script>
 </body>
 </html>

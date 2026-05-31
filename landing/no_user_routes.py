@@ -13,7 +13,11 @@ Public-facing routes that require NO login:
 from flask import Blueprint, render_template, jsonify
 
 from conn import mysql
-from helpers import safe_decrypt, fmt_dt
+from helpers import (
+    safe_decrypt, fmt_dt,
+    BOOK_INVENTORY_QUERY,
+    build_book_data,
+)
 
 landing_bp = Blueprint("landing_bp", __name__)
 
@@ -35,28 +39,11 @@ def browse():
 
 @landing_bp.route('/api/public/books')
 def api_public_books():
-    cursor = mysql.connection.cursor()
-    cursor.execute("""
-        SELECT id, title, author, isbn, category, genre, publisher, created_at, is_borrowable
-        FROM books
-        ORDER BY created_at DESC
-    """)
-    books = cursor.fetchall()
-    cursor.close()
-
-    books_list = [
-        {
-            "id":            b[0],
-            "title":         safe_decrypt(b[1]),
-            "author":        safe_decrypt(b[2]),
-            "isbn":          safe_decrypt(b[3]),
-            "category":      safe_decrypt(b[4]) if b[4] else "",
-            "genre":         safe_decrypt(b[5]) if b[5] else "",
-            "publisher":     safe_decrypt(b[6]) if b[6] else "",
-            "date_added":    fmt_dt(b[7]),
-            "is_borrowable": bool(b[8]),
-        }
-        for b in books
-    ]
-
-    return jsonify({'books': books_list})
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute(BOOK_INVENTORY_QUERY)
+        rows = cursor.fetchall()
+        cursor.close()
+        return jsonify({'books': build_book_data(rows)})
+    except Exception as e:
+        return jsonify({'books': [], 'error': str(e)}), 500
