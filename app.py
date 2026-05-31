@@ -1,4 +1,4 @@
-"""
+""" app.py
 Entry point.  Only contains:
   1. App + DB init
   2. Blueprint registrations

@@ -611,13 +611,6 @@
               </div>
             </label>
             <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;cursor:pointer;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
-              <input type="checkbox" id="bkpUploads" checked style="accent-color:#9fc1e1;width:15px;height:15px;flex-shrink:0;">
-              <div>
-                <div style="font-size:.84rem;font-weight:600;color:rgba(255,255,255,.8);">Uploads</div>
-                <div style="font-size:.72rem;color:rgba(218,232,245,.4);">Book covers, photos</div>
-              </div>
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;cursor:pointer;transition:.2s;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">
               <input type="checkbox" id="bkpSystemFiles" style="accent-color:#9fc1e1;width:15px;height:15px;flex-shrink:0;">
               <div>
                 <div style="font-size:.84rem;font-weight:600;color:rgba(255,255,255,.8);">System Files</div>
@@ -747,13 +740,12 @@
 {% include 'admin_template/footer_template.html' %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    /* ─── STATE ─── */
+/* ─── STATE ─── */
 const state = {
   maintenance: false,
   bypass: 'admin',
   lockdown: false,
   lockHistory: [],
-  backupLogs: [],
   schedule: 'weekly',
 };
  
@@ -766,7 +758,7 @@ async function loadSettings() {
     // Maintenance
     state.maintenance = data.maintenance_enabled;
     document.getElementById('maintToggle').checked = state.maintenance;
-    onMaintChange(true);   // update badge without saving
+    onMaintChange(true);
  
     // Message
     const msg = data.maintenance_message || '';
@@ -784,7 +776,17 @@ async function loadSettings() {
     // Lockdown
     state.lockdown = data.lockdown_enabled;
     document.getElementById('lockToggle').checked = state.lockdown;
-    syncLockdownUI(state.lockdown, false);   // update UI, no toast
+    syncLockdownUI(state.lockdown, false);
+ 
+    // Backup schedule
+    const freq = data.backup_frequency || 'weekly';
+    state.schedule = freq;
+    document.querySelectorAll('.sched-chip').forEach(c => c.classList.remove('active'));
+    const freqMap = {hourly:'Every Hour', daily:'Daily', weekly:'Weekly', monthly:'Monthly', off:'Off'};
+    document.querySelectorAll('.sched-chip').forEach(c => {
+      if (c.textContent.trim() === freqMap[freq]) c.classList.add('active');
+    });
+    updateSchedBadge(freq);
  
   } catch (e) {
     showToast('danger','<i class="bi bi-exclamation-circle" style="color:#ff7070"></i> Could not load settings from server.');
@@ -797,6 +799,7 @@ function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + tabId).classList.add('active');
+  if (tabId === 'backup') loadBackupLogs();
 }
  
 /* ─── MAINTENANCE ─── */
@@ -848,7 +851,6 @@ async function resetMaintenance() {
   document.getElementById('maintBadge').innerHTML='<span class="status-badge-dot"></span> Inactive';
   document.getElementById('tabDotMaint').classList.remove('show');
  
-  // Reset bypass to admin-only
   document.querySelectorAll('#bypassGroup .radio-card').forEach(c => c.classList.remove('selected'));
   document.querySelector('#bypassGroup .radio-card').classList.add('selected');
   state.bypass = 'admin';
@@ -879,7 +881,7 @@ function updateLibrarianBadge(value) {
  
 /* ─── LOCKDOWN ─── */
 function onLockChange() {
-  document.getElementById('lockToggle').checked = state.lockdown;  // revert — use button
+  document.getElementById('lockToggle').checked = state.lockdown;
 }
  
 function confirmLockdown() {
@@ -982,15 +984,18 @@ function addLockEvent(type) {
 /* ─── BACKUP ─── */
 let backupRunning = false;
  
-function runBackup() {
+async function runBackup() {
   if (backupRunning) return;
-  const db  = document.getElementById('bkpDatabase').checked;
-  const upl = document.getElementById('bkpUploads').checked;
-  const sf  = document.getElementById('bkpSystemFiles').checked;
-  if (!db && !upl && !sf) {
+ 
+  const db = document.getElementById('bkpDatabase').checked;
+  const sf = document.getElementById('bkpSystemFiles').checked;
+  if (!db && !sf) {
     showToast('danger','<i class="bi bi-exclamation-circle" style="color:#ff7070"></i> Select at least one backup scope.');
     return;
   }
+ 
+  const scope = [db ? 'Database' : '', sf ? 'System Files' : ''].filter(Boolean).join(' + ');
+ 
   backupRunning = true;
   const btn = document.getElementById('backupNowBtn');
   btn.disabled = true;
@@ -1000,6 +1005,7 @@ function runBackup() {
   badge.className = 'status-badge badge-warn';
   badge.innerHTML = '<span class="status-badge-dot"></span> Running';
  
+  // Show progress bar animation while backup runs in background
   const prog = document.getElementById('backupProgress');
   prog.classList.add('show');
   const fill = document.getElementById('backupBarFill');
@@ -1007,77 +1013,121 @@ function runBackup() {
   const lbl  = document.getElementById('backupProgressLabel');
   fill.style.width = '0%'; pct.textContent = '0%';
  
-  const steps = ['Preparing backup…','Connecting to database…','Compressing files…','Packaging system files…','Finalizing…'];
+  const steps = [
+    'Connecting to database…',
+    'Dumping database tables…',
+    'Archiving uploaded files…',
+    'Bundling & encrypting…',
+    'Uploading to Dropbox…',
+    'Finalizing…'
+  ];
   let step = 0, progress = 0;
+ 
+  // Animate progress bar (visual feedback — actual work is in background)
   const interval = setInterval(() => {
-    progress += Math.random() * 20 + 8;
-    if (progress > 100) progress = 100;
+    progress += Math.random() * 12 + 4;
+    if (progress > 92) progress = 92;   // hold at 92% until API responds
     fill.style.width = progress + '%';
     pct.textContent  = Math.round(progress) + '%';
     lbl.textContent  = steps[Math.min(step++, steps.length - 1)];
-    if (progress >= 100) {
-      clearInterval(interval);
-      setTimeout(() => {
-        backupRunning = false;
-        btn.disabled  = false;
-        btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Backup Now';
-        prog.classList.remove('show');
+  }, 600);
+ 
+  try {
+    const res  = await fetch('/api/admin/backup/run', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ scope }),
+    });
+    const data = await res.json();
+ 
+    clearInterval(interval);
+    fill.style.width = '100%';
+    pct.textContent  = '100%';
+    lbl.textContent  = 'Backup queued!';
+ 
+    setTimeout(() => {
+      backupRunning = false;
+      btn.disabled  = false;
+      btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Backup Now';
+      prog.classList.remove('show');
+ 
+      if (data.success) {
         badge.className = 'status-badge badge-on';
-        badge.innerHTML = '<span class="status-badge-dot"></span> Last: just now';
-        const scope = [db?'Database':'', upl?'Uploads':'', sf?'System Files':''].filter(Boolean).join(', ');
-        const size  = (Math.random() * 80 + 20).toFixed(1) + ' MB';
-        addBackupLog('Manual', scope, size, 'Success', 'Admin');
-        showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Backup completed successfully.');
-      }, 500);
-    }
-  }, 350);
+        badge.innerHTML = '<span class="status-badge-dot"></span> Queued';
+        showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Backup started in background. Check the log in a moment.');
+        // Refresh logs after a delay to catch the result
+        setTimeout(loadBackupLogs, 8000);
+      } else {
+        badge.className = 'status-badge badge-danger';
+        badge.innerHTML = '<span class="status-badge-dot"></span> Error';
+        showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> ' + (data.error || 'Backup failed.'));
+      }
+    }, 600);
+ 
+  } catch (e) {
+    clearInterval(interval);
+    backupRunning = false;
+    btn.disabled  = false;
+    btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Backup Now';
+    prog.classList.remove('show');
+    badge.className = 'status-badge badge-danger';
+    badge.innerHTML = '<span class="status-badge-dot"></span> Error';
+    showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> Network error.');
+  }
 }
  
-function addBackupLog(type, scope, size, status, by) {
-  const ts = new Date().toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'});
-  state.backupLogs.unshift({type, scope, size, status, by, ts});
-  renderBackupLog();
+/* ─── BACKUP LOGS ─── */
+async function loadBackupLogs() {
+  try {
+    const res  = await fetch('/api/admin/backup/logs');
+    const data = await res.json();
+    if (data.error) return;
+    renderBackupLog(data.logs || []);
+  } catch (e) {
+    // silently fail
+  }
 }
  
-function renderBackupLog() {
+function renderBackupLog(logs) {
   const body = document.getElementById('backupLogBody');
   document.getElementById('logCountLabel').textContent =
-    state.backupLogs.length + ' entr' + (state.backupLogs.length === 1 ? 'y' : 'ies');
-  if (!state.backupLogs.length) {
+    logs.length + ' entr' + (logs.length === 1 ? 'y' : 'ies');
+ 
+  if (!logs.length) {
     body.innerHTML = '<tr><td colspan="6"><div class="log-empty"><i class="bi bi-archive"></i>No backup logs yet. Run your first backup above.</div></td></tr>';
     return;
   }
-  body.innerHTML = state.backupLogs.map(l => `
+ 
+  body.innerHTML = logs.map(l => `
     <tr>
-      <td style="font-family:'DM Mono',monospace;font-size:.76rem;color:rgba(218,232,245,.55);">${l.ts}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.76rem;color:rgba(218,232,245,.55);">${l.created_at}</td>
       <td><span class="log-type-badge ${l.type==='Manual'?'log-type-manual':'log-type-auto'}">${l.type}</span></td>
       <td style="color:rgba(218,232,245,.65);">${l.scope}</td>
       <td class="log-size">${l.size}</td>
       <td><span class="status-badge ${l.status==='Success'?'log-status-ok':'log-status-fail'}" style="font-size:.65rem;"><span class="status-badge-dot"></span>${l.status}</span></td>
-      <td style="color:rgba(218,232,245,.55);">${l.by}</td>
+      <td style="color:rgba(218,232,245,.55);">${l.type === 'Manual' ? 'Admin' : 'Scheduler'}${l.status==='Failed' && l.error ? `<br><span style="font-size:.68rem;color:#ff8888;">${l.error.substring(0,60)}</span>` : ''}</td>
     </tr>
   `).join('');
 }
  
-function clearBackupLogs() {
-  if (!state.backupLogs.length) {
-    showToast('','<i class="bi bi-info-circle" style="color:#9fc1e1"></i> No logs to clear.');
-    return;
-  }
-  state.backupLogs = [];
-  renderBackupLog();
-  showToast('','<i class="bi bi-trash3" style="color:#9fc1e1"></i> Backup log history cleared.');
+async function clearBackupLogs() {
+  showToast('','<i class="bi bi-info-circle" style="color:#9fc1e1"></i> Backup logs are stored in the database and cannot be cleared from the UI.');
 }
  
-function refreshLogs() {
-  renderBackupLog();
+async function refreshLogs() {
+  await loadBackupLogs();
   showToast('','<i class="bi bi-arrow-clockwise" style="color:#9fc1e1"></i> Log refreshed.');
 }
  
+/* ─── SCHEDULE ─── */
 function selectSched(chip, val) {
   document.querySelectorAll('.sched-chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
   state.schedule = val;
+  updateSchedBadge(val);
+}
+ 
+function updateSchedBadge(val) {
   const badge  = document.getElementById('schedBadge');
   const labels = {hourly:'Hourly', daily:'Daily', weekly:'Weekly', monthly:'Monthly', off:'Off'};
   if (val === 'off') {
@@ -1085,12 +1135,26 @@ function selectSched(chip, val) {
     badge.innerHTML = '<span class="status-badge-dot"></span> Disabled';
   } else {
     badge.className = 'status-badge badge-on';
-    badge.innerHTML = `<span class="status-badge-dot"></span> ${labels[val]}`;
+    badge.innerHTML = `<span class="status-badge-dot"></span> ${labels[val] || val}`;
   }
 }
  
-function saveSchedule() {
-  showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Backup schedule saved.');
+async function saveSchedule() {
+  try {
+    const res  = await fetch('/api/admin/backup/schedule', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ frequency: state.schedule }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('success','<i class="bi bi-check-circle-fill" style="color:#48c78e"></i> Backup schedule saved.');
+    } else {
+      showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> ' + (data.error || 'Save failed.'));
+    }
+  } catch (e) {
+    showToast('danger','<i class="bi bi-x-circle" style="color:#ff7070"></i> Network error.');
+  }
 }
  
 /* ─── TOAST ─── */
@@ -1101,8 +1165,8 @@ function showToast(type, html) {
   div.innerHTML = html;
   wrap.appendChild(div);
   setTimeout(() => {
-    div.style.opacity   = '0';
-    div.style.transform = 'translateX(110%)';
+    div.style.opacity    = '0';
+    div.style.transform  = 'translateX(110%)';
     div.style.transition = '.4s';
     setTimeout(() => div.remove(), 400);
   }, 3500);
@@ -1116,8 +1180,8 @@ document.getElementById('confirmOverlay').addEventListener('click', function(e) 
  
 /* ─── INIT ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  loadSettings();      // ← fetch from server on page load
-  renderBackupLog();
+  loadSettings();
+  loadBackupLogs();
 });
   </script>
 </body>

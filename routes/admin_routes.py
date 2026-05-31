@@ -1742,3 +1742,102 @@ def api_save_system_settings():
         return jsonify({'success': True}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/api/admin/backup/run', methods=['POST'])
+def api_run_backup():
+    """Trigger a manual backup. Runs in the background task queue."""
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'error': 'Unauthorized'}), 401
+ 
+    data  = request.get_json(silent=True) or {}
+    scope = data.get('scope', 'Database + Files').strip() or 'Database + Files'
+ 
+    try:
+        from task_queue import enqueue
+        from backup.backup import run_backup
+ 
+        enqueue(run_backup, backup_type='manual', scope=scope)
+        return jsonify({'success': True, 'message': 'Backup started in background.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@admin_bp.route('/api/admin/backup/logs', methods=['GET'])
+def api_backup_logs():
+    """Return the last 50 backup log entries from the DB."""
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'error': 'Unauthorized'}), 401
+ 
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT id, backup_type, scope, file_name, file_size_bytes,
+                   dropbox_path, status, error_message, created_at
+            FROM backup_logs
+            ORDER BY created_at DESC
+            LIMIT 50
+        """)
+        rows = cur.fetchall()
+        cur.close()
+ 
+        logs = []
+        for r in rows:
+            size_bytes = int(r[4]) if r[4] else 0
+            # Human-readable size
+            if size_bytes >= 1024 * 1024:
+                size_str = f"{size_bytes / (1024*1024):.1f} MB"
+            elif size_bytes >= 1024:
+                size_str = f"{size_bytes / 1024:.1f} KB"
+            else:
+                size_str = f"{size_bytes} B"
+ 
+            logs.append({
+                'id':           r[0],
+                'type':         r[1].capitalize() if r[1] else '',
+                'scope':        r[2] or '',
+                'file_name':    r[3] or '',
+                'size':         size_str,
+                'dropbox_path': r[5] or '',
+                'status':       r[6].capitalize() if r[6] else '',
+                'error':        r[7] or '',
+                'created_at':   r[8].strftime('%b %d, %Y %I:%M %p') if r[8] else '',
+            })
+ 
+        return jsonify({'logs': logs}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@admin_bp.route('/api/admin/backup/schedule', methods=['POST'])
+def api_save_backup_schedule():
+    """Save backup schedule frequency to DB and update running scheduler."""
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'error': 'Unauthorized'}), 401
+ 
+    data      = request.get_json(silent=True) or {}
+    frequency = data.get('frequency', 'weekly').strip()
+ 
+    valid = {'hourly', 'daily', 'weekly', 'monthly', 'off'}
+    if frequency not in valid:
+        return jsonify({'error': f'Invalid frequency. Must be one of: {", ".join(valid)}'}), 400
+ 
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE system_settings SET backup_frequency = %s WHERE id = 1
+        """, (frequency,))
+        mysql.connection.commit()
+        cur.close()
+ 
+        # Update the live scheduler without restarting
+        from backup.scheduler import update_schedule
+        update_schedule(frequency)
+ 
+        # Bust helpers cache so get_system_settings returns new value
+        import helpers.helpers as _helpers_module
+        _helpers_module._settings_cache = {}
+ 
+        return jsonify({'success': True, 'frequency': frequency}), 200
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'error': str(e)}), 500
