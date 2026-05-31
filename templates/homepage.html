@@ -799,6 +799,41 @@
     document.querySelectorAll('[data-sr]').forEach(el => io.observe(el));
     document.querySelectorAll('[data-sr-group]').forEach(el => io.observe(el));
   }());
+
+  (function(){
+  const sections = [
+    { id: 'offerings', href: '#offerings' },
+    { id: 'features',  href: '#features' },
+    { id: 'Vission_and_Mission', href: '#Vission_and_Mission' },
+    { id: 'services',  href: '#services' },
+  ];
+  const navAs = document.querySelectorAll('.nav-links a');
+
+  function setActive(href) {
+    navAs.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === href);
+    });
+  }
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const match = sections.find(s => s.id === e.target.id);
+        if (match) setActive(match.href);
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-60px 0px -40% 0px' });
+
+  sections.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (el) io.observe(el);
+  });
+
+  // Reset to Home when scrolled to top
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < 200) setActive('/');
+  }, { passive: true });
+})();
   </script>
 </body>
 </html>

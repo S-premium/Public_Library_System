@@ -129,7 +129,7 @@ def user_browse():
     if not is_logged_in() or require_role('user'):
         flash("Please login first", "danger")
         return redirect('/')
-    return render_template("users/books.html", user=_load_user(session['user_id']))
+    return render_template("users/books.html", user=_load_user(session['user_id']), active_page='browse')
 
 
 @user_bp.route('/about')
@@ -145,7 +145,7 @@ def user_notifications():
     if not is_logged_in() or require_role('user'):
         flash("Unauthorized access", "danger")
         return redirect('/')
-    return render_template("users/notification.html", user=_load_user(session['user_id']))
+    return render_template("users/notification.html", user=_load_user(session['user_id']), active_page='notifications')
 
 
 @user_bp.route('/user/event')
@@ -153,7 +153,7 @@ def user_event():
     if not is_logged_in() or require_role('user'):
         flash("Unauthorized access", "danger")
         return redirect('/')
-    return render_template("users/calendar_event.html", user=_load_user(session['user_id']))
+    return render_template("users/calendar_event.html", user=_load_user(session['user_id']), active_page='event')
 
 
 @user_bp.route('/user/borrowed')
@@ -177,7 +177,7 @@ def edit_profile():
     if not is_logged_in() or require_role('user'):
         flash("Unauthorized access", "danger")
         return redirect('/')
-    return render_template("users/edit_profile.html", user=_load_user(session['user_id']))
+    return render_template("users/edit_profile.html", user=_load_user(session['user_id']), active_page='settings')
 
 
 @user_bp.route('/user/settings')
@@ -200,7 +200,7 @@ def user_settings():
     cur.close()
     user['total_borrowed'] = row[0] if row else 0
 
-    return render_template('users/settings.html', user=user)
+    return render_template('users/settings.html', user=user, active_page='settings')
 
 
 # =====================================================================

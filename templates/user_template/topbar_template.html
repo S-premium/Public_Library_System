@@ -69,6 +69,7 @@
     text-decoration: none;
   }
   .calendar-btn:hover { color: #fff; background: rgba(255,255,255,.08); }
+  .calendar-btn.active { color: var(--accent, #9fc1e1); background: rgba(159,193,225,.15); }
 
   .profile-btn {
     width: 34px; height: 34px; border-radius: 50%;
@@ -249,6 +250,8 @@
   .notif-author-badge.role-librarian { color: #9fc1e1; border-color: rgba(159,193,225,.4); background: rgba(159,193,225,.1); }
 </style>
 
+{% set active_page = active_page | default('') %}
+
 <!-- NAV OVERLAY (mobile backdrop) -->
 <div class="nav-overlay" id="navOverlay"></div>
 
@@ -268,13 +271,30 @@
       </button>
     </div>
 
-    <a href="/user/home"                     class="{{ 'active' if active_page == 'home'     else '' }}"><i class="bi bi-house-door-fill"></i> Home</a>
-    <a href="/user/borrowed"                 class="{{ 'active' if active_page == 'borrowed' else '' }}"><i class="bi bi-clock-history"></i> Borrowed Books</a>
-    <a href="/about"                         class="{{ 'active' if active_page == 'about'    else '' }}"><i class="bi bi-info-circle-fill"></i> About Us</a>
+    <a href="/user/home"
+       class="{{ 'active' if active_page == 'home' else '' }}">
+      <i class="bi bi-house-door-fill"></i> Home
+    </a>
+    <a href="/user/browse"
+       class="{{ 'active' if active_page == 'browse' else '' }}">
+      <i class="bi bi-book-fill"></i> Browse
+    </a>
+    <a href="/user/borrowed"
+       class="{{ 'active' if active_page == 'borrowed' else '' }}">
+      <i class="bi bi-clock-history"></i> Borrowed Books
+    </a>
+    <a href="/about"
+       class="{{ 'active' if active_page == 'about' else '' }}">
+      <i class="bi bi-info-circle-fill"></i> About Us
+    </a>
   </nav>
 
   <div class="top-actions">
-    <a href="/user/event" class="calendar-btn" title="Calendar"><i class="bi bi-calendar3"></i></a>
+    <a href="/user/event"
+       class="calendar-btn {{ 'active' if active_page == 'event' else '' }}"
+       title="Calendar">
+      <i class="bi bi-calendar3"></i>
+    </a>
 
     <button type="button" class="notif-btn" id="notifToggleBtn"
             data-bs-toggle="modal" data-bs-target="#notificationModal" title="Notifications">
@@ -335,7 +355,6 @@
   const drawerClose = document.getElementById('navDrawerClose');
 
   function openNav() {
-    /* close profile sidebar first if it is open */
     if (window.closeProfileSidebar) window.closeProfileSidebar();
     topbarNav.classList.add('open');
     navOverlay.classList.add('show');

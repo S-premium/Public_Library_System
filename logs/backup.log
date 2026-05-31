@@ -69617,3 +69617,274 @@
 2026-05-31 18:23:46,282 [INFO] 127.0.0.1 - - [31/May/2026 18:23:46] "GET /static/models/brain.glb HTTP/1.1" 200 -
 2026-05-31 18:24:01,981 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:25:01 +08)" (scheduled at 2026-05-31 18:24:01.978531+08:00)
 2026-05-31 18:24:01,984 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:25:01 +08)" executed successfully
+2026-05-31 18:24:43,560 [INFO] 127.0.0.1 - - [31/May/2026 18:24:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:25:01,984 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:26:01 +08)" (scheduled at 2026-05-31 18:25:01.978531+08:00)
+2026-05-31 18:25:01,986 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:26:01 +08)" executed successfully
+2026-05-31 18:25:43,555 [INFO] 127.0.0.1 - - [31/May/2026 18:25:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:26:01,989 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:27:01 +08)" (scheduled at 2026-05-31 18:26:01.978531+08:00)
+2026-05-31 18:26:01,992 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:27:01 +08)" executed successfully
+2026-05-31 18:26:43,547 [INFO] 127.0.0.1 - - [31/May/2026 18:26:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:27:01,993 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:28:01 +08)" (scheduled at 2026-05-31 18:27:01.978531+08:00)
+2026-05-31 18:27:01,995 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:28:01 +08)" executed successfully
+2026-05-31 18:27:43,546 [INFO] 127.0.0.1 - - [31/May/2026 18:27:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:28:01,980 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:29:01 +08)" (scheduled at 2026-05-31 18:28:01.978531+08:00)
+2026-05-31 18:28:01,983 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:29:01 +08)" executed successfully
+2026-05-31 18:28:43,543 [INFO] 127.0.0.1 - - [31/May/2026 18:28:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:29:01,983 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:30:01 +08)" (scheduled at 2026-05-31 18:29:01.978531+08:00)
+2026-05-31 18:29:01,986 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:30:01 +08)" executed successfully
+2026-05-31 18:29:43,549 [INFO] 127.0.0.1 - - [31/May/2026 18:29:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:30:01,991 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:31:01 +08)" (scheduled at 2026-05-31 18:30:01.978531+08:00)
+2026-05-31 18:30:01,994 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:31:01 +08)" executed successfully
+2026-05-31 18:30:43,554 [INFO] 127.0.0.1 - - [31/May/2026 18:30:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:31:01,992 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:32:01 +08)" (scheduled at 2026-05-31 18:31:01.978531+08:00)
+2026-05-31 18:31:01,994 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:32:01 +08)" executed successfully
+2026-05-31 18:31:44,544 [INFO] 127.0.0.1 - - [31/May/2026 18:31:44] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:32:01,991 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:33:01 +08)" (scheduled at 2026-05-31 18:32:01.978531+08:00)
+2026-05-31 18:32:01,993 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:33:01 +08)" executed successfully
+2026-05-31 18:32:45,551 [INFO] 127.0.0.1 - - [31/May/2026 18:32:45] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:33:01,993 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:34:01 +08)" (scheduled at 2026-05-31 18:33:01.978531+08:00)
+2026-05-31 18:33:01,995 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:34:01 +08)" executed successfully
+2026-05-31 18:33:46,556 [INFO] 127.0.0.1 - - [31/May/2026 18:33:46] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:34:01,985 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:35:01 +08)" (scheduled at 2026-05-31 18:34:01.978531+08:00)
+2026-05-31 18:34:01,987 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:35:01 +08)" executed successfully
+2026-05-31 18:34:47,546 [INFO] 127.0.0.1 - - [31/May/2026 18:34:47] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:35:01,983 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:36:01 +08)" (scheduled at 2026-05-31 18:35:01.978531+08:00)
+2026-05-31 18:35:01,985 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:36:01 +08)" executed successfully
+2026-05-31 18:35:48,546 [INFO] 127.0.0.1 - - [31/May/2026 18:35:48] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:36:01,989 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:37:01 +08)" (scheduled at 2026-05-31 18:36:01.978531+08:00)
+2026-05-31 18:36:01,991 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:37:01 +08)" executed successfully
+2026-05-31 18:36:49,554 [INFO] 127.0.0.1 - - [31/May/2026 18:36:49] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:37:01,984 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:38:01 +08)" (scheduled at 2026-05-31 18:37:01.978531+08:00)
+2026-05-31 18:37:01,987 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:38:01 +08)" executed successfully
+2026-05-31 18:37:50,544 [INFO] 127.0.0.1 - - [31/May/2026 18:37:50] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:38:01,982 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:39:01 +08)" (scheduled at 2026-05-31 18:38:01.978531+08:00)
+2026-05-31 18:38:01,984 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:39:01 +08)" executed successfully
+2026-05-31 18:38:51,554 [INFO] 127.0.0.1 - - [31/May/2026 18:38:51] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:39:01,980 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:40:01 +08)" (scheduled at 2026-05-31 18:39:01.978531+08:00)
+2026-05-31 18:39:01,983 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:40:01 +08)" executed successfully
+2026-05-31 18:39:43,545 [INFO] 127.0.0.1 - - [31/May/2026 18:39:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:40:01,987 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:41:01 +08)" (scheduled at 2026-05-31 18:40:01.978531+08:00)
+2026-05-31 18:40:01,990 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:41:01 +08)" executed successfully
+2026-05-31 18:40:44,547 [INFO] 127.0.0.1 - - [31/May/2026 18:40:44] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:41:01,982 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:42:01 +08)" (scheduled at 2026-05-31 18:41:01.978531+08:00)
+2026-05-31 18:41:01,984 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:42:01 +08)" executed successfully
+2026-05-31 18:41:45,557 [INFO] 127.0.0.1 - - [31/May/2026 18:41:45] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:42:01,980 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:43:01 +08)" (scheduled at 2026-05-31 18:42:01.978531+08:00)
+2026-05-31 18:42:01,983 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:43:01 +08)" executed successfully
+2026-05-31 18:42:46,547 [INFO] 127.0.0.1 - - [31/May/2026 18:42:46] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:43:01,983 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:44:01 +08)" (scheduled at 2026-05-31 18:43:01.978531+08:00)
+2026-05-31 18:43:01,986 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:44:01 +08)" executed successfully
+2026-05-31 18:43:52,732 [INFO] 127.0.0.1 - - [31/May/2026 18:43:52] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:44:01,987 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:45:01 +08)" (scheduled at 2026-05-31 18:44:01.978531+08:00)
+2026-05-31 18:44:01,990 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:45:01 +08)" executed successfully
+2026-05-31 18:44:48,683 [INFO] 127.0.0.1 - - [31/May/2026 18:44:48] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:45:01,987 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:46:01 +08)" (scheduled at 2026-05-31 18:45:01.978531+08:00)
+2026-05-31 18:45:01,990 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:46:01 +08)" executed successfully
+2026-05-31 18:45:49,549 [INFO] 127.0.0.1 - - [31/May/2026 18:45:49] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:46:01,986 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:47:01 +08)" (scheduled at 2026-05-31 18:46:01.978531+08:00)
+2026-05-31 18:46:01,988 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:47:01 +08)" executed successfully
+2026-05-31 18:46:50,549 [INFO] 127.0.0.1 - - [31/May/2026 18:46:50] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:47:01,979 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:48:01 +08)" (scheduled at 2026-05-31 18:47:01.978531+08:00)
+2026-05-31 18:47:01,982 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:48:01 +08)" executed successfully
+2026-05-31 18:47:03,407 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET / HTTP/1.1" 200 -
+2026-05-31 18:47:03,465 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,465 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,480 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,483 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,487 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,497 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,499 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,506 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,513 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,514 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,700 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-31 18:47:03,710 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-31 18:47:03,711 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-31 18:47:03,723 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-31 18:47:03,724 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-31 18:47:03,726 [INFO] 127.0.0.1 - - [31/May/2026 18:47:03] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-31 18:47:05,589 [INFO] 127.0.0.1 - - [31/May/2026 18:47:05] "GET /no_user_about HTTP/1.1" 200 -
+2026-05-31 18:47:05,620 [INFO] 127.0.0.1 - - [31/May/2026 18:47:05] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 18:47:05,651 [INFO] 127.0.0.1 - - [31/May/2026 18:47:05] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-31 18:47:43,553 [INFO] 127.0.0.1 - - [31/May/2026 18:47:43] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:48:01,988 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:49:01 +08)" (scheduled at 2026-05-31 18:48:01.978531+08:00)
+2026-05-31 18:48:01,990 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:49:01 +08)" executed successfully
+2026-05-31 18:48:44,555 [INFO] 127.0.0.1 - - [31/May/2026 18:48:44] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:49:01,988 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:50:01 +08)" (scheduled at 2026-05-31 18:49:01.978531+08:00)
+2026-05-31 18:49:01,990 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:50:01 +08)" executed successfully
+2026-05-31 18:49:45,544 [INFO] 127.0.0.1 - - [31/May/2026 18:49:45] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:50:01,991 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:51:01 +08)" (scheduled at 2026-05-31 18:50:01.978531+08:00)
+2026-05-31 18:50:01,994 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:51:01 +08)" executed successfully
+2026-05-31 18:50:46,567 [INFO] 127.0.0.1 - - [31/May/2026 18:50:46] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:51:01,979 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:52:01 +08)" (scheduled at 2026-05-31 18:51:01.978531+08:00)
+2026-05-31 18:51:01,982 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:52:01 +08)" executed successfully
+2026-05-31 18:51:47,547 [INFO] 127.0.0.1 - - [31/May/2026 18:51:47] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:52:01,991 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:53:01 +08)" (scheduled at 2026-05-31 18:52:01.978531+08:00)
+2026-05-31 18:52:01,994 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:53:01 +08)" executed successfully
+2026-05-31 18:52:48,540 [INFO] 127.0.0.1 - - [31/May/2026 18:52:48] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:53:01,989 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:54:01 +08)" (scheduled at 2026-05-31 18:53:01.978531+08:00)
+2026-05-31 18:53:01,992 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:54:01 +08)" executed successfully
+2026-05-31 18:53:49,561 [INFO] 127.0.0.1 - - [31/May/2026 18:53:49] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 18:54:01,981 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:55:01 +08)" (scheduled at 2026-05-31 18:54:01.978531+08:00)
+2026-05-31 18:54:01,986 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 18:55:01 +08)" executed successfully
+2026-05-31 19:53:48,868 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-31 19:53:49,604 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-31 19:53:49,855 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.8.33:5000
+2026-05-31 19:53:49,855 [INFO] [33mPress CTRL+C to quit[0m
+2026-05-31 19:53:49,859 [INFO]  * Restarting with stat
+2026-05-31 19:53:50,429 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-31 19:53:50,519 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:53:50,519 [INFO] Backup scheduler started — frequency: weekly
+2026-05-31 19:53:50,522 [INFO] Added job "_do_backup" to job store "default"
+2026-05-31 19:53:50,522 [INFO] Scheduler started
+2026-05-31 19:53:50,533 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:53:50,534 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-31 19:53:50,534 [INFO] Scheduler started
+2026-05-31 19:53:51,032 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-31 19:53:51,136 [WARNING]  * Debugger is active!
+2026-05-31 19:53:51,142 [INFO]  * Debugger PIN: 866-059-899
+2026-05-31 19:54:50,541 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:54:50 +08)" (scheduled at 2026-05-31 19:54:50.533597+08:00)
+2026-05-31 19:54:50,549 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:55:50 +08)" executed successfully
+2026-05-31 19:55:50,543 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:56:50 +08)" (scheduled at 2026-05-31 19:55:50.533597+08:00)
+2026-05-31 19:55:50,545 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:56:50 +08)" executed successfully
+2026-05-31 19:56:46,158 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET / HTTP/1.1" 200 -
+2026-05-31 19:56:46,434 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,443 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,471 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,471 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,511 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,520 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,522 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,531 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,532 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,554 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,555 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-31 19:56:46,566 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-31 19:56:46,569 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-31 19:56:46,594 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-31 19:56:46,597 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-31 19:56:46,604 [INFO] 127.0.0.1 - - [31/May/2026 19:56:46] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-31 19:56:50,167 [INFO] 127.0.0.1 - - [31/May/2026 19:56:50] "GET /login HTTP/1.1" 200 -
+2026-05-31 19:56:50,221 [INFO] 127.0.0.1 - - [31/May/2026 19:56:50] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 19:56:50,542 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:57:50 +08)" (scheduled at 2026-05-31 19:56:50.533597+08:00)
+2026-05-31 19:56:50,545 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:57:50 +08)" executed successfully
+2026-05-31 19:56:55,943 [INFO] 127.0.0.1 - - [31/May/2026 19:56:55] "POST /login HTTP/1.1" 200 -
+2026-05-31 19:56:55,978 [INFO] 127.0.0.1 - - [31/May/2026 19:56:55] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,661 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "[32mPOST /verify_captcha HTTP/1.1[0m" 302 -
+2026-05-31 19:57:00,671 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "[32mGET /home HTTP/1.1[0m" 302 -
+2026-05-31 19:57:00,834 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /user/home HTTP/1.1" 200 -
+2026-05-31 19:57:00,880 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,881 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,888 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/js/appearance.js HTTP/1.1" 200 -
+2026-05-31 19:57:00,900 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,902 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,917 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,926 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,933 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,940 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,945 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,950 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,951 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,956 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:00,979 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:00,979 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:00,983 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:00,984 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:00,987 [INFO] 127.0.0.1 - - [31/May/2026 19:57:00] "GET /static/images/logo/logo4.png HTTP/1.1" 200 -
+2026-05-31 19:57:01,009 [INFO] 127.0.0.1 - - [31/May/2026 19:57:01] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 19:57:01,022 [INFO] 127.0.0.1 - - [31/May/2026 19:57:01] "GET /api/user/daily-active-count HTTP/1.1" 200 -
+2026-05-31 19:57:01,034 [INFO] 127.0.0.1 - - [31/May/2026 19:57:01] "[33mGET /api/ratings/average HTTP/1.1[0m" 404 -
+2026-05-31 19:57:01,173 [INFO] 127.0.0.1 - - [31/May/2026 19:57:01] "GET /api/user/appearance HTTP/1.1" 200 -
+2026-05-31 19:57:01,208 [INFO] 127.0.0.1 - - [31/May/2026 19:57:01] "GET /static/models/brain.glb HTTP/1.1" 200 -
+2026-05-31 19:57:15,033 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /user/browse HTTP/1.1" 200 -
+2026-05-31 19:57:15,073 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /static/js/appearance.js HTTP/1.1" 200 -
+2026-05-31 19:57:15,078 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:15,080 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:15,089 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /static/images/logo/logo4.png HTTP/1.1" 200 -
+2026-05-31 19:57:15,100 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 19:57:15,119 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /api/user/favorites HTTP/1.1" 200 -
+2026-05-31 19:57:15,125 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /api/user/search-history HTTP/1.1" 200 -
+2026-05-31 19:57:15,125 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /api/user/storage/check HTTP/1.1" 200 -
+2026-05-31 19:57:15,220 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /api/user/appearance HTTP/1.1" 200 -
+2026-05-31 19:57:15,250 [INFO] 127.0.0.1 - - [31/May/2026 19:57:15] "GET /api/books HTTP/1.1" 200 -
+2026-05-31 19:57:17,266 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /user/home HTTP/1.1" 200 -
+2026-05-31 19:57:17,297 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/js/appearance.js HTTP/1.1" 200 -
+2026-05-31 19:57:17,304 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,305 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library1.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,316 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library2.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,317 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library3.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,331 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library4.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,334 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library5.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,337 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library6.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,343 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library7.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,346 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library8.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,349 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library9.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,364 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library11.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:17,365 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library10.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,369 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/library12.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:17,374 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/readers1.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:17,379 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 19:57:17,383 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/readers2.jpg HTTP/1.1" 200 -
+2026-05-31 19:57:17,388 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "[33mGET /api/ratings/average HTTP/1.1[0m" 404 -
+2026-05-31 19:57:17,396 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,396 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /api/user/daily-active-count HTTP/1.1" 200 -
+2026-05-31 19:57:17,405 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/images/logo/logo4.png HTTP/1.1" 200 -
+2026-05-31 19:57:17,523 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /api/user/appearance HTTP/1.1" 200 -
+2026-05-31 19:57:17,557 [INFO] 127.0.0.1 - - [31/May/2026 19:57:17] "GET /static/models/brain.glb HTTP/1.1" 200 -
+2026-05-31 19:57:50,545 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:58:50 +08)" (scheduled at 2026-05-31 19:57:50.533597+08:00)
+2026-05-31 19:57:50,547 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-05-31 19:58:50 +08)" executed successfully
+2026-05-31 19:58:17,550 [INFO] 127.0.0.1 - - [31/May/2026 19:58:17] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 19:58:27,019 [INFO]  * Detected change in 'c:\\Users\\Angelo Ojera\\Desktop\\Library management System V3\\routes\\user_routes.py', reloading
+2026-05-31 19:58:27,212 [INFO]  * Restarting with stat
+2026-05-31 19:58:27,996 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-31 19:58:28,017 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:58:28,017 [INFO] Backup scheduler started — frequency: weekly
+2026-05-31 19:58:28,019 [INFO] Added job "_do_backup" to job store "default"
+2026-05-31 19:58:28,019 [INFO] Scheduler started
+2026-05-31 19:58:28,038 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:58:28,038 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-31 19:58:28,038 [INFO] Scheduler started
+2026-05-31 19:58:28,665 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-31 19:58:28,816 [WARNING]  * Debugger is active!
+2026-05-31 19:58:28,819 [INFO]  * Debugger PIN: 866-059-899
+2026-05-31 19:58:59,466 [INFO]  * Detected change in 'c:\\Users\\Angelo Ojera\\Desktop\\Library management System V3\\routes\\user_routes.py', reloading
+2026-05-31 19:58:59,607 [INFO]  * Restarting with stat
+2026-05-31 19:59:00,111 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-31 19:59:00,123 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:59:00,123 [INFO] Backup scheduler started — frequency: weekly
+2026-05-31 19:59:00,125 [INFO] Added job "_do_backup" to job store "default"
+2026-05-31 19:59:00,125 [INFO] Scheduler started
+2026-05-31 19:59:00,135 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:59:00,135 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-31 19:59:00,135 [INFO] Scheduler started
+2026-05-31 19:59:00,483 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-31 19:59:00,587 [WARNING]  * Debugger is active!
+2026-05-31 19:59:00,590 [INFO]  * Debugger PIN: 866-059-899
+2026-05-31 19:59:17,546 [INFO] 127.0.0.1 - - [31/May/2026 19:59:17] "GET /api/user/notifications HTTP/1.1" 200 -
+2026-05-31 19:59:24,091 [INFO]  * Detected change in 'c:\\Users\\Angelo Ojera\\Desktop\\Library management System V3\\routes\\user_routes.py', reloading
+2026-05-31 19:59:24,235 [INFO]  * Restarting with stat
+2026-05-31 19:59:24,740 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-31 19:59:24,753 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:59:24,754 [INFO] Backup scheduler started — frequency: weekly
+2026-05-31 19:59:24,755 [INFO] Added job "_do_backup" to job store "default"
+2026-05-31 19:59:24,755 [INFO] Scheduler started
+2026-05-31 19:59:24,766 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:59:24,766 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-31 19:59:24,766 [INFO] Scheduler started
+2026-05-31 19:59:25,127 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-05-31 19:59:25,240 [WARNING]  * Debugger is active!
+2026-05-31 19:59:25,244 [INFO]  * Debugger PIN: 866-059-899
+2026-05-31 19:59:41,577 [INFO]  * Detected change in 'c:\\Users\\Angelo Ojera\\Desktop\\Library management System V3\\routes\\user_routes.py', reloading
+2026-05-31 19:59:41,709 [INFO]  * Restarting with stat
+2026-05-31 19:59:42,161 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-05-31 19:59:42,172 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:59:42,172 [INFO] Backup scheduler started — frequency: weekly
+2026-05-31 19:59:42,173 [INFO] Added job "_do_backup" to job store "default"
+2026-05-31 19:59:42,173 [INFO] Scheduler started
+2026-05-31 19:59:42,182 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-05-31 19:59:42,182 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-05-31 19:59:42,182 [INFO] Scheduler started
+2026-05-31 20:07:52,704 [INFO] [TaskQueue] Started 4 worker thread(s).
