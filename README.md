@@ -1,6 +1,6 @@
 # Public Library Management System (LMS) - Core Application
 
-This contains the core web application for our capstone project: Preventing Data Breaches and Record Inaccuracies in Public Libraries Through a Cybersecurity-Enhanced Management System.
+This repository contains the core web application for our capstone project: Preventing Data Breaches and Record Inaccuracies in Public Libraries Through a Cybersecurity-Enhanced Management System.
 
 This focuses strictly on the system architecture, application features, backend logic, and frontend interface.
 
