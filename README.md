@@ -7,7 +7,7 @@ This focuses strictly on the system architecture, application features, backend 
 ## System Overview & Purpose:
 Many of the local public libraries still rely on manual logbooks or outdated, unmaintained systems. This leads to misplaced book tracking, data entry errors, and open vulnerabilities where user information can be leaked or modified.
 
-Our system bridges this gap by creating a secure, automated web application. It handles everyday library tasks—like cataloging books, checking availability, and processing loans, while embedding security checks directly into the code. The goal is to move the pilot library in Iloilo away from vulnerable paper processes into a secure, digital workflow.
+Our system bridges this gap by creating a secure, automated web application. It handles everyday library tasks like cataloging books and checking availability while embedding security checks directly into the code. The goal is to move the manual library in Iloilo away from vulnerable paper processes into a secure, digital workflow.
 
 ## Key System Features:
 
@@ -26,15 +26,17 @@ We structured the application around the CIA Triad to balance smooth library ope
 
 *Input Sanitation: Every text field runs through validation rules to block malicious SQL Injection payloads.
 	
-*Real-Time Status Tracking: Dynamic status updates for books (Available, Borrowed, Reserved, Room-Use-Only, Lost, or Damaged).
+*Real-Time Status Tracking: Dynamic status updates for books (Available, Borrowed, Lost, or Damaged).
 
 *Policy Automation: The backend automatically calculates due dates, tracks overdue penalties, and blocks non-circulating, government-purchased books from leaving the library without staff intervention.
 
 ## Logging & Visibility (Availability):
 
-*Live Audit Trail: A read-only logger that captures every major system event (e.g., who approved a loan, when a status changed) to ensure internal accountability.
+*Live Audit Trail: A read-only logger that captures every major system event when a status changed) to ensure internal accountability.
 
 ## Language & Tech Stack:
+
+*Tool Use: Visual Studio Code
 
 *Backend Logic: Python 3.x using the Flask web framework (chosen for its lightweight routing and quick database integration).
 
@@ -47,12 +49,15 @@ We structured the application around the CIA Triad to balance smooth library ope
 
 ### Prerequisites:
 *Make sure you have Python (version 3.8 or higher) installed
+
 *You need XAMPP to run the host of the local base server (SQL database configuration file is handled in our separate database repository)
 
 ### Installation Steps:
 
 ##Clone the application repository:##
+   
    git clone [https://github.com/S-premium/Public_Library_System.git](https://github.com/S-premium/Public_Library_System.git)
+   
    cd Public_Library_System
 
 ##Set up a Python virtual environment (recommended):
