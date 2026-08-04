@@ -784,6 +784,7 @@ def signup():
     lastname        = request.form.get('lastname',        '').strip()
     email           = request.form.get('email',           '').strip().lower()
     password        = request.form.get('password',        '').strip()
+    confirm_password= request.form.get('confirm_password', '').strip()
     gender          = request.form.get('gender',          '').strip()
     phone           = request.form.get('phone',           '').strip()
     school          = request.form.get('school',          '').strip()
@@ -798,11 +799,40 @@ def signup():
     if role not in ('admin', 'librarian', 'user'):
         role = 'user'
 
-    # ── 2. Admin / librarian path ──────────────────────────────────────
+    # ── 2. Admin / librarian path — always JSON (used by sidebar modal) ──
     if role in ('admin', 'librarian'):
-        if session.get('role') != 'admin':
-            flash("Unauthorized: Only admins can create staff accounts.", "danger")
-            return redirect('/')
+
+        def _fail(msg, status=400):
+            return jsonify({'success': False, 'message': msg}), status
+
+        # Consistent auth check with the rest of the codebase
+        if not is_logged_in() or require_role('admin'):
+            return _fail('Unauthorized: Only admins can create staff accounts.', 401)
+
+        NAME_RE  = re.compile(r"^[A-Za-z\s'\-]{2,50}$")
+        EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+        if not NAME_RE.match(firstname):
+            return _fail('First name must be letters only, at least 2 characters.')
+        if not NAME_RE.match(lastname):
+            return _fail('Last name must be letters only, at least 2 characters.')
+        if not EMAIL_RE.match(email):
+            return _fail('Enter a valid email address.')
+
+        pw_ok = (
+            len(password) >= 8
+            and re.search(r'[A-Z]', password)
+            and re.search(r'[a-z]', password)
+            and re.search(r'[0-9]', password)
+            and re.search(r'[^A-Za-z0-9]', password)
+        )
+        if not pw_ok:
+            return _fail(
+                'Password must be at least 8 characters and include uppercase, '
+                'lowercase, a number, and a special character.'
+            )
+        if password != confirm_password:
+            return _fail('Passwords do not match.')
 
         hashed         = bcrypt.generate_password_hash(password).decode('utf-8')
         enc_username   = encrypt_email(email)
@@ -814,19 +844,33 @@ def signup():
         cur.execute("SELECT id FROM users WHERE username=%s", (enc_username,))
         if cur.fetchone():
             cur.close()
-            flash("Email already exists!", "danger")
-            return redirect('/admin/home')
+            return _fail('Email already exists!', 409)
 
-        cur.execute("""
-            INSERT INTO users
-                (username, email_display, firstname, lastname, password, role,
-                 failed_attempts, is_locked, status, is_active, is_approved)
-            VALUES (%s,%s,%s,%s,%s,%s,0,0,'offline',1,1)
-        """, (enc_username, enc_email_disp, enc_firstname, enc_lastname, hashed, role))
-        mysql.connection.commit()
-        cur.close()
-        flash(f"{role.capitalize()} account created successfully!", "success")
-        return redirect('/admin/home')
+        try:
+            cur.execute("""
+                INSERT INTO users
+                    (username, email_display, firstname, lastname, password, role,
+                     failed_attempts, is_locked, status, is_active, is_approved)
+                VALUES (%s,%s,%s,%s,%s,%s,0,0,'offline',1,1)
+            """, (enc_username, enc_email_disp, enc_firstname, enc_lastname, hashed, role))
+            mysql.connection.commit()
+            new_id = cur.lastrowid
+            cur.close()
+
+            # Same blind-index treatment other user rows get, so this
+            # account is findable via search_users() later if needed.
+            from helpers import name_blind_index
+            n_hash = name_blind_index(firstname, lastname)
+            cur2 = mysql.connection.cursor()
+            cur2.execute("UPDATE users SET name_index=%s WHERE id=%s", (n_hash, new_id))
+            mysql.connection.commit()
+            cur2.close()
+
+        except Exception as e:
+            mysql.connection.rollback()
+            return _fail(f'Database error: {str(e)}', 500)
+
+        return jsonify({'success': True, 'id': new_id, 'role': role}), 201
 
     # ── 3. Server-side validation ──────────────────────────────────────
     PW_PATTERN = (
