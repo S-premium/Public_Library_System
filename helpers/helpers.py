@@ -29,7 +29,7 @@ load_dotenv()
 def download_apk():
     return send_from_directory(
         directory=os.path.join(app.root_path, 'application'),
-        path='app-debug.apk',
+        path='Iloilo_Public_Library.apk',
         as_attachment=True,
         mimetype='application/vnd.android.package-archive'
     )

@@ -71150,3 +71150,17 @@
 2026-08-04 12:52:40,110 [INFO] 127.0.0.1 - - [04/Aug/2026 12:52:40] "GET /static/images/logo.png HTTP/1.1" 200 -
 2026-08-04 12:52:42,468 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:53:42 +08)" (scheduled at 2026-08-04 12:52:42.464390+08:00)
 2026-08-04 12:52:42,469 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:53:42 +08)" executed successfully
+2026-08-04 12:53:42,466 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:54:42 +08)" (scheduled at 2026-08-04 12:53:42.464390+08:00)
+2026-08-04 12:53:42,469 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:54:42 +08)" executed successfully
+2026-08-04 12:54:42,472 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:55:42 +08)" (scheduled at 2026-08-04 12:54:42.464390+08:00)
+2026-08-04 12:54:42,474 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:55:42 +08)" executed successfully
+2026-08-04 12:55:42,475 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:56:42 +08)" (scheduled at 2026-08-04 12:55:42.464390+08:00)
+2026-08-04 12:55:42,476 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:56:42 +08)" executed successfully
+2026-08-04 12:56:42,468 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:57:42 +08)" (scheduled at 2026-08-04 12:56:42.464390+08:00)
+2026-08-04 12:56:42,470 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:57:42 +08)" executed successfully
+2026-08-04 12:57:42,468 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:58:42 +08)" (scheduled at 2026-08-04 12:57:42.464390+08:00)
+2026-08-04 12:57:42,470 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:58:42 +08)" executed successfully
+2026-08-04 12:58:42,467 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:59:42 +08)" (scheduled at 2026-08-04 12:58:42.464390+08:00)
+2026-08-04 12:58:42,470 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 12:59:42 +08)" executed successfully
+2026-08-04 12:59:42,467 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 13:00:42 +08)" (scheduled at 2026-08-04 12:59:42.464390+08:00)
+2026-08-04 12:59:42,469 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-08-04 13:00:42 +08)" executed successfully
