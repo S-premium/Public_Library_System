@@ -391,6 +391,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+  document.addEventListener('DOMContentLoaded', function () {
+
     let announcements  = [];
     let deleteTargetId = null;
     let currentFilter  = 'all';
@@ -474,30 +476,56 @@
       document.getElementById('statToday').textContent  = announcements.filter(a=>isToday(a.created_at)).length;
     }
 
-    function toggleExpand(btn) {
+    // Expose functions used by inline onclick= handlers in generated card HTML
+    window.toggleExpand = function(btn) {
       const card = btn.closest('.ann-card');
       card.classList.toggle('expanded');
       btn.textContent = card.classList.contains('expanded') ? 'Show less' : 'Read more';
-    }
+    };
 
-    const postModal   = new bootstrap.Modal(document.getElementById('postModal'));
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    // ── Guard Bootstrap modal creation so a load failure doesn't break the whole script ──
+    let postModal   = null;
+    let deleteModal = null;
+    if (window.bootstrap) {
+      try {
+        const postModalEl   = document.getElementById('postModal');
+        const deleteModalEl = document.getElementById('deleteModal');
+        if (postModalEl)   postModal   = new bootstrap.Modal(postModalEl);
+        if (deleteModalEl) deleteModal = new bootstrap.Modal(deleteModalEl);
+      } catch (e) {
+        console.error('Bootstrap modal init failed:', e);
+      }
+    } else {
+      console.error('Bootstrap JS did not load — check the CDN script tag / network connectivity.');
+    }
 
     function resetForm() {
-      ['editId','annTitle','annBody'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('annCategory').value          = 'general';
-      document.getElementById('annPin').value               = '0';
-      document.getElementById('titleCount').textContent     = '0 / 120';
-      document.getElementById('bodyCount').textContent      = '0 / 1000';
-      document.getElementById('previewBox').textContent     = 'Your message will appear here…';
-      document.getElementById('modalTitleLabel').textContent = 'New Announcement';
+      ['editId','annTitle','annBody'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+      const catEl = document.getElementById('annCategory'); if (catEl) catEl.value = 'general';
+      const pinEl = document.getElementById('annPin');      if (pinEl) pinEl.value = '0';
+      const titleCountEl = document.getElementById('titleCount'); if (titleCountEl) titleCountEl.textContent = '0 / 120';
+      const bodyCountEl  = document.getElementById('bodyCount');  if (bodyCountEl)  bodyCountEl.textContent  = '0 / 1000';
+      const previewEl = document.getElementById('previewBox'); if (previewEl) previewEl.textContent = 'Your message will appear here…';
+      const modalTitleEl = document.getElementById('modalTitleLabel'); if (modalTitleEl) modalTitleEl.textContent = 'New Announcement';
       setSelectedUser(null, '');
-      document.getElementById('submitLabel').textContent    = 'Post';
+      const submitLabelEl = document.getElementById('submitLabel'); if (submitLabelEl) submitLabelEl.textContent = 'Post';
     }
 
-    document.getElementById('openPostModal').addEventListener('click', ()=>{ resetForm(); postModal.show(); });
+    const openPostModalBtn = document.getElementById('openPostModal');
+    if (openPostModalBtn) {
+      openPostModalBtn.addEventListener('click', () => {
+        resetForm();
+        if (postModal) {
+          postModal.show();
+        } else {
+          showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Could not open the form — Bootstrap failed to load. Check your connection and reload.', 'error');
+        }
+      });
+    } else {
+      console.error('#openPostModal button not found in the DOM.');
+    }
 
-    function handleEdit(id) {
+    window.handleEdit = function(id) {
       const ann = announcements.find(a=>a.id===id); if(!ann) return;
       resetForm();
       document.getElementById('editId').value                = ann.id;
@@ -510,64 +538,79 @@
       document.getElementById('previewBox').textContent      = ann.body;
       document.getElementById('modalTitleLabel').textContent = 'Edit Announcement';
       document.getElementById('submitLabel').textContent     = 'Save Changes';
-      postModal.show();
+      if (postModal) postModal.show();
+    };
+
+    const annTitleEl = document.getElementById('annTitle');
+    if (annTitleEl) {
+      annTitleEl.addEventListener('input', function() {
+        const l=this.value.length, el=document.getElementById('titleCount');
+        el.textContent=`${l} / 120`; el.className='char-count'+(l>100?' near':'')+(l===120?' over':'');
+      });
     }
 
-    document.getElementById('annTitle').addEventListener('input', function() {
-      const l=this.value.length, el=document.getElementById('titleCount');
-      el.textContent=`${l} / 120`; el.className='char-count'+(l>100?' near':'')+(l===120?' over':'');
-    });
-    document.getElementById('annBody').addEventListener('input', function() {
-      const l=this.value.length, el=document.getElementById('bodyCount');
-      el.textContent=`${l} / 1000`; el.className='char-count'+(l>800?' near':'')+(l===1000?' over':'');
-      document.getElementById('previewBox').textContent = this.value || 'Your message will appear here…';
-    });
+    const annBodyEl = document.getElementById('annBody');
+    if (annBodyEl) {
+      annBodyEl.addEventListener('input', function() {
+        const l=this.value.length, el=document.getElementById('bodyCount');
+        el.textContent=`${l} / 1000`; el.className='char-count'+(l>800?' near':'')+(l===1000?' over':'');
+        document.getElementById('previewBox').textContent = this.value || 'Your message will appear here…';
+      });
+    }
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      const title    = document.getElementById('annTitle').value.trim();
-      const body     = document.getElementById('annBody').value.trim();
-      const category = document.getElementById('annCategory').value;
-      const pinned   = document.getElementById('annPin').value==='1';
-      const editId   = document.getElementById('editId').value;
-      if (!title) { showToast('<i class="bi bi-exclamation-circle-fill" style="color:var(--danger)"></i> Please enter a title.', 'error'); return; }
-      if (!body)  { showToast('<i class="bi bi-exclamation-circle-fill" style="color:var(--danger)"></i> Please enter a message.', 'error'); return; }
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', async () => {
+        const title    = document.getElementById('annTitle').value.trim();
+        const body     = document.getElementById('annBody').value.trim();
+        const category = document.getElementById('annCategory').value;
+        const pinned   = document.getElementById('annPin').value==='1';
+        const editId   = document.getElementById('editId').value;
+        if (!title) { showToast('<i class="bi bi-exclamation-circle-fill" style="color:var(--danger)"></i> Please enter a title.', 'error'); return; }
+        if (!body)  { showToast('<i class="bi bi-exclamation-circle-fill" style="color:var(--danger)"></i> Please enter a message.', 'error'); return; }
 
-      const btn = document.getElementById('submitBtn'); btn.disabled=true;
-      try {
-        if (editId) {
-          const res = await apiUpdate(parseInt(editId),{title,body,category,pinned});
-          if(!res.success) throw new Error();
-          const idx = announcements.findIndex(a=>a.id===parseInt(editId));
-          if(idx>-1) Object.assign(announcements[idx],{title,body,category,pinned});
-          showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement updated!', 'success');
-        } else {
-          const res = await apiCreate({title,body,category,pinned,target_user_id:selectedUserId||null});
-          if(!res.success) throw new Error();
-          announcements.unshift(res.announcement);
-          showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement posted!', 'success');
-        }
-        postModal.hide(); renderAll();
-      } catch { showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Something went wrong.', 'error'); }
-      finally { btn.disabled=false; }
-    });
+        submitBtn.disabled=true;
+        try {
+          if (editId) {
+            const res = await apiUpdate(parseInt(editId),{title,body,category,pinned});
+            if(!res.success) throw new Error();
+            const idx = announcements.findIndex(a=>a.id===parseInt(editId));
+            if(idx>-1) Object.assign(announcements[idx],{title,body,category,pinned});
+            showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement updated!', 'success');
+          } else {
+            const res = await apiCreate({title,body,category,pinned,target_user_id:selectedUserId||null});
+            if(!res.success) throw new Error();
+            announcements.unshift(res.announcement);
+            showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement posted!', 'success');
+          }
+          if (postModal) postModal.hide();
+          renderAll();
+        } catch { showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Something went wrong.', 'error'); }
+        finally { submitBtn.disabled=false; }
+      });
+    }
 
-    function handleDeletePrompt(id) {
+    window.handleDeletePrompt = function(id) {
       const ann = announcements.find(a=>a.id===id); if(!ann) return;
       deleteTargetId = id;
       document.getElementById('deleteTitle').textContent = `"${ann.title}"`;
-      deleteModal.show();
+      if (deleteModal) deleteModal.show();
+    };
+
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+      confirmDeleteBtn.addEventListener('click', async () => {
+        if(!deleteTargetId) return;
+        await apiDelete(deleteTargetId);
+        announcements = announcements.filter(a=>a.id!==deleteTargetId);
+        if (deleteModal) deleteModal.hide();
+        deleteTargetId=null;
+        showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement deleted.', 'success');
+        renderAll();
+      });
     }
 
-    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-      if(!deleteTargetId) return;
-      await apiDelete(deleteTargetId);
-      announcements = announcements.filter(a=>a.id!==deleteTargetId);
-      deleteModal.hide(); deleteTargetId=null;
-      showToast('<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> Announcement deleted.', 'success');
-      renderAll();
-    });
-
-    async function handlePin(id) {
+    window.handlePin = async function(id) {
       const res = await apiTogglePin(id);
       if(res.success) {
         const ann = announcements.find(a=>a.id===id);
@@ -575,7 +618,7 @@
         showToast(`<i class="bi bi-check-circle-fill" style="color:var(--accent2)"></i> ${res.pinned?'Pinned!':'Unpinned.'}`, 'success');
         renderAll();
       }
-    }
+    };
 
     document.querySelectorAll('.filter-pill').forEach(pill => {
       pill.addEventListener('click', function() {
@@ -583,17 +626,32 @@
         this.classList.add('active'); currentFilter=this.dataset.filter; renderAll();
       });
     });
-    document.getElementById('searchInput').addEventListener('input', function() { searchQuery=this.value; renderAll(); });
 
-    function showToast(msg, type='') {
-      const t=document.createElement('div'); t.className=`toast-msg ${type}`; t.innerHTML=msg;
-      document.getElementById('toastWrap').appendChild(t); setTimeout(()=>t.remove(),3800);
+    const searchInputEl = document.getElementById('searchInput');
+    if (searchInputEl) {
+      searchInputEl.addEventListener('input', function() { searchQuery=this.value; renderAll(); });
     }
 
-    const menuToggle=document.getElementById('menuToggle'), navLinks=document.getElementById('navLinks');
-    menuToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
-    document.addEventListener('click',e=>{ if(!menuToggle.contains(e.target)&&!navLinks.contains(e.target)) navLinks.classList.remove('open'); });
+    function showToast(msg, type='') {
+      const wrap = document.getElementById('toastWrap');
+      if (!wrap) return;
+      const t=document.createElement('div'); t.className=`toast-msg ${type}`; t.innerHTML=msg;
+      wrap.appendChild(t); setTimeout(()=>t.remove(),3800);
+    }
 
+    // ── Mobile menu toggle (guarded — these ids come from the topbar include) ──
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks   = document.getElementById('navLinks');
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+      document.addEventListener('click', e => {
+        if (!menuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+          navLinks.classList.remove('open');
+        }
+      });
+    } else {
+      console.warn('menuToggle/navLinks not found — check topbar_template.html ids.');
+    }
 
     /* ── USER SEARCH ── */
     let selectedUserId = null;
@@ -607,16 +665,19 @@
 
     function setSelectedUser(id, name) {
       selectedUserId = id;
-      document.getElementById('targetUserId').value = id || '';
-      userSelectedName.textContent  = name;
-      userSelectedBadge.classList.toggle('show', !!id);
-      broadcastNote.style.display   = id ? 'none' : 'flex';
-      userSearchInput.value         = '';
-      userDropdown.classList.remove('open');
-      userDropdown.innerHTML        = '';
+      const targetUserIdEl = document.getElementById('targetUserId');
+      if (targetUserIdEl) targetUserIdEl.value = id || '';
+      if (userSelectedName)  userSelectedName.textContent = name;
+      if (userSelectedBadge) userSelectedBadge.classList.toggle('show', !!id);
+      if (broadcastNote)     broadcastNote.style.display = id ? 'none' : 'flex';
+      if (userSearchInput)   userSearchInput.value = '';
+      if (userDropdown) { userDropdown.classList.remove('open'); userDropdown.innerHTML = ''; }
     }
 
-    document.getElementById('clearUserBtn').addEventListener('click', () => setSelectedUser(null, ''));
+    const clearUserBtn = document.getElementById('clearUserBtn');
+    if (clearUserBtn) {
+      clearUserBtn.addEventListener('click', () => setSelectedUser(null, ''));
+    }
 
     function buildDropdownItem(user) {
       const item = document.createElement('div');
@@ -648,50 +709,54 @@
       return item;
     }
 
-    userSearchInput.addEventListener('input', function () {
-      clearTimeout(userSearchTimeout);
-      const q = this.value.trim();
+    if (userSearchInput) {
+      userSearchInput.addEventListener('input', function () {
+        clearTimeout(userSearchTimeout);
+        const q = this.value.trim();
 
-      if (!q) {
-        userDropdown.classList.remove('open');
-        userDropdown.innerHTML = '';
-        return;
-      }
-
-      userSearchTimeout = setTimeout(async () => {
-        try {
-          const res   = await fetch('/api/users/search?q=' + encodeURIComponent(q));
-          const data  = await res.json();
-          const users = data.users || [];
-
-          userDropdown.innerHTML = '';
-
-          if (!users.length) {
-            const empty = document.createElement('div');
-            empty.className = 'user-dropdown-item';
-            const noResult = document.createElement('span');
-            noResult.className = 'u-name';
-            noResult.style.color = 'rgba(255,255,255,.4)';
-            noResult.textContent = 'No users found';
-            empty.appendChild(noResult);
-            userDropdown.appendChild(empty);
-          } else {
-            users.forEach(u => userDropdown.appendChild(buildDropdownItem(u)));
-          }
-
-          userDropdown.classList.add('open');
-        } catch (e) {
-          console.error('User search error:', e);
-          userDropdown.classList.remove('open');
+        if (!q) {
+          if (userDropdown) { userDropdown.classList.remove('open'); userDropdown.innerHTML = ''; }
+          return;
         }
-      }, 280);
-    });
+
+        userSearchTimeout = setTimeout(async () => {
+          try {
+            const res   = await fetch('/api/users/search?q=' + encodeURIComponent(q));
+            const data  = await res.json();
+            const users = data.users || [];
+
+            if (!userDropdown) return;
+            userDropdown.innerHTML = '';
+
+            if (!users.length) {
+              const empty = document.createElement('div');
+              empty.className = 'user-dropdown-item';
+              const noResult = document.createElement('span');
+              noResult.className = 'u-name';
+              noResult.style.color = 'rgba(255,255,255,.4)';
+              noResult.textContent = 'No users found';
+              empty.appendChild(noResult);
+              userDropdown.appendChild(empty);
+            } else {
+              users.forEach(u => userDropdown.appendChild(buildDropdownItem(u)));
+            }
+
+            userDropdown.classList.add('open');
+          } catch (e) {
+            console.error('User search error:', e);
+            if (userDropdown) userDropdown.classList.remove('open');
+          }
+        }, 280);
+      });
+    }
 
     document.addEventListener('click', function (e) {
-      if (!userSearchInput.contains(e.target) && !userDropdown.contains(e.target)) {
+      if (userSearchInput && userDropdown &&
+          !userSearchInput.contains(e.target) && !userDropdown.contains(e.target)) {
         userDropdown.classList.remove('open');
       }
     });
+
     (async () => {
       try {
         announcements = await apiGetAnnouncements();
@@ -701,6 +766,8 @@
       }
       renderAll();
     })();
+
+  }); // DOMContentLoaded
   </script>
 </body>
 </html>
