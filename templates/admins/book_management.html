@@ -71,7 +71,8 @@
 
     /* ── PAGE HEADER ── */
     .page-header {
-      padding: 24px 40px 0;
+      padding: 64px 40px 0;
+      margin-top: 16px;   /* ← add this */
       display:flex; align-items:center; justify-content:space-between;
       flex-wrap:wrap; gap:12px;
     }
@@ -85,7 +86,7 @@
     .page-title { font-size:1.5rem; font-weight:700; letter-spacing:-.03em; color:#fff; }
     .page-sub   { font-size:.82rem; color:var(--tl); margin-top:2px; }
     @media (max-width:768px) {
-      .page-header { padding: 20px 16px 0; }
+      .page-header { padding: 20px 16px 0; margin-top: 12px; }
       .page-title  { font-size: 1.2rem; }
       .page-header-icon { width:40px; height:40px; font-size:1.1rem; }
     }
