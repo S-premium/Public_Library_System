@@ -1086,17 +1086,27 @@
 
   /* ════════════════════════════════
      ADMIN NAME / AVATAR
+     Shows "Admin <LastName>" (e.g. "Admin Ojera")
   ════════════════════════════════ */
+  function setAdminLabel(lastname, initials) {
+    const last = (lastname || '').trim();
+
+    const nameEl = document.getElementById('sbUserName');
+    if (nameEl) nameEl.textContent = last ? 'Admin ' + last : 'Admin';
+
+    const initEl = document.getElementById('sbAvatarInitials');
+    if (initEl && initials) initEl.textContent = initials;
+  }
+
+  /* Lets other scripts (e.g. the settings page) update the sidebar live */
+  window.updateSidebarAdminName = setAdminLabel;
+
   async function loadAdminInfo() {
     try {
-      const res  = await fetch('/api/admin/profile');
+      const res = await fetch('/api/admin/profile');
+      if (!res.ok) return;
       const data = await res.json();
-      const name = data.name || data.username || 'Admin';
-      const nameEl = document.getElementById('sbUserName');
-      if (nameEl) nameEl.textContent = name;
-      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-      const initEl = document.getElementById('sbAvatarInitials');
-      if (initEl) initEl.textContent = initials;
+      setAdminLabel(data.lastname, data.initials);
     } catch(e) { /* silent */ }
   }
 

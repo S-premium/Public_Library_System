@@ -161,6 +161,22 @@ def admin_settings():
     )
 
 
+@admin_bp.route('/api/admin/profile')
+def api_admin_profile():
+    """Lightweight profile payload for the sidebar (name + initials)."""
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+    p = _load_admin_profile(session['user_id'])
+    return jsonify({
+        'success':   True,
+        'firstname': p.get('firstname', ''),
+        'lastname':  p.get('lastname', ''),
+        'name':      p.get('fullname', ''),
+        'initials':  p.get('initials', 'A'),
+    }), 200
+
+
 @admin_bp.route('/admin/update_profile', methods=['POST'])
 def admin_update_profile():
     """Update ONE personal-detail field of the logged-in admin."""
@@ -206,6 +222,7 @@ def admin_update_profile():
             extra = {
                 'fullname': f"{first} {last}".strip(),
                 'initials': ((first[:1] + last[:1]).upper() or 'A'),
+                'lastname': last,
             }
 
         elif field == 'gender':
