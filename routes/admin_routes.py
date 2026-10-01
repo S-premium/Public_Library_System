@@ -6,6 +6,7 @@ Blueprint: admin_bp  (url_prefix not set — routes keep their original paths)
 
 import json
 import os
+import re
 import uuid
 from datetime import datetime, date, timedelta
 
@@ -28,6 +29,7 @@ from helpers import (
     save_card_photo, resolve_book_snapshots,
     insert_card_books, update_inventory_on_borrow,
     event_to_dict, search_users, search_members,
+    name_blind_index, phone_blind_index,
 )
 
 from email_config import send_registration_decision_email
@@ -103,6 +105,195 @@ def system_settings():
         flash("Unauthorized access", "danger")
         return redirect('/')
     return render_template("admins/system_settings.html")
+
+# ── Admin settings: Account Summary + Personal Details ────────────────
+_GENDER_OPTIONS = {'Male', 'Female', 'Others'}
+_NAME_RE        = re.compile(r"^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ .'\-]{0,63}$")
+_PHONE_RE       = re.compile(r"^\+?[0-9][0-9 \-]{5,18}[0-9]$")
+
+
+def _load_admin_profile(user_id: int) -> dict:
+    """Read + decrypt the logged-in admin's profile for the settings page."""
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT firstname, lastname, email_display, gender, phone_number,
+               created_at, is_active, is_approved
+        FROM users WHERE id = %s
+    """, (user_id,))
+    row = cur.fetchone()
+    cur.close()
+    if not row:
+        return {}
+
+    first  = safe_decrypt_pii(row[0]) if row[0] else ''
+    last   = safe_decrypt_pii(row[1]) if row[1] else ''
+    is_active, is_approved = bool(row[6]), bool(row[7])
+
+    if not is_active:
+        status_label = 'Deactivated'
+    elif not is_approved:
+        status_label = 'Pending approval'
+    else:
+        status_label = 'Active & Verified'
+
+    return {
+        'firstname':    first,
+        'lastname':     last,
+        'fullname':     f"{first} {last}".strip(),
+        'initials':     ((first[:1] + last[:1]).upper() or 'A'),
+        'email':        safe_decrypt_email(row[2]) if row[2] else '',
+        'gender':       safe_decrypt_pii(row[3]) if row[3] else '',
+        'phone':        safe_decrypt_pii(row[4]) if row[4] else '',
+        'admin_since':  fmt_dt(row[5], '%B %d, %Y') if row[5] else '—',
+        'is_active':    is_active,
+        'status_label': status_label,
+    }
+
+
+@admin_bp.route('/admin-settings')
+def admin_settings():
+    if not is_logged_in() or require_role('admin'):
+        flash("Unauthorized access", "danger")
+        return redirect('/')
+    return render_template(
+        "admins/admin_settings.html",
+        admin=_load_admin_profile(session['user_id']),
+    )
+
+
+@admin_bp.route('/admin/update_profile', methods=['POST'])
+def admin_update_profile():
+    """Update ONE personal-detail field of the logged-in admin."""
+    if not is_logged_in() or require_role('admin'):
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+    field   = request.form.get('field', '').strip()
+    value   = ' '.join(request.form.get('value', '').split())   # trim + collapse spaces
+
+    def fail(msg, code=400):
+        return jsonify({'success': False, 'message': msg}), code
+
+    cur = mysql.connection.cursor()
+    try:
+        extra = {}
+
+        if field in ('firstName', 'lastName'):
+            if not _NAME_RE.match(value):
+                cur.close()
+                return fail("Enter a valid name (letters, spaces, . ' - only, max 64).")
+
+            cur.execute("SELECT firstname, lastname FROM users WHERE id = %s", (user_id,))
+            row = cur.fetchone()
+            if not row:
+                cur.close()
+                return fail("Account not found.", 404)
+
+            first = safe_decrypt_pii(row[0]) if row[0] else ''
+            last  = safe_decrypt_pii(row[1]) if row[1] else ''
+            if field == 'firstName':
+                first = value
+            else:
+                last = value
+
+            # keep the name blind index in sync so search keeps working
+            cur.execute("""
+                UPDATE users SET firstname = %s, lastname = %s, name_index = %s
+                WHERE id = %s
+            """, (encrypt_pii(first), encrypt_pii(last),
+                  name_blind_index(first, last), user_id))
+
+            extra = {
+                'fullname': f"{first} {last}".strip(),
+                'initials': ((first[:1] + last[:1]).upper() or 'A'),
+            }
+
+        elif field == 'gender':
+            if value not in _GENDER_OPTIONS:
+                cur.close()
+                return fail("Invalid gender option.")
+            cur.execute("UPDATE users SET gender = %s WHERE id = %s",
+                        (encrypt_pii(value), user_id))
+
+        elif field == 'phone':
+            if value:
+                digits = re.sub(r'\D', '', value)
+                if not _PHONE_RE.match(value) or not 7 <= len(digits) <= 15:
+                    cur.close()
+                    return fail("Enter a valid phone number (7–15 digits).")
+                cur.execute("""
+                    UPDATE users SET phone_number = %s, phone_index = %s WHERE id = %s
+                """, (encrypt_pii(value), phone_blind_index(value), user_id))
+            else:
+                cur.execute("""
+                    UPDATE users SET phone_number = NULL, phone_index = NULL WHERE id = %s
+                """, (user_id,))
+
+        else:
+            cur.close()
+            return fail("Invalid field.")
+
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'value': value, **extra}), 200
+
+    except Exception:
+        mysql.connection.rollback()
+        cur.close()
+        app.logger.exception('[admin_update_profile] failed for user %s', user_id)
+        return fail("Could not save your changes. Please try again.", 500)
+
+
+# =====================================================================
+# STAFF APPEARANCE (admin + librarian)
+#   GET  /api/staff/appearance  -> {success, theme, language}
+#   POST /api/staff/appearance  -> body {theme, language}
+# =====================================================================
+_STAFF_THEMES = {'default', 'dark', 'light'}
+_STAFF_LANGS  = {'english', 'filipino', 'hiligaynon'}
+
+
+@admin_bp.route('/api/staff/appearance', methods=['GET', 'POST'])
+def api_staff_appearance():
+    if not is_logged_in() or require_role('admin', 'librarian'):
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+
+    if request.method == 'GET':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT theme, language FROM staff_appearance WHERE user_id = %s", (user_id,))
+        row = cur.fetchone()
+        cur.close()
+        theme = row[0] if row and row[0] in _STAFF_THEMES else 'default'
+        lang  = row[1] if row and row[1] in _STAFF_LANGS  else 'english'
+        return jsonify({'success': True, 'theme': theme, 'language': lang}), 200
+
+    data  = request.get_json(silent=True) or {}
+    theme = str(data.get('theme', 'default')).strip().lower()
+    lang  = str(data.get('language', 'english')).strip().lower()
+
+    if theme not in _STAFF_THEMES:
+        return jsonify({'success': False, 'message': 'Invalid theme.'}), 400
+    if lang not in _STAFF_LANGS:
+        return jsonify({'success': False, 'message': 'Invalid language.'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO staff_appearance (user_id, theme, language)
+            VALUES (%s, %s, %s)
+            ON DUPLICATE KEY UPDATE theme = VALUES(theme), language = VALUES(language)
+        """, (user_id, theme, lang))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'theme': theme, 'language': lang}), 200
+    except Exception:
+        mysql.connection.rollback()
+        app.logger.exception('[api_staff_appearance] failed for user %s', user_id)
+        return jsonify({'success': False, 'message': 'Could not save appearance.'}), 500
+
+
 # =====================================================================
 # DASHBOARD STATS
 # =====================================================================

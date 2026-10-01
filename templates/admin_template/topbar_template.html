@@ -1,15 +1,32 @@
 <!-- topbar_template.html -->
-<!-- Slim top bar — shows on mobile only (hamburger to open sidebar), and provides page-level actions on desktop -->
+<!-- Slim top bar — hamburger on mobile, page-level actions on desktop.
+     THEMING: all colors are CSS variables with zero-specificity defaults (:where(:root)),
+     so staff_appearance.js can override them by any method. -->
 
 <style>
+  :where(:root) {
+    --accent:        #9fc1e1;
+    --accent-rgb:    159,193,225;
+    --accent2:       #48c78e;
+    --accent2-rgb:   72,199,142;
+    --danger:        #ff6363;
+    --danger-rgb:    255,99,99;
+    --fg:            #ffffff;
+    --fg-rgb:        255,255,255;
+    --topbar-bg-rgb: 25,39,54;
+    --topbar-bg:     #192736;   /* used for the notification-dot border */
+    --sb-w:          240px;
+    --sb-w-mini:     64px;
+  }
+
   /* ── TOPBAR ── */
   .adm-topbar {
     position: fixed;
     top: 0; left: var(--sb-w); right: 0;
     height: 56px;
-    background: rgba(25,39,54,0.96);
+    background: rgba(var(--topbar-bg-rgb),.96);
     backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(159,193,225,0.09);
+    border-bottom: 1px solid rgba(var(--accent-rgb),.09);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -18,7 +35,7 @@
     transition: left .3s cubic-bezier(.4,0,.2,1);
   }
 
-  /* On mobile the topbar spans full width (sidebar is off-canvas) */
+  /* Sidebar is off-canvas on mobile */
   @media (max-width: 992px) {
     .adm-topbar {
       left: 0;
@@ -32,21 +49,21 @@
     align-items: center; justify-content: center;
     width: 36px; height: 36px;
     border-radius: 9px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.09);
-    color: rgba(255,255,255,.8);
+    background: rgba(var(--fg-rgb),.06);
+    border: 1px solid rgba(var(--fg-rgb),.09);
+    color: rgba(var(--fg-rgb),.8);
     font-size: 1.25rem;
     cursor: pointer;
     flex-shrink: 0;
     transition: .15s;
   }
-  .sb-toggle:hover { background: rgba(255,255,255,.12); color: #fff; }
+  .sb-toggle:hover { background: rgba(var(--fg-rgb),.12); color: var(--fg); }
 
   @media (max-width: 992px) {
     .sb-toggle { display: flex; }
   }
 
-  /* ── MOBILE BRAND (hidden on desktop because sidebar shows it) ── */
+  /* ── MOBILE BRAND ── */
   .topbar-mobile-brand {
     display: none;
     align-items: center;
@@ -63,7 +80,7 @@
     width: 100%; height: 100%; object-fit: cover;
   }
   .topbar-mobile-brand span {
-    font-size: .88rem; font-weight: 700; color: #fff;
+    font-size: .88rem; font-weight: 700; color: var(--fg);
     white-space: nowrap;
   }
   @media (max-width: 992px) {
@@ -85,9 +102,9 @@
     position: relative;
     width: 36px; height: 36px;
     border-radius: 9px;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.08);
-    color: rgba(255,255,255,.6);
+    background: rgba(var(--fg-rgb),.05);
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    color: rgba(var(--fg-rgb),.6);
     display: flex; align-items: center; justify-content: center;
     font-size: 1rem;
     text-decoration: none;
@@ -95,7 +112,18 @@
     transition: .15s;
     flex-shrink: 0;
   }
-  .topbar-icon-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .topbar-icon-btn:hover { background: rgba(var(--fg-rgb),.1); color: var(--fg); }
+
+  /* Logout button (was inline style + onmouseover handlers, which no theme could override) */
+  .topbar-icon-btn.topbar-logout {
+    background: rgba(var(--danger-rgb),.1);
+    border-color: rgba(var(--danger-rgb),.2);
+    color: rgba(var(--danger-rgb),.8);
+  }
+  .topbar-icon-btn.topbar-logout:hover {
+    background: rgba(var(--danger-rgb),.2);
+    color: var(--danger);
+  }
 
   .topbar-notif-dot {
     position: absolute;
@@ -103,10 +131,10 @@
     min-width: 16px; height: 16px;
     border-radius: 8px;
     background: var(--danger);
-    border: 2px solid #192736;
+    border: 2px solid var(--topbar-bg);
     display: none;
     align-items: center; justify-content: center;
-    font-size: .55rem; font-weight: 700; color: #fff;
+    font-size: .55rem; font-weight: 700; color: var(--fg);
     padding: 0 3px;
     line-height: 1;
   }
@@ -116,7 +144,7 @@
   .topbar-page-title {
     font-size: .88rem;
     font-weight: 600;
-    color: rgba(255,255,255,.55);
+    color: rgba(var(--fg-rgb),.55);
     letter-spacing: -.01em;
     white-space: nowrap;
     overflow: hidden;
@@ -128,13 +156,21 @@
   }
 
   /* ── PAGE CONTENT OFFSET ── */
-  /* All pages that use this topbar need top padding */
   .page-wrap, .content-area, main {
     padding-top: 56px !important;
   }
-
-  /* Sidebar already handles left padding via body padding-left */
 </style>
+
+<!-- Load staff_appearance.js exactly once per page -->
+<script>
+  (function () {
+    if (window.__staffAppearanceLoaded) return;
+    window.__staffAppearanceLoaded = true;
+    var s = document.createElement('script');
+    s.src = "{{ url_for('static', filename='js/staff_appearance.js') }}";
+    document.head.appendChild(s);
+  })();
+</script>
 
 <!-- ══════════════════════════
      TOPBAR HTML
@@ -155,9 +191,7 @@
   </a>
 
   <!-- Page title — desktop -->
-  <span class="topbar-page-title" id="topbarPageTitle">
-    <!-- Filled dynamically by pages, or leave blank -->
-  </span>
+  <span class="topbar-page-title" id="topbarPageTitle"></span>
 
   <!-- Right-side actions -->
   <div class="topbar-actions">
@@ -174,11 +208,7 @@
     </a>
 
     <!-- Logout -->
-    <a href="/logout" class="topbar-icon-btn"
-       title="Logout"
-       style="background:rgba(255,99,99,.1);border-color:rgba(255,99,99,.2);color:rgba(255,130,130,.8);"
-       onmouseover="this.style.background='rgba(255,99,99,.2)';this.style.color='#ff6363';"
-       onmouseout="this.style.background='rgba(255,99,99,.1)';this.style.color='rgba(255,130,130,.8)';">
+    <a href="/logout" class="topbar-icon-btn topbar-logout" title="Logout">
       <i class="bi bi-box-arrow-right"></i>
     </a>
 
@@ -188,14 +218,12 @@
 
 <script>
 (function () {
-  /* Expose close sidebar to topbar (in case user taps outside on mobile) */
-  /* Main open/close lives in sidebar_template.html */
+  /* Main sidebar open/close lives in sidebar_template.html */
 
-  /* Set page title from meta or h1 */
+  /* Set page title from <title> */
   document.addEventListener('DOMContentLoaded', function () {
     const titleEl = document.getElementById('topbarPageTitle');
     if (!titleEl) return;
-    /* Try <title> tag first */
     const pageTitle = document.title.split('|')[0].trim();
     if (pageTitle && titleEl.textContent.trim() === '') {
       titleEl.textContent = pageTitle;
