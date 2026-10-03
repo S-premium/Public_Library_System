@@ -198,6 +198,10 @@
     .toast-item.success{border-left-color:var(--accent2)}
     .toast-item.error{border-left-color:var(--danger)}
 
+    .pw-eye{cursor:pointer}
+    .pw-eye:hover{color:var(--accent)}
+    .nav-badge[hidden]{display:none !important}
+
     @media (max-width:840px){
       .settings-sidebar{position:static;width:100%}
       .settings-shell{flex-direction:column}
@@ -234,7 +238,7 @@
       <div class="nav-section-label">General</div>
       <a class="nav-item" href="#sec-overview"><i class="bi bi-grid-fill"></i> Overview</a>
       <a class="nav-item" href="#sec-personal"><i class="bi bi-person-fill"></i> Personal Details</a>
-      <a class="nav-item" href="#sec-security"><i class="bi bi-shield-lock-fill"></i> Password &amp; Security <span class="nav-badge">!</span></a>
+      <a class="nav-item" href="#sec-security"><i class="bi bi-shield-lock-fill"></i> Password &amp; Security <span class="nav-badge" id="secBadge">!</span></a>
       <div class="nav-section-label" style="margin-top:10px;">Preferences</div>
       <a class="nav-item" href="#sec-appearance"><i class="bi bi-palette-fill"></i> Appearance</a>
     </nav>
@@ -296,20 +300,22 @@
             <span class="block-action">Last 6 months</span>
           </div>
 
+          {% set la = login_activity %}
+
           <div class="ls-stats">
-            <div class="ls-stat"><div class="ls-num">384h 24m</div><div class="ls-lbl">Total time logged in</div></div>
-            <div class="ls-stat"><div class="ls-num">3h 14m</div><div class="ls-lbl">Daily average</div></div>
-            <div class="ls-stat"><div class="ls-num">119 <small>days</small></div><div class="ls-lbl">Days logged in</div></div>
-            <div class="ls-stat"><div class="ls-num">4 <small>days</small></div><div class="ls-lbl">Current streak · best 10</div></div>
-            <div class="ls-stat"><div class="ls-num">7h 00m</div><div class="ls-lbl">Longest day · May 09</div></div>
+            <div class="ls-stat"><div class="ls-num">{{ la.total }}</div><div class="ls-lbl">Total time logged in</div></div>
+            <div class="ls-stat"><div class="ls-num">{{ la.avg }}</div><div class="ls-lbl">Daily average</div></div>
+            <div class="ls-stat"><div class="ls-num">{{ la.days }} <small>days</small></div><div class="ls-lbl">Days logged in</div></div>
+            <div class="ls-stat"><div class="ls-num">{{ la.streak }} <small>days</small></div><div class="ls-lbl">Current streak · best {{ la.best_streak }}</div></div>
+            <div class="ls-stat"><div class="ls-num">{{ la.longest }}</div><div class="ls-lbl">Longest day · {{ la.longest_label }}</div></div>
           </div>
 
           <div class="hm-wrap">
             <div class="hm-scroll">
-              <div class="hm-months"><span class="hm-daylbl"></span><span class="hm-mon">Apr</span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon">May</span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon">Jun</span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon">Jul</span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon">Aug</span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon">Sep</span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span><span class="hm-mon"></span></div>
+              <div class="hm-months"><span class="hm-daylbl"></span>{% for m in la.months %}<span class="hm-mon">{{ m }}</span>{% endfor %}</div>
               <div class="hm-body">
                 <div class="hm-daylbl-col"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
-                <div class="hm-col"><span class="hm-cell l2" title="Sun, Apr 05, 2026 — 2h 00m"></span><span class="hm-cell l1" title="Mon, Apr 06, 2026 — 0h 48m"></span><span class="hm-cell l2" title="Tue, Apr 07, 2026 — 1h 30m"></span><span class="hm-cell l1" title="Wed, Apr 08, 2026 — 0h 48m"></span><span class="hm-cell l0" title="Thu, Apr 09, 2026 — No login"></span><span class="hm-cell l1" title="Fri, Apr 10, 2026 — 1h 00m"></span><span class="hm-cell l1" title="Sat, Apr 11, 2026 — 1h 00m"></span></div><div class="hm-col"><span class="hm-cell l4" title="Sun, Apr 12, 2026 — 5h 30m"></span><span class="hm-cell l2" title="Mon, Apr 13, 2026 — 1h 30m"></span><span class="hm-cell l0" title="Tue, Apr 14, 2026 — No login"></span><span class="hm-cell l1" title="Wed, Apr 15, 2026 — 0h 48m"></span><span class="hm-cell l4" title="Thu, Apr 16, 2026 — 5h 00m"></span><span class="hm-cell l3" title="Fri, Apr 17, 2026 — 3h 00m"></span><span class="hm-cell l2" title="Sat, Apr 18, 2026 — 2h 00m"></span></div><div class="hm-col"><span class="hm-cell l2" title="Sun, Apr 19, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Mon, Apr 20, 2026 — 3h 30m"></span><span class="hm-cell l2" title="Tue, Apr 21, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Wed, Apr 22, 2026 — 2h 30m"></span><span class="hm-cell l1" title="Thu, Apr 23, 2026 — 1h 00m"></span><span class="hm-cell l3" title="Fri, Apr 24, 2026 — 2h 30m"></span><span class="hm-cell l0" title="Sat, Apr 25, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Apr 26, 2026 — No login"></span><span class="hm-cell l0" title="Mon, Apr 27, 2026 — No login"></span><span class="hm-cell l4" title="Tue, Apr 28, 2026 — 6h 00m"></span><span class="hm-cell l3" title="Wed, Apr 29, 2026 — 3h 00m"></span><span class="hm-cell l0" title="Thu, Apr 30, 2026 — No login"></span><span class="hm-cell l3" title="Fri, May 01, 2026 — 3h 00m"></span><span class="hm-cell l3" title="Sat, May 02, 2026 — 3h 30m"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, May 03, 2026 — No login"></span><span class="hm-cell l0" title="Mon, May 04, 2026 — No login"></span><span class="hm-cell l0" title="Tue, May 05, 2026 — No login"></span><span class="hm-cell l1" title="Wed, May 06, 2026 — 1h 00m"></span><span class="hm-cell l4" title="Thu, May 07, 2026 — 5h 30m"></span><span class="hm-cell l3" title="Fri, May 08, 2026 — 4h 00m"></span><span class="hm-cell l4" title="Sat, May 09, 2026 — 7h 00m"></span></div><div class="hm-col"><span class="hm-cell l1" title="Sun, May 10, 2026 — 1h 00m"></span><span class="hm-cell l0" title="Mon, May 11, 2026 — No login"></span><span class="hm-cell l3" title="Tue, May 12, 2026 — 4h 00m"></span><span class="hm-cell l3" title="Wed, May 13, 2026 — 4h 30m"></span><span class="hm-cell l4" title="Thu, May 14, 2026 — 6h 00m"></span><span class="hm-cell l1" title="Fri, May 15, 2026 — 1h 00m"></span><span class="hm-cell l0" title="Sat, May 16, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, May 17, 2026 — No login"></span><span class="hm-cell l1" title="Mon, May 18, 2026 — 0h 48m"></span><span class="hm-cell l0" title="Tue, May 19, 2026 — No login"></span><span class="hm-cell l4" title="Wed, May 20, 2026 — 6h 00m"></span><span class="hm-cell l4" title="Thu, May 21, 2026 — 5h 00m"></span><span class="hm-cell l0" title="Fri, May 22, 2026 — No login"></span><span class="hm-cell l4" title="Sat, May 23, 2026 — 6h 00m"></span></div><div class="hm-col"><span class="hm-cell l2" title="Sun, May 24, 2026 — 1h 30m"></span><span class="hm-cell l3" title="Mon, May 25, 2026 — 2h 30m"></span><span class="hm-cell l0" title="Tue, May 26, 2026 — No login"></span><span class="hm-cell l3" title="Wed, May 27, 2026 — 3h 00m"></span><span class="hm-cell l4" title="Thu, May 28, 2026 — 7h 00m"></span><span class="hm-cell l4" title="Fri, May 29, 2026 — 6h 00m"></span><span class="hm-cell l3" title="Sat, May 30, 2026 — 3h 00m"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, May 31, 2026 — No login"></span><span class="hm-cell l0" title="Mon, Jun 01, 2026 — No login"></span><span class="hm-cell l0" title="Tue, Jun 02, 2026 — No login"></span><span class="hm-cell l4" title="Wed, Jun 03, 2026 — 5h 30m"></span><span class="hm-cell l0" title="Thu, Jun 04, 2026 — No login"></span><span class="hm-cell l4" title="Fri, Jun 05, 2026 — 5h 00m"></span><span class="hm-cell l0" title="Sat, Jun 06, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l2" title="Sun, Jun 07, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Mon, Jun 08, 2026 — 3h 00m"></span><span class="hm-cell l2" title="Tue, Jun 09, 2026 — 2h 00m"></span><span class="hm-cell l1" title="Wed, Jun 10, 2026 — 0h 30m"></span><span class="hm-cell l3" title="Thu, Jun 11, 2026 — 4h 30m"></span><span class="hm-cell l3" title="Fri, Jun 12, 2026 — 4h 00m"></span><span class="hm-cell l0" title="Sat, Jun 13, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Jun 14, 2026 — No login"></span><span class="hm-cell l1" title="Mon, Jun 15, 2026 — 0h 48m"></span><span class="hm-cell l4" title="Tue, Jun 16, 2026 — 5h 00m"></span><span class="hm-cell l4" title="Wed, Jun 17, 2026 — 5h 00m"></span><span class="hm-cell l4" title="Thu, Jun 18, 2026 — 5h 00m"></span><span class="hm-cell l1" title="Fri, Jun 19, 2026 — 1h 00m"></span><span class="hm-cell l0" title="Sat, Jun 20, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l2" title="Sun, Jun 21, 2026 — 1h 30m"></span><span class="hm-cell l1" title="Mon, Jun 22, 2026 — 0h 48m"></span><span class="hm-cell l2" title="Tue, Jun 23, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Wed, Jun 24, 2026 — 4h 30m"></span><span class="hm-cell l1" title="Thu, Jun 25, 2026 — 1h 00m"></span><span class="hm-cell l0" title="Fri, Jun 26, 2026 — No login"></span><span class="hm-cell l0" title="Sat, Jun 27, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l3" title="Sun, Jun 28, 2026 — 3h 00m"></span><span class="hm-cell l0" title="Mon, Jun 29, 2026 — No login"></span><span class="hm-cell l4" title="Tue, Jun 30, 2026 — 7h 00m"></span><span class="hm-cell l4" title="Wed, Jul 01, 2026 — 7h 00m"></span><span class="hm-cell l0" title="Thu, Jul 02, 2026 — No login"></span><span class="hm-cell l4" title="Fri, Jul 03, 2026 — 7h 00m"></span><span class="hm-cell l2" title="Sat, Jul 04, 2026 — 2h 00m"></span></div><div class="hm-col"><span class="hm-cell l3" title="Sun, Jul 05, 2026 — 4h 00m"></span><span class="hm-cell l0" title="Mon, Jul 06, 2026 — No login"></span><span class="hm-cell l2" title="Tue, Jul 07, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Wed, Jul 08, 2026 — 2h 30m"></span><span class="hm-cell l0" title="Thu, Jul 09, 2026 — No login"></span><span class="hm-cell l2" title="Fri, Jul 10, 2026 — 2h 00m"></span><span class="hm-cell l0" title="Sat, Jul 11, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Jul 12, 2026 — No login"></span><span class="hm-cell l0" title="Mon, Jul 13, 2026 — No login"></span><span class="hm-cell l1" title="Tue, Jul 14, 2026 — 1h 00m"></span><span class="hm-cell l3" title="Wed, Jul 15, 2026 — 3h 00m"></span><span class="hm-cell l2" title="Thu, Jul 16, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Fri, Jul 17, 2026 — 3h 00m"></span><span class="hm-cell l0" title="Sat, Jul 18, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Jul 19, 2026 — No login"></span><span class="hm-cell l3" title="Mon, Jul 20, 2026 — 3h 00m"></span><span class="hm-cell l3" title="Tue, Jul 21, 2026 — 2h 30m"></span><span class="hm-cell l0" title="Wed, Jul 22, 2026 — No login"></span><span class="hm-cell l0" title="Thu, Jul 23, 2026 — No login"></span><span class="hm-cell l0" title="Fri, Jul 24, 2026 — No login"></span><span class="hm-cell l4" title="Sat, Jul 25, 2026 — 7h 00m"></span></div><div class="hm-col"><span class="hm-cell l1" title="Sun, Jul 26, 2026 — 0h 30m"></span><span class="hm-cell l0" title="Mon, Jul 27, 2026 — No login"></span><span class="hm-cell l0" title="Tue, Jul 28, 2026 — No login"></span><span class="hm-cell l3" title="Wed, Jul 29, 2026 — 2h 30m"></span><span class="hm-cell l3" title="Thu, Jul 30, 2026 — 4h 30m"></span><span class="hm-cell l3" title="Fri, Jul 31, 2026 — 4h 30m"></span><span class="hm-cell l0" title="Sat, Aug 01, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l3" title="Sun, Aug 02, 2026 — 3h 00m"></span><span class="hm-cell l4" title="Mon, Aug 03, 2026 — 7h 00m"></span><span class="hm-cell l3" title="Tue, Aug 04, 2026 — 2h 30m"></span><span class="hm-cell l1" title="Wed, Aug 05, 2026 — 0h 30m"></span><span class="hm-cell l3" title="Thu, Aug 06, 2026 — 4h 30m"></span><span class="hm-cell l0" title="Fri, Aug 07, 2026 — No login"></span><span class="hm-cell l2" title="Sat, Aug 08, 2026 — 1h 30m"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Aug 09, 2026 — No login"></span><span class="hm-cell l0" title="Mon, Aug 10, 2026 — No login"></span><span class="hm-cell l0" title="Tue, Aug 11, 2026 — No login"></span><span class="hm-cell l2" title="Wed, Aug 12, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Thu, Aug 13, 2026 — 4h 00m"></span><span class="hm-cell l4" title="Fri, Aug 14, 2026 — 5h 00m"></span><span class="hm-cell l0" title="Sat, Aug 15, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Aug 16, 2026 — No login"></span><span class="hm-cell l2" title="Mon, Aug 17, 2026 — 2h 00m"></span><span class="hm-cell l2" title="Tue, Aug 18, 2026 — 2h 00m"></span><span class="hm-cell l4" title="Wed, Aug 19, 2026 — 6h 00m"></span><span class="hm-cell l0" title="Thu, Aug 20, 2026 — No login"></span><span class="hm-cell l4" title="Fri, Aug 21, 2026 — 7h 00m"></span><span class="hm-cell l0" title="Sat, Aug 22, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l2" title="Sun, Aug 23, 2026 — 2h 00m"></span><span class="hm-cell l2" title="Mon, Aug 24, 2026 — 1h 30m"></span><span class="hm-cell l2" title="Tue, Aug 25, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Wed, Aug 26, 2026 — 2h 30m"></span><span class="hm-cell l0" title="Thu, Aug 27, 2026 — No login"></span><span class="hm-cell l3" title="Fri, Aug 28, 2026 — 3h 00m"></span><span class="hm-cell l3" title="Sat, Aug 29, 2026 — 3h 00m"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Aug 30, 2026 — No login"></span><span class="hm-cell l4" title="Mon, Aug 31, 2026 — 5h 30m"></span><span class="hm-cell l0" title="Tue, Sep 01, 2026 — No login"></span><span class="hm-cell l3" title="Wed, Sep 02, 2026 — 4h 30m"></span><span class="hm-cell l0" title="Thu, Sep 03, 2026 — No login"></span><span class="hm-cell l4" title="Fri, Sep 04, 2026 — 5h 30m"></span><span class="hm-cell l0" title="Sat, Sep 05, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Sep 06, 2026 — No login"></span><span class="hm-cell l2" title="Mon, Sep 07, 2026 — 2h 00m"></span><span class="hm-cell l1" title="Tue, Sep 08, 2026 — 0h 30m"></span><span class="hm-cell l0" title="Wed, Sep 09, 2026 — No login"></span><span class="hm-cell l0" title="Thu, Sep 10, 2026 — No login"></span><span class="hm-cell l2" title="Fri, Sep 11, 2026 — 2h 00m"></span><span class="hm-cell l4" title="Sat, Sep 12, 2026 — 7h 00m"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Sep 13, 2026 — No login"></span><span class="hm-cell l1" title="Mon, Sep 14, 2026 — 0h 48m"></span><span class="hm-cell l4" title="Tue, Sep 15, 2026 — 7h 00m"></span><span class="hm-cell l0" title="Wed, Sep 16, 2026 — No login"></span><span class="hm-cell l1" title="Thu, Sep 17, 2026 — 0h 48m"></span><span class="hm-cell l3" title="Fri, Sep 18, 2026 — 3h 00m"></span><span class="hm-cell l2" title="Sat, Sep 19, 2026 — 1h 30m"></span></div><div class="hm-col"><span class="hm-cell l0" title="Sun, Sep 20, 2026 — No login"></span><span class="hm-cell l1" title="Mon, Sep 21, 2026 — 1h 00m"></span><span class="hm-cell l3" title="Tue, Sep 22, 2026 — 2h 30m"></span><span class="hm-cell l4" title="Wed, Sep 23, 2026 — 6h 00m"></span><span class="hm-cell l4" title="Thu, Sep 24, 2026 — 7h 00m"></span><span class="hm-cell l3" title="Fri, Sep 25, 2026 — 3h 00m"></span><span class="hm-cell l0" title="Sat, Sep 26, 2026 — No login"></span></div><div class="hm-col"><span class="hm-cell l1" title="Sun, Sep 27, 2026 — 1h 00m"></span><span class="hm-cell l4" title="Mon, Sep 28, 2026 — 5h 30m"></span><span class="hm-cell l2" title="Tue, Sep 29, 2026 — 2h 00m"></span><span class="hm-cell l3" title="Wed, Sep 30, 2026 — 3h 30m"></span><span class="hm-cell hm-future"></span><span class="hm-cell hm-future"></span><span class="hm-cell hm-future"></span></div>
+                {% for col in la.columns %}<div class="hm-col">{% for c in col %}{% if c.future %}<span class="hm-cell hm-future"></span>{% else %}<span class="hm-cell l{{ c.level }}" title="{{ c.title }}"></span>{% endif %}{% endfor %}</div>{% endfor %}
               </div>
             </div>
             <div class="hm-legend">
@@ -325,51 +331,26 @@
           </div>
 
           <div class="wk-head">Last 7 days</div>
-          <div class="wk-bars"><div class="wk-bar-col" title="Thu, Sep 24 — 7h 00m">
-              <div class="wk-bar-val">7h 00m</div>
-              <div class="wk-bar-track"><div class="wk-bar l4" style="height:88%"></div></div>
-              <div class="wk-bar-day">Thu</div></div><div class="wk-bar-col" title="Fri, Sep 25 — 3h 00m">
-              <div class="wk-bar-val">3h 00m</div>
-              <div class="wk-bar-track"><div class="wk-bar l3" style="height:38%"></div></div>
-              <div class="wk-bar-day">Fri</div></div><div class="wk-bar-col" title="Sat, Sep 26 — No login">
-              <div class="wk-bar-val">—</div>
-              <div class="wk-bar-track"><div class="wk-bar l0" style="height:0%"></div></div>
-              <div class="wk-bar-day">Sat</div></div><div class="wk-bar-col" title="Sun, Sep 27 — 1h 00m">
-              <div class="wk-bar-val">1h 00m</div>
-              <div class="wk-bar-track"><div class="wk-bar l1" style="height:12%"></div></div>
-              <div class="wk-bar-day">Sun</div></div><div class="wk-bar-col" title="Mon, Sep 28 — 5h 30m">
-              <div class="wk-bar-val">5h 30m</div>
-              <div class="wk-bar-track"><div class="wk-bar l4" style="height:69%"></div></div>
-              <div class="wk-bar-day">Mon</div></div><div class="wk-bar-col" title="Tue, Sep 29 — 2h 00m">
-              <div class="wk-bar-val">2h 00m</div>
-              <div class="wk-bar-track"><div class="wk-bar l2" style="height:25%"></div></div>
-              <div class="wk-bar-day">Tue</div></div><div class="wk-bar-col" title="Wed, Sep 30 — 3h 30m">
-              <div class="wk-bar-val">3h 30m</div>
-              <div class="wk-bar-track"><div class="wk-bar l3" style="height:44%"></div></div>
-              <div class="wk-bar-day">Wed</div></div></div>
+          <div class="wk-bars">
+            {% for d in la.week %}
+            <div class="wk-bar-col" title="{{ d.title }}">
+              <div class="wk-bar-val">{{ d.value }}</div>
+              <div class="wk-bar-track"><div class="wk-bar l{{ d.level }}" style="height:{{ d.height }}%"></div></div>
+              <div class="wk-bar-day">{{ d.day }}</div>
+            </div>
+            {% endfor %}
+          </div>
 
           <div class="wk-head">Recent sessions</div>
+          {% for s in la.sessions %}
           <div class="activity-item">
-            <span class="sess-dot l3"></span>
-            <div class="act-text"><i class="bi bi-box-arrow-in-right"></i>Today · 9:40 AM → 1:10 PM</div>
-            <div class="sess-dur">3h 30m</div>
-          </div><div class="activity-item">
-            <span class="sess-dot l2"></span>
-            <div class="act-text"><i class="bi bi-box-arrow-in-right"></i>Yesterday · 8:40 AM → 10:40 AM</div>
-            <div class="sess-dur">2h 00m</div>
-          </div><div class="activity-item">
-            <span class="sess-dot l4"></span>
-            <div class="act-text"><i class="bi bi-box-arrow-in-right"></i>Sep 28 · 1:25 PM → 6:55 PM</div>
-            <div class="sess-dur">5h 30m</div>
-          </div><div class="activity-item">
-            <span class="sess-dot l1"></span>
-            <div class="act-text"><i class="bi bi-box-arrow-in-right"></i>Sep 27 · 8:10 AM → 9:10 AM</div>
-            <div class="sess-dur">1h 00m</div>
-          </div><div class="activity-item">
-            <span class="sess-dot l3"></span>
-            <div class="act-text"><i class="bi bi-box-arrow-in-right"></i>Sep 25 · 1:00 PM → 4:00 PM</div>
-            <div class="sess-dur">3h 00m</div>
+            <span class="sess-dot l{{ s.level }}"></span>
+            <div class="act-text"><i class="bi bi-box-arrow-in-right"></i>{{ s.label }}</div>
+            <div class="sess-dur">{{ s.duration }}</div>
           </div>
+          {% else %}
+          <div class="activity-item"><div class="act-text">No sessions recorded yet.</div></div>
+          {% endfor %}
         </div>
       </div>
 
@@ -458,7 +439,10 @@
       </div>
 
       <!-- SECURITY -->
-      <div class="settings-section" id="sec-security">
+      <div class="settings-section" id="sec-security"
+           data-otp="{{ 1 if admin.otp_enabled else 0 }}"
+           data-pin="{{ 1 if admin.pin_enabled else 0 }}"
+           data-haspin="{{ 1 if admin.has_pin else 0 }}">
         <div class="sec-heading">
           <h2>Password <span>&amp; Security</span></h2>
           <p>Keep your account secure.</p>
@@ -471,15 +455,29 @@
           </div>
           <div class="setting-row">
             <div class="sr-left"><div class="sr-icon green"><i class="bi bi-envelope-check-fill"></i></div><div><div class="sr-label">One-Time Password (OTP)</div><div class="sr-sub">Send a verification code to your email on login</div></div></div>
-            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div></label>
+            <label class="toggle"><input type="checkbox" id="otpToggle" {% if admin.otp_enabled %}checked{% endif %}><div class="toggle-track"></div></label>
           </div>
           <div class="setting-row">
-            <div class="sr-left"><div class="sr-icon gold"><i class="bi bi-123"></i></div><div><div class="sr-label">PIN Code</div><div class="sr-sub">Require a numeric PIN after your password on login</div></div></div>
-            <label class="toggle"><input type="checkbox"><div class="toggle-track"></div></label>
+            <div class="sr-left"><div class="sr-icon gold"><i class="bi bi-123"></i></div><div><div class="sr-label">PIN Code</div><div class="sr-sub" id="pinSub">{% if not admin.has_pin %}No PIN set yet{% elif admin.pin_expired %}Your PIN has expired (older than 1 week) – set a new one{% else %}Require your PIN after your password on login{% endif %}</div></div></div>
+            <div class="sr-actions">
+              <button type="button" class="sr-btn" id="pinSetBtn">{% if admin.has_pin %}Change PIN{% else %}Set PIN{% endif %}</button>
+              <label class="toggle"><input type="checkbox" id="pinToggle" {% if admin.pin_enabled %}checked{% endif %}><div class="toggle-track"></div></label>
+            </div>
           </div>
+
+          <div id="pinSetup" hidden style="padding:6px 20px 16px;border-top:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:10px;">
+            <div class="pw-input-wrap" style="max-width:none;"><input type="password" id="pinPassword" placeholder="Your current password"></div>
+            <div class="pw-input-wrap" style="max-width:none;"><input type="password" id="pinNew" inputmode="numeric" maxlength="6" placeholder="New PIN (6 digits)"></div>
+            <div class="pw-input-wrap" style="max-width:none;"><input type="password" id="pinConfirm" inputmode="numeric" maxlength="6" placeholder="Confirm PIN"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button type="button" class="sr-btn" id="pinCancelBtn">Cancel</button>
+              <button type="button" class="sr-btn" id="pinSaveBtn"><i class="bi bi-check2 me-1"></i> Save PIN</button>
+            </div>
+          </div>
+
           <div style="padding:10px 20px 14px;display:flex;align-items:center;gap:8px;font-size:.76rem;color:rgba(255,255,255,.3);border-top:1px solid rgba(255,255,255,.04);">
             <i class="bi bi-info-circle" style="flex-shrink:0;color:var(--accent);opacity:.6;"></i>
-            When enabled, a one-time code will be sent to your email every time you log in.
+            Changes to these toggles are saved immediately.
           </div>
         </div>
 
@@ -487,34 +485,34 @@
           <div class="block-head"><span class="block-title"><i class="bi bi-key-fill"></i> Change Password</span></div>
           <div class="setting-row">
             <div class="sr-left"><div class="sr-icon warn"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">Current Password</div></div></div>
-            <div class="pw-input-wrap"><input type="password" placeholder="Current password"><span class="pw-eye"><i class="bi bi-eye"></i></span></div>
+            <div class="pw-input-wrap"><input type="password" id="pwCurrent" placeholder="Current password" autocomplete="current-password"><span class="pw-eye"><i class="bi bi-eye"></i></span></div>
           </div>
           <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:0;padding-bottom:0;border-bottom:none;">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
               <div class="sr-left"><div class="sr-icon danger"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">New Password</div></div></div>
-              <div class="pw-input-wrap"><input type="password" placeholder="New password"><span class="pw-eye"><i class="bi bi-eye"></i></span></div>
+              <div class="pw-input-wrap"><input type="password" id="pwNew" placeholder="New password" autocomplete="new-password" maxlength="64"><span class="pw-eye"><i class="bi bi-eye"></i></span></div>
             </div>
             <div style="padding:10px 0 14px;display:flex;align-items:center;gap:12px;">
-              <div style="flex:1;"><div class="pw-strength"><div class="pw-strength-fill"></div></div></div>
-              <span style="font-size:.75rem;font-weight:700;min-width:60px;text-align:right;color:var(--warn);">Medium</span>
+              <div style="flex:1;"><div class="pw-strength"><div class="pw-strength-fill" id="pwStrengthFill" style="width:0"></div></div></div>
+              <span id="pwStrengthLbl" style="font-size:.75rem;font-weight:700;min-width:60px;text-align:right;color:rgba(255,255,255,.35);">—</span>
             </div>
           </div>
           <div class="pw-requirements">
-            <div class="pw-req-title">All requirements must be met before saving</div>
+            <div class="pw-req-title">All requirements must be met before saving · only letters, numbers and @$!%*?&amp;_#^ are allowed</div>
             <div class="pw-req-grid">
-              <div class="pw-req-item met"><div class="req-dot"><i class="bi bi-check"></i></div>At least 8 characters</div>
-              <div class="pw-req-item met"><div class="req-dot"><i class="bi bi-check"></i></div>Uppercase letter (A–Z)</div>
-              <div class="pw-req-item met"><div class="req-dot"><i class="bi bi-check"></i></div>Lowercase letter (a–z)</div>
-              <div class="pw-req-item met"><div class="req-dot"><i class="bi bi-check"></i></div>Number (0–9)</div>
-              <div class="pw-req-item"><div class="req-dot"><i class="bi bi-check"></i></div>Special character (!@#$%…)</div>
+              <div class="pw-req-item" data-rule="len"><div class="req-dot"><i class="bi bi-check"></i></div>At least 8 characters</div>
+              <div class="pw-req-item" data-rule="upper"><div class="req-dot"><i class="bi bi-check"></i></div>Uppercase letter (A–Z)</div>
+              <div class="pw-req-item" data-rule="lower"><div class="req-dot"><i class="bi bi-check"></i></div>Lowercase letter (a–z)</div>
+              <div class="pw-req-item" data-rule="num"><div class="req-dot"><i class="bi bi-check"></i></div>Number (0–9)</div>
+              <div class="pw-req-item" data-rule="special"><div class="req-dot"><i class="bi bi-check"></i></div>Special character (@$!%*?&amp;_#^)</div>
             </div>
           </div>
           <div class="setting-row">
-            <div class="sr-left"><div class="sr-icon"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">Confirm New Password</div></div></div>
-            <div class="pw-input-wrap"><input type="password" placeholder="Confirm password"><span class="pw-eye"><i class="bi bi-eye"></i></span></div>
+            <div class="sr-left"><div class="sr-icon"><i class="bi bi-lock-fill"></i></div><div><div class="sr-label">Confirm New Password</div><div class="sr-sub" id="pwMatchMsg"></div></div></div>
+            <div class="pw-input-wrap"><input type="password" id="pwConfirm" placeholder="Confirm password" autocomplete="new-password" maxlength="64"><span class="pw-eye"><i class="bi bi-eye"></i></span></div>
           </div>
           <div class="setting-row" style="justify-content:flex-end;border-top:1px solid rgba(255,255,255,.06);">
-            <span class="sr-btn"><i class="bi bi-check2 me-1"></i> Update Password</span>
+            <button type="button" class="sr-btn" id="pwUpdateBtn" disabled><i class="bi bi-check2 me-1"></i> Update Password</button>
           </div>
         </div>
       </div>
@@ -709,6 +707,162 @@
   const signOut = $('#signOutLink');
   if (signOut) signOut.addEventListener('click', () => {
     try { sessionStorage.removeItem('staff_appearance'); } catch (_) {}
+  });
+
+  // ── Password & Security ──────────────────────────────────────────
+  async function postJSON(url, body) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok || !data.success) {
+      const err = new Error(data.message || 'Request failed');
+      err.data = data;
+      throw err;
+    }
+    return data;
+  }
+
+  const secEl   = $('#sec-security');
+  const otpTg   = $('#otpToggle');
+  const pinTg   = $('#pinToggle');
+  const badge   = $('#secBadge');
+  let hasPin    = secEl.dataset.haspin === '1';
+
+  function refreshBadge() {
+    if (badge) badge.hidden = otpTg.checked || pinTg.checked;
+  }
+  refreshBadge();
+
+  // show / hide password
+  $$('.pw-eye').forEach(eye => eye.addEventListener('click', () => {
+    const input = $('input', eye.parentElement);
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    $('i', eye).className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+  }));
+
+  // OTP toggle
+  otpTg.addEventListener('change', async () => {
+    const want = otpTg.checked;
+    otpTg.disabled = true;
+    try {
+      await postJSON('/admin/security/toggle', { method: 'otp', enabled: want });
+      toast('OTP ' + (want ? 'enabled' : 'disabled'), 'success');
+    } catch (err) {
+      otpTg.checked = !want;
+      toast(err.message, 'error');
+    } finally { otpTg.disabled = false; refreshBadge(); }
+  });
+
+  // PIN toggle + setup box
+  const pinBox = $('#pinSetup');
+  const pinIn  = { pw: $('#pinPassword'), pin: $('#pinNew'), cf: $('#pinConfirm') };
+
+  function openPinBox(on) {
+    pinBox.hidden = !on;
+    pinBox.style.display = on ? 'flex' : 'none';
+    if (on) pinIn.pw.focus(); else Object.values(pinIn).forEach(i => i.value = '');
+  }
+  openPinBox(false);
+
+  $('#pinSetBtn').addEventListener('click', () => openPinBox(pinBox.hidden));
+  $('#pinCancelBtn').addEventListener('click', () => { openPinBox(false); pinTg.checked = pinTg.checked && hasPin; refreshBadge(); });
+  pinIn.pin.addEventListener('input', () => pinIn.pin.value = pinIn.pin.value.replace(/\D/g, ''));
+  pinIn.cf.addEventListener('input',  () => pinIn.cf.value  = pinIn.cf.value.replace(/\D/g, ''));
+
+  pinTg.addEventListener('change', async () => {
+    const want = pinTg.checked;
+    if (want) {                       // same as user side: enabling always goes through PIN setup
+      pinTg.checked = false;
+      openPinBox(true);
+      toast('Set a new PIN to enable it.');
+      return;
+    }
+    pinTg.disabled = true;
+    try {
+      await postJSON('/admin/security/toggle', { method: 'pin', enabled: want });
+      toast('PIN ' + (want ? 'enabled' : 'disabled'), 'success');
+    } catch (err) {
+      pinTg.checked = !want;
+      toast(err.message, 'error');
+    } finally { pinTg.disabled = false; refreshBadge(); }
+  });
+
+  $('#pinSaveBtn').addEventListener('click', async () => {
+    const btn = $('#pinSaveBtn');
+    btn.disabled = true;
+    try {
+      await postJSON('/admin/security/set_pin', {
+        password: pinIn.pw.value, pin: pinIn.pin.value, confirm: pinIn.cf.value
+      });
+      hasPin = true;
+      pinTg.checked = true;
+      $('#pinSetBtn').textContent = 'Change PIN';
+      $('#pinSub').textContent = 'Require your PIN after your password on login';
+      openPinBox(false);
+      toast('PIN saved and enabled', 'success');
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally { btn.disabled = false; refreshBadge(); }
+  });
+
+  // Change password
+  const pw = { cur: $('#pwCurrent'), nw: $('#pwNew'), cf: $('#pwConfirm') };
+  const updBtn = $('#pwUpdateBtn');
+  const RULES = {
+    len:     p => p.length >= 8,
+    upper:   p => /[A-Z]/.test(p),
+    lower:   p => /[a-z]/.test(p),
+    num:     p => /[0-9]/.test(p),
+    special: p => /[@$!%*?&_#^]/.test(p)
+  };
+
+  function refreshPw() {
+    const v = pw.nw.value;
+    let met = 0;
+    $$('.pw-req-item[data-rule]').forEach(item => {
+      const ok = RULES[item.dataset.rule](v);
+      item.classList.toggle('met', ok);
+      if (ok) met++;
+    });
+
+    const fill = $('#pwStrengthFill'), lbl = $('#pwStrengthLbl');
+    let text = '—', color = 'rgba(255,255,255,.35)';
+    if (v) {
+      if (met <= 2)      { text = 'Weak';   color = 'var(--danger)'; }
+      else if (met <= 4) { text = 'Medium'; color = 'var(--warn)'; }
+      else               { text = 'Strong'; color = 'var(--accent2)'; }
+    }
+    fill.style.width = (v ? met / 5 * 100 : 0) + '%';
+    fill.style.background = color;
+    lbl.textContent = text; lbl.style.color = color;
+
+    const msg = $('#pwMatchMsg');
+    const match = pw.cf.value !== '' && pw.cf.value === v;
+    if (!pw.cf.value) { msg.textContent = ''; }
+    else { msg.textContent = match ? 'Passwords match' : 'Passwords do not match';
+           msg.style.color = match ? 'var(--accent2)' : 'var(--danger)'; }
+
+    updBtn.disabled = !(pw.cur.value && met === 5 && match && /^[A-Za-z\d@$!%*?&_#^]+$/.test(v));
+  }
+  Object.values(pw).forEach(i => i.addEventListener('input', refreshPw));
+  refreshPw();
+
+  updBtn.addEventListener('click', async () => {
+    updBtn.disabled = true;
+    try {
+      await postJSON('/admin/security/change_password', {
+        current: pw.cur.value, new: pw.nw.value, confirm: pw.cf.value
+      });
+      Object.values(pw).forEach(i => i.value = '');
+      toast('Password updated', 'success');
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally { refreshPw(); }
   });
 })();
 </script>

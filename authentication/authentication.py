@@ -50,6 +50,7 @@ from email_config import (
     send_pin_expiry_email,
 )
 from task_queue import enqueue   # ← background task queue
+from helpers.login_sessions import record_login, record_logout, touch_session   # ← login activity
 
 bcrypt = Bcrypt(app)
 
@@ -412,6 +413,7 @@ if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
 @app.before_request
 def update_last_seen():
     if "user_id" in session:
+        touch_session()   # ← login activity: keeps the session's last_active_at fresh
         # Run in background — don't block the current request
         enqueue(_do_update_last_seen, session["user_id"])
 
@@ -599,6 +601,7 @@ def verify_captcha():
     session["role"]        = row[1]
     session.permanent      = True
     session["show_loader"] = True
+    record_login(user_id)   # ← login activity
 
     return redirect('/home')
 
@@ -685,6 +688,7 @@ def verify_otp():
     session["role"]        = role
     session.permanent      = True
     session["show_loader"] = True
+    record_login(user_id)   # ← login activity
 
     return redirect('/home')
 
@@ -722,6 +726,7 @@ def verify_pin():
     session["role"]        = row[2]
     session.permanent      = True
     session["show_loader"] = True
+    record_login(user_id)   # ← login activity
 
     return jsonify({'success': True, 'redirect': '/home'})
 
@@ -1335,6 +1340,7 @@ def forgot_pin_set_new():
 @auth_bp.route('/logout')
 def logout():
     if "user_id" in session:
+        record_logout()   # ← login activity: must run before session.clear()
         try:
             cur = mysql.connection.cursor()
             cur.execute(

@@ -31,6 +31,7 @@ from helpers import (
     event_to_dict, search_users, search_members,
     name_blind_index, phone_blind_index,
 )
+from helpers.login_sessions import get_login_activity   # ← login activity (settings page)
 
 from email_config import send_registration_decision_email
 
@@ -117,7 +118,8 @@ def _load_admin_profile(user_id: int) -> dict:
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT firstname, lastname, email_display, gender, phone_number,
-               created_at, is_active, is_approved
+               created_at, is_active, is_approved,
+               otp_enabled, pin_enabled, pin_code, pin_set_at
         FROM users WHERE id = %s
     """, (user_id,))
     row = cur.fetchone()
@@ -147,6 +149,10 @@ def _load_admin_profile(user_id: int) -> dict:
         'admin_since':  fmt_dt(row[5], '%B %d, %Y') if row[5] else '—',
         'is_active':    is_active,
         'status_label': status_label,
+        'otp_enabled':  bool(row[8]),
+        'pin_enabled':  bool(row[9]),
+        'has_pin':      bool(row[10]),
+        'pin_expired':  bool(row[11] and (datetime.now() - row[11]) > timedelta(weeks=1)),
     }
 
 
@@ -158,6 +164,7 @@ def admin_settings():
     return render_template(
         "admins/admin_settings.html",
         admin=_load_admin_profile(session['user_id']),
+        login_activity=get_login_activity(session['user_id']),   # ← FIX: was missing
     )
 
 
@@ -259,6 +266,158 @@ def admin_update_profile():
         cur.close()
         app.logger.exception('[admin_update_profile] failed for user %s', user_id)
         return fail("Could not save your changes. Please try again.", 500)
+
+
+# =====================================================================
+# PASSWORD & SECURITY
+# =====================================================================
+_PW_RULES = [
+    (lambda p: len(p) >= 8,                    "at least 8 characters"),
+    (lambda p: re.search(r'[A-Z]', p),         "an uppercase letter"),
+    (lambda p: re.search(r'[a-z]', p),         "a lowercase letter"),
+    (lambda p: re.search(r'[0-9]', p),         "a number"),
+    (lambda p: re.search(r'[@$!%*?&_#^]', p),  "a special character (@$!%*?&_#^)"),
+]
+_PW_ALLOWED = re.compile(r'^[A-Za-z\d@$!%*?&_#^]+$')   # same charset as user side
+_PIN_RE     = re.compile(r'^\d{6}$')                    # user side = exactly 6 digits
+
+
+def _password_error(pw: str):
+    if len(pw) > 64:
+        return "Password must be at most 64 characters."
+    if not _PW_ALLOWED.match(pw):
+        return "Password may only contain letters, numbers and @$!%*?&_#^"
+    missing = [label for test, label in _PW_RULES if not test(pw)]
+    return ("Password needs " + ", ".join(missing) + ".") if missing else None
+
+
+def _sec_fail(msg, code=400):
+    return jsonify({'success': False, 'message': msg}), code
+
+
+@admin_bp.route('/admin/security/change_password', methods=['POST'])
+def admin_change_password():
+    if not is_logged_in() or require_role('admin'):
+        return _sec_fail('Unauthorized', 401)
+
+    data    = request.get_json(silent=True) or {}
+    current = str(data.get('current', ''))
+    new     = str(data.get('new', ''))
+    confirm = str(data.get('confirm', ''))
+    uid     = session['user_id']
+
+    if not current or not new or not confirm:
+        return _sec_fail("Please fill in all password fields.")
+    if new != confirm:
+        return _sec_fail("New password and confirmation do not match.")
+    err = _password_error(new)
+    if err:
+        return _sec_fail(err)
+
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("SELECT password FROM users WHERE id = %s", (uid,))
+        row = cur.fetchone()
+        if not row:
+            cur.close()
+            return _sec_fail("Account not found.", 404)
+
+        if not bcrypt.check_password_hash(row[0], current):
+            cur.close()
+            return _sec_fail("Current password is incorrect.", 403)
+        if bcrypt.check_password_hash(row[0], new):
+            cur.close()
+            return _sec_fail("New password must be different from the current one.")
+
+        hashed = bcrypt.generate_password_hash(new).decode('utf-8')
+        cur.execute("""
+            UPDATE users
+            SET password = %s, failed_attempts = 0, is_locked = 0, lock_until = NULL,
+                reset_token = NULL, reset_token_expiry = NULL
+            WHERE id = %s
+        """, (hashed, uid))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'message': 'Password updated.'}), 200
+    except Exception:
+        mysql.connection.rollback()
+        cur.close()
+        app.logger.exception('[admin_change_password] failed for user %s', uid)
+        return _sec_fail("Could not update password. Please try again.", 500)
+
+
+@admin_bp.route('/admin/security/toggle', methods=['POST'])
+def admin_security_toggle():
+    """Enable/disable OTP or PIN login for the logged-in admin."""
+    if not is_logged_in() or require_role('admin'):
+        return _sec_fail('Unauthorized', 401)
+
+    data    = request.get_json(silent=True) or {}
+    method  = data.get('method')
+    enabled = 1 if data.get('enabled') else 0
+    uid     = session['user_id']
+
+    column = {'otp': 'otp_enabled', 'pin': 'pin_enabled'}.get(method)
+    if not column:
+        return _sec_fail("Invalid method.")
+
+    cur = mysql.connection.cursor()
+    try:
+        if method == 'pin' and enabled:       # same as user side: enabling goes through PIN setup
+            cur.close()
+            return jsonify({'success': True, 'needs_setup': True}), 200
+
+        cur.execute(f"UPDATE users SET {column} = %s WHERE id = %s", (enabled, uid))  # column is whitelisted above
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'method': method, 'enabled': bool(enabled)}), 200
+    except Exception:
+        mysql.connection.rollback()
+        cur.close()
+        app.logger.exception('[admin_security_toggle] failed for user %s', uid)
+        return _sec_fail("Could not save setting.", 500)
+
+
+@admin_bp.route('/admin/security/set_pin', methods=['POST'])
+def admin_set_pin():
+    """Create / change the login PIN (requires current password)."""
+    if not is_logged_in() or require_role('admin'):
+        return _sec_fail('Unauthorized', 401)
+
+    data     = request.get_json(silent=True) or {}
+    password = str(data.get('password', ''))
+    pin      = str(data.get('pin', ''))
+    confirm  = str(data.get('confirm', ''))
+    uid      = session['user_id']
+
+    if not _PIN_RE.match(pin):
+        return _sec_fail("PIN must be exactly 6 digits.")
+    if pin != confirm:
+        return _sec_fail("PIN and confirmation do not match.")
+
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("SELECT password FROM users WHERE id = %s", (uid,))
+        row = cur.fetchone()
+        if not row or not bcrypt.check_password_hash(row[0], password):
+            cur.close()
+            return _sec_fail("Password is incorrect.", 403)
+
+        hashed = bcrypt.generate_password_hash(pin).decode('utf-8')
+        cur.execute("""
+            UPDATE users
+            SET pin_code = %s, pin_set_at = %s, pin_enabled = 1,
+                pin_reset_token = NULL, pin_reset_token_expiry = NULL
+            WHERE id = %s
+        """, (hashed, datetime.now(), uid))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'message': 'PIN saved.'}), 200
+    except Exception:
+        mysql.connection.rollback()
+        cur.close()
+        app.logger.exception('[admin_set_pin] failed for user %s', uid)
+        return _sec_fail("Could not save PIN.", 500)
 
 
 # =====================================================================
