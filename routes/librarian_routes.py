@@ -50,6 +50,64 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
+
+
+# =====================================================================
+# SIDEBAR / TOPBAR CONTEXT
+# Feeds the librarian sidebar + topbar on every page:
+#   librarian_lastname  -> "Librarian Ojera"
+#   librarian_initials  -> avatar initials
+#   pending_requests    -> badge count (pending card renewals)
+#   active_page         -> sidebar highlight (auto, from the URL;
+#                          a value passed in render_template still wins)
+# =====================================================================
+
+_LIB_ACTIVE_PAGES = {
+    '/librarian/home':              'home',
+    '/librarian_dashboard':         'dashboard',
+    '/librarian/announcements':     'announcements',
+    '/librarian/library-cards':     'library_cards',
+    '/librarian/borrowing/history': 'records_returns',
+    '/librarian_user_management':   'user_mgmt',
+    '/librarian_book_management':   'book_mgmt',
+    '/librarian/event':             'event',
+    '/librarian/account-requests':  'account_requests',
+}
+
+
+@librarian_bp.app_context_processor
+def inject_librarian_sidebar():
+    if session.get('role') != 'librarian' or not session.get('user_id'):
+        return {}
+
+    lastname, initials, pending = '', 'LB', 0
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT firstname, lastname FROM users WHERE id=%s",
+                    (session['user_id'],))
+        row = cur.fetchone()
+        cur.execute("""
+            SELECT COUNT(*) FROM account_requests
+            WHERE status='pending' AND request_type='renew'
+        """)
+        pending = cur.fetchone()[0] or 0
+        cur.close()
+
+        if row:
+            first    = (safe_decrypt_pii(row[0]) or '').strip()
+            lastname = (safe_decrypt_pii(row[1]) or '').strip()
+            initials = ((first[:1] + lastname[:1]).upper()) or 'LB'
+    except Exception:
+        pass
+
+    return {
+        'librarian_lastname': lastname,
+        'librarian_initials': initials,
+        'pending_requests':   pending,
+        'active_page':        _LIB_ACTIVE_PAGES.get(request.path, ''),
+    }
+
+
 # =====================================================================
 # PAGES
 # =====================================================================
@@ -356,6 +414,8 @@ def toggle_pin(ann_id):
     mysql.connection.commit()
     cur.close()
     return jsonify({'success': True, 'pinned': bool(new_pinned)})
+
+
 # =====================================================================
 # INVENTORY
 # =====================================================================
@@ -453,6 +513,7 @@ def api_inventory_summary():
         'damaged':      int(row[1] or 0),
         'lost':         int(row[2] or 0),
     })
+
 
 # =====================================================================
 # LIBRARIAN ACCOUNT REQUESTS (Card Renewal Only)
@@ -634,6 +695,8 @@ def librarian_delete_account_request(req_id):
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'error': str(e)}), 500
+
+
 # =====================================================================
 # EVENT CALENDAR (librarian page — API is on admin_bp)
 # =====================================================================
@@ -943,15 +1006,17 @@ def api_validate_isbn():
         ),
     })
 
+
 # =====================================================================
 # LIBRARY CARDS
 # =====================================================================
+
 @librarian_bp.route('/librarian/register/member', methods=['POST'])
 def register_member():
     if not is_logged_in() or require_role('librarian'):
         flash("Unauthorized access", "danger")
         return redirect('/')
- 
+
     user_id     = request.form.get('user_id', '').strip() or None
     firstname   = request.form.get('firstname', '').strip()
     lastname    = request.form.get('lastname',  '').strip()
@@ -965,25 +1030,25 @@ def register_member():
     ren1_date   = request.form.get('renewal1_date', '').strip() or None
     ren2_chk    = 1 if request.form.get('renewal2_checked') == '1' else 0
     ren2_date   = request.form.get('renewal2_date', '').strip() or None
- 
+
     book_ids_raw = request.form.get('book_ids', '[]')
     try:
         book_ids = json.loads(book_ids_raw)
     except (ValueError, TypeError):
         book_ids = []
- 
+
     if not firstname or not lastname:
         flash("First name and last name are required.", "danger")
         return redirect('/librarian/library-cards')
- 
+
     try:
         photo_path = save_card_photo(request.files.get('photo'), 'member')
     except ValueError as e:
         flash(str(e), "danger")
         return redirect('/librarian/library-cards')
- 
+
     snapshots = resolve_book_snapshots(book_ids)
- 
+
     try:
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -1005,16 +1070,16 @@ def register_member():
     except Exception as e:
         mysql.connection.rollback()
         flash(f"Error: {str(e)}", "danger")
- 
+
     return redirect('/librarian/library-cards')
- 
- 
+
+
 @librarian_bp.route('/librarian/register/borrower', methods=['POST'])
 def register_borrower():
     if not is_logged_in() or require_role('librarian'):
         flash("Unauthorized access", "danger")
         return redirect('/')
- 
+
     firstname   = request.form.get('firstname',   '').strip()
     lastname    = request.form.get('lastname',    '').strip()
     phone       = request.form.get('phone',       '').strip() or None
@@ -1027,28 +1092,28 @@ def register_borrower():
     ren1_date   = request.form.get('renewal1_date', '').strip() or None
     ren2_chk    = 1 if request.form.get('renewal2_checked') == '1' else 0
     ren2_date   = request.form.get('renewal2_date', '').strip() or None
- 
+
     book_ids_raw = request.form.get('book_ids', '[]')
     try:
         book_ids = json.loads(book_ids_raw)
     except (ValueError, TypeError):
         book_ids = []
- 
+
     if not firstname or not lastname:
         flash("First name and last name are required.", "danger")
         return redirect('/librarian/library-cards')
     if not date_return:
         flash("Date of return is required.", "danger")
         return redirect('/librarian/library-cards')
- 
+
     try:
         photo_path = save_card_photo(request.files.get('photo'), 'borrower')
     except ValueError as e:
         flash(str(e), "danger")
         return redirect('/librarian/library-cards')
- 
+
     snapshots = resolve_book_snapshots(book_ids)
- 
+
     try:
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -1070,19 +1135,19 @@ def register_borrower():
     except Exception as e:
         mysql.connection.rollback()
         flash(f"Error: {str(e)}", "danger")
- 
+
     return redirect('/librarian/library-cards')
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards')
 def api_library_cards():
     if not is_logged_in() or require_role('librarian'):
         return jsonify({'error': 'Unauthorized'}), 401
- 
+
     cat   = request.args.get('type', '')
     q     = request.args.get('q',    '').strip()
     limit = min(int(request.args.get('limit', 100)), 500)
- 
+
     conditions, params = [], []
     if cat in ('member', 'borrower'):
         conditions.append("lc.card_type_category = %s"); params.append(cat)
@@ -1093,9 +1158,9 @@ def api_library_cards():
             "OR lcb.book_title LIKE %s OR lcb.book_isbn LIKE %s)"
         )
         params += [like, like, like, like]
- 
+
     where = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
- 
+
     cur = mysql.connection.cursor()
     cur.execute(f"""
         SELECT DISTINCT
@@ -1112,7 +1177,7 @@ def api_library_cards():
         ORDER BY lc.created_at DESC LIMIT %s
     """, params + [limit])
     rows = cur.fetchall()
- 
+
     if rows:
         card_ids = [r[0] for r in rows]
         fmt_in   = ','.join(['%s'] * len(card_ids))
@@ -1124,14 +1189,14 @@ def api_library_cards():
     else:
         book_rows = []
     cur.close()
- 
+
     books_by_card = {}
     for br in book_rows:
         books_by_card.setdefault(br[0], []).append({
             'book_id': br[1], 'title': br[2],
             'author': br[3], 'isbn': br[4], 'quantity': br[5] or 1,
         })
- 
+
     cards = []
     for r in rows:
         photo_url = ('/' + r[14].replace('\\', '/')) if r[14] else ''
@@ -1150,15 +1215,15 @@ def api_library_cards():
             'user_id': r[18],
             'books': books_by_card.get(r[0], []),
         })
- 
+
     return jsonify({'cards': cards, 'total': len(cards)})
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards/<int:card_id>', methods=['GET'])
 def api_get_library_card(card_id):
     if not is_logged_in() or require_role('librarian'):
         return jsonify({'error': 'Unauthorized'}), 401
- 
+
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT id, card_type_category, firstname, lastname, phone_number, address,
@@ -1170,14 +1235,14 @@ def api_get_library_card(card_id):
     if not r:
         cur.close()
         return jsonify({'error': 'Not found'}), 404
- 
+
     cur.execute("""
         SELECT book_id, book_title, book_author, book_isbn, quantity
         FROM library_card_books WHERE card_id=%s
     """, (card_id,))
     book_rows = cur.fetchall()
     cur.close()
- 
+
     return jsonify({
         'id': r[0], 'type': r[1], 'firstname': r[2], 'lastname': r[3],
         'phone_number': r[4] or '', 'address': r[5] or '',
@@ -1190,13 +1255,13 @@ def api_get_library_card(card_id):
         'books': [{'book_id': br[0], 'title': br[1], 'author': br[2],
                    'isbn': br[3], 'quantity': br[4] or 1} for br in book_rows],
     })
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards/<int:card_id>/update', methods=['POST'])
 def api_update_library_card(card_id):
     if not is_logged_in() or require_role('librarian'):
         return jsonify({'error': 'Unauthorized'}), 401
- 
+
     data        = request.get_json(silent=True) or {}
     firstname   = data.get('firstname', '').strip()
     lastname    = data.get('lastname',  '').strip()
@@ -1210,15 +1275,15 @@ def api_update_library_card(card_id):
     ren2_chk    = 1 if data.get('renewal2_checked') else 0
     ren2_date   = data.get('renewal2_date', '') or None
     book_ids    = data.get('book_ids', [])
- 
+
     if not firstname or not lastname:
         return jsonify({'error': 'First name and last name are required.'}), 400
- 
+
     try:
         cur = mysql.connection.cursor()
         cur.execute("SELECT book_id, quantity FROM library_card_books WHERE card_id=%s", (card_id,))
         old_books = cur.fetchall()
- 
+
         cur.execute("""
             UPDATE library_cards SET firstname=%s, lastname=%s, phone_number=%s, address=%s,
                    date_return=%s, renewal1_checked=%s, renewal1_date=%s,
@@ -1226,59 +1291,59 @@ def api_update_library_card(card_id):
             WHERE id=%s
         """, (firstname, lastname, phone, address, date_return,
               ren1_chk, ren1_date, ren2_chk, ren2_date, card_type, valid_until, card_id))
- 
+
         for book_id, qty in old_books:
             cur.execute("""
                 UPDATE book_inventory
                 SET available_copies = LEAST(total_copies, available_copies + %s)
                 WHERE book_id=%s
             """, (qty or 1, book_id))
- 
+
         cur.execute("DELETE FROM library_card_books WHERE card_id=%s", (card_id,))
         mysql.connection.commit()
         cur.close()
- 
+
         snapshots = resolve_book_snapshots(book_ids)
         insert_card_books(card_id, snapshots)
         update_inventory_on_borrow(snapshots)
- 
+
         return jsonify({'success': True}), 200
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'error': str(e)}), 500
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards/<int:card_id>/return', methods=['POST'])
 def api_return_library_card(card_id):
     if not is_logged_in() or require_role('librarian'):
         return jsonify({'error': 'Unauthorized'}), 401
- 
+
     data        = request.get_json(silent=True) or {}
     return_date = data.get('return_date', '').strip()
     items       = data.get('items', [])
- 
+
     if not return_date:
         return jsonify({'error': 'Return date is required.'}), 400
- 
+
     try:
         cur = mysql.connection.cursor()
         cur.execute("SELECT id FROM library_cards WHERE id=%s", (card_id,))
         if not cur.fetchone():
             cur.close()
             return jsonify({'error': 'Card not found.'}), 404
- 
+
         cur.execute("""
             SELECT id, book_id, book_title, book_author, book_isbn, quantity
             FROM library_card_books WHERE card_id=%s ORDER BY id ASC
         """, (card_id,))
         card_books = cur.fetchall()
- 
+
         cur.execute("""
             INSERT INTO book_returns (card_id, return_date, processed_by) VALUES (%s,%s,%s)
         """, (card_id, return_date, session['user_id']))
         mysql.connection.commit()
         return_id = cur.lastrowid
- 
+
         for item in items:
             idx          = item.get('row_index', -1)
             qty_returned = max(0, int(item.get('qty_returned', 0) or 0))
@@ -1290,7 +1355,7 @@ def api_return_library_card(card_id):
                     (return_id, card_book_id, book_title, book_author, book_isbn, qty_returned)
                 VALUES (%s,%s,%s,%s,%s,%s)
             """, (return_id, cb[0], cb[2], cb[3], cb[4], qty_returned))
- 
+
             cur.execute("SELECT id FROM book_inventory WHERE book_id=%s", (cb[1],))
             if cur.fetchone():
                 cur.execute("""
@@ -1304,15 +1369,15 @@ def api_return_library_card(card_id):
                         (book_id, total_copies, available_copies, damaged_copies, lost_copies, status)
                     VALUES (%s,%s,%s,0,0,'Available')
                 """, (cb[1], qty_returned, qty_returned))
- 
+
         mysql.connection.commit()
         cur.close()
         return jsonify({'success': True, 'return_id': return_id}), 200
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'error': str(e)}), 500
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards/returns')
 def api_list_returns():
     if not is_logged_in() or require_role('librarian'):
@@ -1328,7 +1393,7 @@ def api_list_returns():
             ORDER BY br.created_at DESC LIMIT 200
         """)
         rows = cur.fetchall()
- 
+
         if rows:
             ret_ids = [r[0] for r in rows]
             fmt_in  = ','.join(['%s'] * len(ret_ids))
@@ -1340,13 +1405,13 @@ def api_list_returns():
         else:
             item_rows = []
         cur.close()
- 
+
         items_by_return = {}
         for ir in item_rows:
             items_by_return.setdefault(ir[0], []).append({
                 'title': ir[1], 'author': ir[2], 'qty_returned': ir[3],
             })
- 
+
         returns = [
             {
                 'id': r[0], 'card_id': r[1], 'card_type': r[2],
@@ -1363,8 +1428,8 @@ def api_list_returns():
         return jsonify({'returns': returns}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards/<int:card_id>/returns')
 def api_card_returns(card_id):
     if not is_logged_in() or require_role('librarian'):
@@ -1396,8 +1461,8 @@ def api_card_returns(card_id):
         return jsonify({'returns': returns}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
- 
- 
+
+
 @librarian_bp.route('/librarian/api/library-cards/<int:card_id>/delete', methods=['POST'])
 def api_delete_library_card(card_id):
     if not is_logged_in() or require_role('librarian'):
