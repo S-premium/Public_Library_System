@@ -1487,3 +1487,13 @@ def api_delete_library_card(card_id):
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'error': str(e)}), 500
+
+# =====================================================================
+# Librarian settings
+# =====================================================================
+@librarian_bp.route('/librarian-settings')
+def librarian_settings():
+    if not is_logged_in() or require_role('librarian'):
+        flash("Unauthorized access", "danger")
+        return redirect('/')
+    return render_template("librarians/librarian_settings.html")
