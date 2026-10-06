@@ -13,7 +13,7 @@ import json
 import re
 import os
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from flask import (
     Blueprint, render_template, request, redirect,
@@ -33,6 +33,11 @@ from helpers import (
     insert_card_books, update_inventory_on_borrow,
     event_to_dict, search_users,
 )
+try:
+    from helpers import safe_decrypt_email, name_blind_index, phone_blind_index
+except ImportError:   # helpers/__init__.py doesn't re-export them
+    from helpers.helpers import safe_decrypt_email, name_blind_index, phone_blind_index
+from helpers.login_sessions import get_recent_sessions
 from email_config import send_registration_decision_email
 bcrypt = Bcrypt(app)
 
@@ -1491,9 +1496,318 @@ def api_delete_library_card(card_id):
 # =====================================================================
 # Librarian settings
 # =====================================================================
+_NAME_RE    = re.compile(r"^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ .'\-]{0,63}$")
+_PHONE_RE   = re.compile(r"^\+?[0-9][0-9 ()\-]{6,19}$")
+_GENDERS    = ('Male', 'Female', 'Others')
+PIN_EXPIRY_DAYS = 7   # keep in sync with authentication.py
+
+
+def _fetch_librarian_profile(user_id: int):
+    """Return the logged-in librarian's profile as a plain dict (decrypted), or None."""
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT firstname, lastname, phone_number, username, email_display,
+               created_at, is_locked
+        FROM users WHERE id=%s AND role='librarian'
+    """, (user_id,))
+    row = cur.fetchone()
+    if not row:
+        cur.close()
+        return None
+
+    # Optional columns: tolerate a schema that doesn't have them yet.
+    gender, is_active = '', 1
+    try:
+        cur.execute("SELECT gender FROM users WHERE id=%s", (user_id,))
+        g = cur.fetchone()
+        gender = safe_decrypt_pii(g[0]) if g and g[0] else ''
+    except Exception:
+        mysql.connection.rollback()
+    try:
+        cur.execute("SELECT is_active FROM users WHERE id=%s", (user_id,))
+        a = cur.fetchone()
+        is_active = 1 if (a is None or a[0] is None) else int(a[0])
+    except Exception:
+        mysql.connection.rollback()
+    # Security columns (see ALTER TABLE in the notes). Defaults: OTP on, no PIN.
+    otp_enabled, has_pin, pin_enabled = 0, False, False
+    pin_expired, pin_days_left = False, 0
+    try:
+        cur.execute("SELECT otp_enabled, pin_code, pin_enabled, pin_set_at FROM users WHERE id=%s",
+                    (user_id,))
+        sec = cur.fetchone()
+        if sec:
+            otp_enabled = int(bool(sec[0]))
+            has_pin     = bool(sec[1])
+            if has_pin:
+                set_at      = sec[3]
+                age         = (datetime.now() - set_at) if set_at else None
+                pin_expired = age is None or age > timedelta(days=PIN_EXPIRY_DAYS)
+                if not pin_expired:
+                    pin_days_left = max(1, PIN_EXPIRY_DAYS - age.days)
+                # Login skips an expired PIN, so don't show it as "on".
+                pin_enabled = bool(sec[2]) and not pin_expired
+    except Exception:
+        mysql.connection.rollback()
+    cur.close()
+
+    first = (safe_decrypt_pii(row[0]) or '').strip()
+    last  = (safe_decrypt_pii(row[1]) or '').strip()
+    created = row[5]
+
+    if row[6]:
+        status, status_note = 'Locked', 'Account is locked. Contact an administrator.'
+    elif not is_active:
+        status, status_note = 'Inactive', 'Account is deactivated.'
+    else:
+        status, status_note = 'Active', 'Account in good standing'
+
+    return {
+        'firstname':   first,
+        'lastname':    last,
+        'fullname':    f"{first} {last}".strip(),
+        'initials':    ((first[:1] + last[:1]).upper()) or 'LB',
+        'phone':       (safe_decrypt_pii(row[2]) or '').strip(),
+        'gender':      gender,
+        'email':       safe_decrypt_email(row[4]) or safe_decrypt_email(row[3]) or '',
+        'since':       f"{created.strftime('%B')} {created.day}, {created.year}" if created else '—',
+        'status':      status,
+        'status_note': status_note,
+        'otp_enabled': bool(otp_enabled),
+        'has_pin':     has_pin,
+        'pin_expired': pin_expired,
+        'pin_valid':   has_pin and not pin_expired,
+        'pin_days_left': pin_days_left,
+        'pin_enabled': pin_enabled,
+    }
+
+
 @librarian_bp.route('/librarian-settings')
 def librarian_settings():
     if not is_logged_in() or require_role('librarian'):
         flash("Unauthorized access", "danger")
         return redirect('/')
-    return render_template("librarians/librarian_settings.html")
+    profile = _fetch_librarian_profile(session['user_id'])
+    if not profile:
+        flash("Profile not found.", "danger")
+        return redirect('/librarian/home')
+    try:
+        login_sessions = get_recent_sessions(session['user_id'])
+    except Exception:
+        app.logger.exception('[login_sessions] could not load recent sessions')
+        login_sessions = []
+    return render_template("librarians/librarian_settings.html",
+                           profile=profile, login_sessions=login_sessions)
+
+
+@librarian_bp.route('/api/librarian/profile', methods=['GET'])
+def librarian_get_profile():
+    if not is_logged_in() or require_role('librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    profile = _fetch_librarian_profile(session['user_id'])
+    if not profile:
+        return jsonify({'error': 'Profile not found'}), 404
+    return jsonify(profile)
+
+
+@librarian_bp.route('/api/librarian/profile/update', methods=['POST'])
+def librarian_update_profile():
+    """
+    Update ONE personal-detail field per call.
+    Body: {"field": "firstName"|"lastName"|"gender"|"phone", "value": "..."}
+    Email/username and login activity are intentionally not editable here.
+    """
+    if not is_logged_in() or require_role('librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    data  = request.get_json(silent=True) or {}
+    field = data.get('field')
+    value = str(data.get('value') or '').strip()
+    uid   = session['user_id']
+
+    if field not in ('firstName', 'lastName', 'gender', 'phone'):
+        return jsonify({'error': 'Unknown field.'}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT firstname, lastname FROM users WHERE id=%s AND role='librarian'", (uid,))
+        row = cur.fetchone()
+        if not row:
+            cur.close()
+            return jsonify({'error': 'Profile not found.'}), 404
+        first = (safe_decrypt_pii(row[0]) or '').strip()
+        last  = (safe_decrypt_pii(row[1]) or '').strip()
+
+        if field in ('firstName', 'lastName'):
+            label = 'First name' if field == 'firstName' else 'Last name'
+            if not value:
+                cur.close()
+                return jsonify({'error': f'{label} cannot be empty.'}), 400
+            if not _NAME_RE.match(value):
+                cur.close()
+                return jsonify({'error': f"{label} may only contain letters, spaces, . ' and -."}), 400
+            if field == 'firstName':
+                first = value
+            else:
+                last = value
+            cur.execute("""
+                UPDATE users SET firstname=%s, lastname=%s, name_index=%s WHERE id=%s
+            """, (encrypt_pii(first), encrypt_pii(last), name_blind_index(first, last), uid))
+
+        elif field == 'phone':
+            if value and not _PHONE_RE.match(value):
+                cur.close()
+                return jsonify({'error': 'Enter a valid phone number (7–20 digits, + ( ) - allowed).'}), 400
+            cur.execute("""
+                UPDATE users SET phone_number=%s, phone_index=%s WHERE id=%s
+            """, (
+                encrypt_pii(value) if value else None,
+                phone_blind_index(value) if value else None,
+                uid,
+            ))
+
+        else:  # gender
+            if value not in _GENDERS:
+                cur.close()
+                return jsonify({'error': 'Please pick a valid gender option.'}), 400
+            cur.execute("UPDATE users SET gender=%s WHERE id=%s", (encrypt_pii(value), uid))
+
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({
+            'success':   True,
+            'firstname': first,
+            'lastname':  last,
+            'fullname':  f"{first} {last}".strip(),
+            'initials':  ((first[:1] + last[:1]).upper()) or 'LB',
+            'value':     value,
+        }), 200
+
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+# =====================================================================
+# Librarian settings — Password & Security
+# =====================================================================
+_PW_RE  = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_#^])[A-Za-z\d@$!%*?&_#^]{8,64}$")
+_PIN_RE = re.compile(r"^\d{6}$")
+
+
+def _librarian_password_ok(cur, user_id: int, plain: str) -> bool:
+    """Check the librarian's CURRENT account password (bcrypt)."""
+    if not plain:
+        return False
+    cur.execute("SELECT password FROM users WHERE id=%s AND role='librarian'", (user_id,))
+    row = cur.fetchone()
+    if not row or not row[0]:
+        return False
+    try:
+        return bcrypt.check_password_hash(row[0], plain)
+    except (ValueError, TypeError):
+        return False
+
+
+@librarian_bp.route('/api/librarian/security/otp', methods=['POST'])
+def librarian_toggle_otp():
+    if not is_logged_in() or require_role('librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    enabled = bool((request.get_json(silent=True) or {}).get('enabled'))
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE users SET otp_enabled=%s WHERE id=%s AND role='librarian'",
+                    (int(enabled), session['user_id']))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'enabled': enabled}), 200
+    except Exception:
+        mysql.connection.rollback()
+        return jsonify({'error': 'Could not save your security settings. Please try again.'}), 500
+
+
+@librarian_bp.route('/api/librarian/security/pin', methods=['POST'])
+def librarian_set_pin():
+    """Set / change the 6-digit PIN. Requires the current account password."""
+    if not is_logged_in() or require_role('librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    data     = request.get_json(silent=True) or {}
+    password = str(data.get('password') or '')
+    pin      = str(data.get('pin') or '')
+
+    if not _PIN_RE.match(pin):
+        return jsonify({'error': 'PIN must be exactly 6 digits.'}), 400
+    try:
+        cur = mysql.connection.cursor()
+        if not _librarian_password_ok(cur, session['user_id'], password):
+            cur.close()
+            return jsonify({'error': 'Current password is incorrect.'}), 403
+        pin_hash = bcrypt.generate_password_hash(pin).decode('utf-8')
+        cur.execute("""
+            UPDATE users
+            SET pin_code=%s, pin_enabled=1, pin_set_at=%s,
+                pin_reset_token=NULL, pin_reset_token_expiry=NULL
+            WHERE id=%s
+        """, (pin_hash, datetime.now(), session['user_id']))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True}), 200
+    except Exception:
+        mysql.connection.rollback()
+        return jsonify({'error': 'Could not save your security settings. Please try again.'}), 500
+
+
+@librarian_bp.route('/api/librarian/security/pin/toggle', methods=['POST'])
+def librarian_toggle_pin():
+    """Enable/disable an EXISTING PIN (setting a new one goes through /security/pin)."""
+    if not is_logged_in() or require_role('librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    enabled = bool((request.get_json(silent=True) or {}).get('enabled'))
+    try:
+        cur = mysql.connection.cursor()
+        if enabled:
+            cur.execute("SELECT pin_code, pin_set_at FROM users WHERE id=%s", (session['user_id'],))
+            row = cur.fetchone()
+            if not row or not row[0]:
+                cur.close()
+                return jsonify({'error': 'Set a PIN first.'}), 400
+            if not row[1] or (datetime.now() - row[1]) > timedelta(days=PIN_EXPIRY_DAYS):
+                cur.close()
+                return jsonify({'error': 'Your PIN has expired. Set a new PIN to enable it.'}), 400
+        cur.execute("UPDATE users SET pin_enabled=%s WHERE id=%s",
+                    (int(enabled), session['user_id']))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True, 'enabled': enabled}), 200
+    except Exception:
+        mysql.connection.rollback()
+        return jsonify({'error': 'Could not save your security settings. Please try again.'}), 500
+
+
+@librarian_bp.route('/api/librarian/security/password', methods=['POST'])
+def librarian_change_password():
+    if not is_logged_in() or require_role('librarian'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    data    = request.get_json(silent=True) or {}
+    current = str(data.get('current') or '')
+    new     = str(data.get('new') or '')
+
+    if not _PW_RE.match(new):
+        return jsonify({'error': 'New password must be 8–64 characters with uppercase, '
+                                 'lowercase, a number and one of @$!%*?&_#^ (no other symbols).'}), 400
+    try:
+        cur = mysql.connection.cursor()
+        if not _librarian_password_ok(cur, session['user_id'], current):
+            cur.close()
+            return jsonify({'error': 'Current password is incorrect.'}), 403
+        if new == current:
+            cur.close()
+            return jsonify({'error': 'New password must be different from the current one.'}), 400
+        cur.execute("UPDATE users SET password=%s WHERE id=%s",
+                    (bcrypt.generate_password_hash(new).decode('utf-8'), session['user_id']))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'error': str(e)}), 500

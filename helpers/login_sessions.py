@@ -1,7 +1,12 @@
 """
 helpers/login_sessions.py
 Records staff login sessions and builds the data for the
-"Login Activity" block on the admin settings page.
+"Login Activity" block on the admin and librarian settings pages.
+
+  - get_login_activity(user_id)  -> full stats + heatmap + last 7 days + recent
+                                    sessions (used by the ADMIN settings page)
+  - get_recent_sessions(user_id) -> recent sessions only
+                                    (used by the LIBRARIAN settings page)
 
 All times are Philippine time (UTC+8, no DST), stored as naive DATETIMEs.
 """
@@ -130,7 +135,42 @@ def _end_of(login_at, last_active, logout_at):
 
 
 # =====================================================================
-# LOGIN ACTIVITY (for the settings template)
+# LIBRARIAN SETTINGS: recent sessions only
+# =====================================================================
+
+def get_recent_sessions(user_id: int, limit: int = 5) -> list:
+    now   = now_local()
+    today = now.date()
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT login_at, last_active_at, logout_at
+        FROM login_sessions
+        WHERE user_id = %s
+        ORDER BY login_at DESC
+        LIMIT %s
+    """, (user_id, limit))
+    rows = cur.fetchall()
+    cur.close()
+
+    sessions = []
+    for login_at, last_active, logout_at in rows:
+        end  = _end_of(login_at, last_active, logout_at)
+        live = logout_at is None and (now - (last_active or login_at)).total_seconds() <= ACTIVE_WINDOW
+        d    = login_at.date()
+        dlabel = ('Today' if d == today
+                  else 'Yesterday' if d == today - timedelta(days=1)
+                  else d.strftime('%b %d, %Y'))
+        sessions.append({
+            'live':     live,
+            'label':    f"{dlabel} · {_t(login_at)} → {'now' if live else _t(end)}",
+            'duration': 'Active now' if live else _fmt((end - login_at).total_seconds()),
+        })
+    return sessions
+
+
+# =====================================================================
+# ADMIN SETTINGS: full login activity (UNCHANGED from the original)
 # =====================================================================
 
 def get_login_activity(user_id: int) -> dict:

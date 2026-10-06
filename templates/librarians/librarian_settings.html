@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings | Iloilo Public Library</title>
+  <link rel="icon" href="/static/images/logo.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
@@ -168,39 +169,8 @@
     .theme-opt.active{color:var(--accent);font-weight:600}
     .theme-opt.active .theme-swatch::after{content:'\F26E';font-family:'bootstrap-icons';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;text-shadow:0 0 6px rgba(0,0,0,.6)}
 
-    /* Login activity heatmap */
+    /* Login activity: recent sessions */
     .l0{background:rgba(var(--fg),.08)}
-    .l1{background:#BBDEFB}
-    .l2{background:#90CAF9}
-    .l3{background:#2196F3}
-    .l4{background:#0D47A1}
-    .ls-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
-    .ls-stat{background:var(--stat);padding:16px 18px}
-    .ls-num{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:500;letter-spacing:-.02em}
-    .ls-num small{font-size:.72rem;color:rgba(var(--fg),.5)}
-    .ls-lbl{font-size:.7rem;color:rgba(var(--fg),.45);margin-top:4px}
-    .hm-wrap{padding:18px 20px 16px;border-bottom:1px solid var(--border)}
-    .hm-scroll{overflow-x:auto;padding-bottom:6px}
-    .hm-months,.hm-body{display:flex;gap:3px;width:max-content}
-    .hm-months{margin-bottom:5px}
-    .hm-mon{width:14px;font-size:.66rem;color:rgba(var(--fg),.5);white-space:nowrap;overflow:visible}
-    .hm-daylbl{width:28px;flex-shrink:0}
-    .hm-daylbl-col{display:flex;flex-direction:column;gap:3px;width:28px;flex-shrink:0}
-    .hm-daylbl-col span{height:14px;line-height:14px;font-size:.62rem;color:rgba(var(--fg),.4)}
-    .hm-col{display:flex;flex-direction:column;gap:3px}
-    .hm-cell{width:14px;height:14px;border-radius:3px;display:inline-block;flex-shrink:0}
-    .hm-future{background:transparent}
-    .hm-legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
-    .hm-legend-note{font-size:.72rem;color:rgba(var(--fg),.4)}
-    .hm-legend-scale{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .hm-lg{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;color:rgba(var(--fg),.55)}
-    .wk-head{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(var(--fg),.4);padding:16px 20px 8px}
-    .wk-bars{display:flex;gap:10px;padding:4px 20px 18px;border-bottom:1px solid var(--border)}
-    .wk-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
-    .wk-bar-val{font-family:'DM Mono',monospace;font-size:.62rem;color:rgba(var(--fg),.55);white-space:nowrap}
-    .wk-bar-track{width:100%;max-width:44px;height:90px;background:rgba(var(--fg),.06);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden}
-    .wk-bar{width:100%;border-radius:6px 6px 0 0}
-    .wk-bar-day{font-size:.7rem;color:rgba(var(--fg),.5)}
     .sess-dot{width:10px;height:10px;border-radius:3px;margin-top:4px;flex-shrink:0}
     .sess-dur{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--tl);white-space:nowrap}
 
@@ -227,6 +197,9 @@
       .personal-tab{flex:unset;font-size:.76rem;padding:8px 10px}
     }
   </style>
+
+  <!-- Staff theme + language (shared with admin; loaded after the page CSS so theme variables win) -->
+  <script src="{{ url_for('static', filename='js/staff_appearance.js') }}"></script>
 </head>
 <body>
 
@@ -239,21 +212,21 @@
       Back to Home
     </a>
     <div class="sidebar-profile">
-      <div class="avatar-circle" data-bind="initials">MS</div>
-      <div class="profile-name" data-bind="fullname">Maria Santos</div>
-      <div class="profile-email">maria.santos@iloilolibrary.ph</div>
+      <div class="avatar-circle notranslate" data-bind="initials">{{ profile.initials }}</div>
+      <div class="profile-name notranslate" data-bind="fullname">{{ profile.fullname }}</div>
+      <div class="profile-email notranslate">{{ profile.email }}</div>
       <span class="profile-badge"><i class="bi bi-book-fill"></i> Librarian</span>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">General</div>
       <a class="nav-item" href="#sec-overview"><i class="bi bi-grid-fill"></i> Overview</a>
       <a class="nav-item" href="#sec-personal"><i class="bi bi-person-fill"></i> Personal Details</a>
-      <a class="nav-item" href="#sec-security"><i class="bi bi-shield-lock-fill"></i> Password &amp; Security <span class="nav-badge" id="secBadge" hidden>!</span></a>
+      <a class="nav-item" href="#sec-security"><i class="bi bi-shield-lock-fill"></i> Password &amp; Security <span class="nav-badge" id="secBadge" {{ 'hidden' if (profile.otp_enabled or profile.pin_enabled) }}>!</span></a>
       <div class="nav-section-label" style="margin-top:10px;">Preferences</div>
       <a class="nav-item" href="#sec-appearance"><i class="bi bi-palette-fill"></i> Appearance</a>
     </nav>
     <div class="sidebar-bottom">
-      <a class="nav-item" href="#" style="color:rgba(255,100,100,.75);">
+      <a class="nav-item" id="signOutLink" href="/logout" style="color:rgba(255,100,100,.75);">
         <i class="bi bi-box-arrow-right" style="color:rgba(255,100,100,.75);"></i> Sign Out
       </a>
     </div>
@@ -276,7 +249,7 @@
       <!-- OVERVIEW -->
       <div class="settings-section" id="sec-overview">
         <div class="sec-heading">
-          <h2>Good to see you, <span data-bind="fullname">Maria Santos</span> 👋</h2>
+          <h2>Good to see you, <span data-bind="fullname" class="notranslate">{{ profile.fullname }}</span> 👋</h2>
           <p>Manage everything about your account from here.</p>
         </div>
         <div class="quick-row">
@@ -300,45 +273,31 @@
             <span class="block-title"><i class="bi bi-person-badge-fill"></i> Account Summary</span>
             <a class="block-action" href="#sec-personal">Edit</a>
           </div>
-          <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-at"></i></div><div><div class="sr-label">Username / Email</div><div class="sr-sub">maria.santos@iloilolibrary.ph</div></div></div></div>
+          <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-person-fill"></i></div><div><div class="sr-label">Full Name</div><div class="sr-sub notranslate" data-bind="fullname">{{ profile.fullname }}</div></div></div></div>
+          <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-telephone-fill"></i></div><div><div class="sr-label">Phone Number</div><div class="sr-sub notranslate" data-bind="phone">{{ profile.phone or '—' }}</div></div></div></div>
+          <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-at"></i></div><div><div class="sr-label">Username / Email</div><div class="sr-sub notranslate">{{ profile.email }}</div></div></div></div>
           <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-book-fill"></i></div><div><div class="sr-label">Role</div><div class="sr-sub">Librarian</div></div></div></div>
-          <div class="setting-row"><div class="sr-left"><div class="sr-icon green"><i class="bi bi-check-circle-fill"></i></div><div><div class="sr-label">Account Status</div><div class="sr-sub">Account in good standing</div></div></div><span class="sr-value" style="color:var(--accent2);">● Active</span></div>
-          <div class="setting-row"><div class="sr-left"><div class="sr-icon gold"><i class="bi bi-calendar3"></i></div><div><div class="sr-label">Librarian Since</div><div class="sr-sub">March 14, 2022</div></div></div></div>
+          <div class="setting-row"><div class="sr-left"><div class="sr-icon {{ 'green' if profile.status == 'Active' else 'danger' }}"><i class="bi bi-{{ 'check-circle-fill' if profile.status == 'Active' else 'exclamation-circle-fill' }}"></i></div><div><div class="sr-label">Account Status</div><div class="sr-sub">{{ profile.status_note }}</div></div></div><span class="sr-value" style="color:var({{ '--accent2' if profile.status == 'Active' else '--danger' }});">● {{ profile.status }}</span></div>
+          <div class="setting-row"><div class="sr-left"><div class="sr-icon gold"><i class="bi bi-calendar3"></i></div><div><div class="sr-label">Librarian Since</div><div class="sr-sub notranslate">{{ profile.since }}</div></div></div></div>
         </div>
 
         <!-- Login Activity -->
         <div class="block">
           <div class="block-head">
             <span class="block-title"><i class="bi bi-clock-history"></i> Login Activity</span>
-            <span class="block-action">Last 6 months</span>
+            <span class="block-action">Recent sessions</span>
           </div>
-
-          <div class="ls-stats" id="lsStats"></div>
-
-          <div class="hm-wrap">
-            <div class="hm-scroll">
-              <div class="hm-months" id="hmMonths"></div>
-              <div class="hm-body" id="hmBody">
-                <div class="hm-daylbl-col"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
-              </div>
-            </div>
-            <div class="hm-legend">
-              <span class="hm-legend-note">Each square is one day, coloured by hours logged in.</span>
-              <span class="hm-legend-scale">
-                <span class="hm-lg"><span class="hm-cell l0"></span>None</span>
-                <span class="hm-lg"><span class="hm-cell l1"></span>1h &amp; below</span>
-                <span class="hm-lg"><span class="hm-cell l2"></span>2h</span>
-                <span class="hm-lg"><span class="hm-cell l3"></span>3–4h</span>
-                <span class="hm-lg"><span class="hm-cell l4"></span>5h &amp; above</span>
-              </span>
-            </div>
+          {% for s in login_sessions %}
+          <div class="activity-item">
+            <span class="sess-dot l0" {% if s.live %}style="background:var(--accent2)"{% endif %}></span>
+            <div class="act-text notranslate"><i class="bi bi-box-arrow-in-right"></i>{{ s.label }}</div>
+            <div class="sess-dur">{{ s.duration }}</div>
           </div>
-
-          <div class="wk-head">Last 7 days</div>
-          <div class="wk-bars" id="wkBars"></div>
-
-          <div class="wk-head">Recent sessions</div>
-          <div id="sessList"></div>
+          {% else %}
+          <div class="activity-item">
+            <div class="act-text" style="color:rgba(var(--fg),.45);">No login sessions recorded yet.</div>
+          </div>
+          {% endfor %}
         </div>
       </div>
 
@@ -361,11 +320,11 @@
           <div class="block">
             <div class="block-head"><span class="block-title"><i class="bi bi-person-fill"></i> Basic Info</span></div>
 
-            <div class="setting-row js-row" data-field="firstName" data-type="text" data-value="Maria" data-label="First Name">
+            <div class="setting-row js-row" data-field="firstName" data-type="text" data-value="{{ profile.firstname }}" data-label="First Name">
               <div class="sr-left"><div class="sr-icon"><i class="bi bi-person"></i></div>
                 <div class="sr-body">
                   <div class="sr-label">First Name</div>
-                  <div class="sr-sub js-display">Maria</div>
+                  <div class="sr-sub js-display notranslate">{{ profile.firstname or '—' }}</div>
                   <input type="text" class="sr-input js-input" maxlength="64" placeholder="First name" hidden>
                 </div>
               </div>
@@ -375,11 +334,11 @@
               </div>
             </div>
 
-            <div class="setting-row js-row" data-field="lastName" data-type="text" data-value="Santos" data-label="Last Name">
+            <div class="setting-row js-row" data-field="lastName" data-type="text" data-value="{{ profile.lastname }}" data-label="Last Name">
               <div class="sr-left"><div class="sr-icon"><i class="bi bi-person"></i></div>
                 <div class="sr-body">
                   <div class="sr-label">Last Name</div>
-                  <div class="sr-sub js-display">Santos</div>
+                  <div class="sr-sub js-display notranslate">{{ profile.lastname or '—' }}</div>
                   <input type="text" class="sr-input js-input" maxlength="64" placeholder="Last name" hidden>
                 </div>
               </div>
@@ -389,9 +348,9 @@
               </div>
             </div>
 
-            <div class="setting-row js-row" data-field="gender" data-type="gender" data-value="Female" data-label="Gender" style="flex-direction:column;align-items:stretch;gap:0;padding-bottom:0;">
+            <div class="setting-row js-row" data-field="gender" data-type="gender" data-value="{{ profile.gender }}" data-label="Gender" style="flex-direction:column;align-items:stretch;gap:0;padding-bottom:0;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 0 14px;">
-                <div class="sr-left"><div class="sr-icon"><i class="bi bi-gender-ambiguous"></i></div><div><div class="sr-label">Gender</div><div class="sr-sub js-display">Female</div></div></div>
+                <div class="sr-left"><div class="sr-icon"><i class="bi bi-gender-ambiguous"></i></div><div><div class="sr-label">Gender</div><div class="sr-sub js-display notranslate">{{ profile.gender or '—' }}</div></div></div>
                 <div class="sr-actions">
                   <button type="button" class="sr-btn js-edit">Edit</button>
                   <button type="button" class="sr-btn js-cancel" hidden>Cancel</button>
@@ -404,18 +363,18 @@
               </div>
             </div>
 
-            <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-at"></i></div><div><div class="sr-label">Email / Username</div><div class="sr-sub">maria.santos@iloilolibrary.ph</div></div></div><span class="sr-value" style="font-size:.74rem;color:rgba(var(--fg),.4);">Read-only</span></div>
+            <div class="setting-row"><div class="sr-left"><div class="sr-icon"><i class="bi bi-at"></i></div><div><div class="sr-label">Email / Username</div><div class="sr-sub notranslate">{{ profile.email }}</div></div></div><span class="sr-value" style="font-size:.74rem;color:rgba(var(--fg),.4);">Read-only</span></div>
           </div>
         </div>
 
         <div class="personal-tab-panel" id="ppanel-contact">
           <div class="block">
             <div class="block-head"><span class="block-title"><i class="bi bi-telephone-fill"></i> Contact</span></div>
-            <div class="setting-row js-row" data-field="phone" data-type="text" data-value="0917 123 4567" data-label="Phone Number">
+            <div class="setting-row js-row" data-field="phone" data-type="text" data-value="{{ profile.phone }}" data-label="Phone Number">
               <div class="sr-left"><div class="sr-icon"><i class="bi bi-telephone-fill"></i></div>
                 <div class="sr-body">
                   <div class="sr-label">Phone Number</div>
-                  <div class="sr-sub js-display">0917 123 4567</div>
+                  <div class="sr-sub js-display notranslate">{{ profile.phone or '—' }}</div>
                   <input type="tel" class="sr-input js-input" maxlength="20" placeholder="e.g. 0917 123 4567" hidden>
                 </div>
               </div>
@@ -442,13 +401,13 @@
           </div>
           <div class="setting-row">
             <div class="sr-left"><div class="sr-icon green"><i class="bi bi-envelope-check-fill"></i></div><div><div class="sr-label">One-Time Password (OTP)</div><div class="sr-sub">Send a verification code to your email on login</div></div></div>
-            <label class="toggle"><input type="checkbox" id="otpToggle" checked><div class="toggle-track"></div></label>
+            <label class="toggle"><input type="checkbox" id="otpToggle" {{ 'checked' if profile.otp_enabled }}><div class="toggle-track"></div></label>
           </div>
           <div class="setting-row">
-            <div class="sr-left"><div class="sr-icon gold"><i class="bi bi-123"></i></div><div><div class="sr-label">PIN Code</div><div class="sr-sub" id="pinSub">No PIN set yet</div></div></div>
+            <div class="sr-left"><div class="sr-icon gold"><i class="bi bi-123"></i></div><div><div class="sr-label">PIN Code</div><div class="sr-sub" id="pinSub">{% if profile.pin_valid %}Require your PIN after your password on login · expires in {{ profile.pin_days_left }} day{{ '' if profile.pin_days_left == 1 else 's' }}{% elif profile.has_pin %}PIN expired — set a new one to use it again{% else %}No PIN set yet{% endif %}</div></div></div>
             <div class="sr-actions">
-              <button type="button" class="sr-btn" id="pinSetBtn">Set PIN</button>
-              <label class="toggle"><input type="checkbox" id="pinToggle"><div class="toggle-track"></div></label>
+              <button type="button" class="sr-btn" id="pinSetBtn">{{ 'Change PIN' if profile.has_pin else 'Set PIN' }}</button>
+              <label class="toggle"><input type="checkbox" id="pinToggle" {{ 'checked' if profile.pin_enabled }}><div class="toggle-track"></div></label>
             </div>
           </div>
 
@@ -509,13 +468,26 @@
         <div class="sec-heading"><h2>Appearance <span>Settings</span></h2><p>Customize how the library looks for you.</p></div>
         <div class="block">
           <div class="block-head"><span class="block-title"><i class="bi bi-circle-half"></i> Color Theme</span></div>
+          <!-- Clicking a swatch only PREVIEWS the theme (handled by staff_appearance.js).
+               It is stored in the database when you press "Save Changes". -->
           <div class="theme-row">
-            <div class="theme-opt active" data-theme-value="default"><div class="theme-swatch" style="background:linear-gradient(135deg,#1e2d3d,#42586b);"></div>Default</div>
-            <div class="theme-opt" data-theme-value="dark"><div class="theme-swatch" style="background:linear-gradient(135deg,#0d1117,#1c2430);"></div>Dark</div>
-            <div class="theme-opt" data-theme-value="light"><div class="theme-swatch" style="background:linear-gradient(135deg,#f4f7fb,#dae8f5);"></div>Light</div>
+            <div class="theme-opt active" data-theme-value="default"><div class="theme-swatch" data-theme-value="default" style="background:linear-gradient(135deg,#1e2d3d,#42586b);"></div>Default</div>
+            <div class="theme-opt" data-theme-value="dark"><div class="theme-swatch" data-theme-value="dark" style="background:linear-gradient(135deg,#0d1117,#1c2430);"></div>Dark</div>
+            <div class="theme-opt" data-theme-value="light"><div class="theme-swatch" data-theme-value="light" style="background:linear-gradient(135deg,#f4f7fb,#dae8f5);"></div>Light</div>
           </div>
           <div style="padding:0 20px 14px;font-size:.75rem;color:rgba(var(--fg),.4);">Selected: <span id="themeLabel" style="color:var(--accent);">Default</span></div>
           <div id="appearanceDirty" hidden style="padding:0 20px 14px;font-size:.75rem;color:var(--warn);">Unsaved changes — click Save Changes to apply.</div>
+        </div>
+        <div class="block">
+          <div class="block-head"><span class="block-title"><i class="bi bi-translate"></i> Language</span></div>
+          <div class="setting-row">
+            <div class="sr-left"><div class="sr-icon"><i class="bi bi-globe2"></i></div><div><div class="sr-label">Interface Language</div><div class="sr-sub">Changes labeled navigation and UI text</div></div></div>
+            <select class="sr-select notranslate" id="langSelect">
+              <option value="english">English</option>
+              <option value="filipino">Filipino</option>
+              <option value="hiligaynon">Hiligaynon</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -539,114 +511,75 @@
   }
   function bind(name, value) { $$('[data-bind="' + name + '"]').forEach(el => el.textContent = value); }
 
-  /* ── Static sample login activity (replace with real data later) ── */
-  (function buildActivity() {
-    const WEEKS = 26, today = new Date(); today.setHours(0,0,0,0);
-    const start = new Date(today); start.setDate(start.getDate() - today.getDay() - (WEEKS - 1) * 7);
-    let seed = 20260;
-    const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-    const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const DAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const lvl = h => h <= 0 ? 0 : h <= 1 ? 1 : h <= 2 ? 2 : h < 5 ? 3 : 4;
-    const fmt = h => { const m = Math.round(h * 60); return Math.floor(m / 60) + 'h ' + String(m % 60).padStart(2, '0') + 'm'; };
-    const fmtDate = d => MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  /* Login activity ("Recent sessions") is rendered server-side from the
+     login_sessions table (see helpers/login_sessions.py). */
 
-    const days = [];
-    for (let i = 0; i < WEEKS * 7; i++) {
-      const d = new Date(start); d.setDate(start.getDate() + i);
-      const future = d > today, wk = d.getDay() === 0 || d.getDay() === 6;
-      let h = 0;
-      if (!future && rnd() > (wk ? 0.85 : 0.12)) h = Math.round((0.4 + rnd() * 6) * 10) / 10;
-      days.push({ d, h, future });
-    }
-
-    // heatmap
-    const months = $('#hmMonths'), body = $('#hmBody');
-    months.innerHTML = '<span class="hm-daylbl"></span>';
-    let lastMon = -1;
-    for (let c = 0; c < WEEKS; c++) {
-      const col = document.createElement('div'); col.className = 'hm-col';
-      const first = days[c * 7].d, sp = document.createElement('span'); sp.className = 'hm-mon';
-      if (first.getMonth() !== lastMon) { sp.textContent = MON[first.getMonth()]; lastMon = first.getMonth(); }
-      months.appendChild(sp);
-      for (let r = 0; r < 7; r++) {
-        const x = days[c * 7 + r], cell = document.createElement('span');
-        cell.className = 'hm-cell ' + (x.future ? 'hm-future' : 'l' + lvl(x.h));
-        if (!x.future) cell.title = DAY[x.d.getDay()] + ', ' + fmtDate(x.d) + ' — ' + (x.h ? fmt(x.h) : 'no login');
-        col.appendChild(cell);
-      }
-      body.appendChild(col);
-    }
-
-    // stats
-    const past = days.filter(x => !x.future), active = past.filter(x => x.h > 0);
-    const total = active.reduce((a, x) => a + x.h, 0);
-    let best = 0, run = 0, cur = 0;
-    past.forEach(x => { run = x.h > 0 ? run + 1 : 0; best = Math.max(best, run); });
-    for (let i = past.length - 1; i >= 0 && past[i].h > 0; i--) cur++;
-    const longest = active.reduce((a, x) => x.h > a.h ? x : a, active[0]);
-    const stat = (n, l) => '<div class="ls-stat"><div class="ls-num">' + n + '</div><div class="ls-lbl">' + l + '</div></div>';
-    $('#lsStats').innerHTML =
-      stat(Math.round(total) + 'h', 'Total time logged in') +
-      stat(fmt(total / past.length), 'Daily average') +
-      stat(active.length + ' <small>days</small>', 'Days logged in') +
-      stat(cur + ' <small>days</small>', 'Current streak · best ' + best) +
-      stat(fmt(longest.h), 'Longest day · ' + MON[longest.d.getMonth()] + ' ' + longest.d.getDate());
-
-    // last 7 days
-    const wk = past.slice(-7), maxH = Math.max(...wk.map(x => x.h), 1);
-    $('#wkBars').innerHTML = wk.map(x =>
-      '<div class="wk-bar-col" title="' + fmtDate(x.d) + '"><div class="wk-bar-val">' + (x.h ? fmt(x.h) : '—') +
-      '</div><div class="wk-bar-track"><div class="wk-bar l' + lvl(x.h) + '" style="height:' + (x.h / maxH * 100) + '%;"></div></div>' +
-      '<div class="wk-bar-day">' + DAY[x.d.getDay()] + '</div></div>').join('');
-
-    // recent sessions
-    const sess = active.slice(-5).reverse();
-    $('#sessList').innerHTML = sess.map(x => {
-      const hr = 8 + Math.floor(rnd() * 3), mn = String(Math.floor(rnd() * 60)).padStart(2, '0');
-      return '<div class="activity-item"><span class="sess-dot l' + lvl(x.h) + '"></span><div class="act-text"><i class="bi bi-box-arrow-in-right"></i>' +
-        DAY[x.d.getDay()] + ', ' + fmtDate(x.d) + ' · ' + hr + ':' + mn + ' AM</div><div class="sess-dur">' + fmt(x.h) + '</div></div>';
-    }).join('');
-  })();
-
-  /* ── Editable rows (client-side only) ── */
+  /* ── Editable rows (persisted via /api/librarian/profile/update) ── */
   const controllers = [];
+  const rowVal = f => ($('[data-field="' + f + '"]') || { dataset: {} }).dataset.value || '';
+
+  async function saveField(field, value) {
+    const res = await fetch('/api/librarian/profile/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ field, value })
+    });
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok || !data.success) throw new Error(data.error || 'Could not save. Please try again.');
+    return data;
+  }
+
   $$('.js-row').forEach(row => {
     const field = row.dataset.field, label = row.dataset.label, isGender = row.dataset.type === 'gender';
     const display = $('.js-display', row), input = $('.js-input', row);
     const editBtn = $('.js-edit', row), cancelBtn = $('.js-cancel', row);
     const pills = $$('.gender-pill span', row);
-    let original = row.dataset.value || '', draft = original, editing = false;
+    let original = row.dataset.value || '', draft = original, editing = false, saving = false;
 
     const paintPills = () => pills.forEach(p => p.classList.toggle('on', p.dataset.value === draft));
     const render = () => { display.textContent = original || '—'; if (isGender) { draft = original; paintPills(); } };
+    const idleBtn = () => editing ? '<i class="bi bi-check2 me-1"></i> Save' : 'Edit';
 
     function setEditing(on) {
       editing = on;
       row.classList.toggle('editing', on);
-      editBtn.innerHTML = on ? '<i class="bi bi-check2 me-1"></i> Save' : 'Edit';
+      editBtn.innerHTML = idleBtn();
       cancelBtn.hidden = !on;
       if (isGender) { draft = original; paintPills(); return; }
       input.hidden = !on; display.hidden = on;
       if (on) { input.value = original; input.focus(); input.select(); }
     }
 
-    function commit() {
+    async function commit() {
+      if (saving) return false;
       const value = isGender ? draft : input.value.trim();
       if (value === original) { setEditing(false); return true; }
       if (!isGender && field !== 'phone' && !value) { toast(label + ' cannot be empty.', 'error'); return false; }
       if (isGender && !value) { toast('Please pick a gender option.', 'error'); return false; }
-      original = value; row.dataset.value = value;
-      if (field === 'firstName' || field === 'lastName') {
-        const f = field === 'firstName' ? value : (window._first || $('[data-field="firstName"]').dataset.value);
-        const l = field === 'lastName' ? value : $('[data-field="lastName"]').dataset.value;
-        bind('fullname', (f + ' ' + l).trim());
-        bind('initials', ((f[0] || '') + (l[0] || '')).toUpperCase());
+
+      saving = true; editBtn.disabled = cancelBtn.disabled = true;
+      editBtn.textContent = 'Saving…';
+      try {
+        const r = await saveField(field, value);
+        original = (field === 'firstName') ? r.firstname : (field === 'lastName') ? r.lastname : r.value;
+        row.dataset.value = original;
+        if (field === 'firstName' || field === 'lastName') {
+          bind('fullname', r.fullname);
+          bind('initials', r.initials);
+        }
+        if (field === 'phone') bind('phone', original || '—');
+        render(); setEditing(false);
+        toast(label + ' updated', 'success');
+        return true;
+      } catch (err) {
+        toast(err.message, 'error');
+        return false;
+      } finally {
+        saving = false; editBtn.disabled = cancelBtn.disabled = false;
+        editBtn.innerHTML = idleBtn();
       }
-      render(); setEditing(false);
-      toast(label + ' updated', 'success');
-      return true;
     }
 
     editBtn.addEventListener('click', () => editing ? commit() : setEditing(true));
@@ -663,34 +596,71 @@
     controllers.push({ isEditing: () => editing, commit });
   });
 
-  /* ── Appearance: preview on click, "applied" on Save Changes ── */
-  const THEMES = { default: 'Default', dark: 'Dark', light: 'Light' };
-  let savedTheme = 'default', draftTheme = 'default';
-  const dirtyNote = $('#appearanceDirty');
+  /* ── Appearance (shared with admin via /static/js/staff_appearance.js) ──
+     Selecting a theme / language only PREVIEWS it; "Save Changes" stores it
+     in the database (staff_appearance table). */
+  const langSelect = $('#langSelect');
+  const dirtyNote  = $('#appearanceDirty');
 
-  function applyTheme(t) {
-    if (t === 'default') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', t);
-    $$('.theme-opt').forEach(o => o.classList.toggle('active', o.dataset.themeValue === t));
-    $('#themeLabel').textContent = THEMES[t];
+  if (window.StaffAppearance) {
+    // Librarian-only labels the shared phrase list doesn't have yet
+    StaffAppearance.addPhrases([
+      ['Librarian',        'Tagapangasiwa ng Aklatan', 'Manugdumala sang Librarya'],
+      ['Librarian Since',  'Librarian Mula',           'Librarian Halin Pa'],
+      ['Full Name',        'Buong Pangalan',           'Bug-os nga Ngalan'],
+      ['● Locked',         '● Naka-lock',              '● Naka-lock']
+    ]);
+
+    if (langSelect) {
+      const syncLang = () => { langSelect.value = StaffAppearance.get().language; };
+      syncLang();
+      document.addEventListener('appearanceLoaded', () => {   // after the server fetch
+        if (!StaffAppearance.hasPending()) syncLang();
+      });
+      langSelect.addEventListener('change', () => StaffAppearance.selectLanguage(langSelect.value)); // preview only
+    }
   }
-  $$('.theme-opt').forEach(o => o.addEventListener('click', () => {
-    draftTheme = o.dataset.themeValue;
-    applyTheme(draftTheme);
-    dirtyNote.hidden = draftTheme === savedTheme;
-  }));
 
-  $('#saveAllBtn').addEventListener('click', () => {
-    const open = controllers.filter(c => c.isEditing());
-    const themeDirty = draftTheme !== savedTheme;
-    if (!open.length && !themeDirty) { toast('No changes to save.'); return; }
-    open.forEach(c => c.commit());
-    if (themeDirty) { savedTheme = draftTheme; dirtyNote.hidden = true; toast('Changes saved', 'success'); }
+  document.addEventListener('appearanceDraftChanged', e => {
+    if (dirtyNote) dirtyNote.hidden = !(e.detail && e.detail.dirty);
   });
 
-  /* ── Security ── */
+  // Top-bar "Save Changes": saves every row being edited + the appearance preview
+  $('#saveAllBtn').addEventListener('click', async () => {
+    const open            = controllers.filter(c => c.isEditing());
+    const appearanceDirty = !!(window.StaffAppearance && StaffAppearance.hasPending());
+    if (!open.length && !appearanceDirty) { toast('No changes to save.'); return; }
+
+    for (const c of open) await c.commit();
+
+    if (appearanceDirty) {
+      const btn = $('#saveAllBtn'); btn.disabled = true;
+      const res = await StaffAppearance.saveDraft();
+      btn.disabled = false;
+      if (res && res.success) toast('Changes saved', 'success');
+      else toast((res && res.message) || 'Could not save appearance.', 'error');
+      // on failure the preview stays, so you can press Save Changes again
+    }
+  });
+
+  // Sign out: drop the cached prefs so the next staff account doesn't flash this theme.
+  const signOut = $('#signOutLink');
+  if (signOut) signOut.addEventListener('click', () => {
+    try { sessionStorage.removeItem('staff_appearance'); } catch (_) {}
+  });
+
+  /* ── Security (persisted) ── */
+  async function postJSON(url, body) {
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                   credentials: 'same-origin', body: JSON.stringify(body) });
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok || !data.success) throw new Error(data.error || 'Something went wrong. Please try again.');
+    return data;
+  }
+
   const otpTg = $('#otpToggle'), pinTg = $('#pinToggle'), badge = $('#secBadge');
-  let hasPin = false;
+  let hasPin = {{ 'true' if profile.pin_valid else 'false' }};   // a PIN that exists AND hasn't expired
   const refreshBadge = () => badge.hidden = otpTg.checked || pinTg.checked;
   refreshBadge();
 
@@ -700,7 +670,14 @@
     $('i', eye).className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
   }));
 
-  otpTg.addEventListener('change', () => { toast('OTP ' + (otpTg.checked ? 'enabled' : 'disabled'), 'success'); refreshBadge(); });
+  otpTg.addEventListener('change', async () => {
+    const want = otpTg.checked; otpTg.disabled = true;
+    try {
+      await postJSON('/api/librarian/security/otp', { enabled: want });
+      toast('OTP ' + (want ? 'enabled' : 'disabled'), 'success');
+    } catch (err) { otpTg.checked = !want; toast(err.message, 'error'); }
+    finally { otpTg.disabled = false; refreshBadge(); }
+  });
 
   const pinBox = $('#pinSetup');
   const pinIn = { pw: $('#pinPassword'), pin: $('#pinNew'), cf: $('#pinConfirm') };
@@ -710,23 +687,34 @@
   }
   openPinBox(false);
   $('#pinSetBtn').addEventListener('click', () => openPinBox(pinBox.hidden));
-  $('#pinCancelBtn').addEventListener('click', () => { openPinBox(false); pinTg.checked = pinTg.checked && hasPin; refreshBadge(); });
+  $('#pinCancelBtn').addEventListener('click', () => { openPinBox(false); refreshBadge(); });
   [pinIn.pin, pinIn.cf].forEach(i => i.addEventListener('input', () => i.value = i.value.replace(/\D/g, '')));
 
-  pinTg.addEventListener('change', () => {
-    if (pinTg.checked) { pinTg.checked = false; openPinBox(true); toast('Set a new PIN to enable it.'); return; }
-    toast('PIN disabled', 'success'); refreshBadge();
+  pinTg.addEventListener('change', async () => {
+    const want = pinTg.checked;
+    if (want && !hasPin) { pinTg.checked = false; openPinBox(true); toast('Set a new PIN to enable it.'); return; }
+    pinTg.disabled = true;
+    try {
+      await postJSON('/api/librarian/security/pin/toggle', { enabled: want });
+      toast('PIN ' + (want ? 'enabled' : 'disabled'), 'success');
+    } catch (err) { pinTg.checked = !want; toast(err.message, 'error'); }
+    finally { pinTg.disabled = false; refreshBadge(); }
   });
 
-  $('#pinSaveBtn').addEventListener('click', () => {
+  $('#pinSaveBtn').addEventListener('click', async () => {
     if (!pinIn.pw.value) return toast('Enter your current password.', 'error');
     if (!/^\d{6}$/.test(pinIn.pin.value)) return toast('PIN must be exactly 6 digits.', 'error');
     if (pinIn.pin.value !== pinIn.cf.value) return toast('PINs do not match.', 'error');
-    hasPin = true; pinTg.checked = true;
-    $('#pinSetBtn').textContent = 'Change PIN';
-    $('#pinSub').textContent = 'Require your PIN after your password on login';
-    openPinBox(false); refreshBadge();
-    toast('PIN saved and enabled', 'success');
+    const btn = $('#pinSaveBtn'); btn.disabled = true;
+    try {
+      await postJSON('/api/librarian/security/pin', { password: pinIn.pw.value, pin: pinIn.pin.value });
+      hasPin = true; pinTg.checked = true;
+      $('#pinSetBtn').textContent = 'Change PIN';
+      $('#pinSub').textContent = 'Require your PIN after your password on login · expires in 7 days';
+      openPinBox(false); refreshBadge();
+      toast('PIN saved and enabled', 'success');
+    } catch (err) { toast(err.message, 'error'); }
+    finally { btn.disabled = false; }
   });
 
   /* Change password */
@@ -761,10 +749,14 @@
   Object.values(pw).forEach(i => i.addEventListener('input', refreshPw));
   refreshPw();
 
-  updBtn.addEventListener('click', () => {
-    Object.values(pw).forEach(i => i.value = '');
+  updBtn.addEventListener('click', async () => {
+    updBtn.disabled = true;
+    try {
+      await postJSON('/api/librarian/security/password', { current: pw.cur.value, new: pw.nw.value });
+      Object.values(pw).forEach(i => i.value = '');
+      toast('Password updated', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     refreshPw();
-    toast('Password updated', 'success');
   });
 })();
 </script>
