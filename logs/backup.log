@@ -79564,3 +79564,43 @@ NameError: name '_dbx' is not defined
 2026-10-28 00:16:10,177 [WARNING]  * Debugger is active!
 2026-10-28 00:16:10,198 [INFO]  * Debugger PIN: 965-242-026
 2026-10-28 00:16:32,163 [INFO]  * Detected change in 'c:\\Users\\Angelo Ojera\\Desktop\\Library management System V3\\storage\\book_thumbnail.py', reloading
+2026-10-28 00:16:32,520 [INFO]  * Restarting with stat
+2026-10-28 00:16:33,876 [INFO] [TaskQueue] Started 4 worker thread(s).
+2026-10-28 00:16:33,906 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-10-28 00:16:33,907 [INFO] Backup scheduler started — frequency: weekly
+2026-10-28 00:16:33,910 [INFO] Added job "_do_backup" to job store "default"
+2026-10-28 00:16:33,910 [INFO] Scheduler started
+2026-10-28 00:16:33,935 [INFO] Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-10-28 00:16:33,936 [INFO] Added job "cleanup_expired_otps" to job store "default"
+2026-10-28 00:16:33,936 [INFO] Scheduler started
+2026-10-28 00:16:34,918 [INFO] pikepdf C++ to Python logger bridge initialized
+2026-10-28 00:16:35,169 [WARNING]  * Debugger is active!
+2026-10-28 00:16:35,178 [INFO]  * Debugger PIN: 965-242-026
+2026-10-28 00:16:54,698 [INFO] Refreshing access token.
+2026-10-28 00:16:56,021 [INFO] Request to files/upload
+2026-10-28 00:16:58,287 [INFO] 127.0.0.1 - - [28/Oct/2026 00:16:58] "[35m[1mPOST /add_book HTTP/1.1[0m" 201 -
+2026-10-28 00:16:59,634 [INFO] 127.0.0.1 - - [28/Oct/2026 00:16:59] "GET /book_management HTTP/1.1" 200 -
+2026-10-28 00:16:59,952 [INFO] 127.0.0.1 - - [28/Oct/2026 00:16:59] "GET /static/js/staff_appearance.js HTTP/1.1" 200 -
+2026-10-28 00:16:59,994 [INFO] 127.0.0.1 - - [28/Oct/2026 00:16:59] "GET /static/images/partner_logo.png HTTP/1.1" 200 -
+2026-10-28 00:16:59,995 [INFO] 127.0.0.1 - - [28/Oct/2026 00:16:59] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-10-28 00:17:00,115 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:00] "GET /static/js/staff_appearance.js HTTP/1.1" 200 -
+2026-10-28 00:17:00,450 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:00] "GET /api/staff/appearance HTTP/1.1" 200 -
+2026-10-28 00:17:00,453 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:00] "GET /api/admin/account-requests HTTP/1.1" 200 -
+2026-10-28 00:17:00,484 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:00] "GET /api/admin/profile HTTP/1.1" 200 -
+2026-10-28 00:17:00,487 [INFO] Refreshing access token.
+2026-10-28 00:17:00,491 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:00] "GET /api/staff/appearance HTTP/1.1" 200 -
+2026-10-28 00:17:01,652 [INFO] Request to files/download
+2026-10-28 00:17:03,340 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:03] "GET /cover/143e849ac3dc4f18aa973fccae58d1b0.jpg HTTP/1.1" 200 -
+2026-10-28 00:17:03,442 [INFO] 127.0.0.1 - - [28/Oct/2026 00:17:03] "GET /static/images/logo.png HTTP/1.1" 200 -
+2026-10-28 00:17:33,944 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:17:33 +08)" (scheduled at 2026-10-28 00:17:33.935837+08:00)
+2026-10-28 00:17:33,946 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:18:33 +08)" executed successfully
+2026-10-28 00:18:33,942 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:19:33 +08)" (scheduled at 2026-10-28 00:18:33.935837+08:00)
+2026-10-28 00:18:33,944 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:19:33 +08)" executed successfully
+2026-10-28 00:19:33,938 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:20:33 +08)" (scheduled at 2026-10-28 00:19:33.935837+08:00)
+2026-10-28 00:19:33,941 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:20:33 +08)" executed successfully
+2026-10-28 00:20:33,937 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:21:33 +08)" (scheduled at 2026-10-28 00:20:33.935837+08:00)
+2026-10-28 00:20:33,939 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:21:33 +08)" executed successfully
+2026-10-28 00:21:33,948 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:22:33 +08)" (scheduled at 2026-10-28 00:21:33.935837+08:00)
+2026-10-28 00:21:33,950 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:22:33 +08)" executed successfully
+2026-10-28 00:22:33,948 [INFO] Running job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:23:33 +08)" (scheduled at 2026-10-28 00:22:33.935837+08:00)
+2026-10-28 00:22:33,950 [INFO] Job "cleanup_expired_otps (trigger: interval[0:01:00], next run at: 2026-10-28 00:23:33 +08)" executed successfully
