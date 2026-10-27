@@ -3,7 +3,7 @@ routes/admin_routes.py
 -----------------------
 Blueprint: admin_bp  (url_prefix not set — routes keep their original paths)
 """
-
+from flask import Response
 import json
 import os
 import re
@@ -16,7 +16,7 @@ from flask import (
 )
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
-
+from storage.book_thumbnail import upload_bytes
 from conn import mysql, app
 from helpers import (
     is_logged_in, require_role,
@@ -51,26 +51,45 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def _allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
 
-BOOK_COVER_FOLDER    = os.path.join('static', 'uploads', 'books')
 BOOK_COVER_MAX_BYTES = 5 * 1024 * 1024   # 5 MB
-os.makedirs(BOOK_COVER_FOLDER, exist_ok=True)
 
 
 def _save_book_cover(file_obj) -> str | None:
-    """Validate + save a book cover upload. Returns the URL path or None."""
+    """Validate a book cover upload and store it on Dropbox.
+    Returns the cover URL (/cover/<name>), or None if no file was sent.
+    upload_bytes() raises ValueError with a specific reason on failure."""
     if not file_obj or not file_obj.filename:
         return None
     if not _allowed_file(file_obj.filename):
         raise ValueError("Invalid image format. Use PNG, JPG, JPEG, WEBP, or GIF.")
-    file_obj.seek(0, os.SEEK_END)
-    if file_obj.tell() > BOOK_COVER_MAX_BYTES:
+
+    data = file_obj.read()
+    if len(data) > BOOK_COVER_MAX_BYTES:
         raise ValueError("Cover image must be under 5 MB.")
-    file_obj.seek(0)
-    ext       = secure_filename(file_obj.filename).rsplit('.', 1)[1].lower()
-    filename  = f"cover_{uuid.uuid4().hex}.{ext}"
-    save_path = os.path.join(BOOK_COVER_FOLDER, filename)
-    file_obj.save(save_path)
-    return '/' + save_path.replace('\\', '/')
+
+    ext = '.' + secure_filename(file_obj.filename).rsplit('.', 1)[1].lower()
+    url = upload_bytes(data, ext)
+    if not url:
+        raise ValueError("Cover upload to Dropbox failed. Please try again.")
+    return url
+
+
+# =====================================================================
+# BOOK COVER SERVING  (redirects to a temporary Dropbox link)
+# =====================================================================
+
+@admin_bp.route('/cover/<name>')
+def serve_cover(name):
+    if not is_logged_in():
+        abort(403)
+    from storage.book_thumbnail import download_cover
+    result = download_cover(name)
+    if not result:
+        abort(404)
+    data, mime = result
+    resp = Response(data, mimetype=mime)
+    resp.headers['Cache-Control'] = 'private, max-age=86400'   # browser caches it for a day
+    return resp
 
 
 # =====================================================================
