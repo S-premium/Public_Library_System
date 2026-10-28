@@ -21,6 +21,7 @@ from flask import (
 )
 from flask_bcrypt import Bcrypt
 import requests as http_requests
+from storage.book_thumbnail import upload_bytes
 
 from conn import mysql, app
 from helpers import (
@@ -190,30 +191,67 @@ def librarian_delete_book(book_id):
 def librarian_update_book():
     if not is_logged_in() or require_role('admin', 'librarian'):
         return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+
+    form    = request.form
+    book_id = form.get('book_id', '').strip()
+    title   = form.get('title',  '').strip()
+    author  = form.get('author', '').strip()
+    isbn    = form.get('isbn',   '').strip()
+
+    if not (book_id and title and author and isbn):
+        return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+
+    enc_isbn = encrypt_data(isbn)
+    sets = ["title=%s", "author=%s", "isbn=%s"]
+    vals = [encrypt_data(title), encrypt_data(author), enc_isbn]
+
+    def put_enc(col, key):            # encrypted text column
+        if key in form:
+            v = form.get(key, '').strip()
+            sets.append(f"`{col}`=%s")
+            vals.append(encrypt_data(v) if v else None)
+
+    def put_plain(col, key=None):     # plain text column
+        key = key or col
+        if key in form:
+            sets.append(f"`{col}`=%s")
+            vals.append(form.get(key, '').strip() or None)
+
+    put_enc('category', 'category')
+    put_enc('publisher', 'publisher')
+
+    if 'class' in form or 'genre' in form:
+        v = (form.get('class') or form.get('genre') or '').strip()
+        sets.append("`class`=%s")
+        vals.append(encrypt_data(v) if v else None)
+
+    for col in ('subtitle', 'edition', 'published_date', 'language', 'description',
+                'thumbnail_url', 'call_number', 'date_received', 'copy_right',
+                'source_of_fund'):
+        put_plain(col)
+
+    if 'cost_price' in form:
+        try:
+            cp = float(form.get('cost_price') or 0) or None
+        except ValueError:
+            cp = None
+        sets.append("cost_price=%s")
+        vals.append(cp)
+
+    if 'is_borrowable' in form:
+        sets.append("is_borrowable=%s")
+        vals.append(1 if form.get('is_borrowable') in ('1', 'on', 'true') else 0)
+
     try:
-        book_id       = request.form.get('book_id')
-        title         = request.form.get('title', '').strip()
-        author        = request.form.get('author', '').strip()
-        isbn          = request.form.get('isbn', '').strip()
-        category      = request.form.get('category', '').strip()
-        genre         = request.form.get('genre', '').strip()
-        publisher     = request.form.get('publisher', '').strip()
-        is_borrowable = 1 if request.form.get("is_borrowable") in ("1", "true", "on") else 0
-
-        if not all([book_id, title, author, isbn]):
-            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
-
         cursor = mysql.connection.cursor()
-        cursor.execute("""
-            UPDATE books SET title=%s, author=%s, isbn=%s, category=%s,
-                   genre=%s, publisher=%s, is_borrowable=%s WHERE id=%s
-        """, (
-            encrypt_data(title), encrypt_data(author), encrypt_data(isbn),
-            encrypt_data(category) if category else None,
-            encrypt_data(genre)    if genre    else None,
-            encrypt_data(publisher) if publisher else None,
-            is_borrowable, book_id,
-        ))
+        cursor.execute("SELECT id FROM books WHERE isbn=%s AND id!=%s", (enc_isbn, book_id))
+        if cursor.fetchone():
+            cursor.close()
+            return jsonify({'success': False, 'message': 'Another book with this ISBN already exists.'}), 409
+
+        sets.append("updated_at=NOW()")
+        vals.append(book_id)
+        cursor.execute(f"UPDATE books SET {', '.join(sets)} WHERE id=%s", vals)
         mysql.connection.commit()
         cursor.close()
         return jsonify({'success': True}), 200
@@ -467,7 +505,7 @@ def update_inventory(book_id):
         cur.execute("SELECT id FROM book_inventory WHERE book_id=%s", (book_id,))
         if cur.fetchone():
             fields, values = [], []
-            if total_copies     is not None: fields.append("total_copies=%s");     values.append(int(total_copies))
+            if total_copies     is not None: fields.append("volumes=%s");     values.append(int(total_copies))
             if available_copies is not None: fields.append("available_copies=%s"); values.append(int(available_copies))
             if damaged_copies   is not None: fields.append("damaged_copies=%s");   values.append(int(damaged_copies))
             if lost_copies      is not None: fields.append("lost_copies=%s");      values.append(int(lost_copies))
@@ -479,7 +517,7 @@ def update_inventory(book_id):
         else:
             cur.execute("""
                 INSERT INTO book_inventory
-                    (book_id, total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location)
+                    (book_id, volumes, available_copies, damaged_copies, lost_copies, status, shelf_location)
                 VALUES (%s,%s,%s,%s,%s,%s,%s)
             """, (
                 book_id,
@@ -871,39 +909,39 @@ def _db_cache_set(isbn: str, data: dict) -> None:
 
 
 # ── ISBN Blueprint routes ────────────────────────────────────────────
+BOOK_COVER_MAX_BYTES = 5 * 1024 * 1024   # 5 MB
+
+
+def _save_cover(file_obj):
+    """Validate a book cover upload and store it on Dropbox.
+    Returns the cover URL (/cover/<name>, served by admin_bp.serve_cover),
+    or None if no file was sent. Raises ValueError with a reason on failure."""
+    if not file_obj or not file_obj.filename:
+        return None
+    if not _allowed_file(file_obj.filename):
+        raise ValueError("Invalid image format. Use PNG, JPG, JPEG, WEBP, or GIF.")
+
+    data = file_obj.read()
+    if len(data) > BOOK_COVER_MAX_BYTES:
+        raise ValueError("Cover image must be under 5 MB.")
+
+    # Use the original extension (already validated above); a sanitized
+    # non-ASCII filename can lose its dot and crash the split.
+    ext = '.' + file_obj.filename.rsplit('.', 1)[1].lower()
+    url = upload_bytes(data, ext)
+    if not url:
+        raise ValueError("Cover upload to Dropbox failed. Please try again.")
+    return url
+
 
 @isbn_bp.route("/librarian_add_book", methods=["POST"])
 def librarian_add_book():
     if not is_logged_in() or require_role("admin", "librarian"):
         return jsonify({"success": False, "message": "Unauthorized"}), 401
 
-    title            = request.form.get("title",            "").strip()
-    author           = request.form.get("author",           "").strip()
-    isbn_raw         = request.form.get("isbn",             "").strip()
-    category         = request.form.get("category",         "").strip()
-    genre            = request.form.get("genre",            "").strip()
-    publisher        = request.form.get("publisher",        "").strip()
-    total_copies     = int(request.form.get("total_copies",     1) or 1)
-    available_copies = int(request.form.get("available_copies", 1) or 1)
-    shelf_location   = request.form.get("shelf_location",   "").strip() or None
-    is_borrowable    = 1 if request.form.get("is_borrowable") in ("1","true","on") else 0
-    subtitle         = request.form.get("subtitle",         "").strip() or None
-    published_date   = request.form.get("published_date",   "").strip() or None
-    description      = request.form.get("description",      "").strip() or None
-    page_count_raw   = request.form.get("page_count",       "").strip()
-    page_count       = int(page_count_raw) if page_count_raw.isdigit() else None
-    language         = (request.form.get("language", "").strip()[:5].lower()) or None
-    thumbnail_url    = request.form.get("thumbnail_url",    "").strip() or None
-
-    meta_json_raw = request.form.get("isbn_meta_json", "").strip()
-    meta          = {}
-    if meta_json_raw:
-        try:
-            meta = json.loads(meta_json_raw)
-        except (ValueError, TypeError):
-            meta = {}
-    api_source = _sanitize(meta.get("source", ""), 50) or None
-
+    title    = request.form.get("title",  "").strip()
+    author   = request.form.get("author", "").strip()
+    isbn_raw = request.form.get("isbn",   "").strip()
     if not (title and author and isbn_raw):
         return jsonify({"success": False, "message": "Title, Author, and ISBN are required."}), 400
 
@@ -911,37 +949,95 @@ def librarian_add_book():
     if not valid:
         return jsonify({"success": False, "message": f"'{isbn_raw}' is not a valid ISBN."}), 422
 
+    subtitle       = request.form.get("subtitle",       "").strip() or None
+    publisher      = request.form.get("publisher",      "").strip() or None
+    category       = request.form.get("category",       "").strip() or None
+    genre_or_class = (request.form.get("class") or request.form.get("genre") or "").strip() or None
+    edition        = request.form.get("edition",        "").strip() or None
+    published_date = request.form.get("published_date", "").strip() or None
+    language       = request.form.get("language",       "").strip()[:5].lower() or None
+    description    = request.form.get("description",    "").strip() or None
+    call_number    = request.form.get("call_number",    "").strip() or None
+    date_received  = request.form.get("date_received",  "").strip() or None
+    copy_right     = request.form.get("copy_right",     "").strip() or None
+    source_of_fund = request.form.get("source_of_fund", "").strip() or None
+
+    try:
+        cost_price = float(request.form.get("cost_price", "") or 0) or None
+    except (ValueError, TypeError):
+        cost_price = None
+
+    # Attached cover wins over the ISBN-fetched URL
+    try:
+        uploaded_cover = _save_cover(request.files.get("cover_image_file"))
+    except ValueError as e:
+        return jsonify({"success": False, "message": str(e)}), 400
+    thumbnail_url = uploaded_cover or request.form.get("thumbnail_url", "").strip() or None
+
+    try:
+        page_count = int(float(request.form.get("page_count") or 0)) or None
+    except (ValueError, TypeError):
+        page_count = None
+
+    meta = {}
+    try:
+        meta = json.loads(request.form.get("isbn_meta_json", "").strip() or "{}")
+    except (ValueError, TypeError):
+        pass
+    api_source = _sanitize(meta.get("source", ""), 50) or None
+
+    total_copies     = max(0, int(request.form.get("total_copies",   1) or 1))
+    damaged_copies   = max(0, int(request.form.get("damaged_copies", 0) or 0))
+    lost_copies      = max(0, int(request.form.get("lost_copies",    0) or 0))
+    available_copies = max(0, total_copies - damaged_copies - lost_copies)
+    shelf_location   = request.form.get("shelf_location", "").strip() or None
+    status           = request.form.get("status", "Available").strip()
+    if status not in ("Available", "Damaged", "Lost"):
+        status = "Available"
+    is_borrowable    = 1 if request.form.get("is_borrowable") in ("1", "on", "true") else 0
+
     try:
         cursor   = mysql.connection.cursor()
         enc_isbn = encrypt_data(cleaned_isbn)
         cursor.execute("SELECT id FROM books WHERE isbn=%s", (enc_isbn,))
         if cursor.fetchone():
             cursor.close()
-            return jsonify({"success": False, "message": "ISBN already exists."}), 409
+            return jsonify({"success": False, "message": "A book with this ISBN already exists."}), 409
 
         cursor.execute("""
-            INSERT INTO books
-                (title, author, isbn, category, genre, publisher,
-                 subtitle, published_date, description, page_count,
-                 language, thumbnail_url, api_source, is_borrowable, created_at)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
+            INSERT INTO books (
+                title, author, isbn,
+                subtitle, publisher, category, `class`,
+                edition, published_date, language, description, thumbnail_url,
+                page_count, api_source,
+                call_number, date_received,
+                copy_right, source_of_fund, cost_price,
+                is_borrowable, created_at
+            ) VALUES (%s,%s,%s, %s,%s,%s,%s, %s,%s,%s,%s,%s, %s,%s, %s,%s, %s,%s,%s, %s, NOW())
         """, (
             encrypt_data(title), encrypt_data(author), enc_isbn,
-            encrypt_data(category) if category else None,
-            encrypt_data(genre)    if genre    else None,
-            encrypt_data(publisher) if publisher else None,
-            subtitle, published_date, description, page_count,
-            language, thumbnail_url, api_source, is_borrowable,
+            subtitle,
+            encrypt_data(publisher)      if publisher      else None,
+            encrypt_data(category)       if category       else None,
+            encrypt_data(genre_or_class) if genre_or_class else None,
+            edition, published_date, language, description, thumbnail_url,
+            page_count, api_source,
+            call_number, date_received,
+            copy_right, source_of_fund,
+            cost_price,
+            is_borrowable,
         ))
         mysql.connection.commit()
         new_id = cursor.lastrowid
+
         cursor.execute("""
             INSERT INTO book_inventory
-                (book_id, total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location)
-            VALUES (%s,%s,%s,0,0,'Available',%s)
-        """, (new_id, total_copies, available_copies, shelf_location))
+                (book_id, volumes, available_copies, damaged_copies, lost_copies, status, shelf_location)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """, (new_id, total_copies, available_copies, damaged_copies, lost_copies, status, shelf_location))
         mysql.connection.commit()
         cursor.close()
+
         if meta:
             _db_cache_set(cleaned_isbn, meta)
         return jsonify({"success": True, "message": "Book added successfully!", "book_id": new_id}), 201
@@ -1300,7 +1396,7 @@ def api_update_library_card(card_id):
         for book_id, qty in old_books:
             cur.execute("""
                 UPDATE book_inventory
-                SET available_copies = LEAST(total_copies, available_copies + %s)
+                SET available_copies = LEAST(volumes, available_copies + %s)
                 WHERE book_id=%s
             """, (qty or 1, book_id))
 
@@ -1365,13 +1461,13 @@ def api_return_library_card(card_id):
             if cur.fetchone():
                 cur.execute("""
                     UPDATE book_inventory
-                    SET available_copies = LEAST(total_copies, available_copies + %s)
+                    SET available_copies = LEAST(volumes, available_copies + %s)
                     WHERE book_id=%s
                 """, (qty_returned, cb[1]))
             else:
                 cur.execute("""
                     INSERT INTO book_inventory
-                        (book_id, total_copies, available_copies, damaged_copies, lost_copies, status)
+                        (book_id, volumes, available_copies, damaged_copies, lost_copies, status)
                     VALUES (%s,%s,%s,0,0,'Available')
                 """, (cb[1], qty_returned, qty_returned))
 

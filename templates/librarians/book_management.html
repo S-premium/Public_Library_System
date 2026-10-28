@@ -68,7 +68,8 @@
 
     /* ── PAGE HEADER ── */
     .page-header {
-      padding: 24px 40px 0;
+      padding: 64px 40px 0;
+      margin-top: 16px;
       display:flex; align-items:center; justify-content:space-between;
       flex-wrap:wrap; gap:12px;
     }
@@ -81,8 +82,15 @@
     }
     .page-title { font-size:1.5rem; font-weight:700; letter-spacing:-.03em; color:#fff; }
     .page-sub   { font-size:.82rem; color:var(--tl); margin-top:2px; }
-    @media (max-width:768px) { .page-header { padding: 20px 16px 0; } .page-title { font-size: 1.2rem; } .page-header-icon { width:40px; height:40px; font-size:1.1rem; } }
-    @media (max-width:480px) { .page-header { padding: 16px 12px 0; } .page-sub { display: none; } }
+    @media (max-width:768px) {
+      .page-header { padding: 64px 16px 0; margin-top: 12px; }
+      .page-title  { font-size: 1.2rem; }
+      .page-header-icon { width:40px; height:40px; font-size:1.1rem; }
+    }
+    @media (max-width:480px) {
+      .page-header { padding: 64px 12px 0; }
+      .page-sub    { display: none; }
+    }
 
     /* ── TOOLBAR ── */
     .toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:16px 40px 0; }
@@ -109,6 +117,8 @@
     .filter-btn:hover { background:rgba(159,193,225,.16); border-color:rgba(159,193,225,.4); }
     .filter-active-dot { position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; background:var(--accent2); border:2px solid #1e2d3d; display:none; }
     .filter-active-dot.show { display:block; }
+    .filter-active-count { display:none; background:var(--accent2); color:#0d1a24; font-size:.65rem; font-weight:700; padding:1px 6px; border-radius:20px; }
+    .filter-active-count.show { display:inline-block; }
 
     @media (max-width:480px) {
       .toolbar-btn .btn-label, .filter-btn .btn-label { display: none; }
@@ -794,7 +804,7 @@
             </div>
           </div>
           <div style="margin-top:16px;background:rgba(159,193,225,.05);border:1px solid rgba(159,193,225,.1);border-radius:10px;padding:11px 13px;">
-            <p style="font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.7;margin:0"><i class="bi bi-info-circle" style="color:var(--accent);margin-right:6px"></i>Enter an ISBN and click <strong style="color:var(--accent)">Fetch Data</strong> to auto-fill. You can also skip and fill in manually.</p>
+            <p style="font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.7;margin:0"><i class="bi bi-info-circle" style="color:var(--accent);margin-right:6px"></i>Enter an ISBN and click <strong style="color:var(--accent)">Fetch Data</strong> to auto-fill the book details. A valid ISBN is required; you can edit every field afterwards.</p>
           </div>
         </div>
 
@@ -819,8 +829,25 @@
           </div>
           <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="addDescription" class="form-control" rows="3" placeholder="Brief book description…"></textarea></div>
           <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Cover Image URL <span style="font-weight:400;color:var(--tl);font-size:.72rem">(auto-filled or paste)</span></label>
-            <input type="url" name="thumbnail_url_display" id="addThumbnail" class="form-control" placeholder="https://…" oninput="document.getElementById('addThumbnailHidden').value=this.value">
+            <label class="form-label">Cover Image</label>
+            <div id="addCoverDropZone"
+                 style="border:2px dashed rgba(159,193,225,.25);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative"
+                 onclick="document.getElementById('addCoverFile').click()"
+                 ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+                 ondragleave="this.style.borderColor='rgba(159,193,225,.25)'"
+                 ondrop="handleCoverDrop(event)">
+              <input type="file" name="cover_image_file" id="addCoverFile" accept="image/*" style="display:none" onchange="handleCoverFile(this)">
+              <div id="addCoverPreviewWrap" style="display:none;position:relative;width:fit-content;margin:0 auto">
+                <img id="addCoverPreviewImg" src="" alt="Preview" style="max-height:90px;border-radius:6px;border:1px solid rgba(255,255,255,.15);display:block" onerror="clearCover(true)">
+                <button type="button" onclick="clearCover();event.stopPropagation()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--danger);border:none;color:#fff;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
+              </div>
+              <div id="addCoverPlaceholder" style="color:rgba(255,255,255,.35);font-size:.8rem">
+                <i class="bi bi-paperclip" style="font-size:1.3rem;display:block;margin-bottom:5px;color:rgba(159,193,225,.5)"></i>
+                Click to attach or drag &amp; drop a cover image<br>
+                <span style="font-size:.7rem;opacity:.6">PNG, JPG, WEBP, GIF — max 5 MB</span>
+              </div>
+            </div>
+            <div id="addCoverName" style="font-size:.72rem;color:var(--tl);margin-top:6px;display:none"></div>
           </div>
         </div>
 
@@ -1136,7 +1163,7 @@
 <div id="confirmModal">
   <div class="cm-box">
     <div class="cm-icon"><i class="bi bi-trash3-fill"></i></div>
-    <div class="cm-title" id="cmTitle">Delete book?</div>
+    <div class="cm-title" id="cfTitle">Delete book?</div>
     <div class="cm-msg"   id="cmMsg">This action cannot be undone.</div>
     <div class="cm-btns">
       <button class="vm-btn" onclick="closeConfirm()">Cancel</button>
@@ -1423,7 +1450,7 @@ function renderTable() {
     if(b.status==='Lost')dotCls='red'; else if(b.status==='Damaged')dotCls='orange'; else if(avail===0)dotCls='orange';
     const shelf=b.shelf_location?`<span style="font-size:.75rem;color:var(--accent)"><i class="bi bi-geo-alt-fill me-1"></i>${esc(b.shelf_location)}</span>`:`<span style="color:rgba(255,255,255,.25);font-size:.75rem">—</span>`;
     const borrowBadge=b.is_borrowable?`<span class="borrow-badge yes"><i class="bi bi-bookmark-check-fill"></i> Yes</span>`:`<span class="borrow-badge no"><i class="bi bi-bookmark-x"></i> No</span>`;
-    const thumbCell=b.thumbnail_url?`<img src="${esc(b.thumbnail_url)}" alt="" style="width:30px;height:42px;object-fit:cover;border-radius:5px;border:1px solid rgba(255,255,255,.12)">`:`<div style="width:30px;height:42px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center"><i class="bi bi-book" style="font-size:.6rem;opacity:.3"></i></div>`;
+    const thumbCell=b.thumbnail_url?`<img src="${esc(b.thumbnail_url)}" alt="" onerror="this.outerHTML='<div style=&quot;width:30px;height:42px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center&quot;><i class=&quot;bi bi-book&quot; style=&quot;font-size:.6rem;opacity:.3&quot;></i></div>'" style="width:30px;height:42px;object-fit:cover;border-radius:5px;border:1px solid rgba(255,255,255,.12)">`:`<div style="width:30px;height:42px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center"><i class="bi bi-book" style="font-size:.6rem;opacity:.3"></i></div>`;
     return `<tr data-id="${b.id}" onclick="openViewModal(${b.id})">
       <td onclick="event.stopPropagation()"><input type="checkbox" class="cb row-cb" onchange="updateSelCount()"></td>
       <td style="padding:8px 6px">${thumbCell}</td>
@@ -1505,8 +1532,10 @@ async function fetchBookByIsbn(){
     autofill('addTitle',d.title);autofill('addSubtitle',d.subtitle);autofill('addAuthor',d.authors);
     autofill('addPublisher',d.publisher);autofill('addCategory',d.category);autofill('addGenre',d.genre);
     autofill('addPubDate',d.published_date);autofill('addLanguage',d.language);
-    autofill('addDescription',d.description);autofill('addThumbnail',d.thumbnail);
+    autofill('addDescription',d.description);
     document.getElementById('addThumbnailHidden').value=d.thumbnail||'';
+    document.getElementById('addCoverFile').value='';
+    if(d.thumbnail) showCoverPreview(d.thumbnail); else clearCover();
     document.getElementById('addPageCount').value=d.page_count||'';
     if(document.getElementById('addPageCountDisplay'))document.getElementById('addPageCountDisplay').value=d.page_count||'';
     document.getElementById('addApiSource').value=data.source||'';
@@ -1515,6 +1544,59 @@ async function fetchBookByIsbn(){
     setFetchAlert('success',data.from_cache?`Loaded from cache <span style="opacity:.65">(${data.source})</span>`:`Fetched from <strong>${data.source}</strong>. Review before saving.`);
   }catch(err){setFetchAlert('error','Network error. Try again.');}
   finally{btn.disabled=false;lbl.innerHTML='<i class="bi bi-cloud-download-fill"></i> Re-Fetch';}
+}
+
+/* ═══════════════════════════════════════════════
+   COVER ATTACH HELPERS
+═══════════════════════════════════════════════ */
+const COVER_MAX_MB = 5;
+
+function handleCoverFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Please choose an image file','error');
+    input.value = ''; return;
+  }
+  if (file.size > COVER_MAX_MB * 1024 * 1024) {
+    showToast(`<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Image must be under ${COVER_MAX_MB} MB`,'error');
+    input.value = ''; return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    showCoverPreview(e.target.result);
+    document.getElementById('addThumbnailHidden').value = '';   // attached file replaces the fetched URL
+    const nm = document.getElementById('addCoverName');
+    nm.textContent = file.name;
+    nm.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleCoverDrop(event) {
+  event.preventDefault();
+  document.getElementById('addCoverDropZone').style.borderColor = 'rgba(159,193,225,.25)';
+  const file = event.dataTransfer.files[0];
+  if (!file) return;
+  const input = document.getElementById('addCoverFile');
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  handleCoverFile(input);
+}
+
+function showCoverPreview(src) {
+  document.getElementById('addCoverPreviewImg').src = src;
+  document.getElementById('addCoverPreviewWrap').style.display = 'block';
+  document.getElementById('addCoverPlaceholder').style.display = 'none';
+}
+
+function clearCover(keepUrl) {
+  document.getElementById('addCoverFile').value = '';
+  document.getElementById('addCoverPreviewWrap').style.display = 'none';
+  document.getElementById('addCoverPlaceholder').style.display = 'block';
+  document.getElementById('addCoverName').style.display = 'none';
+  if (!keepUrl) document.getElementById('addThumbnailHidden').value = '';
 }
 
 /* ═══════════════════════════════════════════════
@@ -1543,9 +1625,11 @@ function wzGoTo(n){
   wzStep=n;
 }
 function wzNext(){
+  const showErr=msg=>{const e=document.getElementById('addErr');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',2500);};
+  if(wzStep===0&&!validateIsbn(document.getElementById('addIsbn').value).valid){showErr('Enter a valid ISBN to continue.');return;}
   if(wzStep===1){
     const title=document.getElementById('addTitle').value.trim(),author=document.getElementById('addAuthor').value.trim();
-    if(!title||!author){const err=document.getElementById('addErr');err.textContent='Title and Author are required.';err.style.display='block';setTimeout(()=>err.style.display='none',2500);return;}
+    if(!title||!author){showErr('Title and Author are required.');return;}
   }
   document.getElementById('addErr').style.display='none';
   if(wzStep<WZ_TOTAL-1)wzGoTo(wzStep+1);
@@ -1558,7 +1642,8 @@ function buildReview(){
   document.getElementById('reviewTitle').textContent=g('addTitle')||'—';
   document.getElementById('reviewSubtitle').textContent=g('addSubtitle');
   document.getElementById('reviewAuthor').textContent=g('addAuthor')||'—';
-  const thumb=g('addThumbnail');
+  const pw=document.getElementById('addCoverPreviewWrap');
+  const thumb=(pw&&pw.style.display==='block')?document.getElementById('addCoverPreviewImg').src:'';
   const imgEl=document.getElementById('reviewCoverImg'),phEl=document.getElementById('reviewCoverPh');
   if(thumb){imgEl.src=thumb;imgEl.style.display='block';phEl.style.display='none';}else{imgEl.style.display='none';phEl.style.display='flex';}
   const isbn=g('addIsbn');
@@ -1585,8 +1670,6 @@ async function handleAddSubmit(e){
   e.preventDefault();
   const btn=document.getElementById('addSubmitBtn'),err=document.getElementById('addErr');
   err.style.display='none';btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving…';
-  const vt=document.getElementById('addThumbnail'),ht=document.getElementById('addThumbnailHidden');
-  if(vt&&ht)ht.value=vt.value.trim();
   try{
     const fd=new FormData(e.target);
     const res=await fetch('/librarian_add_book',{method:'POST',body:fd});
@@ -1602,6 +1685,7 @@ async function handleAddSubmit(e){
 
 function resetAddForm(){
   document.getElementById('addBookForm').reset();hideCoverStrip();clearFetchAlert();
+  clearCover();
   document.getElementById('sourceBadge').className='isbn-source-badge';
   document.getElementById('isbnHint').textContent='';
   document.getElementById('addIsbn').classList.remove('valid','invalid');
@@ -1649,7 +1733,7 @@ function openViewModal(id){
   vmTab(0);document.getElementById('viewModal').classList.add('open');document.body.style.overflow='hidden';
 }
 function closeViewModal(){document.getElementById('viewModal').classList.remove('open');document.body.style.overflow='';}
-function vmTab(n){document.querySelectorAll('.vm-tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.vm-pane').forEach((p,i)=>p.classList.toggle('active',i===n));}
+function vmTab(n){document.querySelectorAll('#viewModal .vm-tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.vm-pane').forEach((p,i)=>p.classList.toggle('active',i===n));}
 function vmEdit(){if(_vmCurrentId===null)return;closeViewModal();setTimeout(()=>openEditModal(_vmCurrentId),150);}
 function vmDelete(){if(_vmCurrentId===null)return;const b=allBooks.find(x=>x.id===_vmCurrentId);if(!b)return;closeViewModal();setTimeout(()=>confirmDeleteOne(b.id,b.title),150);}
 document.getElementById('viewModal').addEventListener('click',function(e){if(e.target===this)closeViewModal();});
@@ -1781,8 +1865,8 @@ async function submitEdit(){
    DELETE  →  /librarian_delete_book/:id
 ═══════════════════════════════════════════════ */
 let _deleteTarget=null;
-function confirmDeleteOne(id,title){_deleteTarget={id,title,isBulk:false};document.getElementById('cmTitle').textContent='Delete book?';document.getElementById('cmMsg').textContent=`"${title}" will be permanently removed.`;document.getElementById('cmConfirmBtn').onclick=execDelete;document.getElementById('confirmModal').classList.add('open');}
-function bulkDelete(){const ids=[...document.querySelectorAll('.row-cb:checked')].map(cb=>parseInt(cb.closest('tr').dataset.id));if(!ids.length)return;_deleteTarget={isBulk:true,ids};document.getElementById('cmTitle').textContent=`Delete ${ids.length} books?`;document.getElementById('cmMsg').textContent='These books will be permanently removed.';document.getElementById('cmConfirmBtn').onclick=execBulkDelete;document.getElementById('confirmModal').classList.add('open');}
+function confirmDeleteOne(id,title){_deleteTarget={id,title,isBulk:false};document.getElementById('cfTitle').textContent='Delete book?';document.getElementById('cmMsg').textContent=`"${title}" will be permanently removed.`;document.getElementById('cmConfirmBtn').onclick=execDelete;document.getElementById('confirmModal').classList.add('open');}
+function bulkDelete(){const ids=[...document.querySelectorAll('.row-cb:checked')].map(cb=>parseInt(cb.closest('tr').dataset.id));if(!ids.length)return;_deleteTarget={isBulk:true,ids};document.getElementById('cfTitle').textContent=`Delete ${ids.length} books?`;document.getElementById('cmMsg').textContent='These books will be permanently removed.';document.getElementById('cmConfirmBtn').onclick=execBulkDelete;document.getElementById('confirmModal').classList.add('open');}
 function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');_deleteTarget=null;}
 
 async function execDelete(){
