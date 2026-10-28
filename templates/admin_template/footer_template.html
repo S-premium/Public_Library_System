@@ -1,31 +1,46 @@
 <!DOCTYPE html>
 <!-- footer_template.html -->
-<!-- 
-  This template contains the complete footer section for the Iloilo City Public Library.
-  Include this file at the bottom of your page's <body> section, after all main content.
-  
-  Dependencies: Bootstrap 5 CSS/JS, Font Awesome, Bootstrap Icons, Google Fonts (already included)
-  The legal modals (Privacy Policy & Terms of Use) are also included in this template.
+<!--
+  Complete footer section for the Iloilo City Public Library.
+  Include at the bottom of <body>, after all main content.
+
+  Dependencies: Bootstrap 5 CSS/JS, Bootstrap Icons, Google Fonts (already included)
+  Includes the Privacy Policy & Terms of Use modals.
+
+  THEMING: every color below is a CSS variable. The defaults live in :where(:root),
+  which has ZERO specificity, so staff_appearance.js (inline style on <html>, a
+  [data-theme] rule, a class, or a <style> tag) always overrides them.
 -->
 
 <style>
+  /* ═══ THEME VARIABLES (defaults — overridable by staff_appearance.js) ═══ */
+  :where(:root) {
+    --accent:       #9fc1e1;
+    --accent-rgb:   159,193,225;
+    --accent2:      #48c78e;
+    --accent2-rgb:  72,199,142;
+    --bg1:          #1e2d3d;
+    --bg2:          #2f3f4d;
+    --bg3:          #42586b;
+    --tl:           #dae8f5;
+    --danger:       #ff6363;
+    --danger-rgb:   255,99,99;
+    --warn:         #ff9800;
+    --warn-rgb:     255,152,0;
+    --fg:           #ffffff;
+    --fg-rgb:       255,255,255;
+    --on-accent:    #0d1a24;
+    --accent-hover: #b8d4ec;
+    --shadow-rgb:   0,0,0;
+    --legal-bg:     #1b2a35;
+  }
+
   /* ═══════════════════════════════════════════════════════════
      FOOTER STYLES
   ═══════════════════════════════════════════════════════════ */
-  :root {
-    --accent:  #9fc1e1;
-    --accent2: #48c78e;
-    --bg1:     #1e2d3d;
-    --bg2:     #2f3f4d;
-    --bg3:     #42586b;
-    --tl:      #dae8f5;
-    --danger:  #ff6363;
-    --warn:    #ff9800;
-  }
-
   .footer-cta {
-    background: linear-gradient(100deg, rgba(159,193,225,.1) 0%, rgba(72,199,142,.06) 100%);
-    border-top: 1px solid rgba(159,193,225,.13);
+    background: linear-gradient(100deg, rgba(var(--accent-rgb),.1) 0%, rgba(var(--accent2-rgb),.06) 100%);
+    border-top: 1px solid rgba(var(--accent-rgb),.13);
     padding: 52px 60px;
     display: flex;
     align-items: center;
@@ -38,7 +53,7 @@
     font-size: 1.4rem;
     font-weight: 700;
     letter-spacing: -.025em;
-    color: #fff;
+    color: var(--fg);
     margin-bottom: 6px;
   }
 
@@ -62,7 +77,7 @@
     align-items: center;
     gap: 8px;
     background: var(--accent);
-    color: #0d1a24;
+    color: var(--on-accent);
     border: none;
     border-radius: 11px;
     padding: 11px 22px;
@@ -76,9 +91,9 @@
   }
 
   .footer-cta-btn-primary:hover {
-    background: #b8d4ec;
+    background: var(--accent-hover);
     transform: translateY(-2px);
-    color: #0d1a24;
+    color: var(--on-accent);
   }
 
   .footer-cta-btn-ghost {
@@ -86,8 +101,8 @@
     align-items: center;
     gap: 8px;
     background: transparent;
-    color: rgba(255,255,255,.72);
-    border: 1px solid rgba(255,255,255,.16);
+    color: rgba(var(--fg-rgb),.72);
+    border: 1px solid rgba(var(--fg-rgb),.16);
     border-radius: 11px;
     padding: 10px 20px;
     font-family: 'DM Sans', sans-serif;
@@ -100,14 +115,14 @@
   }
 
   .footer-cta-btn-ghost:hover {
-    border-color: rgba(255,255,255,.42);
-    color: #fff;
-    background: rgba(255,255,255,.06);
+    border-color: rgba(var(--fg-rgb),.42);
+    color: var(--fg);
+    background: rgba(var(--fg-rgb),.06);
   }
 
   .footer-main {
-    background: rgba(0,0,0,.3);
-    border-top: 1px solid rgba(255,255,255,.06);
+    background: rgba(var(--shadow-rgb),.3);
+    border-top: 1px solid rgba(var(--fg-rgb),.06);
     padding: 60px 60px 0;
   }
 
@@ -116,7 +131,7 @@
     grid-template-columns: 1.9fr 1fr 1fr 1.35fr;
     gap: 48px;
     padding-bottom: 52px;
-    border-bottom: 1px solid rgba(255,255,255,.07);
+    border-bottom: 1px solid rgba(var(--fg-rgb),.07);
   }
 
   .footer-brand-col .footer-logo-row {
@@ -136,7 +151,7 @@
   .footer-logo-row .brand-label {
     font-size: .92rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--fg);
     letter-spacing: -.015em;
     line-height: 1.25;
   }
@@ -153,7 +168,7 @@
 
   .footer-tagline {
     font-size: .8rem;
-    color: rgba(255,255,255,.42);
+    color: rgba(var(--fg-rgb),.42);
     line-height: 1.75;
     margin-bottom: 20px;
     max-width: 255px;
@@ -169,9 +184,9 @@
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.09);
-    color: rgba(255,255,255,.5);
+    background: rgba(var(--fg-rgb),.05);
+    border: 1px solid rgba(var(--fg-rgb),.09);
+    color: rgba(var(--fg-rgb),.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -181,8 +196,8 @@
   }
 
   .footer-social-btn:hover {
-    background: rgba(159,193,225,.14);
-    border-color: rgba(159,193,225,.28);
+    background: rgba(var(--accent-rgb),.14);
+    border-color: rgba(var(--accent-rgb),.28);
     color: var(--accent);
     transform: translateY(-3px);
   }
@@ -192,10 +207,10 @@
     font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.28);
+    color: rgba(var(--fg-rgb),.28);
     margin-bottom: 16px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgba(var(--fg-rgb),.06);
   }
 
   .footer-links {
@@ -209,7 +224,7 @@
 
   .footer-links a {
     font-size: .825rem;
-    color: rgba(255,255,255,.48);
+    color: rgba(var(--fg-rgb),.48);
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -222,7 +237,7 @@
 
   .footer-links a i {
     font-size: .72rem;
-    color: rgba(159,193,225,.4);
+    color: rgba(var(--accent-rgb),.4);
     flex-shrink: 0;
     transition: .18s;
     width: 14px;
@@ -230,7 +245,7 @@
   }
 
   .footer-links a:hover {
-    color: rgba(255,255,255,.88);
+    color: rgba(var(--fg-rgb),.88);
     padding-left: 5px;
   }
 
@@ -243,16 +258,16 @@
     align-items: flex-start;
     gap: 11px;
     padding: 10px 12px;
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.05);
+    background: rgba(var(--fg-rgb),.04);
+    border: 1px solid rgba(var(--fg-rgb),.05);
     border-radius: 11px;
     margin-bottom: 8px;
     transition: .2s;
   }
 
   .footer-contact-row:hover {
-    background: rgba(159,193,225,.06);
-    border-color: rgba(159,193,225,.12);
+    background: rgba(var(--accent-rgb),.06);
+    border-color: rgba(var(--accent-rgb),.12);
   }
 
   .footer-contact-row i {
@@ -268,17 +283,22 @@
     font-weight: 700;
     letter-spacing: .07em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.28);
+    color: rgba(var(--fg-rgb),.28);
     display: block;
     margin-bottom: 2px;
   }
 
   .footer-contact-row .fc-val {
     font-size: .78rem;
-    color: rgba(255,255,255,.68);
+    color: rgba(var(--fg-rgb),.68);
     font-weight: 500;
     line-height: 1.5;
     display: block;
+  }
+
+  .footer-contact-row .fc-sub {
+    font-size: .72rem;
+    color: rgba(var(--fg-rgb),.32);
   }
 
   .footer-contact-row a.fc-val {
@@ -292,7 +312,7 @@
 
   .footer-partners-belt {
     padding: 26px 0;
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgba(var(--fg-rgb),.06);
     display: flex;
     align-items: center;
     gap: 24px;
@@ -304,7 +324,7 @@
     font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.22);
+    color: rgba(var(--fg-rgb),.22);
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -312,7 +332,7 @@
   .partners-divider {
     width: 1px;
     height: 26px;
-    background: rgba(255,255,255,.08);
+    background: rgba(var(--fg-rgb),.08);
     flex-shrink: 0;
   }
 
@@ -350,12 +370,12 @@
 
   .footer-bottom-left {
     font-size: .76rem;
-    color: rgba(255,255,255,.25);
+    color: rgba(var(--fg-rgb),.25);
     line-height: 1.6;
   }
 
   .footer-bottom-left strong {
-    color: rgba(255,255,255,.4);
+    color: rgba(var(--fg-rgb),.4);
     font-weight: 600;
   }
 
@@ -368,20 +388,20 @@
 
   .footer-bottom-right a {
     font-size: .74rem;
-    color: rgba(255,255,255,.27);
+    color: rgba(var(--fg-rgb),.27);
     text-decoration: none;
     transition: .18s;
   }
 
   .footer-bottom-right a:hover {
-    color: rgba(255,255,255,.65);
+    color: rgba(var(--fg-rgb),.65);
   }
 
   .footer-bottom-sep {
     width: 3px;
     height: 3px;
     border-radius: 50%;
-    background: rgba(255,255,255,.15);
+    background: rgba(var(--fg-rgb),.15);
   }
 
   .footer-ph-badge {
@@ -390,9 +410,9 @@
     gap: 5px;
     font-size: .7rem;
     font-weight: 600;
-    color: rgba(255,255,255,.22);
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.07);
+    color: rgba(var(--fg-rgb),.22);
+    background: rgba(var(--fg-rgb),.04);
+    border: 1px solid rgba(var(--fg-rgb),.07);
     border-radius: 20px;
     padding: 3px 10px;
   }
@@ -409,7 +429,7 @@
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(0,0,0,.72);
+    background: rgba(var(--shadow-rgb),.72);
     backdrop-filter: blur(6px);
     align-items: center;
     justify-content: center;
@@ -417,15 +437,15 @@
   }
 
   .legal-modal {
-    background: #1b2a35;
-    border: 1px solid rgba(159,193,225,.18);
+    background: var(--legal-bg);
+    border: 1px solid rgba(var(--accent-rgb),.18);
     border-radius: 20px;
     width: 100%;
     max-width: 640px;
     max-height: 88vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 24px 72px rgba(0,0,0,.6);
+    box-shadow: 0 24px 72px rgba(var(--shadow-rgb),.6);
     animation: modalIn .25s cubic-bezier(.16,.84,.44,1);
   }
 
@@ -445,7 +465,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px 16px;
-    border-bottom: 1px solid rgba(255,255,255,.07);
+    border-bottom: 1px solid rgba(var(--fg-rgb),.07);
     flex-shrink: 0;
   }
 
@@ -462,9 +482,9 @@
   }
 
   .legal-modal-close {
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.1);
-    color: rgba(255,255,255,.55);
+    background: rgba(var(--fg-rgb),.07);
+    border: 1px solid rgba(var(--fg-rgb),.1);
+    color: rgba(var(--fg-rgb),.55);
     width: 34px;
     height: 34px;
     border-radius: 10px;
@@ -478,9 +498,9 @@
   }
 
   .legal-modal-close:hover {
-    background: rgba(255,100,100,.1);
-    border-color: rgba(255,100,100,.25);
-    color: #ff7070;
+    background: rgba(var(--danger-rgb),.1);
+    border-color: rgba(var(--danger-rgb),.25);
+    color: var(--danger);
   }
 
   .legal-modal-body {
@@ -488,7 +508,7 @@
     overflow-y: auto;
     flex: 1;
     font-size: .84rem;
-    color: rgba(255,255,255,.58);
+    color: rgba(var(--fg-rgb),.58);
     line-height: 1.8;
   }
 
@@ -497,14 +517,14 @@
   }
 
   .legal-modal-body::-webkit-scrollbar-thumb {
-    background: rgba(159,193,225,.2);
+    background: rgba(var(--accent-rgb),.2);
     border-radius: 4px;
   }
 
   .legal-modal-body h5 {
     font-size: .82rem;
     font-weight: 700;
-    color: rgba(255,255,255,.85);
+    color: rgba(var(--fg-rgb),.85);
     margin: 18px 0 6px;
   }
 
@@ -525,17 +545,23 @@
     margin-bottom: 5px;
   }
 
+  .legal-modal-updated {
+    margin-top: 18px;
+    font-size: .77rem;
+    color: rgba(var(--fg-rgb),.3);
+  }
+
   .legal-modal-footer {
     padding: 14px 24px;
-    border-top: 1px solid rgba(255,255,255,.07);
+    border-top: 1px solid rgba(var(--fg-rgb),.07);
     display: flex;
     justify-content: flex-end;
     flex-shrink: 0;
   }
 
   .legal-modal-btn {
-    background: rgba(159,193,225,.15);
-    border: 1px solid rgba(159,193,225,.25);
+    background: rgba(var(--accent-rgb),.15);
+    border: 1px solid rgba(var(--accent-rgb),.25);
     color: var(--accent);
     border-radius: 10px;
     padding: 9px 20px;
@@ -547,8 +573,8 @@
   }
 
   .legal-modal-btn:hover {
-    background: rgba(159,193,225,.25);
-    color: #fff;
+    background: rgba(var(--accent-rgb),.25);
+    color: var(--fg);
   }
 
   /* Footer responsive */
@@ -699,6 +725,17 @@
   }
 </style>
 
+<!-- Load staff_appearance.js exactly once, even if sidebar/topbar/footer are all included on one page -->
+<script>
+  (function () {
+    if (window.__staffAppearanceLoaded) return;
+    window.__staffAppearanceLoaded = true;
+    var s = document.createElement('script');
+    s.src = "{{ url_for('static', filename='js/staff_appearance.js') }}";
+    document.head.appendChild(s);
+  })();
+</script>
+
 <!-- FOOTER HTML -->
 <div class="footer-cta">
   <div class="footer-cta-text">
@@ -772,7 +809,7 @@
           <div>
             <span class="fc-label">Library Hours</span>
             <span class="fc-val">Mon – Sat &nbsp;·&nbsp; 8:00 AM – 8:00 PM<br>
-              <span style="font-size:.72rem;color:rgba(255,255,255,.32);">Closed on Sundays &amp; public holidays</span>
+              <span class="fc-sub">Closed on Sundays &amp; public holidays</span>
             </span>
           </div>
         </div>
@@ -839,7 +876,7 @@
       <p>We implement appropriate measures to protect your personal data. Access is restricted to authorized library staff only.</p>
       <h5>6. Your Rights</h5>
       <p>You have the right to access, correct, and request the deletion of your personal data held by the library.</p>
-      <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
+      <p class="legal-modal-updated">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
     </div>
     <div class="legal-modal-footer">
       <button class="legal-modal-btn" onclick="document.getElementById('privacyModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button>
@@ -876,7 +913,7 @@
       </ul>
       <h5>5. Free WiFi and Computers</h5>
       <p>Free WiFi is provided for educational purposes only. Use for illegal activities is strictly prohibited.</p>
-      <p style="margin-top:18px;font-size:.77rem;color:rgba(255,255,255,.3);">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
+      <p class="legal-modal-updated">Last updated: 2025 &nbsp;·&nbsp; Iloilo City Public Library</p>
     </div>
     <div class="legal-modal-footer">
       <button class="legal-modal-btn" onclick="document.getElementById('termsModal').style.display='none'"><i class="bi bi-check2 me-1"></i> I Understand</button>

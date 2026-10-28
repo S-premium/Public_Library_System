@@ -32,14 +32,41 @@
     .phdr h1{font-size:1.5rem;font-weight:700;letter-spacing:-.03em;margin:0}
     .phdr p{font-size:.78rem;color:var(--tl);margin:3px 0 0}
 
-    .flash-wrap{margin-bottom:18px}
-    .flash-msg{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:11px;font-size:.86rem;font-weight:500;margin-bottom:8px}
+    /* ── FLASH MESSAGES ─────────────────────────────────────
+       - capped height + scroll so a flood of messages doesn't
+         push the tabs/form down the page
+       - each message fades in, then auto-dismisses on its own
+    ──────────────────────────────────────────────────────── */
+    .flash-wrap{
+      margin-bottom:18px;
+      max-height:210px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding-right:4px;
+    }
+    .flash-wrap::-webkit-scrollbar{width:5px}
+    .flash-wrap::-webkit-scrollbar-track{background:rgba(255,255,255,.03);border-radius:10px}
+    .flash-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px}
+    .flash-wrap::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.28)}
+
+    .flash-msg{
+      display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:11px;
+      font-size:.86rem;font-weight:500;margin-bottom:8px;
+      animation:flashIn .25s ease, flashOut .35s ease 4.5s forwards;
+      overflow:hidden;
+    }
     .flash-msg.success{background:rgba(72,199,142,.11);border:1px solid rgba(72,199,142,.28);color:#6ddaa8}
     .flash-msg.danger{background:rgba(255,99,99,.11);border:1px solid rgba(255,99,99,.28);color:#ff9999}
     .flash-msg.warning{background:rgba(255,152,0,.11);border:1px solid rgba(255,152,0,.28);color:#ffb74d}
     .flash-msg.info{background:rgba(159,193,225,.11);border:1px solid rgba(159,193,225,.28);color:var(--accent)}
     .flash-close{margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1rem;opacity:.65}
     .flash-close:hover{opacity:1}
+
+    @keyframes flashIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes flashOut{
+      0%{opacity:1;max-height:60px;margin-bottom:8px;padding-top:11px;padding-bottom:11px}
+      100%{opacity:0;max-height:0;margin-bottom:0;padding-top:0;padding-bottom:0;border-width:0}
+    }
 
     .tabs{display:flex;gap:8px;margin-bottom:22px}
     .tab-btn{display:flex;align-items:center;gap:8px;padding:9px 20px;border-radius:12px;font-size:.87rem;font-weight:600;cursor:pointer;transition:.2s;border:1px solid rgba(255,255,255,.1);background:var(--card);color:rgba(255,255,255,.5)}
@@ -387,6 +414,7 @@
     @media(max-width:420px){.page{padding:68px 10px 56px}.sc{padding:15px 13px;border-radius:16px}.sh .shi{width:30px;height:30px;font-size:.88rem}.tab-btn{padding:7px 11px;font-size:.78rem;gap:5px}.tab-btn i{font-size:.82rem}.fg input,.fg select{padding:9px 11px;font-size:.84rem}.fg label{font-size:.67rem}}
     @media(max-width:360px){.page{padding:64px 8px 52px}.phdr h1{font-size:1.05rem}.tabs{flex-direction:column}.tab-btn{width:100%;justify-content:center}}
   </style>
+  <script src="{{ url_for('static', filename='js/staff_appearance.js') }}"></script>
 </head>
 <body>
 {% include 'admin_template/topbar_template.html' %}
@@ -406,8 +434,8 @@
   <!-- Flash -->
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-  <div class="flash-wrap">
-    {% for cat, msg in messages %}
+  <div class="flash-wrap" id="flashWrap">
+    {% for cat, msg in messages|unique(attribute='1') %}
     <div class="flash-msg {{ cat }}">
       <i class="bi {% if cat=='success' %}bi-check-circle-fill{% elif cat=='danger' %}bi-x-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
       {{ msg }}
@@ -843,6 +871,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set initial disabled state
   _refreshSubmitState('m');
   _refreshSubmitState('b');
+
+  // ── FLASH MESSAGES: auto-dismiss so they never pile up/flood ──
+  document.querySelectorAll('.flash-msg').forEach(el => {
+    setTimeout(() => el.remove(), 4900);
+  });
 });
 
 // ── TABS ───────────────────────────────────────────────────

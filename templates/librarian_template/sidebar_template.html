@@ -1,281 +1,702 @@
+<!-- librarian_sidebar_template.html -->
+<!-- Left vertical sidebar (librarian) — same design as the admin sidebar.
+     THEMING: all colors are CSS variables with zero-specificity defaults (:where(:root)),
+     so staff_appearance.js can override them by any method. -->
 
 <style>
-  /* ══════════════════════════════
-     FLOATING RIGHT SIDEBAR — Desktop (> 992px)
-  ══════════════════════════════ */
-  .side-dock {
-    position:fixed; right:0; top:50%;
-    transform:translateY(-50%) translateX(calc(100% - 14px));
-    z-index:1050; display:flex; flex-direction:row; align-items:center;
-    transition:transform .35s cubic-bezier(.4,0,.2,1);
-  }
-  .side-tab {
-    width:14px; height:72px;
-    background:rgba(159,193,225,.18); border:1px solid rgba(159,193,225,.25);
-    border-right:none; border-radius:10px 0 0 10px;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; flex-shrink:0; transition:background .2s;
-  }
-  .side-tab::after { content:''; display:block; width:3px; height:28px; background:rgba(159,193,225,.6); border-radius:3px; }
-  .side-dock:hover .side-tab,
-  .side-dock.open  .side-tab  { background:rgba(159,193,225,.3); }
-  .side-dock:hover,
-  .side-dock.open              { transform:translateY(-50%) translateX(0); }
-
-  .side-panel {
-    background:rgba(25,38,52,0.97); backdrop-filter:blur(18px);
-    border:1px solid rgba(159,193,225,.18); border-right:none;
-    border-radius:18px 0 0 18px;
-    padding:20px 14px; display:flex; flex-direction:column;
-    gap:10px; align-items:center; min-width:64px;
+  :where(:root) {
+    --accent:       #9fc1e1;
+    --accent-rgb:   159,193,225;
+    --accent2:      #48c78e;
+    --accent2-rgb:  72,199,142;
+    --bg1:          #1e2d3d;
+    --bg2:          #2f3f4d;
+    --bg3:          #42586b;
+    --tl:           #dae8f5;
+    --danger:       #ff6363;
+    --danger-rgb:   255,99,99;
+    --warn:         #ff9800;
+    --warn-rgb:     255,152,0;
+    --fg:           #ffffff;
+    --fg-rgb:       255,255,255;
+    --on-accent:    #0d1a24;
+    --shadow-rgb:   0,0,0;
+    --sb-bg:        #192736;
+    --sb-bg-deep:   #0f1e2c;
+    --tip-bg:       #0d1a24;
+    --overlay-rgb:  8,14,20;
+    --mono:         'DM Mono', monospace;
+    --sb-w:         240px;
+    --sb-w-mini:    64px;
   }
 
-  .side-btn {
-    position:relative; width:44px; height:44px; border-radius:12px;
-    display:flex; align-items:center; justify-content:center;
-    text-decoration:none; font-size:1.15rem; transition:.2s;
-    flex-shrink:0; cursor:pointer; border:none; background:transparent;
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* ── BODY OFFSET ── */
+  body {
+    padding-left: var(--sb-w) !important;
+    padding-top: 0 !important;
+    transition: padding-left .3s cubic-bezier(.4,0,.2,1);
   }
-  .side-btn:hover { transform:scale(1.08); }
-  .side-btn-cal    { background:rgba(72,199,142,.15);  border:1px solid rgba(72,199,142,.3);  color:#48c78e; }
-  .side-btn-cal:hover    { background:rgba(72,199,142,.28); border-color:rgba(72,199,142,.55); color:#6ddaa8; }
-  .side-btn-req    { background:rgba(255,152,0,.15);   border:1px solid rgba(255,152,0,.3);   color:#ffb74d; }
-  .side-btn-req:hover    { background:rgba(255,152,0,.28);  border-color:rgba(255,152,0,.55);  color:#ffc96e; }
-  .side-btn-logout { background:rgba(255,99,99,.15);   border:1px solid rgba(255,99,99,.25);  color:#ff9999; }
-  .side-btn-logout:hover { background:rgba(255,99,99,.28); border-color:rgba(255,99,99,.5);   color:#fff; }
-
-  .side-dot {
-    position:absolute; top:-3px; right:-3px;
-    width:17px; height:17px; border-radius:50%;
-    background:#ff6363; border:2px solid #1e2d3d;
-    display:none; align-items:center; justify-content:center;
-    font-size:.55rem; font-weight:700; color:#fff; line-height:1;
-  }
-  .side-dot.show { display:flex; }
-
-  .side-divider { width:32px; height:1px; background:rgba(255,255,255,.1); margin:2px 0; flex-shrink:0; }
-
-  .side-btn-wrap { position:relative; display:flex; align-items:center; }
-  .side-tip {
-    position:absolute; right:calc(100% + 10px);
-    background:rgba(15,25,35,.92); color:#fff;
-    font-size:.75rem; font-weight:600; padding:4px 10px;
-    border-radius:8px; white-space:nowrap; pointer-events:none;
-    opacity:0; transform:translateX(6px); transition:opacity .18s, transform .18s;
-    border:1px solid rgba(255,255,255,.1);
-  }
-  .side-btn-wrap:hover .side-tip { opacity:1; transform:translateX(0); }
-
-  @media (max-width:992px) { .side-dock { display:none !important; } }
-
-  /* ══════════════════════════════
-     MOBILE RIGHT-SIDE DRAWER (≤ 992px)
-  ══════════════════════════════ */
-  .drawer-backdrop {
-    display:none; position:fixed; inset:0; z-index:1040;
-    background:rgba(0,0,0,0); transition:background .3s; pointer-events:none;
-  }
-  .drawer-backdrop.open { background:rgba(0,0,0,.45); pointer-events:all; }
-  @media (max-width:992px) { .drawer-backdrop { display:block; } }
-
-  .mob-drawer {
-    display:none; position:fixed; right:0; top:50%;
-    transform:translateY(-50%) translateX(calc(100% - 18px));
-    z-index:1051; flex-direction:row; align-items:center;
-    transition:transform .35s cubic-bezier(.4,0,.2,1);
-  }
-  .mob-drawer.open { transform:translateY(-50%) translateX(0); }
-  @media (max-width:992px) { .mob-drawer { display:flex; } }
-
-  .mob-drawer-tab {
-    width:18px; height:80px;
-    background:rgba(159,193,225,.18); border:1px solid rgba(159,193,225,.25);
-    border-right:none; border-radius:12px 0 0 12px;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; flex-shrink:0; transition:background .2s;
-  }
-  .mob-drawer-tab::after { content:''; display:block; width:4px; height:32px; background:rgba(159,193,225,.6); border-radius:3px; }
-  .mob-drawer.open .mob-drawer-tab { background:rgba(159,193,225,.3); }
-
-  .mob-drawer-panel {
-    background:rgba(25,38,52,0.97); backdrop-filter:blur(18px);
-    border:1px solid rgba(159,193,225,.18); border-right:none;
-    border-radius:18px 0 0 18px;
-    padding:22px 14px; display:flex; flex-direction:column;
-    gap:12px; align-items:center; width:72px;
+  body.sb-collapsed { padding-left: var(--sb-w-mini) !important; }
+  @media (max-width: 992px) {
+    body, body.sb-collapsed { padding-left: 0 !important; }
   }
 
-  .mob-drawer-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
-
-  .mob-drawer-btn {
-    position:relative; width:48px; height:48px; border-radius:13px;
-    display:flex; align-items:center; justify-content:center;
-    text-decoration:none; font-size:1.2rem; transition:transform .15s;
-    flex-shrink:0; cursor:pointer; border:none; background:transparent;
-    -webkit-tap-highlight-color:transparent;
+  /* ── SIDEBAR SHELL ── */
+  .adm-sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--sb-w);
+    background: var(--sb-bg);
+    border-right: 1px solid rgba(var(--accent-rgb),0.10);
+    display: flex;
+    flex-direction: column;
+    z-index: 1100;
+    overflow: hidden;
+    transition: width .3s cubic-bezier(.4,0,.2,1),
+                transform .3s cubic-bezier(.4,0,.2,1);
   }
-  .mob-drawer-btn:active { transform:scale(.91); }
-  .mob-drawer-btn-cal    { background:rgba(72,199,142,.15); border:1px solid rgba(72,199,142,.3);  color:#48c78e; }
-  .mob-drawer-btn-req    { background:rgba(255,152,0,.15);  border:1px solid rgba(255,152,0,.3);   color:#ffb74d; }
-  .mob-drawer-btn-logout { background:rgba(255,99,99,.15);  border:1px solid rgba(255,99,99,.25);  color:#ff9999; }
+  .adm-sidebar.collapsed { width: var(--sb-w-mini); }
 
-  .mob-drawer-label { font-size:.6rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; }
-  .mob-label-cal    { color:rgba(72,199,142,.8); }
-  .mob-label-req    { color:rgba(255,180,80,.8); }
-  .mob-label-logout { color:rgba(255,130,130,.8); }
-
-  .mob-drawer-divider { width:36px; height:1px; background:rgba(255,255,255,.1); flex-shrink:0; }
-
-  .mob-drawer-dot {
-    position:absolute; top:-4px; right:-4px;
-    width:17px; height:17px; border-radius:50%;
-    background:#ff6363; border:2px solid #1e2d3d;
-    display:none; align-items:center; justify-content:center;
-    font-size:.55rem; font-weight:700; color:#fff; line-height:1;
+  /* ── HEADER ── */
+  .sb-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 14px 14px;
+    border-bottom: 1px solid rgba(var(--accent-rgb),0.08);
+    flex-shrink: 0; min-height: 64px;
+    transition: padding .3s cubic-bezier(.4,0,.2,1), justify-content .3s;
   }
-  .mob-drawer-dot.show { display:flex; }
+  .adm-sidebar.collapsed .sb-header { justify-content: center; padding: 16px 0 14px; }
+
+  .sb-brand {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; overflow: hidden;
+    flex: 1; min-width: 0;
+  }
+  .sb-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .sb-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .sb-brand-text { line-height: 1.2; overflow: hidden; transition: opacity .2s, width .3s; white-space: nowrap; }
+  .sb-brand-name { font-size: .82rem; font-weight: 700; color: var(--fg); letter-spacing: -.01em; }
+  .sb-brand-sub  { font-size: .65rem; color: rgba(var(--accent-rgb),.5); }
+
+  .sb-collapse-btn {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: rgba(var(--fg-rgb),.06);
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    color: rgba(var(--fg-rgb),.4);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: .9rem; flex-shrink: 0;
+    transition: .15s; padding: 0;
+  }
+  .sb-collapse-btn:hover { background: rgba(var(--fg-rgb),.12); color: var(--fg); }
+  @media (max-width: 992px) { .sb-collapse-btn { display: none !important; } }
+
+  /* ── COLLAPSED STATE ── */
+  .adm-sidebar.collapsed .sb-brand { flex: unset; }
+  .adm-sidebar.collapsed .sb-brand-text { opacity: 0; width: 0; pointer-events: none; }
+  .adm-sidebar.collapsed .sb-collapse-btn { display: none; }
+  .adm-sidebar.collapsed .sb-search-wrap { padding: 10px 10px 6px; }
+  .adm-sidebar.collapsed .sb-search-inner { justify-content: center; }
+  .adm-sidebar.collapsed .sb-search-inner input { display: none; }
+  .adm-sidebar.collapsed .sb-search-inner .sb-clear-btn { display: none; }
+  .adm-sidebar.collapsed .sb-section { opacity: 0; pointer-events: none; height: 6px; padding: 0; }
+  .adm-sidebar.collapsed .sb-label { display: none; }
+  .adm-sidebar.collapsed .sb-chevron { display: none; }
+  .adm-sidebar.collapsed .sb-badge { display: none !important; }
+  .adm-sidebar.collapsed .sb-sub { max-height: 0 !important; }
+  .adm-sidebar.collapsed .sb-divider { margin: 6px 14px; }
+  .adm-sidebar.collapsed .sb-item { justify-content: center; padding: 10px 0; }
+  .adm-sidebar.collapsed .sb-icon { width: auto; }
+  .adm-sidebar.collapsed .sb-footer-item { justify-content: center; padding: 10px 0; }
+  .adm-sidebar.collapsed .sb-footer-item .sb-icon { width: auto; }
+  .adm-sidebar.collapsed .sb-footer-text { display: none; }
+  .adm-sidebar.collapsed .sb-user-info { display: none; }
+  .adm-sidebar.collapsed .sb-user-logout { display: none; }
+  .adm-sidebar.collapsed .sb-user { justify-content: center; padding: 8px 0 4px; }
+
+  /* ── EXPAND BUTTON (collapsed footer) ── */
+  .sb-expand-btn {
+    display: none;
+    width: 28px; height: 28px; border-radius: 7px;
+    background: rgba(var(--fg-rgb),.06);
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    color: rgba(var(--fg-rgb),.4);
+    align-items: center; justify-content: center;
+    cursor: pointer; font-size: .9rem; flex-shrink: 0;
+    transition: .15s; padding: 0; margin: 0 auto 4px;
+  }
+  .sb-expand-btn:hover { background: rgba(var(--fg-rgb),.12); color: var(--fg); }
+  .adm-sidebar.collapsed .sb-expand-btn { display: flex; }
+  .adm-sidebar.collapsed .sb-expand-btn i { transform: rotate(180deg); }
+
+  /* ── TOOLTIPS ON COLLAPSED ITEMS ── */
+  .adm-sidebar.collapsed .sb-item,
+  .adm-sidebar.collapsed .sb-footer-item,
+  .adm-sidebar.collapsed .sb-avatar { position: relative; }
+  .adm-sidebar.collapsed .sb-item:hover::after,
+  .adm-sidebar.collapsed .sb-footer-item:hover::after,
+  .adm-sidebar.collapsed .sb-avatar:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%; transform: translateY(-50%);
+    background: var(--tip-bg); color: var(--fg);
+    font-size: .75rem; font-weight: 600;
+    padding: 5px 10px; border-radius: 7px;
+    white-space: nowrap;
+    border: 1px solid rgba(var(--accent-rgb),.15);
+    pointer-events: none; z-index: 2000;
+    box-shadow: 0 4px 16px rgba(var(--shadow-rgb),.4);
+  }
+  .adm-sidebar.collapsed .sb-item:hover::before,
+  .adm-sidebar.collapsed .sb-footer-item:hover::before {
+    content: '' !important;
+    position: absolute !important;
+    left: calc(100% + 6px) !important;
+    top: 50% !important; transform: translateY(-50%) !important;
+    width: 6px !important; height: 6px !important;
+    background: var(--tip-bg) !important;
+    border-radius: 0 !important;
+    clip-path: polygon(0 50%, 100% 0, 100% 100%) !important;
+    border: none !important; z-index: 1999 !important;
+  }
+  .adm-sidebar:not(.collapsed) .sb-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 18px;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+    clip-path: none !important; border: none !important; z-index: 1 !important;
+  }
+
+  /* ── SEARCH ── */
+  .sb-search-wrap { padding: 10px 12px 6px; flex-shrink: 0; }
+  .sb-search-inner {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(var(--fg-rgb),.05);
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    border-radius: 9px; padding: 7px 11px;
+    transition: border-color .15s, background .15s;
+    position: relative;
+  }
+  .sb-search-inner:focus-within { border-color: rgba(var(--accent-rgb),.35); background: rgba(var(--fg-rgb),.07); }
+  .sb-search-inner .sb-search-icon { font-size: .85rem; color: rgba(var(--fg-rgb),.35); flex-shrink: 0; cursor: pointer; }
+  .adm-sidebar.collapsed .sb-search-inner .sb-search-icon:hover { color: var(--accent); }
+  .sb-search-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: .8rem;
+    color: var(--fg); caret-color: var(--accent); min-width: 0;
+  }
+  .sb-search-input::placeholder { color: rgba(var(--fg-rgb),.3); }
+  .sb-clear-btn {
+    background: rgba(var(--fg-rgb),.1); border: none;
+    color: rgba(var(--fg-rgb),.5); border-radius: 4px;
+    width: 18px; height: 18px;
+    display: none; align-items: center; justify-content: center;
+    font-size: .65rem; cursor: pointer; flex-shrink: 0; padding: 0; transition: .15s;
+  }
+  .sb-clear-btn:hover { background: rgba(var(--fg-rgb),.18); color: var(--fg); }
+  .sb-clear-btn.visible { display: flex; }
+
+  .sb-search-results {
+    display: none; position: absolute;
+    top: calc(100% + 4px); left: 0; right: 0;
+    background: var(--sb-bg-deep);
+    border: 1px solid rgba(var(--accent-rgb),.15);
+    border-radius: 10px; overflow: hidden; z-index: 2100;
+    box-shadow: 0 8px 32px rgba(var(--shadow-rgb),.5);
+    max-height: 280px; overflow-y: auto;
+  }
+  .sb-search-results.show { display: block; }
+  .sb-sr-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px; font-size: .82rem;
+    color: rgba(var(--fg-rgb),.7); text-decoration: none; transition: .12s;
+    border-bottom: 1px solid rgba(var(--fg-rgb),.04);
+  }
+  .sb-sr-item:last-child { border-bottom: none; }
+  .sb-sr-item:hover, .sb-sr-item.focused { background: rgba(var(--accent-rgb),.1); color: var(--fg); }
+  .sb-sr-item i { font-size: .9rem; color: rgba(var(--accent-rgb),.6); flex-shrink: 0; width: 16px; text-align: center; }
+  .sb-sr-item .sb-sr-label { flex: 1; }
+  .sb-sr-item .sb-sr-parent { font-size: .68rem; color: rgba(var(--fg-rgb),.3); margin-left: auto; white-space: nowrap; }
+  .sb-sr-empty { padding: 16px 14px; font-size: .8rem; color: rgba(var(--fg-rgb),.3); text-align: center; }
+  .sb-sr-highlight { color: var(--accent); font-weight: 700; }
+
+  /* ── NAV SCROLL AREA ── */
+  .sb-nav {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding: 6px 10px 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--accent-rgb),.15) transparent;
+  }
+  .sb-nav::-webkit-scrollbar { width: 4px; }
+  .sb-nav::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.15); border-radius: 4px; }
+
+  .sb-section {
+    font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: rgba(var(--accent-rgb),.4);
+    padding: 14px 8px 5px; display: block;
+    transition: opacity .2s, height .3s, padding .3s;
+    white-space: nowrap; overflow: hidden;
+  }
+  .sb-section:first-child { padding-top: 6px; }
+
+  /* ── NAV ITEM ── */
+  .sb-item {
+    position: relative;
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 10px; border-radius: 9px;
+    font-size: .825rem; font-weight: 500;
+    color: rgba(var(--fg-rgb),.6);
+    text-decoration: none; cursor: pointer;
+    transition: background .15s, color .15s;
+    white-space: nowrap; overflow: hidden;
+    margin-bottom: 1px; border: none; background: transparent;
+    width: 100%; text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sb-item:hover { background: rgba(var(--fg-rgb),.06); color: rgba(var(--fg-rgb),.9); }
+  .sb-item.active { background: rgba(var(--accent-rgb),.13); color: var(--accent); }
+  .sb-item .sb-icon { font-size: 1rem; flex-shrink: 0; width: 18px; text-align: center; color: inherit; }
+  .sb-item .sb-label { flex: 1; }
+  .sb-item .sb-badge {
+    font-size: .6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    background: var(--danger); color: var(--fg); flex-shrink: 0;
+  }
+  .sb-item .sb-chevron { font-size: .7rem; color: rgba(var(--fg-rgb),.25); flex-shrink: 0; transition: transform .2s; margin-left: auto; }
+  .sb-item.open .sb-chevron { transform: rotate(180deg); }
+
+  /* ── SUB-MENU ── */
+  .sb-sub {
+    margin: 2px 0 4px 14px; padding-left: 12px;
+    border-left: 1.5px solid rgba(var(--accent-rgb),.12);
+    overflow: hidden; max-height: 0; transition: max-height .25s ease;
+  }
+  .sb-sub.open { max-height: 400px; }
+  .sb-sub-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px 8px; border-radius: 7px;
+    font-size: .78rem; font-weight: 500;
+    color: rgba(var(--fg-rgb),.5);
+    text-decoration: none; transition: .15s; white-space: nowrap;
+  }
+  .sb-sub-item::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(var(--fg-rgb),.2); flex-shrink: 0;
+  }
+  .sb-sub-item:hover { color: rgba(var(--fg-rgb),.9); background: rgba(var(--fg-rgb),.05); }
+  .sb-sub-item:hover::before, .sb-sub-item.active::before { background: var(--accent); }
+  .sb-sub-item.active { color: var(--accent); }
+
+  .sb-divider { height: 1px; background: rgba(var(--fg-rgb),.07); margin: 8px 8px; }
+
+  /* ── FOOTER ── */
+  .sb-footer { border-top: 1px solid rgba(var(--accent-rgb),.08); padding: 8px 10px; flex-shrink: 0; }
+  .sb-footer-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px; border-radius: 8px;
+    font-size: .8rem; font-weight: 500;
+    color: rgba(var(--fg-rgb),.5);
+    text-decoration: none; cursor: pointer; transition: .15s; white-space: nowrap;
+    border: none; background: transparent; width: 100%; text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sb-footer-item:hover { background: rgba(var(--fg-rgb),.06); color: rgba(var(--fg-rgb),.9); }
+  .sb-footer-item .sb-icon { font-size: .95rem; width: 18px; text-align: center; flex-shrink: 0; }
+
+  /* ── USER ROW ── */
+  .sb-user { display: flex; align-items: center; gap: 10px; padding: 8px 10px 4px; margin-top: 2px; transition: justify-content .3s; }
+  .sb-account-link { display: flex; align-items: center; gap: 10px; text-decoration: none; flex: 1; min-width: 0; }
+  .sb-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; color: var(--fg);
+    flex-shrink: 0; overflow: hidden; cursor: pointer;
+  }
+  .sb-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .sb-user-info { flex: 1; min-width: 0; }
+  .sb-user-name { font-size: .8rem; font-weight: 600; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-user-role { font-size: .65rem; color: rgba(var(--fg-rgb),.4); white-space: nowrap; }
+  .sb-user-logout { color: rgba(var(--danger-rgb),.7); font-size: 1rem; flex-shrink: 0; text-decoration: none; transition: .15s; margin-left: 4px; }
+  .sb-user-logout:hover { color: var(--danger); }
+
+  /* ── MOBILE BACKDROP ── */
+  .sb-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(var(--shadow-rgb),0); z-index: 1099;
+    transition: background .3s; pointer-events: none;
+  }
+  .sb-backdrop.show { background: rgba(var(--shadow-rgb),.5); pointer-events: all; }
+  @media (max-width: 992px) { .sb-backdrop { display: block; } }
+
+  /* ── MOBILE ── */
+  @media (max-width: 992px) {
+    .adm-sidebar { transform: translateX(-100%); width: var(--sb-w) !important; }
+    .adm-sidebar.open { transform: translateX(0); }
+    .adm-sidebar.collapsed { width: var(--sb-w) !important; }
+  }
 </style>
-
-
-<!-- ══════════════════════════════
-     DESKTOP FLOATING RIGHT SIDEBAR
-══════════════════════════════ -->
-<div class="side-dock" id="sideDock">
-  <div class="side-tab" id="sideTab" title="Quick Actions"></div>
-  <div class="side-panel">
-
-    <div class="side-btn-wrap">
-      <span class="side-tip">Event Calendar</span>
-      <a href="/librarian/event" class="side-btn side-btn-cal" title="Event Calendar">
-        <i class="bi bi-calendar-week"></i>
-      </a>
-    </div>
-
-    <div class="side-divider"></div>
-
-    <div class="side-btn-wrap">
-      <span class="side-tip">Account Requests</span>
-      <a href="/librarian/account-requests" class="side-btn side-btn-req" title="Account Requests">
-        <i class="bi bi-app-indicator"></i>
-        <span class="side-dot" id="acctReqDot"></span>
-      </a>
-    </div>
-
-    <div class="side-divider"></div>
-
-    <div class="side-btn-wrap">
-      <span class="side-tip">Logout</span>
-      <a href="/logout" class="side-btn side-btn-logout" title="Logout">
-        <i class="bi bi-box-arrow-right"></i>
-      </a>
-    </div>
-
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════
-     MOBILE BACKDROP
-══════════════════════════════ -->
-<div class="drawer-backdrop" id="drawerBackdrop"></div>
-
-
-<!-- ══════════════════════════════
-     MOBILE RIGHT-SIDE DRAWER
-══════════════════════════════ -->
-<div class="mob-drawer" id="mobDrawer">
-  <div class="mob-drawer-tab" id="mobDrawerTab" title="Quick Actions"></div>
-  <div class="mob-drawer-panel">
-
-    <div class="mob-drawer-item">
-      <a href="/librarian/event" class="mob-drawer-btn mob-drawer-btn-cal" title="Event Calendar">
-        <i class="bi bi-calendar-week"></i>
-      </a>
-      <span class="mob-drawer-label mob-label-cal">Calendar</span>
-    </div>
-
-    <div class="mob-drawer-divider"></div>
-
-    <div class="mob-drawer-item">
-      <a href="/librarian/account-requests" class="mob-drawer-btn mob-drawer-btn-req" title="Account Requests">
-        <i class="bi bi-app-indicator"></i>
-        <span class="mob-drawer-dot" id="mobReqDot"></span>
-      </a>
-      <span class="mob-drawer-label mob-label-req">Requests</span>
-    </div>
-
-    <div class="mob-drawer-divider"></div>
-
-    <div class="mob-drawer-item">
-      <a href="/logout" class="mob-drawer-btn mob-drawer-btn-logout" title="Logout">
-        <i class="bi bi-box-arrow-right"></i>
-      </a>
-      <span class="mob-drawer-label mob-label-logout">Logout</span>
-    </div>
-
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════
-     SIDEBAR JS
-══════════════════════════════ -->
+<script src="{{ url_for('static', filename='js/staff_appearance.js') }}"></script>
+<!-- Load staff_appearance.js exactly once per page -->
 <script>
   (function () {
-    /* ── Desktop dock: click pull-tab to pin/unpin ── */
-    const sideDock = document.getElementById('sideDock');
-    const sideTab  = document.getElementById('sideTab');
-    if (sideDock && sideTab) {
-      let pinned = false;
-      sideTab.addEventListener('click', e => {
-        e.stopPropagation();
-        pinned = !pinned;
-        sideDock.classList.toggle('open', pinned);
-      });
-      document.addEventListener('click', e => {
-        if (pinned && !sideDock.contains(e.target)) {
-          pinned = false;
-          sideDock.classList.remove('open');
-        }
-      });
-    }
-
-    /* ── Mobile right-side drawer ── */
-    const mobDrawer = document.getElementById('mobDrawer');
-    const mobTab    = document.getElementById('mobDrawerTab');
-    const backdrop  = document.getElementById('drawerBackdrop');
-    if (mobDrawer && mobTab && backdrop) {
-      let drawerOpen = false;
-      function openDrawer()  { drawerOpen = true;  mobDrawer.classList.add('open');    backdrop.classList.add('open'); }
-      function closeDrawer() { drawerOpen = false; mobDrawer.classList.remove('open'); backdrop.classList.remove('open'); }
-      mobTab.addEventListener('click', e => { e.stopPropagation(); drawerOpen ? closeDrawer() : openDrawer(); });
-      backdrop.addEventListener('click', closeDrawer);
-      document.addEventListener('click', e => { if (drawerOpen && !mobDrawer.contains(e.target)) closeDrawer(); });
-    }
-
-    /* ── Pending account-request count ── */
-    async function loadPendingRequestCount() {
-      try {
-        const res  = await fetch('/api/admin/account-requests');
-        const data = await res.json();
-        const n    = (data.requests || []).filter(r => r.status === 'pending').length;
-        const setDot = (id) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          if (n > 0) { el.textContent = n > 9 ? '9+' : n; el.classList.add('show'); }
-          else { el.classList.remove('show'); }
-        };
-        setDot('acctReqDot');
-        setDot('mobReqDot');
-      } catch (err) {
-        console.debug('Could not fetch pending request count:', err);
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadPendingRequestCount);
-    } else {
-      loadPendingRequestCount();
-    }
+    if (window.__staffAppearanceLoaded) return;
+    window.__staffAppearanceLoaded = true;
+    var s = document.createElement('script');
+    s.src = "{{ url_for('static', filename='js/staff_appearance.js') }}";
+    document.head.appendChild(s);
   })();
+</script>
+
+<!-- Backdrop -->
+<div class="sb-backdrop" id="sbBackdrop"></div>
+
+<!-- Sidebar -->
+<aside class="adm-sidebar" id="admSidebar">
+
+  <!-- Header -->
+  <div class="sb-header">
+    <a href="/librarian/home" class="sb-brand">
+      <div class="sb-logo">
+        <img src="/static/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+      </div>
+      <div class="sb-brand-text">
+        <div class="sb-brand-name">Iloilo City Library</div>
+        <div class="sb-brand-sub">Librarian Panel</div>
+      </div>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" title="Collapse sidebar">
+      <i class="bi bi-layout-sidebar-reverse" id="sbCollapseIcon"></i>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="sb-search-wrap">
+    <div class="sb-search-inner" id="sbSearchBox">
+      <i class="bi bi-search sb-search-icon" id="sbSearchIcon" title="Search (click to expand)"></i>
+      <input type="text" class="sb-search-input" id="sbSearchInput"
+             placeholder="Search for..." autocomplete="off" spellcheck="false">
+      <button class="sb-clear-btn" id="sbClearBtn" tabindex="-1" title="Clear">
+        <i class="bi bi-x"></i>
+      </button>
+      <div class="sb-search-results" id="sbSearchResults"></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sb-nav" id="sbNavArea">
+
+    <span class="sb-section" data-section="main">Main</span>
+
+    <a href="/librarian/home" class="sb-item {{ 'active' if active_page == 'home' else '' }}"
+       data-tip="Home" data-search="home">
+      <i class="bi bi-house-door-fill sb-icon"></i>
+      <span class="sb-label">Home</span>
+    </a>
+
+    <a href="/librarian_dashboard" class="sb-item {{ 'active' if active_page == 'dashboard' else '' }}"
+       data-tip="Dashboard" data-search="dashboard">
+      <i class="bi bi-speedometer2 sb-icon"></i>
+      <span class="sb-label">Dashboard</span>
+    </a>
+
+    <a href="/librarian/announcements" class="sb-item {{ 'active' if active_page == 'announcements' else '' }}"
+       data-tip="Announcement" data-search="announcement">
+      <i class="bi bi-megaphone-fill sb-icon"></i>
+      <span class="sb-label">Announcement</span>
+    </a>
+
+    <span class="sb-section" data-section="management">Management</span>
+
+    <!-- Borrow Management -->
+    <button class="sb-item {{ 'open' if active_page in ['library_cards','records_returns'] else '' }}"
+            data-tip="Borrow Management" data-search="borrow management borrowing"
+            onclick="toggleSbSub(this)">
+      <i class="bi bi-journal-bookmark-fill sb-icon"></i>
+      <span class="sb-label">Borrow Management</span>
+      <i class="bi bi-chevron-down sb-chevron"></i>
+    </button>
+    <div class="sb-sub {{ 'open' if active_page in ['library_cards','records_returns'] else '' }}">
+      <a href="/librarian/library-cards"      class="sb-sub-item {{ 'active' if active_page == 'library_cards' else '' }}">Borrowing Form</a>
+      <a href="/librarian/borrowing/history"  class="sb-sub-item {{ 'active' if active_page == 'records_returns' else '' }}">Borrow History</a>
+    </div>
+
+    <a href="/librarian_user_management" class="sb-item {{ 'active' if active_page == 'user_mgmt' else '' }}"
+       data-tip="User Management" data-search="user management users members">
+      <i class="bi bi-people-fill sb-icon"></i>
+      <span class="sb-label">User Management</span>
+    </a>
+
+    <a href="/librarian_book_management" class="sb-item {{ 'active' if active_page == 'book_mgmt' else '' }}"
+       data-tip="Book Management" data-search="book management books">
+      <i class="bi bi-book-fill sb-icon"></i>
+      <span class="sb-label">Book Management</span>
+    </a>
+
+    <div class="sb-divider"></div>
+
+    <a href="/librarian/event" class="sb-item {{ 'active' if active_page == 'event' else '' }}"
+       data-tip="Event Calendar" data-search="event calendar">
+      <i class="bi bi-calendar-week-fill sb-icon"></i>
+      <span class="sb-label">Event Calendar</span>
+    </a>
+
+    <a href="/librarian/account_requests" class="sb-item {{ 'active' if active_page == 'account_requests' else '' }}"
+       data-tip="Account Requests" data-search="account requests">
+      <i class="bi bi-person-check-fill sb-icon"></i>
+      <span class="sb-label">Account Requests</span>
+      <span class="sb-badge" id="sbReqBadge" style="display:none"></span>
+    </a>
+
+  </nav>
+
+  <!-- Footer -->
+  <div class="sb-footer">
+
+    <button class="sb-expand-btn" id="sbExpandBtn" title="Expand sidebar" data-tip="Expand">
+      <i class="bi bi-layout-sidebar-reverse"></i>
+    </button>
+
+    <div class="sb-user">
+      <a href="/librarian-settings" class="sb-account-link">
+        <div class="sb-avatar" id="sbAvatarWrap" data-tip="Account">
+          <span id="sbAvatarInitials">LB</span>
+        </div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sbUserName">Librarian</div>
+          <div class="sb-user-role">Account settings</div>
+        </div>
+      </a>
+      <a href="/logout" class="sb-user-logout" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+</aside>
+
+<script>
+(function () {
+
+  /* ════════════════════════════════
+     NAV ITEMS INDEX (for search)
+  ════════════════════════════════ */
+  const NAV_INDEX = [
+    { label: 'Home',             icon: 'bi-house-door-fill',       href: '/librarian/home',             parent: null },
+    { label: 'Dashboard',        icon: 'bi-speedometer2',          href: '/librarian_dashboard',        parent: null },
+    { label: 'Announcement',     icon: 'bi-megaphone-fill',        href: '/librarian/announcements',    parent: null },
+    { label: 'Borrowing Form',   icon: 'bi-journal-bookmark-fill', href: '/librarian/library-cards',    parent: 'Borrow Management' },
+    { label: 'Borrow History',   icon: 'bi-clock-history',         href: '/librarian/borrowing/history',parent: 'Borrow Management' },
+    { label: 'User Management',  icon: 'bi-people-fill',           href: '/librarian_user_management',  parent: null },
+    { label: 'Book Management',  icon: 'bi-book-fill',             href: '/librarian_book_management',  parent: null },
+    { label: 'Event Calendar',   icon: 'bi-calendar-week-fill',    href: '/librarian/event',            parent: null },
+    { label: 'Account Requests', icon: 'bi-person-check-fill',     href: '/librarian/account-requests', parent: null },
+  ];
+
+  /* ════════════════════════════════
+     COLLAPSE / EXPAND
+  ════════════════════════════════ */
+  const sidebar     = document.getElementById('admSidebar');
+  const collapseBtn = document.getElementById('sbCollapseBtn');
+  const expandBtn   = document.getElementById('sbExpandBtn');
+  const STORAGE_KEY = 'admSbCollapsed';
+
+  function setCollapsed(collapsed, save) {
+    sidebar.classList.toggle('collapsed', collapsed);
+    document.body.classList.toggle('sb-collapsed', collapsed);
+    const topbar = document.getElementById('admTopbar');
+    if (topbar) topbar.style.left = collapsed ? 'var(--sb-w-mini)' : 'var(--sb-w)';
+    if (save) localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+  }
+
+  if (localStorage.getItem(STORAGE_KEY) === '1') setCollapsed(true, false);
+
+  collapseBtn && collapseBtn.addEventListener('click', function () {
+    setCollapsed(true, true);
+    clearSearch();
+  });
+
+  expandBtn && expandBtn.addEventListener('click', function () {
+    setCollapsed(false, true);
+    setTimeout(function () { searchInput && searchInput.focus(); }, 320);
+  });
+
+  /* ════════════════════════════════
+     MOBILE OPEN / CLOSE
+  ════════════════════════════════ */
+  const backdrop = document.getElementById('sbBackdrop');
+
+  window.openAdmSidebar = function () {
+    sidebar.classList.add('open');
+    backdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeAdmSidebar = function () {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('show');
+    document.body.style.overflow = '';
+  };
+  backdrop.addEventListener('click', window.closeAdmSidebar);
+
+  /* ════════════════════════════════
+     SUB-MENU TOGGLE
+  ════════════════════════════════ */
+  window.toggleSbSub = function (btn) {
+    if (sidebar.classList.contains('collapsed')) return;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.adm-sidebar .sb-item.open').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.adm-sidebar .sb-sub.open').forEach(s => s.classList.remove('open'));
+    if (!isOpen) {
+      btn.classList.add('open');
+      const sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('sb-sub')) sub.classList.add('open');
+    }
+  };
+
+  /* ════════════════════════════════
+     SEARCH
+  ════════════════════════════════ */
+  const searchInput = document.getElementById('sbSearchInput');
+  const searchIcon  = document.getElementById('sbSearchIcon');
+  const clearBtn    = document.getElementById('sbClearBtn');
+  const resultsBox  = document.getElementById('sbSearchResults');
+  let focusedIdx    = -1;
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+
+  function highlight(text, query) {
+    if (!query) return text;
+    const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return text.replace(re, '<span class="sb-sr-highlight">$1</span>');
+  }
+
+  function renderResults(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) { closeResults(); return; }
+
+    const matches = NAV_INDEX.filter(item =>
+      item.label.toLowerCase().includes(q) ||
+      (item.parent && item.parent.toLowerCase().includes(q))
+    );
+
+    focusedIdx = -1;
+    if (matches.length === 0) {
+      resultsBox.innerHTML = '<div class="sb-sr-empty">No results for "<strong>' + escapeHtml(query) + '</strong>"</div>';
+    } else {
+      resultsBox.innerHTML = matches.map((item, i) => `
+        <a href="${item.href}" class="sb-sr-item" data-idx="${i}">
+          <i class="bi ${item.icon}"></i>
+          <span class="sb-sr-label">${highlight(item.label, q)}</span>
+          ${item.parent ? `<span class="sb-sr-parent">${item.parent}</span>` : ''}
+        </a>
+      `).join('');
+    }
+    resultsBox.classList.add('show');
+  }
+
+  function closeResults() {
+    resultsBox.classList.remove('show');
+    focusedIdx = -1;
+  }
+
+  function clearSearch() {
+    searchInput.value = '';
+    clearBtn.classList.remove('visible');
+    closeResults();
+  }
+
+  searchInput.addEventListener('input', function () {
+    clearBtn.classList.toggle('visible', this.value.length > 0);
+    renderResults(this.value);
+  });
+
+  searchInput.addEventListener('keydown', function (e) {
+    const items = resultsBox.querySelectorAll('.sb-sr-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      focusedIdx = Math.min(focusedIdx + 1, items.length - 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      focusedIdx = Math.max(focusedIdx - 1, 0);
+    } else if (e.key === 'Enter') {
+      if (focusedIdx >= 0 && items[focusedIdx]) {
+        e.preventDefault();
+        items[focusedIdx].click();
+      }
+    } else if (e.key === 'Escape') {
+      clearSearch();
+    }
+    items.forEach((el, i) => el.classList.toggle('focused', i === focusedIdx));
+    if (focusedIdx >= 0) items[focusedIdx].scrollIntoView({ block: 'nearest' });
+  });
+
+  clearBtn.addEventListener('click', function () {
+    clearSearch();
+    searchInput.focus();
+  });
+
+  searchIcon.addEventListener('click', function () {
+    if (sidebar.classList.contains('collapsed')) {
+      setCollapsed(false, true);
+      setTimeout(function () { searchInput.focus(); }, 320);
+    } else {
+      searchInput.focus();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!document.getElementById('sbSearchBox').contains(e.target)) closeResults();
+  });
+
+  /* ════════════════════════════════
+     PENDING REQUEST BADGE + LIBRARIAN NAME
+     No API calls: Flask passes the values into the template.
+     render_template(..., pending_requests=n,
+                     librarian_lastname='Ojera', librarian_initials='JO')
+  ════════════════════════════════ */
+  const PENDING_REQUESTS = parseInt("{{ pending_requests|default(0) }}", 10) || 0;
+  const LIB_LASTNAME     = "{{ librarian_lastname|default('') }}";
+  const LIB_INITIALS     = "{{ librarian_initials|default('LB') }}";
+
+  function setReqBadge(n) {
+    const text = n > 9 ? '9+' : String(n);
+    const badge = document.getElementById('sbReqBadge');
+    if (badge) { badge.textContent = text; badge.style.display = n > 0 ? '' : 'none'; }
+    const dot = document.getElementById('navReqBadge');
+    if (dot) { dot.textContent = text; dot.style.display = n > 0 ? 'flex' : 'none'; }
+  }
+
+  function setLibrarianLabel(lastname, initials) {
+    const last = (lastname || '').trim();
+    const nameEl = document.getElementById('sbUserName');
+    if (nameEl) nameEl.textContent = last ? 'Librarian ' + last : 'Librarian';
+    const initEl = document.getElementById('sbAvatarInitials');
+    if (initEl && initials) initEl.textContent = initials;
+  }
+
+  /* Lets other scripts (e.g. the settings page) update the sidebar live */
+  window.updateSidebarLibrarianName = setLibrarianLabel;
+  window.updateSidebarRequestBadge  = setReqBadge;
+
+  function initSidebarLabels() {
+    setReqBadge(PENDING_REQUESTS);
+    setLibrarianLabel(LIB_LASTNAME, LIB_INITIALS);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSidebarLabels);
+  } else {
+    initSidebarLabels();
+  }
+
+})();
 </script>

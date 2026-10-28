@@ -1,19 +1,33 @@
 <!-- sidebar_template.html -->
-<!-- Left vertical sidebar — functional search + collapsible -->
+<!-- Left vertical sidebar — functional search + collapsible.
+     THEMING: all colors are CSS variables with zero-specificity defaults (:where(:root)),
+     so staff_appearance.js can override them by any method (inline style on <html>,
+     [data-theme] rule, class, or <style> tag). -->
 
 <style>
-  :root {
-    --accent:  #9fc1e1;
-    --accent2: #48c78e;
-    --bg1:     #1e2d3d;
-    --bg2:     #2f3f4d;
-    --bg3:     #42586b;
-    --card:    rgba(255,255,255,0.06);
-    --card-b:  rgba(255,255,255,0.10);
-    --tl:      #dae8f5;
-    --danger:  #ff6363;
-    --warn:    #ff9800;
-    --mono:    'DM Mono', monospace;
+  :where(:root) {
+    --accent:       #9fc1e1;
+    --accent-rgb:   159,193,225;
+    --accent2:      #48c78e;
+    --accent2-rgb:  72,199,142;
+    --bg1:          #1e2d3d;
+    --bg2:          #2f3f4d;
+    --bg3:          #42586b;
+    --tl:           #dae8f5;
+    --danger:       #ff6363;
+    --danger-rgb:   255,99,99;
+    --warn:         #ff9800;
+    --warn-rgb:     255,152,0;
+    --fg:           #ffffff;
+    --fg-rgb:       255,255,255;
+    --on-accent:    #0d1a24;
+    --shadow-rgb:   0,0,0;
+    --sb-bg:        #192736;   /* sidebar background */
+    --sb-bg-deep:   #0f1e2c;   /* search results dropdown */
+    --tip-bg:       #0d1a24;   /* collapsed-item tooltips */
+    --modal-bg:     #182632;   /* add-user modal */
+    --overlay-rgb:  8,14,20;
+    --mono:         'DM Mono', monospace;
     --sb-w:         240px;
     --sb-w-mini:    64px;
   }
@@ -38,8 +52,8 @@
     position: fixed;
     top: 0; left: 0; bottom: 0;
     width: var(--sb-w);
-    background: #192736;
-    border-right: 1px solid rgba(159,193,225,0.10);
+    background: var(--sb-bg);
+    border-right: 1px solid rgba(var(--accent-rgb),0.10);
     display: flex;
     flex-direction: column;
     z-index: 1100;
@@ -57,13 +71,13 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 14px 14px;
-    border-bottom: 1px solid rgba(159,193,225,0.08);
+    border-bottom: 1px solid rgba(var(--accent-rgb),0.08);
     flex-shrink: 0;
     min-height: 64px;
     transition: padding .3s cubic-bezier(.4,0,.2,1), justify-content .3s;
   }
 
-  /* FIX: Center header content when collapsed */
+  /* Center header content when collapsed */
   .adm-sidebar.collapsed .sb-header {
     justify-content: center;
     padding: 16px 0 14px;
@@ -86,26 +100,25 @@
     transition: opacity .2s, width .3s;
     white-space: nowrap;
   }
-  .sb-brand-name { font-size: .82rem; font-weight: 700; color: #fff; letter-spacing: -.01em; }
-  .sb-brand-sub  { font-size: .65rem; color: rgba(159,193,225,.5); }
+  .sb-brand-name { font-size: .82rem; font-weight: 700; color: var(--fg); letter-spacing: -.01em; }
+  .sb-brand-sub  { font-size: .65rem; color: rgba(var(--accent-rgb),.5); }
 
   /* Collapse button */
   .sb-collapse-btn {
     width: 28px; height: 28px; border-radius: 7px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.08);
-    color: rgba(255,255,255,.4);
+    background: rgba(var(--fg-rgb),.06);
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    color: rgba(var(--fg-rgb),.4);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; font-size: .9rem; flex-shrink: 0;
     transition: .15s; padding: 0;
   }
-  .sb-collapse-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+  .sb-collapse-btn:hover { background: rgba(var(--fg-rgb),.12); color: var(--fg); }
   @media (max-width: 992px) { .sb-collapse-btn { display: none !important; } }
 
   /* ── COLLAPSED STATE — hide text, show only icons ── */
   .adm-sidebar.collapsed .sb-brand { flex: unset; }
   .adm-sidebar.collapsed .sb-brand-text { opacity: 0; width: 0; pointer-events: none; }
-  /* FIX: Hide collapse btn when collapsed so it doesn't push the logo off-center */
   .adm-sidebar.collapsed .sb-collapse-btn { display: none; }
   .adm-sidebar.collapsed .sb-collapse-icon-wrap {
     display: flex;
@@ -135,15 +148,15 @@
   .sb-expand-btn {
     display: none;
     width: 28px; height: 28px; border-radius: 7px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.08);
-    color: rgba(255,255,255,.4);
+    background: rgba(var(--fg-rgb),.06);
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    color: rgba(var(--fg-rgb),.4);
     align-items: center; justify-content: center;
     cursor: pointer; font-size: .9rem; flex-shrink: 0;
     transition: .15s; padding: 0;
     margin: 0 auto 4px;
   }
-  .sb-expand-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+  .sb-expand-btn:hover { background: rgba(var(--fg-rgb),.12); color: var(--fg); }
   .adm-sidebar.collapsed .sb-expand-btn { display: flex; }
   .adm-sidebar.collapsed .sb-expand-btn i { transform: rotate(180deg); }
 
@@ -160,16 +173,16 @@
     position: absolute;
     left: calc(100% + 12px);
     top: 50%; transform: translateY(-50%);
-    background: #0d1a24;
-    color: #fff;
+    background: var(--tip-bg);
+    color: var(--fg);
     font-size: .75rem; font-weight: 600;
     padding: 5px 10px;
     border-radius: 7px;
     white-space: nowrap;
-    border: 1px solid rgba(159,193,225,.15);
+    border: 1px solid rgba(var(--accent-rgb),.15);
     pointer-events: none;
     z-index: 2000;
-    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    box-shadow: 0 4px 16px rgba(var(--shadow-rgb),.4);
   }
   .adm-sidebar.collapsed .sb-item:hover::before,
   .adm-sidebar.collapsed .sb-footer-item:hover::before {
@@ -178,13 +191,13 @@
     left: calc(100% + 6px) !important;
     top: 50% !important; transform: translateY(-50%) !important;
     width: 6px !important; height: 6px !important;
-    background: #0d1a24 !important;
+    background: var(--tip-bg) !important;
     border-radius: 0 !important;
     clip-path: polygon(0 50%, 100% 0, 100% 100%) !important;
     border: none !important;
     z-index: 1999 !important;
   }
-  /* Re-apply active bar only for non-collapsed active items */
+  /* Active bar only for non-collapsed active items */
   .adm-sidebar:not(.collapsed) .sb-item.active::before {
     content: '';
     position: absolute; left: 0; top: 50%; transform: translateY(-50%);
@@ -200,41 +213,40 @@
   .sb-search-wrap { padding: 10px 12px 6px; flex-shrink: 0; }
   .sb-search-inner {
     display: flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(var(--fg-rgb),.05);
+    border: 1px solid rgba(var(--fg-rgb),.08);
     border-radius: 9px;
     padding: 7px 11px;
     transition: border-color .15s, background .15s;
     position: relative;
   }
   .sb-search-inner:focus-within {
-    border-color: rgba(159,193,225,.35);
-    background: rgba(255,255,255,.07);
+    border-color: rgba(var(--accent-rgb),.35);
+    background: rgba(var(--fg-rgb),.07);
   }
   .sb-search-inner .sb-search-icon {
-    font-size: .85rem; color: rgba(255,255,255,.35); flex-shrink: 0; cursor: pointer;
+    font-size: .85rem; color: rgba(var(--fg-rgb),.35); flex-shrink: 0; cursor: pointer;
   }
-  /* FIX: Highlight search icon on hover in collapsed mode to hint it's clickable */
   .adm-sidebar.collapsed .sb-search-inner .sb-search-icon:hover {
     color: var(--accent);
   }
   .sb-search-input {
     flex: 1; background: transparent; border: none; outline: none;
     font-family: 'DM Sans', sans-serif;
-    font-size: .8rem; color: #fff;
+    font-size: .8rem; color: var(--fg);
     caret-color: var(--accent);
     min-width: 0;
   }
-  .sb-search-input::placeholder { color: rgba(255,255,255,.3); }
+  .sb-search-input::placeholder { color: rgba(var(--fg-rgb),.3); }
   .sb-clear-btn {
-    background: rgba(255,255,255,.1); border: none;
-    color: rgba(255,255,255,.5); border-radius: 4px;
+    background: rgba(var(--fg-rgb),.1); border: none;
+    color: rgba(var(--fg-rgb),.5); border-radius: 4px;
     width: 18px; height: 18px;
     display: none; align-items: center; justify-content: center;
     font-size: .65rem; cursor: pointer; flex-shrink: 0;
     padding: 0; transition: .15s;
   }
-  .sb-clear-btn:hover { background: rgba(255,255,255,.18); color: #fff; }
+  .sb-clear-btn:hover { background: rgba(var(--fg-rgb),.18); color: var(--fg); }
   .sb-clear-btn.visible { display: flex; }
 
   /* ── SEARCH RESULTS OVERLAY ── */
@@ -242,12 +254,12 @@
     display: none;
     position: absolute;
     top: calc(100% + 4px); left: 0; right: 0;
-    background: #0f1e2c;
-    border: 1px solid rgba(159,193,225,.15);
+    background: var(--sb-bg-deep);
+    border: 1px solid rgba(var(--accent-rgb),.15);
     border-radius: 10px;
     overflow: hidden;
     z-index: 2100;
-    box-shadow: 0 8px 32px rgba(0,0,0,.5);
+    box-shadow: 0 8px 32px rgba(var(--shadow-rgb),.5);
     max-height: 280px;
     overflow-y: auto;
   }
@@ -255,20 +267,20 @@
   .sb-sr-item {
     display: flex; align-items: center; gap: 10px;
     padding: 9px 14px;
-    font-size: .82rem; color: rgba(255,255,255,.7);
+    font-size: .82rem; color: rgba(var(--fg-rgb),.7);
     text-decoration: none;
     transition: .12s;
-    border-bottom: 1px solid rgba(255,255,255,.04);
+    border-bottom: 1px solid rgba(var(--fg-rgb),.04);
   }
   .sb-sr-item:last-child { border-bottom: none; }
   .sb-sr-item:hover, .sb-sr-item.focused {
-    background: rgba(159,193,225,.1); color: #fff;
+    background: rgba(var(--accent-rgb),.1); color: var(--fg);
   }
-  .sb-sr-item i { font-size: .9rem; color: rgba(159,193,225,.6); flex-shrink: 0; width: 16px; text-align: center; }
+  .sb-sr-item i { font-size: .9rem; color: rgba(var(--accent-rgb),.6); flex-shrink: 0; width: 16px; text-align: center; }
   .sb-sr-item .sb-sr-label { flex: 1; }
-  .sb-sr-item .sb-sr-parent { font-size: .68rem; color: rgba(255,255,255,.3); margin-left: auto; white-space: nowrap; }
+  .sb-sr-item .sb-sr-parent { font-size: .68rem; color: rgba(var(--fg-rgb),.3); margin-left: auto; white-space: nowrap; }
   .sb-sr-empty {
-    padding: 16px 14px; font-size: .8rem; color: rgba(255,255,255,.3);
+    padding: 16px 14px; font-size: .8rem; color: rgba(var(--fg-rgb),.3);
     text-align: center;
   }
   .sb-sr-highlight { color: var(--accent); font-weight: 700; }
@@ -278,15 +290,15 @@
     flex: 1; overflow-y: auto; overflow-x: hidden;
     padding: 6px 10px 10px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(159,193,225,.15) transparent;
+    scrollbar-color: rgba(var(--accent-rgb),.15) transparent;
   }
   .sb-nav::-webkit-scrollbar { width: 4px; }
-  .sb-nav::-webkit-scrollbar-thumb { background: rgba(159,193,225,.15); border-radius: 4px; }
+  .sb-nav::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb),.15); border-radius: 4px; }
 
   /* ── SECTION LABEL ── */
   .sb-section {
     font-size: .6rem; font-weight: 700; letter-spacing: .1em;
-    text-transform: uppercase; color: rgba(159,193,225,.4);
+    text-transform: uppercase; color: rgba(var(--accent-rgb),.4);
     padding: 14px 8px 5px; display: block;
     transition: opacity .2s, height .3s, padding .3s;
     white-space: nowrap; overflow: hidden;
@@ -299,7 +311,7 @@
     display: flex; align-items: center; gap: 9px;
     padding: 8px 10px; border-radius: 9px;
     font-size: .825rem; font-weight: 500;
-    color: rgba(255,255,255,.6);
+    color: rgba(var(--fg-rgb),.6);
     text-decoration: none; cursor: pointer;
     transition: background .15s, color .15s;
     white-space: nowrap; overflow: hidden;
@@ -308,16 +320,16 @@
     width: 100%; text-align: left;
     font-family: 'DM Sans', sans-serif;
   }
-  .sb-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
-  .sb-item.active { background: rgba(159,193,225,.13); color: var(--accent); }
+  .sb-item:hover { background: rgba(var(--fg-rgb),.06); color: rgba(var(--fg-rgb),.9); }
+  .sb-item.active { background: rgba(var(--accent-rgb),.13); color: var(--accent); }
   .sb-item .sb-icon { font-size: 1rem; flex-shrink: 0; width: 18px; text-align: center; color: inherit; }
   .sb-item .sb-label { flex: 1; }
   .sb-item .sb-badge {
     font-size: .6rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;
-    background: var(--danger); color: #fff; flex-shrink: 0;
+    background: var(--danger); color: var(--fg); flex-shrink: 0;
   }
   .sb-item .sb-chevron {
-    font-size: .7rem; color: rgba(255,255,255,.25); flex-shrink: 0;
+    font-size: .7rem; color: rgba(var(--fg-rgb),.25); flex-shrink: 0;
     transition: transform .2s; margin-left: auto;
   }
   .sb-item.open .sb-chevron { transform: rotate(180deg); }
@@ -331,41 +343,214 @@
   /* ── SUB-MENU ── */
   .sb-sub {
     margin: 2px 0 4px 14px; padding-left: 12px;
-    border-left: 1.5px solid rgba(159,193,225,.12);
+    border-left: 1.5px solid rgba(var(--accent-rgb),.12);
     overflow: hidden; max-height: 0;
     transition: max-height .25s ease;
   }
-  .sb-sub.open { max-height: 300px; }
+  .sb-sub.open { max-height: 400px; }
   .sb-sub-item {
     display: flex; align-items: center; gap: 7px;
     padding: 6px 8px; border-radius: 7px;
     font-size: .78rem; font-weight: 500;
-    color: rgba(255,255,255,.5);
+    color: rgba(var(--fg-rgb),.5);
     text-decoration: none; transition: .15s; white-space: nowrap;
   }
   .sb-sub-item::before {
     content: ''; width: 5px; height: 5px; border-radius: 50%;
-    background: rgba(255,255,255,.2); flex-shrink: 0;
+    background: rgba(var(--fg-rgb),.2); flex-shrink: 0;
   }
-  .sb-sub-item:hover { color: rgba(255,255,255,.9); background: rgba(255,255,255,.05); }
+  .sb-sub-item:hover { color: rgba(var(--fg-rgb),.9); background: rgba(var(--fg-rgb),.05); }
   .sb-sub-item:hover::before, .sb-sub-item.active::before { background: var(--accent); }
   .sb-sub-item.active { color: var(--accent); }
 
+  /* ── NESTED "Add Management" TOGGLE (inside User Management sub-menu) ── */
+  .sb-sub-toggle {
+    display: flex; align-items: center; gap: 7px; width: 100%;
+    padding: 6px 8px; border-radius: 7px;
+    font-size: .78rem; font-weight: 500;
+    color: rgba(var(--fg-rgb),.5);
+    background: transparent; border: none; cursor: pointer;
+    text-align: left; font-family: 'DM Sans', sans-serif;
+    transition: .15s; white-space: nowrap;
+  }
+  .sb-sub-toggle::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(var(--fg-rgb),.2); flex-shrink: 0;
+  }
+  .sb-sub-toggle:hover { color: rgba(var(--fg-rgb),.9); background: rgba(var(--fg-rgb),.05); }
+  .sb-sub-toggle:hover::before { background: var(--accent); }
+  .sb-sub-toggle.open::before { background: var(--accent); }
+  .sb-sub-toggle .sb-label { flex: 1; }
+  .sb-sub-toggle .sb-nested-chevron {
+    font-size: .65rem; color: rgba(var(--fg-rgb),.25);
+    transition: transform .2s; flex-shrink: 0;
+  }
+  .sb-sub-toggle.open .sb-nested-chevron { transform: rotate(180deg); }
+
+  .sb-sub-nested {
+    overflow: hidden; max-height: 0;
+    transition: max-height .25s ease;
+    padding-left: 10px;
+  }
+  .sb-sub-nested.open { max-height: 200px; margin: 2px 0 2px; }
+
+  /* ── QUICK-ADD ROW (inside nested "Add Management" dropdown) ── */
+  .sb-sub-addrow { display: flex; flex-direction: column; padding: 4px 0 6px; }
+  .sb-add-role {
+    display: flex; align-items: center; gap: 7px;
+    padding: 6px 8px; border-radius: 7px;
+    font-size: .76rem; font-weight: 600;
+    background: transparent; border: none; cursor: pointer;
+    text-align: left; font-family: 'DM Sans', sans-serif;
+    transition: .15s; width: 100%;
+  }
+  .sb-add-role i { font-size: .85rem; flex-shrink: 0; }
+  /* Admin — warn color */
+  .sb-add-admin           { color: var(--warn); }
+  .sb-add-admin:hover     { background: rgba(var(--warn-rgb),.12); color: var(--warn); }
+  /* Librarian — accent2 color */
+  .sb-add-librarian       { color: var(--accent2); }
+  .sb-add-librarian:hover { background: rgba(var(--accent2-rgb),.12); color: var(--accent2); }
+  /* User — follows default theme text/hover styling */
+  .sb-add-user            { color: rgba(var(--fg-rgb),.55); }
+  .sb-add-user:hover      { background: rgba(var(--fg-rgb),.06); color: rgba(var(--fg-rgb),.9); }
+  .sb-sub-divider { height: 1px; background: rgba(var(--fg-rgb),.06); margin: 4px 8px 6px; }
+
+  /* ── ADD-USER MODAL ── */
+  .sb-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(var(--overlay-rgb),.65); backdrop-filter: blur(2px);
+    z-index: 3000; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .sb-modal-overlay.show { display: flex; }
+  .sb-modal {
+    width: 100%; max-width: 420px;
+    background: var(--modal-bg); border-radius: 14px;
+    border: 1px solid rgba(var(--fg-rgb),.08);
+    box-shadow: 0 20px 60px rgba(var(--shadow-rgb),.5);
+    overflow: hidden;
+    animation: sbModalIn .18s ease;
+  }
+  @keyframes sbModalIn { from { opacity: 0; transform: translateY(8px) scale(.98);} to { opacity:1; transform:none; } }
+  .sb-modal-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 18px 16px;
+    border-bottom: 2px solid var(--accent);
+    transition: border-color .15s;
+  }
+  .sb-modal-head-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+    background: rgba(var(--accent-rgb),.12); color: var(--accent);
+    transition: background .15s, color .15s;
+  }
+  .sb-modal-title { font-size: .95rem; font-weight: 700; color: var(--fg); }
+  .sb-modal-sub   { font-size: .72rem; color: rgba(var(--fg-rgb),.45); margin-top: 2px; }
+  .sb-modal-close {
+    margin-left: auto; background: transparent; border: none;
+    color: rgba(var(--fg-rgb),.4); font-size: .9rem; cursor: pointer;
+    width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+  }
+  .sb-modal-close:hover { background: rgba(var(--fg-rgb),.08); color: var(--fg); }
+  .sb-modal-body { padding: 18px; }
+  .sb-form-row { display: flex; gap: 10px; }
+  .sb-form-group { flex: 1; margin-bottom: 12px; }
+  .sb-form-group label {
+    display: block; font-size: .72rem; font-weight: 600;
+    color: rgba(var(--fg-rgb),.55); margin-bottom: 5px;
+  }
+  .sb-form-group input {
+    width: 100%; background: rgba(var(--fg-rgb),.05);
+    border: 1px solid rgba(var(--fg-rgb),.1); border-radius: 8px;
+    padding: 8px 10px; font-size: .82rem; color: var(--fg);
+    font-family: 'DM Sans', sans-serif; outline: none;
+    transition: border-color .15s;
+  }
+  .sb-form-group input:focus { border-color: var(--accent); }
+
+  /* FIELD-LEVEL VALIDATION STATES */
+  .sb-form-group input.sb-invalid { border-color: var(--danger); }
+  .sb-form-group input.sb-valid   { border-color: var(--accent2); }
+  .sb-field-hint {
+    font-size: .68rem; color: var(--danger); margin-top: 4px;
+    display: none;
+  }
+  .sb-field-hint.show { display: block; }
+
+  /* PASSWORD INPUT WITH SHOW/HIDE TOGGLE */
+  .sb-pw-wrap { position: relative; }
+  .sb-pw-wrap input { padding-right: 34px; }
+  .sb-pw-toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 24px; height: 24px; border-radius: 6px;
+    background: transparent; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(var(--fg-rgb),.4); font-size: .85rem; padding: 0;
+    transition: .15s;
+  }
+  .sb-pw-toggle:hover { color: rgba(var(--fg-rgb),.85); background: rgba(var(--fg-rgb),.08); }
+
+  /* PASSWORD STRENGTH TRACKER */
+  .sb-pw-meter {
+    display: flex; gap: 4px; margin-top: 8px; margin-bottom: 6px;
+  }
+  .sb-pw-meter-bar {
+    flex: 1; height: 4px; border-radius: 3px;
+    background: rgba(var(--fg-rgb),.1);
+    transition: background .2s;
+  }
+  .sb-pw-meter-bar.weak   { background: var(--danger); }
+  .sb-pw-meter-bar.medium { background: var(--warn); }
+  .sb-pw-meter-bar.strong { background: var(--accent2); }
+
+  .sb-pw-requirements {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px;
+    margin-bottom: 12px;
+  }
+  .sb-pw-req {
+    display: flex; align-items: center; gap: 6px;
+    font-size: .68rem; color: rgba(var(--fg-rgb),.4);
+    transition: color .15s;
+  }
+  .sb-pw-req i {
+    font-size: .7rem; color: rgba(var(--fg-rgb),.25);
+    transition: color .15s;
+  }
+  .sb-pw-req.met { color: rgba(var(--fg-rgb),.75); }
+  .sb-pw-req.met i { color: var(--accent2); }
+
+  .sb-form-error {
+    background: rgba(var(--danger-rgb),.12); color: var(--danger);
+    border-radius: 8px; padding: 8px 10px; font-size: .76rem;
+    margin-bottom: 12px;
+  }
+  .sb-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+  .sb-btn-secondary, .sb-btn-primary {
+    padding: 8px 16px; border-radius: 8px; font-size: .8rem; font-weight: 600;
+    cursor: pointer; border: none; font-family: 'DM Sans', sans-serif;
+  }
+  .sb-btn-secondary { background: rgba(var(--fg-rgb),.07); color: rgba(var(--fg-rgb),.7); }
+  .sb-btn-secondary:hover { background: rgba(var(--fg-rgb),.12); }
+  .sb-btn-primary { background: var(--accent); color: var(--on-accent); transition: background .15s; }
+  .sb-btn-primary:disabled { opacity: .6; cursor: default; }
+
   /* ── DIVIDER ── */
-  .sb-divider { height: 1px; background: rgba(255,255,255,.07); margin: 8px 8px; }
+  .sb-divider { height: 1px; background: rgba(var(--fg-rgb),.07); margin: 8px 8px; }
 
   /* ── FOOTER ── */
-  .sb-footer { border-top: 1px solid rgba(159,193,225,.08); padding: 8px 10px; flex-shrink: 0; }
+  .sb-footer { border-top: 1px solid rgba(var(--accent-rgb),.08); padding: 8px 10px; flex-shrink: 0; }
   .sb-footer-item {
     display: flex; align-items: center; gap: 9px;
     padding: 7px 10px; border-radius: 8px;
     font-size: .8rem; font-weight: 500;
-    color: rgba(255,255,255,.5);
+    color: rgba(var(--fg-rgb),.5);
     text-decoration: none; cursor: pointer; transition: .15s; white-space: nowrap;
     border: none; background: transparent; width: 100%; text-align: left;
     font-family: 'DM Sans', sans-serif;
   }
-  .sb-footer-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+  .sb-footer-item:hover { background: rgba(var(--fg-rgb),.06); color: rgba(var(--fg-rgb),.9); }
   .sb-footer-item .sb-icon { font-size: .95rem; width: 18px; text-align: center; flex-shrink: 0; }
 
   /* ── USER ROW ── */
@@ -374,31 +559,35 @@
     padding: 8px 10px 4px; margin-top: 2px;
     transition: justify-content .3s;
   }
+  .sb-account-link {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; flex: 1; min-width: 0;
+  }
   .sb-avatar {
     width: 32px; height: 32px; border-radius: 50%;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     display: flex; align-items: center; justify-content: center;
-    font-size: .75rem; font-weight: 700; color: #fff;
+    font-size: .75rem; font-weight: 700; color: var(--fg);
     flex-shrink: 0; overflow: hidden;
     cursor: pointer;
   }
   .sb-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
   .sb-user-info { flex: 1; min-width: 0; }
-  .sb-user-name  { font-size: .8rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sb-user-role  { font-size: .65rem; color: rgba(255,255,255,.4); white-space: nowrap; }
+  .sb-user-name  { font-size: .8rem; font-weight: 600; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-user-role  { font-size: .65rem; color: rgba(var(--fg-rgb),.4); white-space: nowrap; }
   .sb-user-logout {
-    color: rgba(255,99,99,.7); font-size: 1rem; flex-shrink: 0;
+    color: rgba(var(--danger-rgb),.7); font-size: 1rem; flex-shrink: 0;
     text-decoration: none; transition: .15s; margin-left: 4px;
   }
-  .sb-user-logout:hover { color: #ff6363; }
+  .sb-user-logout:hover { color: var(--danger); }
 
   /* ── MOBILE BACKDROP ── */
   .sb-backdrop {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0); z-index: 1099;
+    background: rgba(var(--shadow-rgb),0); z-index: 1099;
     transition: background .3s; pointer-events: none;
   }
-  .sb-backdrop.show { background: rgba(0,0,0,.5); pointer-events: all; }
+  .sb-backdrop.show { background: rgba(var(--shadow-rgb),.5); pointer-events: all; }
   @media (max-width: 992px) { .sb-backdrop { display: block; } }
 
   /* ── MOBILE ── */
@@ -408,6 +597,17 @@
     .adm-sidebar.collapsed { width: var(--sb-w) !important; }
   }
 </style>
+
+<!-- Load staff_appearance.js exactly once per page -->
+<script>
+  (function () {
+    if (window.__staffAppearanceLoaded) return;
+    window.__staffAppearanceLoaded = true;
+    var s = document.createElement('script');
+    s.src = "{{ url_for('static', filename='js/staff_appearance.js') }}";
+    document.head.appendChild(s);
+  })();
+</script>
 
 <!-- Backdrop -->
 <div class="sb-backdrop" id="sbBackdrop"></div>
@@ -426,7 +626,7 @@
         <div class="sb-brand-sub">Admin Panel</div>
       </div>
     </a>
-    <!-- Collapse button — hidden when already collapsed; expand button in footer handles re-open -->
+    <!-- Collapse button — hidden when collapsed; expand button in footer re-opens -->
     <button class="sb-collapse-btn" id="sbCollapseBtn" title="Collapse sidebar">
       <i class="bi bi-layout-sidebar-reverse" id="sbCollapseIcon"></i>
     </button>
@@ -489,6 +689,22 @@
       <a href="/admin_management"    class="sb-sub-item {{ 'active' if active_page == 'admin_mgmt' else '' }}">Admins</a>
       <a href="/librarian_management" class="sb-sub-item {{ 'active' if active_page == 'librarian_mgmt' else '' }}">Librarians</a>
       <a href="/user_management"     class="sb-sub-item {{ 'active' if active_page == 'user_mgmt' else '' }}">Users / Members</a>
+      <div class="sb-sub-divider"></div>
+      <!-- Nested "Add Management" dropdown -->
+      <button type="button" class="sb-sub-toggle" onclick="toggleSbNestedSub(this)">
+        <span class="sb-label">Add Management</span>
+        <i class="bi bi-chevron-down sb-nested-chevron"></i>
+      </button>
+      <div class="sb-sub-nested">
+        <div class="sb-sub-addrow">
+          <button type="button" class="sb-add-role sb-add-admin" onclick="openAddUserModal('admin')">
+            <i class="bi bi-plus-circle-fill"></i> Add Admin
+          </button>
+          <button type="button" class="sb-add-role sb-add-librarian" onclick="openAddUserModal('librarian')">
+            <i class="bi bi-plus-circle-fill"></i> Add Librarian
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Borrow Management -->
@@ -541,13 +757,16 @@
     </a>
 
     <div class="sb-user">
-      <div class="sb-avatar" id="sbAvatarWrap" data-tip="Account">
-        <span id="sbAvatarInitials">AD</span>
-      </div>
-      <div class="sb-user-info">
-        <div class="sb-user-name" id="sbUserName">Admin</div>
-        <div class="sb-user-role">Account settings</div>
-      </div>
+      <a href="/admin-settings" class="sb-account-link">
+        <div class="sb-avatar" id="sbAvatarWrap" data-tip="Account">
+          <span id="sbAvatarInitials">AD</span>
+        </div>
+
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sbUserName">Admin</div>
+          <div class="sb-user-role">Account settings</div>
+        </div>
+      </a>
       <a href="/logout" class="sb-user-logout" title="Logout">
         <i class="bi bi-box-arrow-right"></i>
       </a>
@@ -555,6 +774,85 @@
   </div>
 
 </aside>
+
+<!-- Add User Modal — color-codes itself by role (warn=Admin, accent2=Librarian, accent=User) -->
+<div class="sb-modal-overlay" id="addUserOverlay" onclick="if(event.target===this) closeAddUserModal()">
+  <div class="sb-modal">
+    <div class="sb-modal-head" id="addUserModalHead">
+      <div class="sb-modal-head-icon" id="addUserModalIcon"><i class="bi bi-person-plus-fill"></i></div>
+      <div>
+        <div class="sb-modal-title" id="addUserModalTitle">Add Admin</div>
+        <div class="sb-modal-sub" id="addUserModalSub">Create a new administrator account</div>
+      </div>
+      <button type="button" class="sb-modal-close" onclick="closeAddUserModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <form id="addUserForm" class="sb-modal-body" onsubmit="return submitAddUser(event)" novalidate>
+      <input type="hidden" id="addUserRole" name="role" value="admin">
+
+      <div class="sb-form-row">
+        <div class="sb-form-group">
+          <label>First Name</label>
+          <input type="text" name="firstname" id="fuFirstname" required pattern="[A-Za-z\s'-]+" minlength="2" maxlength="50">
+          <div class="sb-field-hint" id="fuFirstnameHint">Letters only, at least 2 characters.</div>
+        </div>
+        <div class="sb-form-group">
+          <label>Last Name</label>
+          <input type="text" name="lastname" id="fuLastname" required pattern="[A-Za-z\s'-]+" minlength="2" maxlength="50">
+          <div class="sb-field-hint" id="fuLastnameHint">Letters only, at least 2 characters.</div>
+        </div>
+      </div>
+
+      <div class="sb-form-group">
+        <label>Email</label>
+        <input type="email" name="email" id="fuEmail" required>
+        <div class="sb-field-hint" id="fuEmailHint">Enter a valid email address.</div>
+      </div>
+
+      <div class="sb-form-row">
+        <div class="sb-form-group">
+          <label>Password</label>
+          <div class="sb-pw-wrap">
+            <input type="password" name="password" id="fuPassword" required minlength="8" autocomplete="new-password">
+            <button type="button" class="sb-pw-toggle" id="fuPasswordToggle" tabindex="-1" title="Show password">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div class="sb-form-group">
+          <label>Confirm Password</label>
+          <div class="sb-pw-wrap">
+            <input type="password" name="confirm_password" id="fuConfirmPassword" required minlength="8" autocomplete="new-password">
+            <button type="button" class="sb-pw-toggle" id="fuConfirmPasswordToggle" tabindex="-1" title="Show password">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          <div class="sb-field-hint" id="fuConfirmHint">Passwords do not match.</div>
+        </div>
+      </div>
+
+      <!-- Password strength tracker -->
+      <div class="sb-pw-meter" id="fuPwMeter">
+        <div class="sb-pw-meter-bar" data-bar="1"></div>
+        <div class="sb-pw-meter-bar" data-bar="2"></div>
+        <div class="sb-pw-meter-bar" data-bar="3"></div>
+        <div class="sb-pw-meter-bar" data-bar="4"></div>
+      </div>
+      <div class="sb-pw-requirements" id="fuPwRequirements">
+        <div class="sb-pw-req" data-req="length"><i class="bi bi-circle"></i> At least 8 characters</div>
+        <div class="sb-pw-req" data-req="upper"><i class="bi bi-circle"></i> One uppercase letter</div>
+        <div class="sb-pw-req" data-req="lower"><i class="bi bi-circle"></i> One lowercase letter</div>
+        <div class="sb-pw-req" data-req="number"><i class="bi bi-circle"></i> One number</div>
+        <div class="sb-pw-req" data-req="special"><i class="bi bi-circle"></i> One special character</div>
+      </div>
+
+      <div class="sb-form-error" id="addUserError" style="display:none"></div>
+      <div class="sb-modal-actions">
+        <button type="button" class="sb-btn-secondary" onclick="closeAddUserModal()">Cancel</button>
+        <button type="submit" class="sb-btn-primary" id="addUserSubmitBtn">Create Account</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -574,7 +872,7 @@
     { label: 'Book Management',  icon: 'bi-book-fill',              href: '/book_management',      parent: null },
     { label: 'Event Calendar',   icon: 'bi-calendar-week-fill',     href: '/admin/event',          parent: null },
     { label: 'Account Requests', icon: 'bi-person-check-fill',      href: '/admin/account-requests', parent: null },
-    { label: 'Settings',         icon: 'bi-gear-fill',              href: '#',                     parent: null },
+    { label: 'Settings',         icon: 'bi-gear-fill',              href: '/system-settings',      parent: null },
   ];
 
   /* ════════════════════════════════
@@ -602,16 +900,13 @@
   /* Restore saved state */
   if (localStorage.getItem(STORAGE_KEY) === '1') setCollapsed(true, false);
 
-  /* Collapse button (visible when expanded) */
   collapseBtn && collapseBtn.addEventListener('click', function () {
     setCollapsed(true, true);
     clearSearch();
   });
 
-  /* Expand button (visible when collapsed, shown in footer) */
   expandBtn && expandBtn.addEventListener('click', function () {
     setCollapsed(false, true);
-    /* Focus search after expanding so it's ready to use */
     setTimeout(function () { searchInput && searchInput.focus(); }, 320);
   });
 
@@ -633,7 +928,7 @@
   backdrop.addEventListener('click', window.closeAdmSidebar);
 
   /* ════════════════════════════════
-     SUB-MENU TOGGLE
+     SUB-MENU TOGGLE (top-level)
   ════════════════════════════════ */
   window.toggleSbSub = function (btn) {
     if (sidebar.classList.contains('collapsed')) return;
@@ -648,6 +943,22 @@
   };
 
   /* ════════════════════════════════
+     NESTED SUB-MENU TOGGLE ("Add Management")
+  ════════════════════════════════ */
+  window.toggleSbNestedSub = function (btn) {
+    const nested = btn.nextElementSibling;
+    if (!nested || !nested.classList.contains('sb-sub-nested')) return;
+    const isOpen = nested.classList.contains('open');
+    if (isOpen) {
+      nested.classList.remove('open');
+      btn.classList.remove('open');
+    } else {
+      nested.classList.add('open');
+      btn.classList.add('open');
+    }
+  };
+
+  /* ════════════════════════════════
      SEARCH
   ════════════════════════════════ */
   const searchInput  = document.getElementById('sbSearchInput');
@@ -655,6 +966,10 @@
   const clearBtn     = document.getElementById('sbClearBtn');
   const resultsBox   = document.getElementById('sbSearchResults');
   let focusedIdx     = -1;
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
 
   function highlight(text, query) {
     if (!query) return text;
@@ -673,7 +988,7 @@
 
     focusedIdx = -1;
     if (matches.length === 0) {
-      resultsBox.innerHTML = '<div class="sb-sr-empty">No results for "<strong>' + query + '</strong>"</div>';
+      resultsBox.innerHTML = '<div class="sb-sr-empty">No results for "<strong>' + escapeHtml(query) + '</strong>"</div>';
     } else {
       resultsBox.innerHTML = matches.map((item, i) => `
         <a href="${item.href}" class="sb-sr-item" data-idx="${i}">
@@ -730,11 +1045,10 @@
     searchInput.focus();
   });
 
-  /* FIX: Clicking the search icon expands the sidebar if collapsed, then focuses input */
+  /* Clicking the search icon expands the sidebar if collapsed, then focuses input */
   searchIcon.addEventListener('click', function () {
     if (sidebar.classList.contains('collapsed')) {
       setCollapsed(false, true);
-      /* Small delay so the input is visible before focusing */
       setTimeout(function () { searchInput.focus(); }, 320);
     } else {
       searchInput.focus();
@@ -765,24 +1079,34 @@
         const el = document.getElementById(id);
         if (!el) return;
         el.textContent  = n > 9 ? '9+' : n;
-        el.style.display = n > 0 ? '' : 'none';
+        el.style.display = n > 0 ? 'flex' : 'none';
       });
     } catch(e) { /* silent */ }
   }
 
   /* ════════════════════════════════
      ADMIN NAME / AVATAR
+     Shows "Admin <LastName>" (e.g. "Admin Ojera")
   ════════════════════════════════ */
+  function setAdminLabel(lastname, initials) {
+    const last = (lastname || '').trim();
+
+    const nameEl = document.getElementById('sbUserName');
+    if (nameEl) nameEl.textContent = last ? 'Admin ' + last : 'Admin';
+
+    const initEl = document.getElementById('sbAvatarInitials');
+    if (initEl && initials) initEl.textContent = initials;
+  }
+
+  /* Lets other scripts (e.g. the settings page) update the sidebar live */
+  window.updateSidebarAdminName = setAdminLabel;
+
   async function loadAdminInfo() {
     try {
-      const res  = await fetch('/api/admin/profile');
+      const res = await fetch('/api/admin/profile');
+      if (!res.ok) return;
       const data = await res.json();
-      const name = data.name || data.username || 'Admin';
-      const nameEl = document.getElementById('sbUserName');
-      if (nameEl) nameEl.textContent = name;
-      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-      const initEl = document.getElementById('sbAvatarInitials');
-      if (initEl) initEl.textContent = initials;
+      setAdminLabel(data.lastname, data.initials);
     } catch(e) { /* silent */ }
   }
 
@@ -795,6 +1119,262 @@
     loadReqBadge();
     loadAdminInfo();
   }
+
+  /* ════════════════════════════════
+     ADD USER MODAL (role color-coded)
+     Colors are CSS variables so the theme applies:
+     Admin = --warn, Librarian = --accent2, User = --accent
+  ════════════════════════════════ */
+  const ROLE_THEME = {
+    admin:     { color: 'var(--warn)',    bg: 'rgba(var(--warn-rgb),.12)',    icon: 'bi-shield-lock-fill',  title: 'Add Admin',         sub: 'Create a new administrator account' },
+    librarian: { color: 'var(--accent2)', bg: 'rgba(var(--accent2-rgb),.12)', icon: 'bi-person-badge-fill', title: 'Add Librarian',     sub: 'Create a new librarian account' },
+    user:      { color: 'var(--accent)',  bg: 'rgba(var(--accent-rgb),.12)',  icon: 'bi-person-fill',       title: 'Add User / Member', sub: 'Create a new library member account' },
+  };
+
+  /* ── Field references ── */
+  const fuForm             = document.getElementById('addUserForm');
+  const fuFirstname        = document.getElementById('fuFirstname');
+  const fuLastname         = document.getElementById('fuLastname');
+  const fuEmail            = document.getElementById('fuEmail');
+  const fuPassword         = document.getElementById('fuPassword');
+  const fuConfirmPassword  = document.getElementById('fuConfirmPassword');
+  const fuFirstnameHint    = document.getElementById('fuFirstnameHint');
+  const fuLastnameHint     = document.getElementById('fuLastnameHint');
+  const fuEmailHint        = document.getElementById('fuEmailHint');
+  const fuConfirmHint      = document.getElementById('fuConfirmHint');
+  const fuPwMeter          = document.getElementById('fuPwMeter');
+  const fuPwRequirements   = document.getElementById('fuPwRequirements');
+  const submitBtn          = document.getElementById('addUserSubmitBtn');
+
+  const NAME_RE  = /^[A-Za-z\s'-]{2,50}$/;
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  /* ── Password rule checks ── */
+  function getPasswordChecks(pw) {
+    return {
+      length:  pw.length >= 8,
+      upper:   /[A-Z]/.test(pw),
+      lower:   /[a-z]/.test(pw),
+      number:  /[0-9]/.test(pw),
+      special: /[^A-Za-z0-9]/.test(pw),
+    };
+  }
+
+  function passwordIsValid(pw) {
+    const c = getPasswordChecks(pw);
+    return c.length && c.upper && c.lower && c.number && c.special;
+  }
+
+  /* ── Live strength tracker ── */
+  function updatePasswordTracker() {
+    const pw = fuPassword.value;
+    const checks = getPasswordChecks(pw);
+    let metCount = 0;
+
+    Object.keys(checks).forEach(key => {
+      const el = fuPwRequirements.querySelector(`[data-req="${key}"]`);
+      if (!el) return;
+      const icon = el.querySelector('i');
+      if (checks[key]) {
+        el.classList.add('met');
+        icon.className = 'bi bi-check-circle-fill';
+        metCount++;
+      } else {
+        el.classList.remove('met');
+        icon.className = 'bi bi-circle';
+      }
+    });
+
+    /* Meter bars: 1-2 met = weak, 3-4 = medium, 5 = strong */
+    const bars = fuPwMeter.querySelectorAll('.sb-pw-meter-bar');
+    let level = 'weak';
+    if (metCount >= 5) level = 'strong';
+    else if (metCount >= 3) level = 'medium';
+
+    const filledCount = pw.length === 0 ? 0 : Math.max(1, Math.ceil((metCount / 5) * 4));
+    bars.forEach((bar, i) => {
+      bar.className = 'sb-pw-meter-bar';
+      if (i < filledCount) bar.classList.add(level);
+    });
+  }
+
+  fuPassword.addEventListener('input', function () {
+    updatePasswordTracker();
+    validateField(fuPassword);
+    if (fuConfirmPassword.value) validateConfirmPassword();
+  });
+
+  /* ── Show / hide password toggles ── */
+  function wirePasswordToggle(toggleId, inputEl) {
+    const btn = document.getElementById(toggleId);
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      const isHidden = inputEl.type === 'password';
+      inputEl.type = isHidden ? 'text' : 'password';
+      const icon = btn.querySelector('i');
+      icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+      btn.title = isHidden ? 'Hide password' : 'Show password';
+    });
+  }
+  wirePasswordToggle('fuPasswordToggle', fuPassword);
+  wirePasswordToggle('fuConfirmPasswordToggle', fuConfirmPassword);
+
+  /* ── Field-level validation helpers ── */
+  function setFieldState(input, valid) {
+    input.classList.remove('sb-valid', 'sb-invalid');
+    if (input.value.trim() === '') return; // don't flag empty fields until submit
+    input.classList.add(valid ? 'sb-valid' : 'sb-invalid');
+  }
+
+  function validateField(input) {
+    let valid = true;
+    if (input === fuFirstname) {
+      valid = NAME_RE.test(fuFirstname.value.trim());
+      fuFirstnameHint.classList.toggle('show', fuFirstname.value.trim() !== '' && !valid);
+    } else if (input === fuLastname) {
+      valid = NAME_RE.test(fuLastname.value.trim());
+      fuLastnameHint.classList.toggle('show', fuLastname.value.trim() !== '' && !valid);
+    } else if (input === fuEmail) {
+      valid = EMAIL_RE.test(fuEmail.value.trim());
+      fuEmailHint.classList.toggle('show', fuEmail.value.trim() !== '' && !valid);
+    } else if (input === fuPassword) {
+      valid = passwordIsValid(fuPassword.value);
+    }
+    setFieldState(input, valid);
+    return valid;
+  }
+
+  function validateConfirmPassword() {
+    const match = fuConfirmPassword.value.length > 0 && fuConfirmPassword.value === fuPassword.value;
+    fuConfirmHint.classList.toggle('show', fuConfirmPassword.value.length > 0 && !match);
+    setFieldState(fuConfirmPassword, match);
+    return match;
+  }
+
+  [fuFirstname, fuLastname, fuEmail].forEach(input => {
+    input.addEventListener('input', () => validateField(input));
+    input.addEventListener('blur', () => validateField(input));
+  });
+  fuConfirmPassword.addEventListener('input', validateConfirmPassword);
+  fuConfirmPassword.addEventListener('blur', validateConfirmPassword);
+
+  function resetValidationUI() {
+    [fuFirstname, fuLastname, fuEmail, fuPassword, fuConfirmPassword].forEach(input => {
+      input.classList.remove('sb-valid', 'sb-invalid');
+      if (input === fuPassword || input === fuConfirmPassword) input.type = 'password';
+    });
+    [fuFirstnameHint, fuLastnameHint, fuEmailHint, fuConfirmHint].forEach(hint => hint.classList.remove('show'));
+    ['fuPasswordToggle', 'fuConfirmPasswordToggle'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) { btn.querySelector('i').className = 'bi bi-eye'; btn.title = 'Show password'; }
+    });
+    updatePasswordTracker();
+  }
+
+  window.openAddUserModal = function (role) {
+    const theme = ROLE_THEME[role];
+    if (!theme) return;
+
+    fuForm.reset();
+    resetValidationUI();
+    document.getElementById('addUserRole').value = role;
+    document.getElementById('addUserModalTitle').textContent = theme.title;
+    document.getElementById('addUserModalSub').textContent = theme.sub;
+
+    const iconEl = document.getElementById('addUserModalIcon');
+    iconEl.innerHTML = `<i class="bi ${theme.icon}"></i>`;
+    iconEl.style.background = theme.bg;
+    iconEl.style.color = theme.color;
+    document.getElementById('addUserModalHead').style.borderBottomColor = theme.color;
+    document.getElementById('addUserSubmitBtn').style.background = theme.color;
+
+    document.getElementById('addUserError').style.display = 'none';
+    document.getElementById('addUserOverlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    if (typeof closeAdmSidebar === 'function') closeAdmSidebar(); // close mobile drawer if open
+  };
+
+  window.closeAddUserModal = function () {
+    document.getElementById('addUserOverlay').classList.remove('show');
+    document.body.style.overflow = '';
+  };
+
+  window.submitAddUser = async function (e) {
+    e.preventDefault();
+    const errEl = document.getElementById('addUserError');
+    errEl.style.display = 'none';
+
+    /* ── Run full validation before submitting ── */
+    const firstnameOk = validateField(fuFirstname);
+    const lastnameOk  = validateField(fuLastname);
+    const emailOk     = validateField(fuEmail);
+    const passwordOk  = validateField(fuPassword);
+    const confirmOk   = validateConfirmPassword();
+
+    if (fuFirstname.value.trim() === '') { setFieldState(fuFirstname, false); fuFirstname.classList.add('sb-invalid'); }
+    if (fuLastname.value.trim() === '')  { setFieldState(fuLastname, false);  fuLastname.classList.add('sb-invalid'); }
+    if (fuEmail.value.trim() === '')     { setFieldState(fuEmail, false);     fuEmail.classList.add('sb-invalid'); }
+
+    if (fuFirstname.value.trim() === '' || fuLastname.value.trim() === '' || fuEmail.value.trim() === '' ||
+        !firstnameOk || !lastnameOk || !emailOk) {
+      errEl.textContent = 'Please fill in all fields correctly.';
+      errEl.style.display = 'block';
+      return false;
+    }
+
+    if (!passwordOk) {
+      errEl.textContent = 'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.';
+      errEl.style.display = 'block';
+      return false;
+    }
+
+    if (!confirmOk) {
+      errEl.textContent = 'Passwords do not match.';
+      errEl.style.display = 'block';
+      return false;
+    }
+
+    const fd    = new FormData(fuForm);
+    const role  = fd.get('role');
+
+    /* admin/librarian use the existing /signup route (ajax=1);
+       user uses the lightweight /admin/add_user route */
+    let endpoint;
+    if (role === 'admin' || role === 'librarian') {
+      fd.set('ajax', '1');
+      endpoint = '/signup';
+    } else {
+      endpoint = '/admin/add_user';
+    }
+
+    const btn = submitBtn;
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+
+    try {
+      const res  = await fetch(endpoint, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success) {
+        closeAddUserModal();
+        location.reload();
+      } else {
+        errEl.textContent = data.message || 'Something went wrong.';
+        errEl.style.display = 'block';
+      }
+    } catch (err) {
+      errEl.textContent = 'Network error. Please try again.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+    return false;
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeAddUserModal();
+  });
 
 })();
 </script>

@@ -71,7 +71,8 @@
 
     /* ── PAGE HEADER ── */
     .page-header {
-      padding: 24px 40px 0;
+      padding: 64px 40px 0;
+      margin-top: 16px;   /* ← add this */
       display:flex; align-items:center; justify-content:space-between;
       flex-wrap:wrap; gap:12px;
     }
@@ -85,7 +86,7 @@
     .page-title { font-size:1.5rem; font-weight:700; letter-spacing:-.03em; color:#fff; }
     .page-sub   { font-size:.82rem; color:var(--tl); margin-top:2px; }
     @media (max-width:768px) {
-      .page-header { padding: 20px 16px 0; }
+      .page-header { padding: 20px 16px 0; margin-top: 12px; }
       .page-title  { font-size: 1.2rem; }
       .page-header-icon { width:40px; height:40px; font-size:1.1rem; }
     }
@@ -618,6 +619,7 @@
     .vm-body::-webkit-scrollbar, .inv-modal-box::-webkit-scrollbar, .modal-box::-webkit-scrollbar { width:4px; }
     .vm-body::-webkit-scrollbar-thumb, .inv-modal-box::-webkit-scrollbar-thumb, .modal-box::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:4px; }
   </style>
+  <script src="{{ url_for('static', filename='js/staff_appearance.js') }}"></script>
 </head>
 <body>
 {% include 'admin_template/topbar_template.html' %}
@@ -916,7 +918,6 @@
 
     <form id="addBookForm" onsubmit="handleAddSubmit(event)" enctype="multipart/form-data">
       <input type="hidden" name="isbn_meta_json" id="addMetaJson">
-      <input type="hidden" name="page_count"     id="addPageCount">
       <input type="hidden" name="api_source"     id="addApiSource">
       <input type="hidden" name="thumbnail_url"  id="addThumbnailHidden">
       <input type="hidden" name="status"         id="addStatus" value="Available">
@@ -968,10 +969,9 @@
             <div class="form-group"><label class="form-label">Category</label><input type="text" name="category" id="addCategory" class="form-control" placeholder="e.g. Fiction"></div>
             <div class="form-group"><label class="form-label">Class / Genre</label><input type="text" name="class" id="addGenre" class="form-control" placeholder="e.g. Novel"></div>
           </div>
-          <div class="form-grid"><div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="editPubDate" class="form-control"></div><div class="form-group"><label class="form-label">Language</label><input type="text" name="language" id="editLanguage" class="form-control"></div></div>
-          <div class="form-group">
-            <label class="form-label">Page Count</label>
-            <input type="number" name="page_count" id="editPageCount" class="form-control" min="1">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="addPubDate" class="form-control" placeholder="e.g. 2001"></div>
+            <div class="form-group"><label class="form-label">Page Count</label><input type="number" name="page_count" id="addPageCount" class="form-control" min="1"></div>
           </div>
           <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="addDescription" class="form-control" rows="3" placeholder="Brief book description…"></textarea></div>
           <div class="form-group" style="margin-bottom:0">
@@ -998,10 +998,7 @@
         <!-- Step 3: Library Classification -->
         <div class="wz-pane" id="wzPane2">
           <div class="wz-section"><i class="bi bi-building"></i> Library Classification</div>
-          <div class="form-grid">
-            <div class="form-group"><label class="form-label">Call Number</label><input type="text" name="call_number" class="form-control" placeholder="e.g. 823.914 ROW"></div>
-            <div class="form-group"><label class="form-label">Class</label><input type="text" name="class" class="form-control" placeholder="e.g. PR6068"></div>
-          </div>
+          <div class="form-group"><label class="form-label">Call Number</label><input type="text" name="call_number" class="form-control" placeholder="e.g. 823.914 ROW"></div>
           <div class="form-group"><label class="form-label">Shelf Location</label><input type="text" name="shelf_location" id="addShelf" class="form-control" placeholder="e.g. A-Row 2, Section 3"></div>
           <div class="wz-section" style="margin-top:18px"><i class="bi bi-calendar3"></i> Acquisition</div>
           <div class="form-grid">

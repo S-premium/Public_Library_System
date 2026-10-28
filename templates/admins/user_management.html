@@ -363,6 +363,7 @@
     @keyframes toastIn { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
     @media (max-width:768px) { .stats-row { grid-template-columns:repeat(2,1fr); } .info-grid { grid-template-columns: 1fr; } }
   </style>
+  <script src="{{ url_for('static', filename='js/staff_appearance.js') }}"></script>
 </head>
 <body>
 {% include 'admin_template/topbar_template.html' %}
