@@ -17,6 +17,8 @@
     --danger-rgb:   255,99,99;
     --warn:         #ff9800;
     --warn-rgb:     255,152,0;
+    --gold:         #f5c542;
+    --gold-rgb:     245,197,66;
     --fg:           #ffffff;
     --fg-rgb:       255,255,255;
     --on-accent:    #0d1a24;
@@ -225,6 +227,7 @@
   .sb-sr-item i { font-size: .9rem; color: rgba(var(--accent-rgb),.6); flex-shrink: 0; width: 16px; text-align: center; }
   .sb-sr-item .sb-sr-label { flex: 1; }
   .sb-sr-item .sb-sr-parent { font-size: .68rem; color: rgba(var(--fg-rgb),.3); margin-left: auto; white-space: nowrap; }
+  .sb-sr-item i.sb-sr-lock { color: var(--gold); font-size: .75rem; width: auto; margin-left: 4px; }
   .sb-sr-empty { padding: 16px 14px; font-size: .8rem; color: rgba(var(--fg-rgb),.3); text-align: center; }
   .sb-sr-highlight { color: var(--accent); font-weight: 700; }
 
@@ -294,6 +297,16 @@
   .sb-sub-item:hover::before, .sb-sub-item.active::before { background: var(--accent); }
   .sb-sub-item.active { color: var(--accent); }
 
+  /* ── LOCKED SUB-ITEM (gold lock) ── */
+  .sb-sub-item .sb-lock {
+    margin-left: auto; font-size: .78rem;
+    color: var(--gold);
+    filter: drop-shadow(0 0 4px rgba(var(--gold-rgb),.35));
+    flex-shrink: 0;
+  }
+  .sb-sub-item.locked { cursor: pointer; }
+  .sb-sub-item.locked:hover::before { background: var(--gold); }
+
   .sb-divider { height: 1px; background: rgba(var(--fg-rgb),.07); margin: 8px 8px; }
 
   /* ── FOOTER ── */
@@ -342,6 +355,42 @@
     .adm-sidebar.open { transform: translateX(0); }
     .adm-sidebar.collapsed { width: var(--sb-w) !important; }
   }
+
+  /* ── "COMING SOON" MODAL ── */
+  .sb-cs-overlay {
+    position: fixed; inset: 0; z-index: 3000;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+    background: rgba(var(--overlay-rgb),.65);
+    backdrop-filter: blur(3px);
+  }
+  .sb-cs-overlay.show { display: flex; animation: sbCsFade .18s ease; }
+  .sb-cs-modal {
+    width: 100%; max-width: 360px; text-align: center;
+    background: var(--sb-bg);
+    border: 1px solid rgba(var(--gold-rgb),.25);
+    border-radius: 16px; padding: 30px 26px 24px;
+    box-shadow: 0 20px 60px rgba(var(--shadow-rgb),.55);
+    animation: sbCsPop .22s cubic-bezier(.2,.9,.3,1.2);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sb-cs-icon {
+    width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: var(--gold);
+    background: rgba(var(--gold-rgb),.12);
+    border: 1px solid rgba(var(--gold-rgb),.3);
+  }
+  .sb-cs-title { margin: 0 0 6px; font-size: 1.15rem; font-weight: 700; color: var(--fg); }
+  .sb-cs-text  { margin: 0 0 22px; font-size: .85rem; color: rgba(var(--fg-rgb),.55); }
+  .sb-cs-btn {
+    border: none; cursor: pointer; padding: 9px 28px; border-radius: 9px;
+    font-family: inherit; font-size: .82rem; font-weight: 700;
+    background: var(--gold); color: var(--on-accent); transition: filter .15s;
+  }
+  .sb-cs-btn:hover { filter: brightness(1.08); }
+  @keyframes sbCsFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sbCsPop  { from { opacity: 0; transform: scale(.92) translateY(8px); } to { opacity: 1; transform: none; } }
 </style>
 <script src="{{ url_for('static', filename='js/staff_appearance.js') }}"></script>
 <!-- Load staff_appearance.js exactly once per page -->
@@ -425,7 +474,12 @@
     </button>
     <div class="sb-sub {{ 'open' if active_page in ['library_cards','records_returns'] else '' }}">
       <a href="/librarian/library-cards"      class="sb-sub-item {{ 'active' if active_page == 'library_cards' else '' }}">Borrowing Form</a>
-      <a href="/librarian/borrowing/history"  class="sb-sub-item {{ 'active' if active_page == 'records_returns' else '' }}">Borrow History</a>
+      <!-- LOCKED: Borrow History (coming soon). To unlock, restore href="/librarian/borrowing/history",
+           remove data-locked / the lock icon, and drop `locked: true` from NAV_INDEX. -->
+      <a href="#" class="sb-sub-item locked" data-locked="Borrow History" title="Coming soon">
+        Borrow History
+        <i class="bi bi-lock-fill sb-lock"></i>
+      </a>
     </div>
 
     <a href="/librarian_user_management" class="sb-item {{ 'active' if active_page == 'user_mgmt' else '' }}"
@@ -448,7 +502,7 @@
       <span class="sb-label">Event Calendar</span>
     </a>
 
-    <a href="/librarian/account_requests" class="sb-item {{ 'active' if active_page == 'account_requests' else '' }}"
+    <a href="/librarian/account-requests" class="sb-item {{ 'active' if active_page == 'account_requests' else '' }}"
        data-tip="Account Requests" data-search="account requests">
       <i class="bi bi-person-check-fill sb-icon"></i>
       <span class="sb-label">Account Requests</span>
@@ -482,18 +536,29 @@
 
 </aside>
 
+<!-- "Coming soon" modal -->
+<div class="sb-cs-overlay" id="sbCsOverlay" role="dialog" aria-modal="true" aria-labelledby="sbCsTitle">
+  <div class="sb-cs-modal">
+    <div class="sb-cs-icon"><i class="bi bi-lock-fill"></i></div>
+    <h3 class="sb-cs-title" id="sbCsTitle">Coming soon</h3>
+    <p class="sb-cs-text"><span id="sbCsFeature">This feature</span> is not available yet.</p>
+    <button type="button" class="sb-cs-btn" id="sbCsClose">Got it</button>
+  </div>
+</div>
+
 <script>
 (function () {
 
   /* ════════════════════════════════
      NAV ITEMS INDEX (for search)
+     locked: true  → shows a gold lock and opens the "Coming soon" modal
   ════════════════════════════════ */
   const NAV_INDEX = [
     { label: 'Home',             icon: 'bi-house-door-fill',       href: '/librarian/home',             parent: null },
     { label: 'Dashboard',        icon: 'bi-speedometer2',          href: '/librarian_dashboard',        parent: null },
     { label: 'Announcement',     icon: 'bi-megaphone-fill',        href: '/librarian/announcements',    parent: null },
     { label: 'Borrowing Form',   icon: 'bi-journal-bookmark-fill', href: '/librarian/library-cards',    parent: 'Borrow Management' },
-    { label: 'Borrow History',   icon: 'bi-clock-history',         href: '/librarian/borrowing/history',parent: 'Borrow Management' },
+    { label: 'Borrow History',   icon: 'bi-clock-history',         href: '/librarian/borrowing/history',parent: 'Borrow Management', locked: true },
     { label: 'User Management',  icon: 'bi-people-fill',           href: '/librarian_user_management',  parent: null },
     { label: 'Book Management',  icon: 'bi-book-fill',             href: '/librarian_book_management',  parent: null },
     { label: 'Event Calendar',   icon: 'bi-calendar-week-fill',    href: '/librarian/event',            parent: null },
@@ -561,6 +626,39 @@
   };
 
   /* ════════════════════════════════
+     "COMING SOON" MODAL
+  ════════════════════════════════ */
+  const csOverlay = document.getElementById('sbCsOverlay');
+  const csFeature = document.getElementById('sbCsFeature');
+  const csClose   = document.getElementById('sbCsClose');
+
+  function openComingSoon(featureName) {
+    csFeature.textContent = featureName || 'This feature';
+    csOverlay.classList.add('show');
+    csClose.focus();
+  }
+  function closeComingSoon() {
+    csOverlay.classList.remove('show');
+  }
+
+  csClose.addEventListener('click', closeComingSoon);
+  csOverlay.addEventListener('click', function (e) {
+    if (e.target === csOverlay) closeComingSoon();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && csOverlay.classList.contains('show')) closeComingSoon();
+  });
+
+  /* Locked links in the sidebar nav */
+  document.querySelectorAll('.adm-sidebar [data-locked]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      openComingSoon(el.getAttribute('data-locked'));
+      if (window.matchMedia('(max-width: 992px)').matches) window.closeAdmSidebar();
+    });
+  });
+
+  /* ════════════════════════════════
      SEARCH
   ════════════════════════════════ */
   const searchInput = document.getElementById('sbSearchInput');
@@ -593,15 +691,26 @@
       resultsBox.innerHTML = '<div class="sb-sr-empty">No results for "<strong>' + escapeHtml(query) + '</strong>"</div>';
     } else {
       resultsBox.innerHTML = matches.map((item, i) => `
-        <a href="${item.href}" class="sb-sr-item" data-idx="${i}">
+        <a href="${item.locked ? '#' : item.href}" class="sb-sr-item" data-idx="${i}"
+           ${item.locked ? 'data-locked="' + escapeHtml(item.label) + '"' : ''}>
           <i class="bi ${item.icon}"></i>
           <span class="sb-sr-label">${highlight(item.label, q)}</span>
+          ${item.locked ? '<i class="bi bi-lock-fill sb-sr-lock"></i>' : ''}
           ${item.parent ? `<span class="sb-sr-parent">${item.parent}</span>` : ''}
         </a>
       `).join('');
     }
     resultsBox.classList.add('show');
   }
+
+  /* Locked results in search open the modal instead of navigating */
+  resultsBox.addEventListener('click', function (e) {
+    const locked = e.target.closest('[data-locked]');
+    if (!locked) return;
+    e.preventDefault();
+    clearSearch();
+    openComingSoon(locked.getAttribute('data-locked'));
+  });
 
   function closeResults() {
     resultsBox.classList.remove('show');

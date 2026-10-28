@@ -1111,7 +1111,28 @@
           <div class="form-grid"><div class="form-group"><label class="form-label">Category</label><input type="text" name="category" id="editCategory" class="form-control"></div><div class="form-group"><label class="form-label">Genre / Class</label><input type="text" name="genre" id="editGenre" class="form-control"></div></div>
           <div class="form-grid"><div class="form-group"><label class="form-label">Published Date</label><input type="text" name="published_date" id="editPubDate" class="form-control"></div><div class="form-group"><label class="form-label">Language</label><input type="text" name="language" id="editLanguage" class="form-control"></div></div>
           <div class="form-group"><label class="form-label">Description</label><textarea name="description" id="editDescription" class="form-control" rows="3"></textarea></div>
-          <div class="form-group"><label class="form-label">Cover Image URL</label><input type="url" name="thumbnail_url" id="editThumbnail" class="form-control" placeholder="https://…"></div>
+          <div class="form-group">
+            <label class="form-label">Cover Image</label>
+            <input type="hidden" name="thumbnail_url" id="editThumbnail">
+            <div id="editCoverDropZone"
+                 style="border:2px dashed rgba(159,193,225,.25);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;transition:.2s"
+                 onclick="document.getElementById('editCoverFile').click()"
+                 ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+                 ondragleave="this.style.borderColor='rgba(159,193,225,.25)'"
+                 ondrop="handleEditCoverDrop(event)">
+              <input type="file" name="cover_image_file" id="editCoverFile" accept="image/*" style="display:none" onchange="handleEditCoverFile(this)">
+              <div id="editCoverPreviewWrap" style="display:none;position:relative;width:fit-content;margin:0 auto">
+                <img id="editCoverPreviewImg" src="" alt="Cover preview" style="max-height:90px;border-radius:6px;border:1px solid rgba(255,255,255,.15);display:block" onerror="this.parentElement.style.display='none';document.getElementById('editCoverPlaceholder').style.display='block'">
+              </div>
+              <div id="editCoverPlaceholder" style="color:rgba(255,255,255,.35);font-size:.8rem">
+                <i class="bi bi-paperclip" style="font-size:1.3rem;display:block;margin-bottom:5px;color:rgba(159,193,225,.5)"></i>
+                Click to attach or drag &amp; drop a new cover image<br>
+                <span style="font-size:.7rem;opacity:.6">PNG, JPG, WEBP, GIF — max 5 MB</span>
+              </div>
+            </div>
+            <div id="editCoverName" style="font-size:.72rem;color:var(--tl);margin-top:6px;display:none"></div>
+            <div style="margin-top:6px"><button type="button" class="vm-btn" id="editCoverRemoveBtn" style="display:none;padding:5px 10px;font-size:.74rem" onclick="clearEditCover()"><i class="bi bi-x-lg"></i> Remove cover</button></div>
+          </div>
           <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px;margin:16px 0 12px"><i class="bi bi-building"></i> Library Classification <span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span></div>
           <div class="form-grid"><div class="form-group"><label class="form-label">Call Number</label><input type="text" name="call_number" id="editCallNumber" class="form-control"></div><div class="form-group"><label class="form-label">Copyright</label><input type="text" name="copy_right" id="editCopyRight" class="form-control"></div></div>
           <div class="form-grid"><div class="form-group"><label class="form-label">Date Received</label><input type="date" name="date_received" id="editDateReceived" class="form-control"></div><div class="form-group"><label class="form-label">Source of Fund</label><input type="text" name="source_of_fund" id="editSourceOfFund" class="form-control"></div></div>
@@ -1815,6 +1836,9 @@ function openEditModal(id){
   document.getElementById('editLanguage').value=b.language||'';
   document.getElementById('editDescription').value=b.description||'';
   document.getElementById('editThumbnail').value=b.thumbnail_url||'';
+  setEditCoverPreview(b.thumbnail_url||'');
+  document.getElementById('editCoverFile').value='';
+  document.getElementById('editCoverName').style.display='none';
   document.getElementById('editCallNumber').value=b.call_number||'';
   document.getElementById('editCopyRight').value=b.copy_right||'';
   document.getElementById('editDateReceived').value=b.date_received||'';
@@ -1831,6 +1855,31 @@ function openEditModal(id){
   editTabSwitch(0);
   const errEl=document.getElementById('editErr');if(errEl){errEl.textContent='';errEl.style.display='none';}
   document.getElementById('editModal').classList.add('open');document.body.style.overflow='hidden';
+}
+/* ── Edit-modal cover attach ── */
+function setEditCoverPreview(src){
+  const wrap=document.getElementById('editCoverPreviewWrap'),ph=document.getElementById('editCoverPlaceholder'),rm=document.getElementById('editCoverRemoveBtn');
+  if(src){document.getElementById('editCoverPreviewImg').src=src;wrap.style.display='block';ph.style.display='none';rm.style.display='';}
+  else{wrap.style.display='none';ph.style.display='block';rm.style.display='none';}
+}
+function handleEditCoverFile(input){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){showToast('<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Please choose an image file','error');input.value='';return;}
+  if(file.size>COVER_MAX_MB*1024*1024){showToast(`<i class="bi bi-x-circle-fill" style="color:var(--danger)"></i> Image must be under ${COVER_MAX_MB} MB`,'error');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{setEditCoverPreview(e.target.result);const nm=document.getElementById('editCoverName');nm.textContent=file.name+' (will replace the current cover on save)';nm.style.display='block';};
+  reader.readAsDataURL(file);
+}
+function handleEditCoverDrop(event){
+  event.preventDefault();document.getElementById('editCoverDropZone').style.borderColor='rgba(159,193,225,.25)';
+  const file=event.dataTransfer.files[0];if(!file)return;
+  const input=document.getElementById('editCoverFile'),dt=new DataTransfer();dt.items.add(file);input.files=dt.files;handleEditCoverFile(input);
+}
+function clearEditCover(){
+  document.getElementById('editCoverFile').value='';
+  document.getElementById('editThumbnail').value='';
+  document.getElementById('editCoverName').style.display='none';
+  setEditCoverPreview('');
 }
 function closeEditModal(){document.getElementById('editModal').classList.remove('open');document.body.style.overflow='';}
 document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});

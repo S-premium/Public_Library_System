@@ -226,9 +226,21 @@ def librarian_update_book():
         vals.append(encrypt_data(v) if v else None)
 
     for col in ('subtitle', 'edition', 'published_date', 'language', 'description',
-                'thumbnail_url', 'call_number', 'date_received', 'copy_right',
+                'call_number', 'date_received', 'copy_right',
                 'source_of_fund'):
         put_plain(col)
+
+    # Cover: a newly attached file (stored on Dropbox) replaces the current one;
+    # otherwise keep whatever thumbnail_url the form sent (the existing cover).
+    try:
+        new_cover = _save_cover(request.files.get('cover_image_file'))
+    except ValueError as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+    if new_cover:
+        sets.append("thumbnail_url=%s")
+        vals.append(new_cover)
+    else:
+        put_plain('thumbnail_url')
 
     if 'cost_price' in form:
         try:
